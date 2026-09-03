@@ -40,9 +40,10 @@
     "qa:resume": "node qa/resume-parity.mjs",
     "qa:static": "node qa/static-home-parity.mjs",
     "qa:parity": "node --expose-gc qa/parity.mjs",
+    "qa:reference-routes": "node qa/reference-routes.mjs",
     "qa:core": "npm run qa:assets && npm run qa:functionality && npm run qa:quality && npm run qa:media",
     "qa:all": "node qa/run-with-server.mjs qa:assets qa:functionality qa:quality qa:media qa:fonts qa:resume qa:bundle",
-    "qa:reference": "node qa/run-with-server.mjs qa:static qa:parity",
+    "qa:reference": "node qa/run-with-server.mjs qa:static qa:reference-routes",
     "qa:maintainer": "npm run qa:all && npm run qa:reference",
     "audit:prod": "npm audit --omit=dev"
   },
