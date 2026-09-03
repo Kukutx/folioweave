@@ -1,0 +1,27 @@
+:root {
+  /* Core typography + portfolio colors. Safe first-stop customization for the theme. */
+  --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "Newsreader", serif;
+  --font-hand: "Caveat Portfolio", cursive;
+  --color-accent: #0071e3;
+  --color-text: #111;
+  --color-text-secondary: #666;
+
+  /* Shared page/card/editor tokens inherited from the original design system. */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #fafafa;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #6e6e73;
+  --border: #d2d2d7;
+  --border-light: #e8e8ed;
+  --accent: #000000;
+  --accent-hover: #333333;
+  --card-bg: #ffffff;
+  --card-border: #e8e8ed;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --figma-blue: #18a0fb;
+  --figma-selection-bg: rgba(24, 160, 251, 0.2);
+}

@@ -1,0 +1,631 @@
+{
+  "version": 1,
+  "description": "Reference/demo assets preserved from the deployed portfolio. These files intentionally remain in public even when not all are currently rendered.",
+  "count": 103,
+  "assets": [
+    {
+      "referencePath": "apple-touch-icon.png",
+      "publicPath": "apple-touch-icon.png",
+      "size": 58353,
+      "sha256": "ab6d78f9d1de3161835dc97596a867692b9a7bb6e89344296e0c5afd9620a6f6"
+    },
+    {
+      "referencePath": "assets/clipt_data_architecture-53b0ab3d.webp",
+      "publicPath": "assets/clipt_data_architecture-53b0ab3d.webp",
+      "size": 458920,
+      "sha256": "53b0ab3df82012425cd587f51db32bdb6c5b54f5bc9295fd901a407a4ea26dd7"
+    },
+    {
+      "referencePath": "assets/clipt_onboarding_security_1-217c9416.webp",
+      "publicPath": "assets/clipt_onboarding_security_1-217c9416.webp",
+      "size": 101277,
+      "sha256": "217c9416146f33d32f8a3c88a508b9774df84c0d61bcad022338053e4cfba406"
+    },
+    {
+      "referencePath": "assets/clipt_onboarding_security_2-bc544c81.webp",
+      "publicPath": "assets/clipt_onboarding_security_2-bc544c81.webp",
+      "size": 104470,
+      "sha256": "bc544c81a3a17d5f048ce39d7e4452dc3b1d45bd2c0c04ddb3d11f7a53431275"
+    },
+    {
+      "referencePath": "assets/clipt_sync_diagram-61ccf62c.webp",
+      "publicPath": "assets/clipt_sync_diagram-61ccf62c.webp",
+      "size": 411702,
+      "sha256": "61ccf62c20d503c4a4f33c27d57c44d695c3620a0fd97f4ecd3753d1ec668161"
+    },
+    {
+      "referencePath": "assets/cred-icon-6de258e2.png",
+      "publicPath": "assets/cred-icon-6de258e2.png",
+      "size": 23356,
+      "sha256": "6de258e20fbaf17f3375b3e1b0de9a5ad7d9e2acf7423f24ab829870b439455d"
+    },
+    {
+      "referencePath": "assets/district-icon-fad26ad7.png",
+      "publicPath": "assets/district-icon-fad26ad7.png",
+      "size": 498475,
+      "sha256": "fad26ad7285d778fca10efd38952d881d88f0801a08ed18f5726b43512d6f883"
+    },
+    {
+      "referencePath": "brink/logo.png",
+      "publicPath": "brink/logo.png",
+      "size": 864257,
+      "sha256": "44f4636144e1097ab8c45eb2c0c57b8814d96420a2205e5258e0fa4fd0d02dfc"
+    },
+    {
+      "referencePath": "external/s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg",
+      "publicPath": "assets/bird-cells-new.svg",
+      "size": 7969,
+      "sha256": "5c10a3a3bb1ee00f5f3e1588b4ac23988e4dd6b4ca81a7d46fab70dc153ece98"
+    },
+    {
+      "referencePath": "favicon-16x16.png",
+      "publicPath": "favicon-16x16.png",
+      "size": 857,
+      "sha256": "8f76867741f96e90c402106c90f7f821ac409b150985f5602c96e39f20898fe0"
+    },
+    {
+      "referencePath": "favicon-32x32.png",
+      "publicPath": "favicon-32x32.png",
+      "size": 2640,
+      "sha256": "9060adb30243f5f413902b5d8b2187787415c0786633f1c294f1379e9c6eaced"
+    },
+    {
+      "referencePath": "favicon.ico",
+      "publicPath": "favicon.ico",
+      "size": 165467,
+      "sha256": "a1ec0dcd2855ed4bcd428e4a98a4d89f960695fea29b7ed0249e6976f7e8d10c"
+    },
+    {
+      "referencePath": "fonts/caveat-latin-400.woff2",
+      "publicPath": "fonts/caveat-latin-400.woff2",
+      "size": 48864,
+      "sha256": "7bd727afb3d294b5be1f3df1e47f875144e35d2ec9ba8f4c2484b885722dadb9"
+    },
+    {
+      "referencePath": "fonts/google-000.woff2",
+      "publicPath": "fonts/google-000.woff2",
+      "size": 8104,
+      "sha256": "3275f18f3783930981517dd969e75911b9a5c774ac602299f635a083702e81b6"
+    },
+    {
+      "referencePath": "fonts/google-001.woff2",
+      "publicPath": "fonts/google-001.woff2",
+      "size": 17196,
+      "sha256": "2c9576bb1d612cf8750bf749689b5916287940fc99e1be5451b83d9fb6c4c5d9"
+    },
+    {
+      "referencePath": "fonts/google-002.woff2",
+      "publicPath": "fonts/google-002.woff2",
+      "size": 23528,
+      "sha256": "04f54ff42ea2b8fc50b4259c29c60b1e05e606b769c2fb541c98624346c9767c"
+    },
+    {
+      "referencePath": "fonts/google-003.woff2",
+      "publicPath": "fonts/google-003.woff2",
+      "size": 2896,
+      "sha256": "aaeca97c82451ceff098a70bc77c3bf22320d1e9763bd4989f32f2c2a4a7ced0"
+    },
+    {
+      "referencePath": "fonts/google-004.woff2",
+      "publicPath": "fonts/google-004.woff2",
+      "size": 2552,
+      "sha256": "cd48eed0925d2c483b42ef8f15082488e175eabab8704d2cf97cf4136c1a2b5d"
+    },
+    {
+      "referencePath": "fonts/google-005.woff2",
+      "publicPath": "fonts/google-005.woff2",
+      "size": 38836,
+      "sha256": "f266d6cc9d343ae3da3de6ee68a772a76a27277ba864a1a07f8bc7ec4bcfd68d"
+    },
+    {
+      "referencePath": "fonts/google-006.woff2",
+      "publicPath": "fonts/google-006.woff2",
+      "size": 24024,
+      "sha256": "d877cbd19ac97d8baa047ef544d92cbf7254ff7eeb4195f022dc068210823141"
+    },
+    {
+      "referencePath": "fonts/google-007.woff2",
+      "publicPath": "fonts/google-007.woff2",
+      "size": 24856,
+      "sha256": "bd180e400d337693ff3880c95acbd9e7a44848ab89839e4c384911aad663b8ae"
+    },
+    {
+      "referencePath": "fonts/google-008.woff2",
+      "publicPath": "fonts/google-008.woff2",
+      "size": 5476,
+      "sha256": "c782c559ee388463d30b7cf138116d29b19bf8f51922eafe3061437ddac40d23"
+    },
+    {
+      "referencePath": "fonts/google-009.woff2",
+      "publicPath": "fonts/google-009.woff2",
+      "size": 2828,
+      "sha256": "64a603f0d77e97d6e6c0dd1380768f3109a52a3866cf93427c5f912eeaaa8490"
+    },
+    {
+      "referencePath": "fonts/google-010.woff2",
+      "publicPath": "fonts/google-010.woff2",
+      "size": 11112,
+      "sha256": "c3c9f394ebb84e5a77df8e7bae973035114f852986810435775007137cdddebe"
+    },
+    {
+      "referencePath": "fonts/google-011.woff2",
+      "publicPath": "fonts/google-011.woff2",
+      "size": 25584,
+      "sha256": "24dd4792970a1bc781b03f040aab74f5b8065921b4797e6547fc6476d1a51eb4"
+    },
+    {
+      "referencePath": "fonts/google-012.woff2",
+      "publicPath": "fonts/google-012.woff2",
+      "size": 50832,
+      "sha256": "4f2ce47af77a0bb9ec3dbd2e81bab7eb97fbcfcd94e47fa63510bb4271b09113"
+    },
+    {
+      "referencePath": "fonts/google-013.woff2",
+      "publicPath": "fonts/google-013.woff2",
+      "size": 12384,
+      "sha256": "d0014821252a8a770bf7551641572f239a8ede83d75652d84fef0c3627751baf"
+    },
+    {
+      "referencePath": "fonts/google-014.woff2",
+      "publicPath": "fonts/google-014.woff2",
+      "size": 22128,
+      "sha256": "5a51946dfffa82972bc98745359c46761515641fda557c25116459a9f83da4a7"
+    },
+    {
+      "referencePath": "fonts/google-015.woff2",
+      "publicPath": "fonts/google-015.woff2",
+      "size": 11604,
+      "sha256": "290e6267dd833bf5f899eba4c29ad0a9b09dbe53f6075b18af38057159e1ff20"
+    },
+    {
+      "referencePath": "fonts/google-016.woff2",
+      "publicPath": "fonts/google-016.woff2",
+      "size": 21032,
+      "sha256": "5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31"
+    },
+    {
+      "referencePath": "fonts/google-017.woff2",
+      "publicPath": "fonts/google-017.woff2",
+      "size": 25960,
+      "sha256": "ca157063339ac4ad418f214f3abfed119b0798ab4d377386ce5c9e5a7a435ebd"
+    },
+    {
+      "referencePath": "fonts/google-018.woff2",
+      "publicPath": "fonts/google-018.woff2",
+      "size": 18748,
+      "sha256": "71d5ee93cc1e9f1d520a3a8b66456de18c7879d8df09d57fcd2eaff75fef0075"
+    },
+    {
+      "referencePath": "fonts/google-019.woff2",
+      "publicPath": "fonts/google-019.woff2",
+      "size": 11232,
+      "sha256": "6e9e020a25f9b56d418f2c085b1d3c09725a4da23fe693a5b463064606732190"
+    },
+    {
+      "referencePath": "fonts/google-020.woff2",
+      "publicPath": "fonts/google-020.woff2",
+      "size": 18996,
+      "sha256": "1be3448e292fbf05ffe176fe1e43f135013d50b1e7d324ad1a558f623d3bb6f6"
+    },
+    {
+      "referencePath": "fonts/google-021.woff2",
+      "publicPath": "fonts/google-021.woff2",
+      "size": 10252,
+      "sha256": "5c66f9e07e90c6d4ac4922cc68d60de26c17b1858e677fb5e603fce3952b3ff2"
+    },
+    {
+      "referencePath": "fonts/google-022.woff2",
+      "publicPath": "fonts/google-022.woff2",
+      "size": 85068,
+      "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"
+    },
+    {
+      "referencePath": "fonts/google-023.woff2",
+      "publicPath": "fonts/google-023.woff2",
+      "size": 48256,
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "referencePath": "fonts/google-024.woff2",
+      "publicPath": "fonts/google-024.woff2",
+      "size": 5556,
+      "sha256": "f7e98aa7b0c65d422b06851f7a5f148dca71df9083f19f0ed0ca888bc96055ad"
+    },
+    {
+      "referencePath": "fonts/google-025.woff2",
+      "publicPath": "fonts/google-025.woff2",
+      "size": 15228,
+      "sha256": "b775f4faa4ffd1bbb36db8c9504c95af98d82e37209f3a6253915c7cae919d6a"
+    },
+    {
+      "referencePath": "fonts/google-026.woff2",
+      "publicPath": "fonts/google-026.woff2",
+      "size": 24340,
+      "sha256": "fa9b900403949d9a723106752a5c8ad2797012a0c9057427b1da2db72d552148"
+    },
+    {
+      "referencePath": "fonts/google-027.woff2",
+      "publicPath": "fonts/google-027.woff2",
+      "size": 11932,
+      "sha256": "f0dcc9795666850cc4cd8d50d55c44d48d9103cc86f552b4a12f0793eb915840"
+    },
+    {
+      "referencePath": "fonts/google-028.woff2",
+      "publicPath": "fonts/google-028.woff2",
+      "size": 36244,
+      "sha256": "ac6fa9ed533278f4c8fd3ae44a1fc78c7df736040237ab86fc1160d020af0af2"
+    },
+    {
+      "referencePath": "fonts/google-029.woff2",
+      "publicPath": "fonts/google-029.woff2",
+      "size": 58084,
+      "sha256": "62981321d9a3cc7a61a73792729043703fd6112da86e8ec848bb57f088578757"
+    },
+    {
+      "referencePath": "gowtham-oleti-resume.jpg",
+      "publicPath": "gowtham-oleti-resume.jpg",
+      "size": 335298,
+      "sha256": "bd1717c47660a769c31d93f8c9f21af0915f6bfae7e5c417ff26511fe6ce1053"
+    },
+    {
+      "referencePath": "gowtham-oleti-resume.pdf",
+      "publicPath": "gowtham-oleti-resume.pdf",
+      "size": 19156,
+      "sha256": "8e44ba7e14033f8fcb83755dd44ee62ade5baeb0ca176b4b9b4c6770f45e532f"
+    },
+    {
+      "referencePath": "media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp",
+      "publicPath": "media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp",
+      "size": 226918,
+      "sha256": "0617e722b2ba50031fbe43a86d19037df2ad5c0a0ef751ad1646e21186e895a7"
+    },
+    {
+      "referencePath": "media/5c0589_0a59eba495e947ad9ff22c2546a28b04~mv2.webp",
+      "publicPath": "media/5c0589_0a59eba495e947ad9ff22c2546a28b04~mv2.webp",
+      "size": 213322,
+      "sha256": "e9e8d9a0bd8d51454c2858db948bfafff4542a643fd3f143705941280bb716e8"
+    },
+    {
+      "referencePath": "media/5c0589_2114ae1b4c2a4844a205efd5c32caf39~mv2.webp",
+      "publicPath": "media/5c0589_2114ae1b4c2a4844a205efd5c32caf39~mv2.webp",
+      "size": 151930,
+      "sha256": "4182ec1f7202bf32a87b291c19b4114cd560e7d07b4b2b716f076317bd575509"
+    },
+    {
+      "referencePath": "media/5c0589_233e313fa20e465fa100ea33fdf41490~mv2.webp",
+      "publicPath": "media/5c0589_233e313fa20e465fa100ea33fdf41490~mv2.webp",
+      "size": 173128,
+      "sha256": "73cebc14a6fd450f8b20903e5f896d936ddce2625910ac433a0257a6facf79b9"
+    },
+    {
+      "referencePath": "media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp",
+      "publicPath": "media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp",
+      "size": 97756,
+      "sha256": "ad0670a63b2f2ae880b2edb3f8502d280b3f29c2d0b568ac8e896b23706bdbdb"
+    },
+    {
+      "referencePath": "media/5c0589_28405806566a41858265a0abb273e381~mv2.webp",
+      "publicPath": "media/5c0589_28405806566a41858265a0abb273e381~mv2.webp",
+      "size": 56280,
+      "sha256": "567802aee44c512c7ed9aee3ef1753aec0ada3058c9ce8ee0f41b8906c817e64"
+    },
+    {
+      "referencePath": "media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
+      "publicPath": "media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
+      "size": 47398,
+      "sha256": "f340b3659227d686d044b339245936a62bdb7d229b774757f7288207f3409363"
+    },
+    {
+      "referencePath": "media/5c0589_34bde73293b34a3e820a380e8566259c~mv2.webp",
+      "publicPath": "media/5c0589_34bde73293b34a3e820a380e8566259c~mv2.webp",
+      "size": 84778,
+      "sha256": "c748f72df7c21f5aa22239fa58ea135847e5db506b07c9bba0c7f63e5f17fcb7"
+    },
+    {
+      "referencePath": "media/5c0589_37bc8f979b374232882320fb4f341eb2~mv2.webp",
+      "publicPath": "media/5c0589_37bc8f979b374232882320fb4f341eb2~mv2.webp",
+      "size": 171232,
+      "sha256": "09ad3326d336ef85cda56314add35a17e8e1ca29977627bb97ef65d02d8f9781"
+    },
+    {
+      "referencePath": "media/5c0589_3bacee1390ea4982b60a15ffa787763d~mv2.webp",
+      "publicPath": "media/5c0589_3bacee1390ea4982b60a15ffa787763d~mv2.webp",
+      "size": 149080,
+      "sha256": "fafac32aba2f056948e775cdea4308ebc655bbfba2212256076d67bb02341087"
+    },
+    {
+      "referencePath": "media/5c0589_4015772c87e6491eb8881e3764409267~mv2.webp",
+      "publicPath": "media/5c0589_4015772c87e6491eb8881e3764409267~mv2.webp",
+      "size": 173916,
+      "sha256": "b17ae9de13ec1f6998b9028848732cfd898c78868a6d659ebe6dd1a54ca91226"
+    },
+    {
+      "referencePath": "media/5c0589_42a00ff8590c4ff5b1cf8496183b08b8~mv2.webp",
+      "publicPath": "media/5c0589_42a00ff8590c4ff5b1cf8496183b08b8~mv2.webp",
+      "size": 84930,
+      "sha256": "3072e8f962a474f8b25709e199b368c83aa96e6c6baa9d29961ac6b6c0c8c652"
+    },
+    {
+      "referencePath": "media/5c0589_4397853e33df48cbae9a1f8b56d8417f~mv2.webp",
+      "publicPath": "media/5c0589_4397853e33df48cbae9a1f8b56d8417f~mv2.webp",
+      "size": 80018,
+      "sha256": "a7b4dbfc586f22c685d8eebff0f7a24bf4cea68069412bcf969e2e5f549b5bae"
+    },
+    {
+      "referencePath": "media/5c0589_43f2662bccd344f6b5d833dc0ec16ea0~mv2.webp",
+      "publicPath": "media/5c0589_43f2662bccd344f6b5d833dc0ec16ea0~mv2.webp",
+      "size": 27454,
+      "sha256": "a6ae6611c766e6ad645a0a0ea73755e899014d3e3faa253293482e187e364b38"
+    },
+    {
+      "referencePath": "media/5c0589_4e9f8672707a43daa7b64d6d2cfe31b9~mv2.webp",
+      "publicPath": "media/5c0589_4e9f8672707a43daa7b64d6d2cfe31b9~mv2.webp",
+      "size": 254534,
+      "sha256": "524577080e885eb3c834a462ada9d3246d3dfb2f1d1237cc9826d7b47a7f56a5"
+    },
+    {
+      "referencePath": "media/5c0589_4ea5c5899e764cfc9e88a6e43827f725~mv2.webp",
+      "publicPath": "media/5c0589_4ea5c5899e764cfc9e88a6e43827f725~mv2.webp",
+      "size": 151212,
+      "sha256": "5c66bb3c18b4973b9b275c3f36d3630d67b28186a619d91b2825aa1c2f430bc6"
+    },
+    {
+      "referencePath": "media/5c0589_4f0120a34ba646dc9d951d108953e15e~mv2.webp",
+      "publicPath": "media/5c0589_4f0120a34ba646dc9d951d108953e15e~mv2.webp",
+      "size": 63268,
+      "sha256": "317844a90a89e272db3d56b1c09f9f4fd952eb6297cc2ba8def0c2e830ec393e"
+    },
+    {
+      "referencePath": "media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
+      "publicPath": "media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
+      "size": 207478,
+      "sha256": "a9a2ed8ec5d4ed4d1666e9aba6951e52f63ab5aa906c4d7afae27439d70cb34a"
+    },
+    {
+      "referencePath": "media/5c0589_53e686a3ba004bec88d510dc56cbcdda~mv2.webp",
+      "publicPath": "media/5c0589_53e686a3ba004bec88d510dc56cbcdda~mv2.webp",
+      "size": 123882,
+      "sha256": "6bc7e848e917aaad38b0995ed92c841be5631bc109b7bc6c9fe49a77932bc5ca"
+    },
+    {
+      "referencePath": "media/5c0589_543c0982737648b7ba00cf8f05a23000~mv2.webp",
+      "publicPath": "media/5c0589_543c0982737648b7ba00cf8f05a23000~mv2.webp",
+      "size": 241682,
+      "sha256": "253ef0e4b25ab9db6c1181994baac25709437d73e61da68e4b6b50344e52428f"
+    },
+    {
+      "referencePath": "media/5c0589_65959611b6ab4f989ee0d2663a720e5e~mv2.webp",
+      "publicPath": "media/5c0589_65959611b6ab4f989ee0d2663a720e5e~mv2.webp",
+      "size": 160282,
+      "sha256": "8f97002b653d2a3b4e71f4f572e0212c6552e4750a05a129fbf082904c1296c1"
+    },
+    {
+      "referencePath": "media/5c0589_6ac998ac67574efe8de1ce8e005273f0~mv2.webp",
+      "publicPath": "media/5c0589_6ac998ac67574efe8de1ce8e005273f0~mv2.webp",
+      "size": 245164,
+      "sha256": "892949774d2e8e462edea26e72102a47268fd304885b53fceb1258f5aea98bc6"
+    },
+    {
+      "referencePath": "media/5c0589_6cdb4dc09a8c4b0c951116889a6e4856~mv2.webp",
+      "publicPath": "media/5c0589_6cdb4dc09a8c4b0c951116889a6e4856~mv2.webp",
+      "size": 247452,
+      "sha256": "3c3b11565b0fd001c1d6f00bd7eff69adf0dcbe950257865cddb3b3785f24698"
+    },
+    {
+      "referencePath": "media/5c0589_6d20c3f02c4141b797c006682f422e28~mv2.webp",
+      "publicPath": "media/5c0589_6d20c3f02c4141b797c006682f422e28~mv2.webp",
+      "size": 115492,
+      "sha256": "21645f6cf4b4fea107b90af9abf9172b4b897dbcb9f172f188d440cff2f8af56"
+    },
+    {
+      "referencePath": "media/5c0589_6df61a722565437bb6d4716fb4d12808~mv2.webp",
+      "publicPath": "media/5c0589_6df61a722565437bb6d4716fb4d12808~mv2.webp",
+      "size": 48600,
+      "sha256": "3ddbaab7f5a0fdbbe257ca347db363331919fba67e028efd73dbd8dc5c768e41"
+    },
+    {
+      "referencePath": "media/5c0589_73583c6e0d78476c97acc3a7ea179510~mv2.webp",
+      "publicPath": "media/5c0589_73583c6e0d78476c97acc3a7ea179510~mv2.webp",
+      "size": 502648,
+      "sha256": "c448f4859a8ff8da27ecd5665d97990b23dcf8108f6bda09d98e7a4b0a61f12e"
+    },
+    {
+      "referencePath": "media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp",
+      "publicPath": "media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp",
+      "size": 140892,
+      "sha256": "4dc188986ab37b02a3400c3d55e6f88ac7d1ec89dac547d304b823d5c0894d8e"
+    },
+    {
+      "referencePath": "media/5c0589_7a19e7707f9f47aba23847f56ab6e61a~mv2.webp",
+      "publicPath": "media/5c0589_7a19e7707f9f47aba23847f56ab6e61a~mv2.webp",
+      "size": 171232,
+      "sha256": "c03be7f46b2953d07f864b823fd5a7257db0809ff6511ef9f5136abfb0536925"
+    },
+    {
+      "referencePath": "media/5c0589_7a30aeef55604850b2cb9994e87dd196~mv2.webp",
+      "publicPath": "media/5c0589_7a30aeef55604850b2cb9994e87dd196~mv2.webp",
+      "size": 186926,
+      "sha256": "edf5f1a753448e6c4ad74eec39665da896ef76260dd70b39853b23716531e759"
+    },
+    {
+      "referencePath": "media/5c0589_7ab49e27a66b414f87aac76285523413~mv2.webp",
+      "publicPath": "media/5c0589_7ab49e27a66b414f87aac76285523413~mv2.webp",
+      "size": 145994,
+      "sha256": "9b7a07acc7d965645ce24fb791e4da20bf0b9c2a877f9b472c25f031f6cf87d4"
+    },
+    {
+      "referencePath": "media/5c0589_8035037444ae49d2bb661f3a5c001786~mv2.webp",
+      "publicPath": "media/5c0589_8035037444ae49d2bb661f3a5c001786~mv2.webp",
+      "size": 68440,
+      "sha256": "bee6db05833dba64b43073f84cb465ab1f26e60d392cd01f75976b9282485cdf"
+    },
+    {
+      "referencePath": "media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
+      "publicPath": "media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
+      "size": 209564,
+      "sha256": "cb782dd479c699f171ebfbe2bfc043400bb383f8e3ab2fc073d47497f6f416a5"
+    },
+    {
+      "referencePath": "media/5c0589_85c7ce872fc04e6197af87a91819444e~mv2.webp",
+      "publicPath": "media/5c0589_85c7ce872fc04e6197af87a91819444e~mv2.webp",
+      "size": 195584,
+      "sha256": "317a984a6e154d20dcabdd69863376278202b300ca61d222b6342f7bc96df734"
+    },
+    {
+      "referencePath": "media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp",
+      "publicPath": "media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp",
+      "size": 158030,
+      "sha256": "a8766da0cab3b860a1881184c9440347e10888b82efc581a9eb93e70a7efd038"
+    },
+    {
+      "referencePath": "media/5c0589_9176cd08731745888749fd42c230945c~mv2.webp",
+      "publicPath": "media/5c0589_9176cd08731745888749fd42c230945c~mv2.webp",
+      "size": 190938,
+      "sha256": "132ff398c17cb2748f29bc9453831e053b4e6bab6c01391bbdd4796ee9561da4"
+    },
+    {
+      "referencePath": "media/5c0589_9743a3bf5a364dbdbe1f9713e98529fb~mv2.webp",
+      "publicPath": "media/5c0589_9743a3bf5a364dbdbe1f9713e98529fb~mv2.webp",
+      "size": 225912,
+      "sha256": "8428d2b160229bdf04a8a751ea3c7eb502ccf20e2338f0b1ff0290996f4bcf60"
+    },
+    {
+      "referencePath": "media/5c0589_993e246b6ef145f7ae710024bcc04b61~mv2.webp",
+      "publicPath": "media/5c0589_993e246b6ef145f7ae710024bcc04b61~mv2.webp",
+      "size": 43864,
+      "sha256": "3b4b64b2dc818eccb28f3b84fdde9a1b9b31592b875fdd0c595857d6b1119318"
+    },
+    {
+      "referencePath": "media/5c0589_aa87bfa7f0d74a45933715685ed66614~mv2.webp",
+      "publicPath": "media/5c0589_aa87bfa7f0d74a45933715685ed66614~mv2.webp",
+      "size": 488446,
+      "sha256": "9d3bf162850ecc17bfd34af718a81470deaaf49d9c443064eeb3495f2775c05e"
+    },
+    {
+      "referencePath": "media/5c0589_b20ecdaceb33447d9dd3088dabcd24a6~mv2.webp",
+      "publicPath": "media/5c0589_b20ecdaceb33447d9dd3088dabcd24a6~mv2.webp",
+      "size": 152298,
+      "sha256": "10f3caa33ef4d3c46b262f0f766d1e29ddc7f9415cfc838aa769d42a5c8aad83"
+    },
+    {
+      "referencePath": "media/5c0589_b6de3c913beb49b386b9792f9f4ade48~mv2.webp",
+      "publicPath": "media/5c0589_b6de3c913beb49b386b9792f9f4ade48~mv2.webp",
+      "size": 120454,
+      "sha256": "32cb7650c45da11ba1e20e12c57288c89ea2ea66b31ebeb87dd8d1ee4430c4d3"
+    },
+    {
+      "referencePath": "media/5c0589_b7e6559a7cde434e91bb9e69d79cfc0c~mv2.webp",
+      "publicPath": "media/5c0589_b7e6559a7cde434e91bb9e69d79cfc0c~mv2.webp",
+      "size": 108328,
+      "sha256": "27fb0c302f3a9d92706b273a8410a0d911e91913ca404c3cc5dc1046e17ccc2c"
+    },
+    {
+      "referencePath": "media/5c0589_bafbecbb93a046538a666329f8b3a4b0~mv2.webp",
+      "publicPath": "media/5c0589_bafbecbb93a046538a666329f8b3a4b0~mv2.webp",
+      "size": 357132,
+      "sha256": "c0b1b5dba613c4889a143b38b39f1efc18c31b27b822117059d4ff1c6483157f"
+    },
+    {
+      "referencePath": "media/5c0589_bc243d74532e485db6c65812ab8b622b~mv2.webp",
+      "publicPath": "media/5c0589_bc243d74532e485db6c65812ab8b622b~mv2.webp",
+      "size": 163166,
+      "sha256": "417d4b836b8cee44908275c1e9a4e14fa0cc5037fa671e59f87e074291fd5a15"
+    },
+    {
+      "referencePath": "media/5c0589_c2e0392b0d4e4d3cad2515d76472fa6c~mv2.webp",
+      "publicPath": "media/5c0589_c2e0392b0d4e4d3cad2515d76472fa6c~mv2.webp",
+      "size": 261326,
+      "sha256": "5ed2d1d0658ed89ca25c016708d18cf3d58d72b7eaeff39785b378f43ef55245"
+    },
+    {
+      "referencePath": "media/5c0589_c551be0fd9ce4bfd8a179abe76b1ae83~mv2.webp",
+      "publicPath": "media/5c0589_c551be0fd9ce4bfd8a179abe76b1ae83~mv2.webp",
+      "size": 282074,
+      "sha256": "c1b9bf2ad158e4b0cff1886c3d542290932dac4db67be4d8922ef91337125a96"
+    },
+    {
+      "referencePath": "media/5c0589_e130c4a5b3fb42a0b6369fbcc08e4184~mv2.webp",
+      "publicPath": "media/5c0589_e130c4a5b3fb42a0b6369fbcc08e4184~mv2.webp",
+      "size": 48670,
+      "sha256": "d42a4de34017c35bd44ff1126993784f7ca72e3c9e26482142cba8edfa9264c4"
+    },
+    {
+      "referencePath": "media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp",
+      "publicPath": "media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp",
+      "size": 201164,
+      "sha256": "521a6352cd8463ad06260958cfcd0ca1517e348a91738d7534f3ab2328776c8f"
+    },
+    {
+      "referencePath": "media/5c0589_e510a0a265744c628a6f5be98d165764~mv2.webp",
+      "publicPath": "media/5c0589_e510a0a265744c628a6f5be98d165764~mv2.webp",
+      "size": 63514,
+      "sha256": "9b4c0255d36faa91daa17f702b267c1bb1415dc608e8fd08a1e50da667a4a62f"
+    },
+    {
+      "referencePath": "media/5c0589_e5a8942da56147d49a06a929fc312864~mv2.webp",
+      "publicPath": "media/5c0589_e5a8942da56147d49a06a929fc312864~mv2.webp",
+      "size": 97892,
+      "sha256": "6452d8603d03f7bb1a23fa6dfc3b6aa7cbf3a95687bba5cf3069168164a9bb8d"
+    },
+    {
+      "referencePath": "media/5c0589_ea6630f53b474533bae973ba423892b5~mv2.webp",
+      "publicPath": "media/5c0589_ea6630f53b474533bae973ba423892b5~mv2.webp",
+      "size": 252390,
+      "sha256": "8d6242ecbc992faa9c09ec809f0801275982ee06bed7ab92b31d22bf064bc50a"
+    },
+    {
+      "referencePath": "media/5c0589_efb61fd0050843a4b8cdec62493de85e~mv2.webp",
+      "publicPath": "media/5c0589_efb61fd0050843a4b8cdec62493de85e~mv2.webp",
+      "size": 27358,
+      "sha256": "6d3964ea8fdf7c05d93673ede9c90605466a16b58d03e609b6710528ea5610d3"
+    },
+    {
+      "referencePath": "media/5c0589_f2650350f5424f63986ad52a542e14b7~mv2.webp",
+      "publicPath": "media/5c0589_f2650350f5424f63986ad52a542e14b7~mv2.webp",
+      "size": 68868,
+      "sha256": "acdacbd4359b3372be9e0bc8e22292b78ae06fe76569f624fcffeee9efcb0e72"
+    },
+    {
+      "referencePath": "media/5c0589_fdc7d062ceaa435582bfe4e4d4a48d06~mv2.webp",
+      "publicPath": "media/5c0589_fdc7d062ceaa435582bfe4e4d4a48d06~mv2.webp",
+      "size": 294984,
+      "sha256": "434732250cac80180f8e91d49030e92f8378d18d680140ce2d04c5797f1cf5a7"
+    },
+    {
+      "referencePath": "media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp",
+      "publicPath": "media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp",
+      "size": 343294,
+      "sha256": "9b830eb48046eadbb54c49227ef0f4b07e744e3549de592fb18a27eebf673824"
+    },
+    {
+      "referencePath": "media/brink-work-desktop.jpg",
+      "publicPath": "media/brink-work-desktop.jpg",
+      "size": 680426,
+      "sha256": "3f2cf5592ed3e2623f00d35ef488b933737e751a9793fbbc8f3909cc8dcd2377"
+    },
+    {
+      "referencePath": "media/brink-work-mobile.jpg",
+      "publicPath": "media/brink-work-mobile.jpg",
+      "size": 482931,
+      "sha256": "0d3a0d750e6c6eef623c55dfb8b3327039e1f57c7c44022af90ce044ad7ca421"
+    },
+    {
+      "referencePath": "notchshelf-logo.webp",
+      "publicPath": "notchshelf-logo.webp",
+      "size": 188685,
+      "sha256": "3461bc8d8221caaff74ff79de132a36551c7767a538233c1ea4342f4bf2fca24"
+    },
+    {
+      "referencePath": "ogportfolio-logo.webp",
+      "publicPath": "ogportfolio-logo.webp",
+      "size": 5033,
+      "sha256": "47bafe1541b2160cfb74c1f2610f6ce529fb700912554d136d3ddb8767dcf98f"
+    }
+  ],
+  "templateExtras": [
+    "assets/app-store-badge.svg",
+    "fonts/satoshi-0.woff2",
+    "fonts/satoshi-1.woff2",
+    "fonts/satoshi-2.woff2"
+  ]
+}
