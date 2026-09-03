@@ -1,4 +1,4 @@
-import { resolveChromePath } from "./chrome.mjs";
+import { cleanupPlaywrightProcesses, resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
 
@@ -22,12 +22,22 @@ const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
 ];
+const browserArgs = [
+  "--renderer-process-limit=1",
+  "--disable-gpu",
+  "--disable-extensions",
+  "--disable-component-update",
+  "--no-first-run",
+];
 
-const browser = await chromium.launch({ executablePath: chrome, headless: true });
-const report = [];
-for (const viewport of viewports) {
-  const context = await browser.newContext({ viewport });
-  for (const route of routes) {
+async function scan(viewport, route) {
+  const browser = await chromium.launch({
+    executablePath: chrome,
+    headless: true,
+    args: browserArgs,
+  });
+  try {
+    const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     const consoleErrors = [];
     const pageErrors = [];
@@ -35,24 +45,42 @@ for (const viewport of viewports) {
       if (message.type() === "error") consoleErrors.push(message.text());
     });
     page.on("pageerror", (error) => pageErrors.push(String(error)));
+
     await page.goto(base + route, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(500);
     await page.evaluate(async () => {
       const max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
-      const steps = Math.min(10, Math.max(1, Math.ceil(max / innerHeight)));
-      for (let i = 1; i <= steps; i++) {
-        scrollTo(0, Math.round((max * i) / steps));
-        await new Promise((resolve) => setTimeout(resolve, 180));
+      const steps = Math.min(12, Math.max(1, Math.ceil(max / innerHeight)));
+      for (let index = 1; index <= steps; index++) {
+        scrollTo(0, Math.round((max * index) / steps));
+        await new Promise((resolve) => setTimeout(resolve, 140));
       }
     });
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(250);
+
+    // Very long pages can jump over viewport-triggered media. Visit any
+    // remaining loader explicitly. A genuinely stalled loader survives the
+    // bounded loop and is still reported as a failure below.
+    for (let attempt = 0; attempt < 30; attempt++) {
+      const loader = page.locator(".skeleton-loader").first();
+      if ((await loader.count()) === 0) break;
+      await loader.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(180);
+    }
+    await page.waitForTimeout(250);
+
     const state = await page.evaluate(() => {
       const isIntentionallyHidden = (image) =>
         image.matches("[data-portrait-preload]") ||
         Boolean(image.closest(".resume-paper")) ||
         Boolean(image.closest(".gallery-overlay")) ||
         Boolean(image.closest(".camera-view")) ||
-        Boolean(image.closest(".notchshelf-carousel"));
+        Boolean(image.closest(".notchshelf-carousel")) ||
+        // AnimatePresence can keep an outgoing Brink phone screenshot at
+        // opacity 0 briefly while its replacement is already visible.
+        (image.classList.contains("brink-phoneShot") &&
+          image.parentElement?.querySelectorAll("img.brink-phoneShot").length > 1);
+
       const invisibleLoaded = [...document.images]
         .filter((image) => {
           if (isIntentionallyHidden(image)) return false;
@@ -77,34 +105,53 @@ for (const viewport of viewports) {
             return [rect.x, rect.y + scrollY, rect.width, rect.height];
           })(),
         }));
+
       const broken = [...document.images]
         .filter((image) => image.complete && image.naturalWidth === 0)
         .map((image) => image.getAttribute("src"));
+
+      const visibleSkeletons = [...document.querySelectorAll(".skeleton-loader")]
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return (
+            rect.width > 1 &&
+            rect.height > 1 &&
+            rect.bottom >= -innerHeight * 0.5 &&
+            rect.top <= innerHeight * 1.5
+          );
+        }).length;
+
       return {
         images: document.images.length,
         broken,
         invisibleLoaded,
-        skeletons: document.querySelectorAll(".skeleton-loader").length,
+        skeletons: visibleSkeletons,
+        pendingSkeletons: document.querySelectorAll(".skeleton-loader").length,
       };
     });
-    report.push({
-      viewport: viewport.name,
-      route,
-      ...state,
-      consoleErrors,
-      pageErrors,
-    });
+
+    await context.close();
+    return { ...state, consoleErrors, pageErrors };
+  } finally {
+    await browser.close().catch(() => {});
+    cleanupPlaywrightProcesses();
+  }
+}
+
+const report = [];
+for (const viewport of viewports) {
+  for (const route of routes) {
+    const state = await scan(viewport, route);
+    const item = { viewport: viewport.name, route, ...state };
+    report.push(item);
     console.log(
-      `${viewport.name.padEnd(7)} ${route.padEnd(28)} images=${state.images} broken=${state.broken.length} invisible=${state.invisibleLoaded.length} skeletons=${state.skeletons} console=${consoleErrors.length} page=${pageErrors.length}`,
+      `${viewport.name.padEnd(7)} ${route.padEnd(28)} images=${state.images} broken=${state.broken.length} invisible=${state.invisibleLoaded.length} skeletons=${state.skeletons} console=${state.consoleErrors.length} page=${state.pageErrors.length}`,
     );
     if (state.invisibleLoaded.length) {
       console.log(JSON.stringify(state.invisibleLoaded, null, 2));
     }
-    await page.close();
   }
-  await context.close();
 }
-await browser.close();
 
 const issues = report.filter(
   (item) =>

@@ -152,7 +152,9 @@ export function PhotoCard({
             src={src}
             alt="Photography"
             onLoad={() => setLoading(false)}
-            loading="eager"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             initial={{ opacity: 0 }}
             animate={{ opacity: loading ? 0 : 1, scale: hover ? 1.1 : 1 }}
             transition={{
@@ -169,10 +171,6 @@ export function PhotoCard({
               top: isPolaroid ? 0 : "-10%",
               left: 0,
               borderRadius: isPolaroid ? 0 : "inherit",
-              willChange: "transform",
-              transform: "translateZ(0)",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
             }}
           />
         </div>
@@ -202,14 +200,18 @@ export function GalleryLightbox({
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") move(-1);
-      if (e.key === "ArrowRight") move(1);
+    const key = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key === "ArrowLeft") move(-1);
+      if (event.key === "ArrowRight") move(1);
     };
-    addEventListener("keydown", key);
+    document.addEventListener("keydown", key, { capture: true });
     return () => {
-      removeEventListener("keydown", key);
+      document.removeEventListener("keydown", key, { capture: true });
       document.body.style.overflow = previousOverflow;
     };
   }, [move, onClose]);

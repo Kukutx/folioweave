@@ -1,15 +1,15 @@
 {
-  "name": "folioweave-next",
+  "name": "folioweave",
   "version": "1.0.0",
   "private": true,
   "description": "FolioWeave — a pixel-faithful, reusable Next.js portfolio theme with deterministic regression QA.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kukutx/folioweave-next.git"
+    "url": "git+https://github.com/Kukutx/folioweave.git"
   },
   "bugs": {
-    "url": "https://github.com/Kukutx/folioweave-next/issues"
+    "url": "https://github.com/Kukutx/folioweave/issues"
   },
   "keywords": [
     "nextjs",
@@ -39,32 +39,36 @@
     "qa:bundle": "node qa/bundle-budget.mjs",
     "qa:resume": "node qa/resume-parity.mjs",
     "qa:static": "node qa/static-home-parity.mjs",
-    "qa:parity": "node qa/parity.mjs",
+    "qa:parity": "node --expose-gc qa/parity.mjs",
     "qa:core": "npm run qa:assets && npm run qa:functionality && npm run qa:quality && npm run qa:media",
-    "qa:all": "npm run qa:core && npm run qa:fonts && npm run qa:bundle",
-    "qa:reference": "npm run qa:resume && npm run qa:static && npm run qa:parity",
+    "qa:all": "node qa/run-with-server.mjs qa:assets qa:functionality qa:quality qa:media qa:fonts qa:resume qa:bundle",
+    "qa:reference": "node qa/run-with-server.mjs qa:static qa:parity",
     "qa:maintainer": "npm run qa:all && npm run qa:reference",
     "audit:prod": "npm audit --omit=dev"
   },
   "dependencies": {
-    "fast-xml-parser": "^5.11.1",
-    "framer-motion": "^13.1.1",
-    "lenis": "^1.3.26",
-    "lucide-react": "^1.39.0",
-    "next": "^16.3.4",
+    "fast-xml-parser": "5.11.1",
+    "framer-motion": "13.1.1",
+    "lenis": "1.3.26",
+    "lucide-react": "1.39.0",
+    "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/pngjs": "^6.0.5",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "20.19.43",
+    "@types/pngjs": "6.0.5",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
     "eslint": "9.39.5",
-    "eslint-config-next": "^16.3.4",
-    "pixelmatch": "^7.2.0",
-    "playwright-core": "^1.62.1",
-    "pngjs": "^7.0.0",
-    "typescript": "^5"
+    "eslint-config-next": "16.3.4",
+    "pixelmatch": "7.2.0",
+    "playwright-core": "1.62.1",
+    "pngjs": "7.0.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "motion-dom": "13.1.1",
+    "motion-utils": "13.0.0"
   }
 }

@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+const parsedBuildWorkers = Number.parseInt(
+  process.env.NEXT_BUILD_WORKERS ?? "4",
+  10,
+);
+const buildWorkers = Number.isFinite(parsedBuildWorkers)
+  ? Math.max(1, Math.min(parsedBuildWorkers, 16))
+  : 4;
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -38,6 +46,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // Next 16 otherwise uses nearly every logical CPU for page-data generation.
+    // A conservative default avoids native worker crashes on Windows/CI while
+    // NEXT_BUILD_WORKERS keeps the setting portable for larger build hosts.
+    cpus: buildWorkers,
+  },
   async headers() {
     return [
       {

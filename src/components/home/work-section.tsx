@@ -22,7 +22,22 @@ function WorkImage({
   alt: string;
 }) {
   const isMobile = useMobileViewport();
-  return <img src={isMobile ? mobile : desktop} alt={alt} />;
+  const src = isMobile ? mobile : desktop;
+  const dimensions = src.endsWith("brink-work-mobile.jpg")
+    ? { width: 1800, height: 1569 }
+    : src.endsWith("brink-work-desktop.jpg")
+      ? { width: 2400, height: 1447 }
+      : isMobile
+        ? { width: 2000, height: 1744 }
+        : { width: 2000, height: 1206 };
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={dimensions.width}
+      height={dimensions.height}
+    />
+  );
 }
 function ExternalLink({
   href,
@@ -250,6 +265,7 @@ export function WorkSection() {
                         alt="Deepinder Goyal's reply"
                         style={{
                           width: "100%",
+                          height: "auto",
                           maxWidth: 400,
                           borderRadius: 8,
                           border: "1px solid rgba(0,0,0,.1)",

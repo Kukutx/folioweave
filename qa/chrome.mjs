@@ -81,3 +81,23 @@ export function resolveChromePath() {
     "No Chrome/Chromium browser was found. Install Chrome/Chromium or set CHROME_PATH.",
   );
 }
+
+export function cleanupPlaywrightProcesses() {
+  if (process.platform !== "win32") return;
+  const script = [
+    "$items = Get-CimInstance Win32_Process | Where-Object {",
+    "  $_.Name -match 'chrome|msedge' -and",
+    "  $_.CommandLine -match 'playwright_chromiumdev_profile'",
+    "}",
+    "foreach ($item in $items) {",
+    "  Stop-Process -Id $item.ProcessId -Force -ErrorAction SilentlyContinue",
+    "}",
+  ].join("; ");
+  try {
+    execFileSync("powershell.exe", ["-NoProfile", "-Command", script], {
+      stdio: "ignore",
+    });
+  } catch {
+    // Best-effort cleanup for orphaned Playwright Chrome helpers on Windows.
+  }
+}

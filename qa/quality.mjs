@@ -1,4 +1,4 @@
-import { resolveChromePath } from "./chrome.mjs";
+import { cleanupPlaywrightProcesses, resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
 
@@ -23,14 +23,22 @@ const viewports = [
   { name: "mobile", width: 390, height: 844 },
 ];
 
-const browser = await chromium.launch({
+const launchOptions = {
   executablePath: chrome,
   headless: true,
-});
+  args: [
+    "--renderer-process-limit=1",
+    "--disable-gpu",
+    "--disable-extensions",
+    "--disable-component-update",
+    "--no-first-run",
+  ],
+};
 const report = [];
 const origin = new URL(base).origin;
 
 for (const viewport of viewports) {
+  const browser = await chromium.launch(launchOptions);
   for (const route of routes) {
     const context = await browser.newContext({
       viewport: { width: viewport.width, height: viewport.height },
@@ -189,6 +197,8 @@ for (const viewport of viewports) {
     );
     await context.close();
   }
+  await browser.close();
+cleanupPlaywrightProcesses();
 }
 
 const homeResponse = await fetch(base, { redirect: "manual" });
@@ -218,8 +228,6 @@ const endpointChecks = {
   notFound: notFound.status,
   notFoundOk,
 };
-
-await browser.close();
 
 const failures = report.filter(
   (item) =>

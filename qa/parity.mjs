@@ -13,7 +13,7 @@ import {
 const chrome = resolveChromePath();
 const original = process.env.ORIGINAL_URL || "http://127.0.0.1:4173";
 const next = process.env.NEXT_URL || process.env.BASE_URL || "http://127.0.0.1:4181";
-const routes = [
+const allRoutes = [
   "/",
   "/blogs",
   "/blogs/clipt",
@@ -27,11 +27,20 @@ const routes = [
   "/habee-privacypolicy",
   "/notchshelf-privacypolicy",
 ];
+const requestedRoutes = new Set(
+  (process.env.PARITY_ROUTES || "")
+    .split(",")
+    .map((route) => route.trim())
+    .filter(Boolean),
+);
+const routes = requestedRoutes.size
+  ? allRoutes.filter((route) => requestedRoutes.has(route))
+  : allRoutes;
 const allViewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
 ];
-const requested = process.argv[2];
+const requested = process.argv[2] || process.env.PARITY_VIEWPORT;
 const viewports = requested
   ? allViewports.filter((viewport) => viewport.name === requested)
   : allViewports;
@@ -54,9 +63,31 @@ const stripDynamic = (value) =>
     .replace(/(?:Contact Now|CONTACT\.EXE|START_MAIL|Send Mail\.\.\.|C0NTACT_N0W|Connect|Get in Touch)/g, "CONTACT_ACTION");
 
 function settleTime(route) {
-  if (route === "/" || route === "/clipt") return 3200;
-  if (route === "/brink" || route === "/brink/privacy") return 2600;
-  return 1800;
+  // reducedMotion + explicit font/image readiness below make multi-second fixed
+  // sleeps unnecessary. Keeping these short materially lowers peak commit time
+  // on Windows machines with a constrained page file.
+  if (route === "/" || route === "/clipt") return 900;
+  if (route === "/brink" || route === "/brink/privacy") return 600;
+  return 400;
+}
+
+async function captureDeterministicScreenshot(page, outputPath, fullPage) {
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await page.screenshot({
+        path: outputPath,
+        fullPage,
+        animations: "disabled",
+        timeout: 120_000,
+      });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await page.waitForTimeout(400 * attempt);
+    }
+  }
+  throw lastError;
 }
 
 async function inspect(page, url, route, shot, fullPage = true) {
@@ -84,6 +115,30 @@ async function inspect(page, url, route, shot, fullPage = true) {
     { timeout: 10_000 },
   );
   await waitForRenderableAssets(page);
+
+  // District's long case-study page uses lazy project imagery in the rebuilt app.
+  // Materialize those six images for visual parity so we compare rendered content,
+  // while functionality/media QA continues to verify the real on-demand behavior.
+  if (route === "/district") {
+    await page.evaluate(async () => {
+      const images = [...document.querySelectorAll("img[loading='lazy']")];
+      for (const image of images) {
+        image.loading = "eager";
+        if (!image.complete) {
+          await new Promise((resolve) => {
+            image.addEventListener("load", resolve, { once: true });
+            image.addEventListener("error", resolve, { once: true });
+          });
+        }
+        if (image.naturalWidth > 0) {
+          try {
+            await image.decode();
+          } catch {}
+        }
+      }
+    });
+  }
+
   await page.waitForTimeout(100);
 
   const data = await page.evaluate(() => {
@@ -128,7 +183,9 @@ async function inspect(page, url, route, shot, fullPage = true) {
       images: query("img").map((element) => ({
         src: element.getAttribute("src") || "",
         alt: element.getAttribute("alt") || "",
-        ok: element.complete && element.naturalWidth > 0,
+        loaded: element.complete && element.naturalWidth > 0,
+        broken: element.complete && element.naturalWidth === 0,
+        pending: !element.complete,
       })),
       sections: query("section").map((element) => ({
         id: element.id,
@@ -140,7 +197,7 @@ async function inspect(page, url, route, shot, fullPage = true) {
   });
 
   await freezeVisualState(page, route);
-  await page.screenshot({ path: shot, fullPage, animations: "disabled" });
+  await captureDeterministicScreenshot(page, shot, fullPage);
   return { ...data, status: response?.status() || 0, issues };
 }
 
@@ -159,16 +216,24 @@ async function pixelDiff(originalPath, nextPath, diffPath) {
     };
   }
 
-  const diff = new PNG({ width: a.width, height: a.height });
+  const options = { threshold: 0.1, includeAA: false };
   const diffPixels = pixelmatch(
     a.data,
     b.data,
-    diff.data,
+    null,
     a.width,
     a.height,
-    { threshold: 0.1, includeAA: false },
+    options,
   );
-  await fs.writeFile(diffPath, PNG.sync.write(diff));
+
+  if (diffPixels > 0) {
+    const diff = new PNG({ width: a.width, height: a.height });
+    pixelmatch(a.data, b.data, diff.data, a.width, a.height, options);
+    await fs.writeFile(diffPath, PNG.sync.write(diff));
+  } else {
+    await fs.rm(diffPath, { force: true });
+  }
+
   return {
     sameDimensions: true,
     width: a.width,
@@ -178,20 +243,20 @@ async function pixelDiff(originalPath, nextPath, diffPath) {
   };
 }
 
-const browser = await chromium.launch({ executablePath: chrome, headless: true });
 const report = [];
 
 for (const viewport of viewports) {
   for (const route of routes) {
+    const browser = await chromium.launch({ executablePath: chrome, headless: true });
     const safe = route === "/" ? "home" : route.slice(1).replaceAll("/", "__");
-    const context = await browser.newContext({
+    const contextOptions = {
       viewport: { width: viewport.width, height: viewport.height },
       deviceScaleFactor: 1,
       reducedMotion: "reduce",
-    });
-    await prepareVisualContext(context);
-    const originalPage = await context.newPage();
-    const nextPage = await context.newPage();
+    };
+    const originalContext = await browser.newContext(contextOptions);
+    await prepareVisualContext(originalContext);
+    const originalPage = await originalContext.newPage();
     const originalPath = path.resolve(
       "qa/screens",
       `${viewport.name}-${safe}-original.png`,
@@ -204,14 +269,34 @@ for (const viewport of viewports) {
       "qa/screens",
       `${viewport.name}-${safe}-diff.png`,
     );
-    const fullPage = viewport.name === "desktop";
+    // qa:static already owns full-page homepage pixel parity on desktop/tablet/mobile.
+    // Avoid duplicating the 14k–22k px home capture here; parity still checks the
+    // homepage viewport plus full document geometry/semantics.
+    const fullPage = viewport.name === "desktop" && route !== "/";
 
-    // Start both pages together so time-, greeting-, and carousel-driven UI is
-    // sampled at the same phase instead of several seconds apart.
-    const [a, b] = await Promise.all([
-      inspect(originalPage, original + route, route, originalPath, fullPage),
-      inspect(nextPage, next + route, route, nextPath, fullPage),
-    ]);
+    // Visual state is deterministically frozen, so capture sequentially to keep
+    // long-page screenshots memory-safe on CI and low-pagefile machines.
+    const a = await inspect(
+      originalPage,
+      original + route,
+      route,
+      originalPath,
+      fullPage,
+    );
+    await originalPage.close();
+    await originalContext.close();
+    const nextContext = await browser.newContext(contextOptions);
+    await prepareVisualContext(nextContext);
+    const nextPage = await nextContext.newPage();
+    const b = await inspect(
+      nextPage,
+      next + route,
+      route,
+      nextPath,
+      fullPage,
+    );
+    await nextPage.close();
+    await nextContext.close();
     const diff = await pixelDiff(originalPath, nextPath, diffPath);
     const item = {
       viewport: viewport.name,
@@ -230,8 +315,12 @@ for (const viewport of viewports) {
       links: [a.links.length, b.links.length],
       images: [a.images.length, b.images.length],
       broken: [
-        a.images.filter((image) => !image.ok).length,
-        b.images.filter((image) => !image.ok).length,
+        a.images.filter((image) => image.broken).length,
+        b.images.filter((image) => image.broken).length,
+      ],
+      pending: [
+        a.images.filter((image) => image.pending).length,
+        b.images.filter((image) => image.pending).length,
       ],
       issues: [a.issues.length, b.issues.length],
       diff,
@@ -240,13 +329,13 @@ for (const viewport of viewports) {
     console.log(
       `${viewport.name.padEnd(7)} ${route.padEnd(28)} text=${item.textEqual} ` +
         `h=${a.height}/${b.height} img=${item.images.join("/")} ` +
-        `broken=${item.broken.join("/")} diff=${diff.diffRatio?.toFixed(4) ?? "dim"}`,
+        `broken=${item.broken.join("/")} pending=${item.pending.join("/")} ` +
+        `diff=${diff.diffRatio?.toFixed(4) ?? "dim"}`,
     );
-    await context.close();
+    await browser.close();
+    global.gc?.();
   }
 }
-
-await browser.close();
 await fs.writeFile("qa/parity-report.json", JSON.stringify(report, null, 2));
 
 const summary = {

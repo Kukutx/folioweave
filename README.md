@@ -82,28 +82,29 @@ npm run check
 npm run audit:prod
 ```
 
-With the production server running on port `4181`:
+Run the self-contained production/browser suite:
 
 ```bash
 npm run qa:all
 ```
 
-`qa:all` is self-contained and covers:
+`qa:all` automatically starts the current `.next` production build on a temporary localhost port, waits for readiness, runs the browser checks, and shuts the temporary server down. No manually running preview server is required. It covers:
 
 - protected assets;
 - real user interactions;
 - accessibility/security/SEO quality rules;
 - loaded-but-invisible media and stale skeletons;
 - font-fallback layout stability;
+- Resume printer state-machine timing and terminal states;
 - JS/CSS bundle budgets.
 
-Maintainers with the optional reference mirror running on port `4173` can additionally run:
+Maintainers with the optional reference mirror running on port `4173` (or `ORIGINAL_URL`) can additionally run:
 
 ```bash
 npm run qa:reference
 ```
 
-That suite covers the resume animation and strict deterministic visual parity. Dynamic UI is behavior-tested separately and frozen only for screenshot comparison.
+`qa:reference` starts its own temporary Next production server too, so only the external reference mirror must already exist. That suite covers strict deterministic home and full-route visual parity against the optional reference mirror. Dynamic UI is behavior-tested separately and frozen only for screenshot comparison.
 
 Browser QA auto-detects Chrome, Chromium or Edge on Windows, macOS and Linux. Set `CHROME_PATH` only for a non-standard installation.
 

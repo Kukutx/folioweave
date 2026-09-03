@@ -198,7 +198,7 @@ With the production server running on port 4181:
 npm run qa:all
 ```
 
-This self-contained suite includes asset, functionality, quality, media-health, font-fallback and bundle-budget checks. Browser QA auto-detects Chrome, Chromium or Edge; set `CHROME_PATH` only for a non-standard browser installation.
+This self-contained suite includes asset, functionality, quality, media-health, font-fallback, Resume state-machine and bundle-budget checks. Browser QA auto-detects Chrome, Chromium or Edge; set `CHROME_PATH` only for a non-standard browser installation.
 
 Maintainers with both the production server (4181) and optional reference mirror (4173) running can add the strict reference suite:
 

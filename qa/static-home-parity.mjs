@@ -106,66 +106,71 @@ async function diff(aPath, bPath) {
 }
 
 await fs.mkdir("qa/static-home", { recursive: true });
-const browser = await chromium.launch({ executablePath: chrome, headless: true });
+const launchOptions = {
+  executablePath: chrome,
+  headless: true,
+  args: [
+    "--renderer-process-limit=1",
+    "--disable-extensions",
+    "--disable-component-update",
+    "--no-first-run",
+  ],
+};
 const report = [];
 
+async function captureHome(context, base, shot, viewport) {
+  const page = await context.newPage();
+  await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+  await waitForRenderableAssets(page);
+  await page.waitForTimeout(3400);
+  await freezeVisualState(page, "/");
+  const dimensions = await page.evaluate(() => ({
+    h: document.documentElement.scrollHeight,
+    w: document.documentElement.scrollWidth,
+    imgs: document.images.length,
+  }));
+  await page.screenshot({
+    path: shot,
+    fullPage: viewport.fullPage,
+    animations: "disabled",
+  });
+  await page.close();
+  return dimensions;
+}
+
 for (const viewport of viewports) {
-  const context = await browser.newContext({
+  const browser = await chromium.launch(launchOptions);
+  const contextOptions = {
     viewport: { width: viewport.width, height: viewport.height },
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
     locale: "en-IN",
-  });
-  await prepareVisualContext(context);
-
-  const [originalPage, nextPage] = await Promise.all([
-    context.newPage(),
-    context.newPage(),
-  ]);
-  await Promise.all([
-    originalPage.goto(original + "/", { waitUntil: "domcontentloaded" }),
-    nextPage.goto(next + "/", { waitUntil: "domcontentloaded" }),
-  ]);
-  await Promise.all([
-    waitForRenderableAssets(originalPage),
-    waitForRenderableAssets(nextPage),
-  ]);
-  await Promise.all([
-    originalPage.waitForTimeout(3400),
-    nextPage.waitForTimeout(3400),
-  ]);
-  await Promise.all([
-    freezeVisualState(originalPage, "/"),
-    freezeVisualState(nextPage, "/"),
-  ]);
+  };
 
   const originalPath = `qa/static-home/${viewport.name}-original.png`;
   const nextPath = `qa/static-home/${viewport.name}-next.png`;
-  await Promise.all([
-    originalPage.screenshot({
-      path: originalPath,
-      fullPage: viewport.fullPage,
-      animations: "disabled",
-    }),
-    nextPage.screenshot({
-      path: nextPath,
-      fullPage: viewport.fullPage,
-      animations: "disabled",
-    }),
-  ]);
+  const originalContext = await browser.newContext(contextOptions);
+  await prepareVisualContext(originalContext);
+  const originalDimensions = await captureHome(
+    originalContext,
+    original,
+    originalPath,
+    viewport,
+  );
+  await originalContext.close();
 
-  const [difference, dimensions] = await Promise.all([
-    diff(originalPath, nextPath),
-    Promise.all(
-      [originalPage, nextPage].map((page) =>
-        page.evaluate(() => ({
-          h: document.documentElement.scrollHeight,
-          w: document.documentElement.scrollWidth,
-          imgs: document.images.length,
-        })),
-      ),
-    ),
-  ]);
+  const nextContext = await browser.newContext(contextOptions);
+  await prepareVisualContext(nextContext);
+  const nextDimensions = await captureHome(
+    nextContext,
+    next,
+    nextPath,
+    viewport,
+  );
+  await nextContext.close();
+
+  const difference = await diff(originalPath, nextPath);
+  const dimensions = [originalDimensions, nextDimensions];
 
   const item = {
     viewport: viewport.name,
@@ -174,10 +179,9 @@ for (const viewport of viewports) {
   };
   report.push(item);
   console.log(viewport.name, JSON.stringify(item));
-  await context.close();
+  await browser.close();
 }
 
-await browser.close();
 await fs.writeFile("qa/static-home/report.json", JSON.stringify(report, null, 2));
 
 const staticExact = report.every(

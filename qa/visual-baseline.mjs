@@ -1,5 +1,11 @@
 export const FIXED_NOW = Date.parse("2026-09-02T16:00:00.000Z");
 
+const WEATHER_PAYLOAD = {
+  temperature: 24.2,
+  weatherCode: 3,
+  isDay: false,
+};
+
 export async function prepareVisualContext(context) {
   await context.addInitScript(({ fixedNow }) => {
     const NativeDate = Date;
@@ -21,30 +27,29 @@ export async function prepareVisualContext(context) {
     };
   }, { fixedNow: FIXED_NOW });
 
-  await context.route("**/*", async (route) => {
-    const url = route.request().url();
-    if (url.includes("api.open-meteo.com/v1/forecast")) {
-      return route.fulfill({
+  // Intercept only the two truly dynamic weather endpoints. A catch-all
+  // `context.route("**/*")` disables Chromium's HTTP cache and forces every
+  // image/CSS/JS request through Playwright, which makes large visual pages
+  // unnecessarily slow and can produce false broken-image/screenshot failures.
+  await context.route(
+    "https://api.open-meteo.com/v1/forecast**",
+    async (route) =>
+      route.fulfill({
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
           current: { temperature_2m: 24.2, weather_code: 3, is_day: 0 },
         }),
-      });
-    }
-    if (/\/api\/weather(?:\?|$)/.test(url)) {
-      return route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({
-          temperature: 24.2,
-          weatherCode: 3,
-          isDay: false,
-        }),
-      });
-    }
-    return route.continue();
-  });
+      }),
+  );
+
+  await context.route(/\/api\/weather(?:\?|$)/, async (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(WEATHER_PAYLOAD),
+    }),
+  );
 }
 
 export async function waitForRenderableAssets(page) {
@@ -116,6 +121,16 @@ function freezeScript(currentRoute) {
         attributes: true,
         attributeFilter: ["style"],
       });
+    }
+
+    // These tiny raster brand icons render at fractional CSS sizes (~15.2px).
+    // Their source files are SHA-256 verified by qa:assets; separate Chromium
+    // surfaces can still differ by a handful of interpolated edge pixels.
+    // Screenshot parity therefore keeps their layout boxes but hides pixels.
+    for (const icon of document.querySelectorAll(".hero-brand-inline img")) {
+      if (icon instanceof HTMLElement) {
+        icon.style.setProperty("visibility", "hidden", "important");
+      }
     }
 
     const greeting = document.querySelector(".hero-greeting > span");

@@ -31,7 +31,7 @@ export function Hero() {
   }, []);
   useEffect(() => {
     // With SSR, a cached preload can finish before React attaches onLoad.
-    // Reconcile already-complete images once hydration has mounted.
+    // Reconcile the hidden preload images after hydration as a fallback.
     const reconcileCachedPortraits = () => {
       const loaded: Record<number, boolean> = {};
       document
@@ -41,9 +41,7 @@ export function Hero() {
         });
       if (!Object.keys(loaded).length) return;
       setLoadedPortraits((current) => {
-        const missing = Object.keys(loaded).some(
-          (key) => !current[Number(key)],
-        );
+        const missing = Object.keys(loaded).some((key) => !current[Number(key)]);
         return missing ? { ...current, ...loaded } : current;
       });
     };
@@ -280,6 +278,15 @@ export function Hero() {
                         alt={siteConfig.identity.name}
                         className="polaroid-photo-image"
                         draggable={false}
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                        onLoad={() =>
+                          setLoadedPortraits((current) => ({
+                            ...current,
+                            [portrait]: true,
+                          }))
+                        }
                         initial={{
                           opacity: 0,
                           scale: 1.035,
@@ -333,9 +340,9 @@ export function Hero() {
           {portraitImages.map((src, index) => (
             <img
               key={src}
+              data-portrait-preload
               src={src}
               alt="preload"
-              data-portrait-preload
               fetchPriority={index === 0 ? "high" : "low"}
               loading="eager"
               onLoad={() =>
