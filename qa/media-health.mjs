@@ -62,9 +62,13 @@ async function scan(viewport, route) {
     // remaining loader explicitly. A genuinely stalled loader survives the
     // bounded loop and is still reported as a failure below.
     for (let attempt = 0; attempt < 30; attempt++) {
-      const loader = page.locator(".skeleton-loader").first();
-      if ((await loader.count()) === 0) break;
-      await loader.scrollIntoViewIfNeeded();
+      const foundLoader = await page.evaluate(() => {
+        const loader = document.querySelector(".skeleton-loader");
+        if (!loader) return false;
+        loader.scrollIntoView({ block: "center", inline: "nearest" });
+        return true;
+      });
+      if (!foundLoader) break;
       await page.waitForTimeout(180);
     }
     await page.waitForTimeout(250);
