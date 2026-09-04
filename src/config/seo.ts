@@ -7,44 +7,43 @@ const { identity, origin, socialLinks, assets } = siteConfig;
 
 const rootDescription = portfolioSeo.description;
 const rootKeywords = portfolioSeo.keywords;
+const rootTitle = `${identity.name} | ${identity.role} in ${identity.country}${
+  identity.company ? ` | ${identity.company}` : ""
+}`;
+const openGraphLocale = identity.locale.replaceAll("-", "_");
 
 export const rootMetadata: Metadata = {
   metadataBase: new URL(origin),
-  title: `${identity.name} | ${identity.role} in ${identity.country} | ${identity.company}`,
+  title: rootTitle,
   description: rootDescription,
   keywords: [...rootKeywords],
   authors: [{ name: identity.name }],
   manifest: "/manifest.webmanifest",
   alternates: { canonical: "/" },
   icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-    ],
-    apple: "/apple-touch-icon.png",
+    icon: [{ url: assets.icon }],
+    apple: assets.appleTouchIcon,
   },
   openGraph: {
     type: "website",
     url: origin,
-    title: `${identity.name} | ${identity.role} in ${identity.country} | ${identity.company}`,
+    title: rootTitle,
     description: rootDescription,
     siteName: `${identity.name} Portfolio`,
-    locale: "en_IN",
+    locale: openGraphLocale,
     images: [
       {
         url: assets.socialPreview,
-        width: 1200,
-        height: 630,
         alt: `${identity.name} - ${identity.role} in ${identity.country}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    creator: siteConfig.social.twitterHandle,
-    site: siteConfig.social.twitterHandle,
-    title: `${identity.name} | ${identity.role} in ${identity.country} | ${identity.company}`,
+    ...(siteConfig.social.twitterHandle
+      ? { creator: siteConfig.social.twitterHandle, site: siteConfig.social.twitterHandle }
+      : {}),
+    title: rootTitle,
     description: rootDescription,
     images: [assets.socialPreview],
   },
@@ -67,18 +66,16 @@ export const personJsonLd = {
   name: identity.name,
   alternateName: identity.firstName,
   jobTitle: identity.role,
-  worksFor: { "@type": "Organization", name: identity.company },
+  ...(identity.company
+    ? { worksFor: { "@type": "Organization", name: identity.company } }
+    : {}),
   url: origin,
   sameAs: socialLinks
-    .filter(
-      ({ icon }) =>
-        icon === "twitter" || icon === "linkedin" || icon === "github",
-    )
+    .filter(({ href }) => href.startsWith("http://") || href.startsWith("https://"))
     .map(({ href }) => href),
   description: rootDescription,
   knowsAbout: [...portfolioSeo.knowsAbout],
   ...(portfolioSeo.award ? { award: portfolioSeo.award } : {}),
-  nationality: { "@type": "Country", name: identity.country },
 };
 
 type RouteMetadataInput = {

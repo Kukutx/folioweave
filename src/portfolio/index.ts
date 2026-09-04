@@ -10,19 +10,30 @@ export const portfolio = rawPortfolio as unknown as PortfolioConfig;
 
 const sourceSite = portfolio.site;
 
+function twitterHandleFromSocialLinks() {
+  const href = sourceSite.socialLinks.find((item) => item.icon === "twitter")?.href;
+  if (!href) return "";
+  try {
+    const handle = new URL(href).pathname.split("/").filter(Boolean)[0];
+    return handle ? `@${handle}` : "";
+  } catch {
+    return "";
+  }
+}
+
 export const siteConfig = {
-  identity: sourceSite.identity,
+  identity: { ...sourceSite.identity, country: sourceSite.location.country },
   origin: sourceSite.origin,
   themeColor: sourceSite.themeColor,
   copyrightYear: sourceSite.copyrightYear,
   contact: sourceSite.contact,
-  social: { twitterHandle: sourceSite.twitterHandle },
+  social: { twitterHandle: twitterHandleFromSocialLinks() },
   socialLinks: sourceSite.socialLinks,
   navigation: sourceSite.navigation,
   location: sourceSite.location,
   resume: {
     ...sourceSite.resume,
-    enabled: portfolio.features.resume && sourceSite.resume.enabled,
+    enabled: portfolio.features.resume,
   },
   assets: sourceSite.assets,
   features: portfolio.features,
