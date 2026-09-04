@@ -96,6 +96,7 @@ export function TimeWeatherWidget() {
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
+    if (!siteConfig.features.weather) return;
     const controller = new AbortController();
     fetch("/api/weather", { signal: controller.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -127,17 +128,19 @@ export function TimeWeatherWidget() {
       >
         <span className="time-label">{time}</span>
         <span className="ist-label">{siteConfig.location.timeZoneLabel}</span>
-        <span
-          className="weather-label"
-          aria-label={
-            weather.temperature == null
-              ? `${siteConfig.location.city} weather`
-              : `${siteConfig.location.city} weather ${weather.temperature} degrees Celsius`
-          }
-        >
-          <span aria-hidden>{weather.icon}</span>
-          {weather.temperature !== null && <span>{weather.temperature}°</span>}
-        </span>
+        {siteConfig.features.weather && (
+          <span
+            className="weather-label"
+            aria-label={
+              weather.temperature == null
+                ? `${siteConfig.location.city} weather`
+                : `${siteConfig.location.city} weather ${weather.temperature} degrees Celsius`
+            }
+          >
+            <span aria-hidden>{weather.icon}</span>
+            {weather.temperature !== null && <span>{weather.temperature}°</span>}
+          </span>
+        )}
       </div>
     </div>
   );

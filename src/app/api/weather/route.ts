@@ -5,6 +5,10 @@ import { siteConfig } from "@/config/site";
 export const dynamic = "force-static";
 
 export async function GET() {
+  if (!siteConfig.features.weather) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
   const policy = cachePolicy.weather;
   try {
     const query = new URLSearchParams({

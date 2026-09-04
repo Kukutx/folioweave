@@ -62,12 +62,30 @@ async function scan(viewport, route) {
     // remaining loader explicitly. A genuinely stalled loader survives the
     // bounded loop and is still reported as a failure below.
     for (let attempt = 0; attempt < 30; attempt++) {
-      const loader = page.locator(".skeleton-loader").first();
-      if ((await loader.count()) === 0) break;
-      await loader.scrollIntoViewIfNeeded();
+      const foundLoader = await page.evaluate(() => {
+        const loader = document.querySelector(".skeleton-loader");
+        if (!loader) return false;
+        loader.scrollIntoView({ block: "center", inline: "nearest" });
+        return true;
+      });
+      if (!foundLoader) break;
       await page.waitForTimeout(180);
     }
     await page.waitForTimeout(250);
+    if (route === "/clipt") {
+      // Clipt hero screenshots have a staggered opacity entrance. Wait for the
+      // intended stable state so media health does not sample a valid image
+      // halfway through its mount animation on a busy CI runner.
+      await page
+        .waitForFunction(
+          () =>
+            [...document.querySelectorAll(".clipt-images-hero img")].every(
+              (image) => Number(getComputedStyle(image).opacity) > 0.99,
+            ),
+          { timeout: 3000 },
+        )
+        .catch(() => {});
+    }
 
     const state = await page.evaluate(() => {
       const isIntentionallyHidden = (image) =>

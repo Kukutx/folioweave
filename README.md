@@ -54,7 +54,7 @@ public/portfolio/       your portraits, photography, project artwork, and resume
 
 Typical workflow:
 
-1. Run `npm run personalize` for identity, location, contact, social links, and a clean starting state.
+1. Run `npm run personalize` for identity, location, contact, social links, and an optional clean starting state. Optional values can be removed explicitly with `-`.
 2. Put your own files under `public/portfolio/`.
 3. Edit `portfolio.json` to add projects, photos, About content, and links.
 4. Run `npm run content:check`.
@@ -131,7 +131,7 @@ FolioWeave uses standard Next.js conventions and requires no provider-specific c
 
 The repository includes complete product, blog, case-study, and privacy pages as working examples. They are enabled by default so the starter is fully demonstrable after cloning.
 
-For a clean personal portfolio, `npm run personalize` can set `features.demoRoutes` to `false`. The bundled example routes then return 404 and are removed from the sitemap, while the underlying examples remain available in source for reference while building your own pages.
+For a clean personal portfolio, `npm run personalize` removes demo projects/content from the public config and sets `features.demoRoutes` to `false`. Bundled example routes then return 404, disappear from the sitemap, and the demo podcast API is disabled, while the underlying example source remains available for reference.
 
 ## Demo assets
 

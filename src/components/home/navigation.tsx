@@ -15,7 +15,7 @@ import { scrollToElement } from "@/lib/scroll";
 import { ContactCycleButton, TimeWeatherWidget } from "./chrome";
 
 const navigation = siteConfig.navigation.filter((item) => {
-  if (!siteConfig.features.demoRoutes && item.href === "/blogs") return false;
+  if (item.demoOnly && !siteConfig.features.demoRoutes) return false;
   if (item.sectionId === "about") return siteConfig.features.about;
   if (item.sectionId === "work") return siteConfig.features.work;
   if (item.sectionId === "photography") return siteConfig.features.photography;

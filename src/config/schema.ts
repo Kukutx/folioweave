@@ -16,9 +16,10 @@ export type SocialIconName =
 
 export type NavigationItem = {
   label: string;
-  href: InternalPath | HashPath;
+  href: InternalPath | HashPath | AbsoluteHttpUrl;
   sectionId: string | null;
   newTab?: boolean;
+  demoOnly?: boolean;
 };
 
 export type SocialLink = {
@@ -47,7 +48,7 @@ export type SiteConfig = {
     hiSubject: string;
   };
   social: {
-    twitterHandle: TwitterHandle;
+    twitterHandle: TwitterHandle | "";
   };
   socialLinks: readonly SocialLink[];
   navigation: readonly NavigationItem[];
@@ -75,7 +76,8 @@ export type SiteConfig = {
   };
   assets: {
     socialPreview: InternalPath;
-    appStoreBadge: InternalPath;
+    icon: InternalPath;
+    appleTouchIcon: InternalPath;
   };
 };
 
