@@ -68,6 +68,10 @@ const getPodcastSummaries = unstable_cache(
 );
 
 export async function GET() {
+  if (!siteConfig.features.demoRoutes) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
   const policy = cachePolicy.podcasts;
   const feeds = await getPodcastSummaries();
   return NextResponse.json(feeds, {

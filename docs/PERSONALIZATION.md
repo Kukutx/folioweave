@@ -18,7 +18,11 @@ npm run content:check
 npm run dev
 ```
 
-`npm run personalize` asks for your basic identity, location, contact details, social links, and whether you want to hide the bundled example content. It only changes `portfolio.json` and creates folders under `public/portfolio/`.
+`npm run personalize` asks first whether you want a clean portfolio, then collects identity, location, contact, and social details. A clean start removes bundled demo projects/content from `portfolio.json`, disables demo routes and optional empty sections, creates neutral placeholder profile/social-preview assets, and keeps navigation definitions so sections reappear automatically when re-enabled.
+
+For optional company/social fields, press Enter to keep the shown value or type `-` to remove it.
+
+Clean mode creates a neutral SVG social-preview placeholder so no demo branding leaks into metadata. Replace it with a 1200×630 PNG, JPEG, or WebP before publishing for the widest social-platform compatibility.
 
 ## Content map
 
@@ -27,16 +31,16 @@ npm run dev
 Use this for stable identity and site-level information:
 
 - display name / first name / initials
-- role, company, country and locale
+- role, optional company, and locale
+- city/country, coordinates and time zone (the public country is derived from this location block)
 - production domain
 - contact email and email subjects
 - social links and their icons
 - navigation
-- city, coordinates and time zone
 - resume paths
 - social preview / shared static assets
 
-The personalization wizard can resolve latitude, longitude, and time zone from city/country using Open-Meteo. If it is offline, the existing values are kept.
+The personalization wizard can resolve latitude, longitude, and time zone from city/country using Open-Meteo. When updating an existing portfolio, an offline lookup keeps the current location data. During a clean start, a failed lookup falls back to UTC/0,0 so demo location data is never carried into the new portfolio.
 
 ### `features`
 
@@ -53,7 +57,7 @@ Feature switches let a portfolio start small and grow later:
 }
 ```
 
-`demoRoutes: false` hides the bundled example product/blog/privacy/case-study routes and removes them from the sitemap. This is useful when turning the starter into a real personal site.
+`demoRoutes: false` hides the bundled example product/blog/privacy/case-study routes, removes them from the sitemap, and disables the demo-only podcast API. `weather: false` hides weather from the time widget and makes `/api/weather` return 404. Navigation definitions stay in the config and are filtered by these feature switches at render time. Use `demoOnly: true` on a navigation item when it should disappear together with the bundled demo routes.
 
 ### `hero`
 
@@ -137,7 +141,7 @@ under `features`.
 
 ### `seo`
 
-Root metadata and Person JSON-LD read their editable description, keywords, expertise list and optional award from this block.
+Root metadata, Open Graph, Twitter metadata, the Web App Manifest, and Person JSON-LD derive from this block plus `site.identity`. Company and award are optional; locale controls the Open Graph locale, and location is not inferred as nationality.
 
 The detailed bundled example routes still have route-specific metadata in `src/config/seo.ts`; those routes can be disabled entirely through `features.demoRoutes`.
 
@@ -150,7 +154,8 @@ Use this structure for your own files:
 public/portfolio/
 ├─ profile/
 │  ├─ portrait.webp
-│  └─ logo.svg
+│  ├─ icon.png
+│  └─ social-preview.png
 ├─ photography/
 │  ├─ photo-01.webp
 │  └─ photo-02.webp
@@ -179,17 +184,19 @@ Run:
 npm run content:check
 ```
 
-The checker validates the important structure and verifies every configured local asset exists under `public/`.
+The checker validates the important runtime structure and verifies every configured local asset exists under `public/`.
 
 It detects issues such as:
 
-- malformed identity/origin/contact fields
-- invalid time zones
-- duplicate project IDs
-- enabled projects without media
-- carousel projects without slides
-- missing portraits, project media, photography, resume or preview files
+- malformed identity, email, origin, locale, coordinates, or time zone
+- non-boolean feature flags
+- invalid social, navigation, badge, or project-action URLs
+- duplicate project IDs or unsupported project layouts
+- invalid intrinsic image dimensions
+- enabled projects without media or carousel projects without slides
+- missing portraits, project media, photography, resume, or preview files
 - asset paths that point outside `public/`
+- SVG social previews that should be replaced with a raster asset before publishing
 
 `content:check` also runs automatically before `npm run dev` and `npm run build`, so a broken configuration fails early instead of producing a partially broken deployment.
 

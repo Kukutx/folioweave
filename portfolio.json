@@ -7,7 +7,6 @@
       "initials": "OG",
       "role": "Product Designer",
       "company": "CRED",
-      "country": "India",
       "locale": "en-IN"
     },
     "origin": "https://gowthamoleti.com",
@@ -18,7 +17,6 @@
       "helloSubject": "Hello Gowtham!",
       "hiSubject": "Hi Gowtham"
     },
-    "twitterHandle": "@gow88_",
     "socialLinks": [
       {
         "label": "Twitter",
@@ -65,7 +63,8 @@
         "label": "Blogs",
         "href": "/blogs",
         "sectionId": null,
-        "newTab": true
+        "newTab": true,
+        "demoOnly": true
       }
     ],
     "location": {
@@ -77,14 +76,14 @@
       "longitude": 77.5946
     },
     "resume": {
-      "enabled": true,
       "image": "/gowtham-oleti-resume.jpg",
       "pdf": "/gowtham-oleti-resume.pdf",
       "downloadName": "Gowtham-Oleti-Resume.pdf"
     },
     "assets": {
       "socialPreview": "/ogportfolio-logo.webp",
-      "appStoreBadge": "/assets/app-store-badge.svg"
+      "icon": "/favicon.ico",
+      "appleTouchIcon": "/apple-touch-icon.png"
     }
   },
   "features": {

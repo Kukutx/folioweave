@@ -70,7 +70,6 @@ export type PortfolioConfig = {
       initials: string;
       role: string;
       company: string;
-      country: string;
       locale: string;
     };
     origin: string;
@@ -81,7 +80,6 @@ export type PortfolioConfig = {
       helloSubject: string;
       hiSubject: string;
     };
-    twitterHandle: string;
     socialLinks: readonly {
       label: string;
       icon: PortfolioSocialIcon;
@@ -93,6 +91,7 @@ export type PortfolioConfig = {
       href: string;
       sectionId: string | null;
       newTab?: boolean;
+      demoOnly?: boolean;
     }[];
     location: {
       city: string;
@@ -103,14 +102,14 @@ export type PortfolioConfig = {
       longitude: number;
     };
     resume: {
-      enabled: boolean;
       image: string;
       pdf: string;
       downloadName: string;
     };
     assets: {
       socialPreview: string;
-      appStoreBadge: string;
+      icon: string;
+      appleTouchIcon: string;
     };
   };
   features: {
