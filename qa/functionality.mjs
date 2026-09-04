@@ -39,6 +39,23 @@ async function launch(extraArgs = []) {
   });
 }
 
+async function waitForHydratedElement(page, selector) {
+  await page.waitForFunction(
+    (value) => {
+      const element = document.querySelector(value);
+      return Boolean(
+        element &&
+          Object.keys(element).some(
+            (key) =>
+              key.startsWith("__reactProps$") || key.startsWith("__reactFiber$"),
+          ),
+      );
+    },
+    selector,
+    { timeout: 10_000 },
+  );
+}
+
 async function runHomeCore() {
   const browser = await launch();
   try {
@@ -357,6 +374,7 @@ async function runCamera() {
     await context.grantPermissions(["camera"], { origin: base });
     const page = await context.newPage();
     await page.goto(base, { waitUntil: "domcontentloaded" });
+    await waitForHydratedElement(page, '[aria-label="Start camera"]');
 
     await test("camera starts, captures, and exposes Retake/Download", async () => {
       const lens = page.locator('[role="button"][aria-label="Start camera"]');
@@ -403,19 +421,27 @@ async function runCasePages() {
         await page.goto(`${base}/blogs/clipt`, {
           waitUntil: "domcontentloaded",
         });
-        await page.getByRole("button", { name: /For Designers/ }).click();
+        await waitForHydratedElement(page, ".perspective-tag");
+        await page
+          .locator(".perspective-tag")
+          .filter({ hasText: "For Designers" })
+          .click();
         await page.getByText("Designing for Trust").waitFor({
           state: "visible",
           timeout: 5000,
         });
         await page
-          .getByRole("button", { name: /Explain Like I'm Five/ })
+          .locator(".perspective-tag")
+          .filter({ hasText: "Explain Like I'm Five" })
           .click();
         await page.getByText("How It Works (Simply Put)").waitFor({
           state: "visible",
           timeout: 5000,
         });
-        await page.getByRole("button", { name: "The Story" }).click();
+        await page
+          .locator(".perspective-tag")
+          .filter({ hasText: "The Story" })
+          .click();
         await page.getByText("My Tech Stack").waitFor({
           state: "visible",
           timeout: 5000,
@@ -469,6 +495,7 @@ async function runMobile() {
     });
     const page = await context.newPage();
     await page.goto(base, { waitUntil: "domcontentloaded" });
+    await waitForHydratedElement(page, "button.mobile-menu-toggle");
 
     await test("mobile menu opens and scrolls", async () => {
       const toggle = page.locator("button.mobile-menu-toggle");
@@ -489,6 +516,15 @@ async function runMobile() {
     await test("mobile uses Brink mobile work image", async () => {
       const brink = page.locator(".mobile-work-brink .work-image-container img");
       await brink.scrollIntoViewIfNeeded();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector(".mobile-work-brink .work-image-container img")
+            ?.getAttribute("src")
+            ?.includes("brink-work-mobile.jpg"),
+        undefined,
+        { timeout: 5000 },
+      );
       const src = await brink.getAttribute("src");
       assert(src?.includes("brink-work-mobile.jpg"), `unexpected ${src}`);
       return src;

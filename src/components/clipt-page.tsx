@@ -74,7 +74,9 @@ export function CliptPage() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 0.2], [0, -50]);
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  useEffect(() => scrollTo(0, 0), []);
+  useEffect(() => {
+    scrollTo(0, 0);
+  }, []);
   const tech = [
     [
       "Native SwiftUI & SwiftData",

@@ -678,7 +678,9 @@ export function CliptBlogPage() {
     restDelta: 0.001,
   });
   const [perspective, setPerspective] = useState<Perspective>("standard");
-  useEffect(() => window.scrollTo(0, 0), []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const current = perspectives[perspective];
   return (
     <div className="writing-container blog-post-page">
