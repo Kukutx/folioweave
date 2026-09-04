@@ -17,7 +17,8 @@ The main asset groups are:
 ```text
 public/assets/   UI icons, badges, and decorative assets
 public/fonts/    local fonts
-public/media/    portfolio, photography, product, and resume media
+public/media/    bundled demo portfolio/product media
+public/portfolio/ recommended home for your own profile, project, photo, and resume assets
 ```
 
 Run the asset check after changing or removing protected files:
@@ -33,6 +34,8 @@ Remove assets only when you have confirmed they are no longer used by routes, co
 Some files may be loaded dynamically and therefore will not always appear in simple static import scans. When intentionally removing a protected asset, update `qa/assets-manifest.json` in the same change.
 
 ## Publishing your own portfolio
+
+Put your own files under `public/portfolio/` and reference them from `portfolio.json`. `npm run content:check` verifies those configured local paths exist before development/builds.
 
 A typical customization pass should replace:
 

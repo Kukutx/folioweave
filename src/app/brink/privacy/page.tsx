@@ -1,3 +1,4 @@
+import { requireDemoRoutes } from "@/portfolio/demo-routes";
 import { products } from "@/config/products";
 import { routeMetadata } from "@/config/seo";
 import Link from "next/link";
@@ -5,6 +6,7 @@ import "@/styles/brink-privacy.css";
 
 export const metadata = routeMetadata.brinkPrivacy;
 export default function Page() {
+  requireDemoRoutes();
   return (
     <div className="brink-ppPage">
       <main className="brink-ppShell">

@@ -1,6 +1,8 @@
-import { type CSSProperties, type RefObject } from "react";
+import { Code2, Globe } from "lucide-react";
+import { type ComponentType, type CSSProperties, type RefObject } from "react";
 import { homeContent } from "@/content/home";
 import { siteConfig } from "@/config/site";
+import type { SocialIconName } from "@/config/schema";
 import {
   PortfolioEnvelopeIcon,
   PortfolioInstagramIcon,
@@ -9,11 +11,13 @@ import {
 } from "../portfolio-icons";
 
 const iconMap = {
-  Twitter: PortfolioTwitterIcon,
-  LinkedIn: PortfolioLinkedInIcon,
-  Instagram: PortfolioInstagramIcon,
-  Email: PortfolioEnvelopeIcon,
-} as const;
+  twitter: PortfolioTwitterIcon,
+  linkedin: PortfolioLinkedInIcon,
+  instagram: PortfolioInstagramIcon,
+  email: PortfolioEnvelopeIcon,
+  github: Code2,
+  website: Globe,
+} satisfies Record<SocialIconName, ComponentType<{ size?: number; "aria-hidden"?: boolean }>>;
 export function ContactFooter({
   sectionRef,
 }: {
@@ -86,8 +90,8 @@ export function ContactFooter({
           </div>
         </div>
         <div className="contact-social-links">
-          {siteConfig.socialLinks.map(({ label, href, brand }) => {
-            const Icon = iconMap[label];
+          {siteConfig.socialLinks.map(({ label, icon, href, brand }) => {
+            const Icon = iconMap[icon];
             const external = href.startsWith("http");
             return (
               <a

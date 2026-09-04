@@ -16,6 +16,7 @@ import { WorkSection } from "./home/work-section";
 import { useLenis } from "@/hooks/use-lenis";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import { scrollToPosition } from "@/lib/scroll";
+import { siteConfig } from "@/config/site";
 
 export function HomePage() {
   useLenis();
@@ -50,8 +51,11 @@ export function HomePage() {
       const [night, photography, contact] = values as [number, number, number];
       const nightEnvelope =
         night < 0.3 ? night / 0.3 : night < 0.7 ? 1 : 1 - (night - 0.7) / 0.3;
-      const photographyReveal =
-        photography < 0.2 ? photography / 0.2 : 1;
+      const photographyReveal = siteConfig.features.photography
+        ? photography < 0.2
+          ? photography / 0.2
+          : 1
+        : 0;
       const contactReveal = contact < 0.3 ? contact / 0.3 : 1;
       return contactReveal > 0
         ? photographyReveal * (1 - contactReveal)
@@ -150,8 +154,10 @@ export function HomePage() {
       <MainNav themeProgress={themeProgress} />
       <Hero />
       <NightAndSimple sectionRef={nightRef} />
-      <WorkSection />
-      <Photography sectionRef={photographyRef} />
+      {siteConfig.features.work && <WorkSection />}
+      {siteConfig.features.photography && (
+        <Photography sectionRef={photographyRef} />
+      )}
       <div className="container">
         <ContactFooter sectionRef={contactRef} />
       </div>

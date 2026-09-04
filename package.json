@@ -45,7 +45,11 @@
     "audit:prod": "npm audit --omit=dev",
     "qa:visual-routes": "node --expose-gc qa/visual-routes.mjs",
     "qa:visual-matrix": "node qa/visual-matrix.mjs",
-    "qa:visual-compare": "node qa/run-with-server.mjs qa:static qa:visual-matrix"
+    "qa:visual-compare": "node qa/run-with-server.mjs qa:static qa:visual-matrix",
+    "personalize": "node scripts/personalize.mjs",
+    "content:check": "node scripts/portfolio-check.mjs",
+    "predev": "npm run content:check",
+    "prebuild": "npm run content:check"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.1",

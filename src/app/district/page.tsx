@@ -1,3 +1,4 @@
+import { requireDemoRoutes } from "@/portfolio/demo-routes";
 import { districtJsonLd, routeMetadata } from "@/config/seo";
 import { DistrictPage } from "@/components/district-page";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -6,6 +7,7 @@ import "@/styles/district.css";
 export const metadata = routeMetadata.district;
 
 export default function Page() {
+  requireDemoRoutes();
   return (
     <>
       <DistrictPage />

@@ -1,77 +1,25 @@
-# Template Customization Guide
+# Template and Extension Guide
 
-This project is designed so most people can replace the demo portfolio without editing animation or framework internals.
+Normal portfolio personalization belongs in `portfolio.json`, not in framework internals. Start with [`PERSONALIZATION.md`](PERSONALIZATION.md).
 
-## 1. Change the site identity
+This guide covers changes that go beyond replacing identity, projects, photos, and copy.
 
-Edit `src/config/site.ts` first.
+## 1. Public content boundary
 
-Typical fields:
+The intended user-facing content surface is:
 
-- `identity.name`
-- `identity.firstName`
-- `identity.initials`
-- `identity.role`
-- `identity.company`
-- `identity.country`
-- `origin`
-- primary contact email and mail subjects
-- social links
-- navigation
-- location/timezone/weather coordinates
-- resume image/PDF/download filename
-- social preview image
+```text
+portfolio.json
+public/portfolio/
+```
 
-Changing the domain here automatically updates root metadata, robots, sitemap, JSON-LD and API User-Agent values that derive from the site configuration.
+Internal adapters under `src/portfolio/`, `src/config/`, and `src/content/` keep the rest of the app strongly typed and should normally stay unchanged.
 
-## 2. Change products and project destinations
+When adding a reusable content option, prefer extending `portfolio.json` + `portfolio.schema.json` and deriving it in `src/portfolio/` instead of adding a second editable source.
 
-Edit `src/config/products.ts`.
+## 2. Visual theme
 
-Use it for stable cross-page identifiers:
-
-- product name
-- internal product route
-- story route
-- privacy route
-- icon
-- App Store / Play Store URL
-- press URL
-- product support email
-- product award
-
-Do not move long project descriptions into this file. Long editorial content belongs in `src/content/`.
-
-## 3. Replace the portfolio copy
-
-Edit:
-
-- `src/content/home.ts` — greeting languages and footer-book quote
-- `src/content/about.ts` — About story segments and timeline
-- `src/content/work.ts` — portfolio/project descriptions, dates and work images
-
-About story segments use `muted`, `strong` and `highlight` roles. This preserves the Story/TL;DR visual behavior while keeping the text editable without touching the component.
-
-## 4. Replace images
-
-Edit `src/content/media.ts` after placing your files in `public/`.
-
-The lists cover:
-
-- hero portrait rotation
-- About story gallery
-- Photography gallery/lightbox
-- NotchShelf carousel demo images
-
-Work-card images live in `src/content/work.ts` because they belong to individual projects.
-
-Bundled demo assets are intentionally kept so you can replace media gradually while the starter remains fully usable.
-
-## 5. Change the visual theme
-
-Edit `src/styles/theme.css` first.
-
-It contains the global design tokens for:
+Edit `src/styles/theme.css` first for global design tokens:
 
 - main sans / serif / handwritten font stacks
 - accent color
@@ -83,25 +31,73 @@ It contains the global design tokens for:
 
 Route-specific CSS remains separate when a page needs specialized selectors or layout behavior.
 
-Avoid global search/replace in `globals.css` before checking whether the property is a theme token. The theme file is the intended public customization surface.
+Avoid broad search/replace in `globals.css` before checking whether the property is already a theme token.
 
-## 6. Navigation and scrolling
+## 3. Project layouts
 
-Navigation comes from `siteConfig.navigation`.
+Homepage projects are rendered from `portfolio.json > projects`.
 
-Section entries use a hash route plus a `sectionId`. External/internal pages can use an internal path and `sectionId: null`.
+The built-in variants intentionally stay limited:
+
+- `standard`
+- `featured`
+- `story`
+- `carousel`
+
+These cover the repeated homepage patterns without pretending that every case study should use the same universal page builder.
+
+If a new homepage presentation can be reused, add another project variant. If it is truly unique editorial content, create a dedicated App Router page instead.
+
+## 4. Custom project/case-study routes
+
+For a custom project page:
+
+1. add the homepage card to `portfolio.json > projects`;
+2. create a route under `src/app/`;
+3. point a project `actions[].href` at that route;
+4. add route-specific metadata in `src/config/seo.ts` when necessary;
+5. include the route in the sitemap if it should be indexed;
+6. run the validation suite.
+
+The bundled product/blog/privacy routes are examples. Set `features.demoRoutes` to `false` to remove them from the public site without deleting their source.
+
+## 5. Navigation and scrolling
+
+Navigation content comes from `portfolio.json > site.navigation` through `siteConfig.navigation`.
+
+Section entries use a hash route plus a `sectionId`. Internal pages use a site path and `sectionId: null`.
 
 The project uses shared helpers:
 
 - `useMediaQuery` / `useMobileViewport` for responsive state
-- `useLenis` for the smooth-scroll lifecycle
+- `useLenis` for desktop smooth-scroll lifecycle
+- native touch scrolling on coarse-pointer devices
 - `scrollToElement` / `scrollToPosition` for consistent Lenis/fallback scrolling
 
 Do not create independent page-level Lenis instances or ad-hoc resize listeners unless a feature genuinely needs different behavior.
 
-## 7. Adding another privacy page
+## 6. Live integrations
 
-Use the shared primitives in `src/components/privacy-page.tsx`:
+### Weather
+
+- enabled by `portfolio.json > features.weather`
+- location comes from `site.location`
+- cache policy comes from `src/config/cache.ts`
+- Route Handler: `src/app/api/weather/route.ts`
+
+### Podcasts
+
+- feeds come from `src/config/podcasts.ts`
+- raw RSS is fetched with a request timeout
+- only compact parsed summaries are cached
+- cache/timeout policy lives in `src/config/cache.ts`
+- Route Handler: `src/app/api/podcasts/route.ts`
+
+Keep integration mechanics separate from portfolio content.
+
+## 7. Privacy pages
+
+Use shared primitives from `src/components/privacy-page.tsx`:
 
 ```tsx
 <PrivacyPageShell prefix="myapp" subtitle="MyApp">
@@ -111,46 +107,9 @@ Use the shared primitives in `src/components/privacy-page.tsx`:
 </PrivacyPageShell>
 ```
 
-The shell provides:
+For an analytics-oriented policy, reuse `AnalyticsPrivacy` rather than duplicating its section structure.
 
-- shared privacy layout classes
-- exact date formatting
-- the client-only date correction used to match browser-local date behavior
-
-If the page follows the analytics-heavy Habee/NotchShelf policy, reuse `AnalyticsPrivacy` instead of duplicating the sections.
-
-## 8. Adding a new product or work item
-
-1. Add stable product identifiers to `src/config/products.ts`.
-2. Add work copy/images to `src/content/work.ts`.
-3. Add any new media to `public/`.
-4. Render the project in `src/components/home/work-section.tsx`.
-5. Add a route under `src/app/` if the project has a standalone page.
-6. Add route SEO in `src/config/seo.ts`.
-7. Add the public route to `src/app/sitemap.ts` when it should be indexed.
-8. Run the validation suite.
-
-Work layout deliberately remains explicit JSX instead of a universal JSON renderer. Projects can have genuinely different badges, editorial content, previews and destinations; keeping those differences visible makes the template easier to understand and extend.
-
-## 9. Live integrations
-
-### Weather
-
-- location comes from `siteConfig.location`
-- cache policy comes from `src/config/cache.ts`
-- Route Handler: `src/app/api/weather/route.ts`
-
-### Podcasts
-
-- feeds come from `src/config/podcasts.ts`
-- large raw RSS documents are fetched with a request timeout and are not stored in Next's per-entry Data Cache
-- only the compact parsed podcast summaries are cached
-- browser/API cache and timeout policy comes from `src/config/cache.ts`
-- Route Handler: `src/app/api/podcasts/route.ts`
-
-Keep cache settings centralized unless Next requires a statically analyzable route constant.
-
-## 10. Error states
+## 8. Error states
 
 The template includes:
 
@@ -158,15 +117,17 @@ The template includes:
 - `app/error.tsx`
 - `app/global-error.tsx`
 
-Their shared styling is `src/styles/system-state.css`.
+Their shared styling lives in `src/styles/system-state.css`.
 
-Quality QA checks that an unknown route returns HTTP 404 and includes `noindex`.
+Quality QA checks that unknown routes return HTTP 404 and include `noindex`.
 
-## 11. Asset policy
+## 9. Asset policy
 
-Bundled demo assets remain available as examples. `qa/assets-manifest.json` records the expected path, size and SHA-256 hash of protected demo files.
+Personal assets should normally live under `public/portfolio/`.
 
-Do not run "delete unused assets" automation against `public/` without first updating the intended demo-asset policy. Some files are retained specifically as examples even if a current page does not render them.
+Bundled demo assets remain under their original paths because they form a working example site and are covered by QA integrity checks.
+
+`qa/assets-manifest.json` records protected demo assets. Do not run automated "delete unused assets" cleanup against `public/` without deliberately updating that policy.
 
 Run:
 
@@ -174,13 +135,22 @@ Run:
 npm run qa:assets
 ```
 
-before and after asset cleanup.
+before and after demo-asset maintenance.
 
-## 12. Validation workflow
+## 10. Content validation
+
+`npm run content:check` verifies `portfolio.json` and configured local asset paths.
+
+It runs automatically before development/build commands. Extend `scripts/portfolio-check.mjs` when adding a new public content field that references a local asset or has an important cross-field invariant.
+
+The JSON schema exists for editor assistance; the Node validator is the authoritative project-specific semantic check.
+
+## 11. Full validation workflow
 
 During normal development:
 
 ```bash
+npm run content:check
 npm run lint
 npm run typecheck
 ```
@@ -190,26 +160,20 @@ Before publishing:
 ```bash
 npm run check
 npm run audit:prod
-```
-
-With the production server running on port 4181:
-
-```bash
 npm run qa:all
 ```
 
-This self-contained suite includes asset, functionality, quality, media-health, font-fallback, Resume state-machine and bundle-budget checks. Browser QA auto-detects Chrome, Chromium or Edge; set `CHROME_PATH` only for a non-standard browser installation.
+The browser suite covers assets, functionality, quality, media health, font fallback, the Resume state machine, and bundle budgets.
 
-Run `npm run qa:all` for the complete browser validation suite before publishing.
-
-## 13. Things intentionally not generalized further
+## 12. What remains intentionally explicit
 
 Some explicit code is healthier than a universal abstraction:
 
-- Work cards have different badges, links and story content.
-- District has a unique case-study interaction model.
-- Clipt blog has multiple perspective modes.
-- Camera/Resume/Gallery are separate feature modules because their state machines are unrelated.
-- Custom SVG primitives are stored locally when their geometry is part of the intended visual design.
+- custom case-study page storytelling
+- the multi-perspective Clipt blog example
+- camera/resume/gallery state machines
+- specialized privacy/legal copy
+- integration/cache mechanics
+- custom SVG geometry that belongs to the visual design
 
-The template should be easy to edit, not "generic at any cost".
+FolioWeave centralizes repeated portfolio content, not every possible application concern.
