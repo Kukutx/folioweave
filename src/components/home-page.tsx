@@ -82,7 +82,12 @@ export function HomePage() {
   useEffect(() => {
     const previousRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
+    let userInteracted = false;
+    const markInteraction = () => {
+      userInteracted = true;
+    };
     const reset = () => {
+      if (userInteracted) return;
       window.scrollTo(0, 0);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
@@ -90,14 +95,14 @@ export function HomePage() {
 
     reset();
     const frame = window.requestAnimationFrame(reset);
-    const doubleFrame = window.requestAnimationFrame(() =>
-      window.requestAnimationFrame(reset),
-    );
-    const timers = [50, 250, 700, 1400, 2200].map((delay) =>
-      window.setTimeout(reset, delay),
-    );
-    window.addEventListener("load", reset);
-    window.addEventListener("pageshow", reset);
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) reset();
+    };
+    window.addEventListener("wheel", markInteraction, { passive: true, once: true });
+    window.addEventListener("touchstart", markInteraction, { passive: true, once: true });
+    window.addEventListener("pointerdown", markInteraction, { passive: true, once: true });
+    window.addEventListener("keydown", markInteraction, { once: true });
+    window.addEventListener("pageshow", onPageShow);
 
     const onLogoClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
@@ -117,10 +122,11 @@ export function HomePage() {
 
     return () => {
       window.cancelAnimationFrame(frame);
-      window.cancelAnimationFrame(doubleFrame);
-      timers.forEach((timer) => window.clearTimeout(timer));
-      window.removeEventListener("load", reset);
-      window.removeEventListener("pageshow", reset);
+      window.removeEventListener("wheel", markInteraction);
+      window.removeEventListener("touchstart", markInteraction);
+      window.removeEventListener("pointerdown", markInteraction);
+      window.removeEventListener("keydown", markInteraction);
+      window.removeEventListener("pageshow", onPageShow);
       document.removeEventListener("click", onLogoClick);
       window.history.scrollRestoration = previousRestoration;
     };
@@ -133,7 +139,6 @@ export function HomePage() {
         backgroundColor,
         color,
         position: "relative",
-        willChange: "background-color, color",
       }}
     >
       <GreetingToast />

@@ -14,7 +14,7 @@ import { siteConfig } from "@/config/site";
 import { scrollToElement } from "@/lib/scroll";
 import { ContactCycleButton, TimeWeatherWidget } from "./chrome";
 
-function OriginalMenuIcon({ size = 20 }: { size?: number }) {
+function MenuGlyph({ size = 20 }: { size?: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +220,7 @@ export function MainNav({
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((v) => !v)}
           >
-            {open ? <X size={20} /> : <OriginalMenuIcon size={20} />}
+            {open ? <X size={20} /> : <MenuGlyph size={20} />}
           </button>
           <ContactCycleButton compact />
         </motion.div>

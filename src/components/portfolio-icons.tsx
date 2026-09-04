@@ -1,4 +1,4 @@
-type ReferenceIconProps = {
+type PortfolioIconProps = {
   size?: number;
   className?: string;
   "aria-hidden"?: boolean;
@@ -17,11 +17,11 @@ const common = (size: number, className?: string) => ({
   className,
 });
 
-export function ReferenceCalendarIcon({
+export function PortfolioCalendarIcon({
   size = 14,
   className = "lucide lucide-calendar",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
@@ -32,11 +32,11 @@ export function ReferenceCalendarIcon({
   );
 }
 
-export function ReferenceClockIcon({
+export function PortfolioClockIcon({
   size = 14,
   className = "lucide lucide-clock",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <circle cx="12" cy="12" r="10" />
@@ -45,11 +45,11 @@ export function ReferenceClockIcon({
   );
 }
 
-export function ReferencePaletteIcon({
+export function PortfolioPaletteIcon({
   size = 16,
   className = "lucide lucide-palette",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <circle cx="13.5" cy="6.5" r=".5" />
@@ -61,11 +61,11 @@ export function ReferencePaletteIcon({
   );
 }
 
-export function ReferenceCpuIcon({
+export function PortfolioCpuIcon({
   size = 24,
   className = "content-icon",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -82,11 +82,11 @@ export function ReferenceCpuIcon({
   );
 }
 
-export function ReferenceZapIcon({
+export function PortfolioZapIcon({
   size = 24,
   className = "content-icon",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -94,11 +94,11 @@ export function ReferenceZapIcon({
   );
 }
 
-export function ReferenceSparklesIcon({
+export function PortfolioSparklesIcon({
   size = 24,
   className = "content-icon",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
@@ -110,11 +110,11 @@ export function ReferenceSparklesIcon({
   );
 }
 
-export function ReferenceLayersIcon({
+export function PortfolioLayersIcon({
   size = 24,
   className = "content-icon",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -124,11 +124,11 @@ export function ReferenceLayersIcon({
   );
 }
 
-export function ReferenceBabyIcon({
+export function PortfolioBabyIcon({
   size = 16,
   className = "lucide lucide-baby",
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg {...common(size, className)} aria-hidden={ariaHidden}>
       <path d="M9 12h.01" />
@@ -139,7 +139,7 @@ export function ReferenceBabyIcon({
   );
 }
 
-function FilledReferenceIcon({
+function FilledPortfolioIcon({
   size,
   viewBox,
   path,
@@ -166,12 +166,12 @@ function FilledReferenceIcon({
   );
 }
 
-export function ReferenceTwitterIcon({
+export function PortfolioTwitterIcon({
   size = 19,
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
-    <FilledReferenceIcon
+    <FilledPortfolioIcon
       size={size}
       viewBox="0 0 512 512"
       ariaHidden={ariaHidden}
@@ -180,12 +180,12 @@ export function ReferenceTwitterIcon({
   );
 }
 
-export function ReferenceLinkedInIcon({
+export function PortfolioLinkedInIcon({
   size = 19,
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
-    <FilledReferenceIcon
+    <FilledPortfolioIcon
       size={size}
       viewBox="0 0 448 512"
       ariaHidden={ariaHidden}
@@ -194,12 +194,12 @@ export function ReferenceLinkedInIcon({
   );
 }
 
-export function ReferenceInstagramIcon({
+export function PortfolioInstagramIcon({
   size = 19,
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
-    <FilledReferenceIcon
+    <FilledPortfolioIcon
       size={size}
       viewBox="0 0 448 512"
       ariaHidden={ariaHidden}
@@ -208,10 +208,10 @@ export function ReferenceInstagramIcon({
   );
 }
 
-export function ReferenceEnvelopeIcon({
+export function PortfolioEnvelopeIcon({
   size = 19,
   "aria-hidden": ariaHidden,
-}: ReferenceIconProps) {
+}: PortfolioIconProps) {
   return (
     <svg
       stroke="currentColor"

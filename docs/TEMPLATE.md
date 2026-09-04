@@ -50,7 +50,7 @@ Edit:
 - `src/content/about.ts` — About story segments and timeline
 - `src/content/work.ts` — portfolio/project descriptions, dates and work images
 
-About story segments use `muted`, `strong` and `highlight` roles. This preserves the original Story/TL;DR visual behavior while keeping the text editable without touching the component.
+About story segments use `muted`, `strong` and `highlight` roles. This preserves the Story/TL;DR visual behavior while keeping the text editable without touching the component.
 
 ## 4. Replace images
 
@@ -65,7 +65,7 @@ The lists cover:
 
 Work-card images live in `src/content/work.ts` because they belong to individual projects.
 
-The original demo assets are intentionally kept. You can replace references gradually instead of deleting the examples immediately.
+Bundled demo assets are intentionally kept so you can replace media gradually while the starter remains fully usable.
 
 ## 5. Change the visual theme
 
@@ -81,7 +81,7 @@ It contains the global design tokens for:
 - shadows
 - editor/collaboration accents
 
-Route-specific CSS remains separate when pixel parity requires exact selectors or specialized layouts.
+Route-specific CSS remains separate when a page needs specialized selectors or layout behavior.
 
 Avoid global search/replace in `globals.css` before checking whether the property is a theme token. The theme file is the intended public customization surface.
 
@@ -130,7 +130,7 @@ If the page follows the analytics-heavy Habee/NotchShelf policy, reuse `Analytic
 7. Add the public route to `src/app/sitemap.ts` when it should be indexed.
 8. Run the validation suite.
 
-Work layout is deliberately still explicit JSX instead of a universal JSON renderer. The current projects have genuinely different badges, story-time content, previews and destinations; forcing them into one over-general component would make the template harder to understand and would risk visual parity.
+Work layout deliberately remains explicit JSX instead of a universal JSON renderer. Projects can have genuinely different badges, editorial content, previews and destinations; keeping those differences visible makes the template easier to understand and extend.
 
 ## 9. Live integrations
 
@@ -164,7 +164,7 @@ Quality QA checks that an unknown route returns HTTP 404 and includes `noindex`.
 
 ## 11. Asset policy
 
-The portfolio's original assets remain as demo/reference material. `qa/assets-manifest.json` records the expected SHA-256 of all 103 reference assets.
+Bundled demo assets remain available as examples. `qa/assets-manifest.json` records the expected path, size and SHA-256 hash of protected demo files.
 
 Do not run "delete unused assets" automation against `public/` without first updating the intended demo-asset policy. Some files are retained specifically as examples even if a current page does not render them.
 
@@ -200,13 +200,7 @@ npm run qa:all
 
 This self-contained suite includes asset, functionality, quality, media-health, font-fallback, Resume state-machine and bundle-budget checks. Browser QA auto-detects Chrome, Chromium or Edge; set `CHROME_PATH` only for a non-standard browser installation.
 
-Maintainers with both the production server (4181) and optional reference mirror (4173) running can add the strict reference suite:
-
-```bash
-npm run qa:reference
-```
-
-`qa:parity` first gathers real semantic content, then freezes genuinely dynamic visuals for screenshot comparison. Dynamic behavior remains covered by `qa:functionality`.
+Run `npm run qa:all` for the complete browser validation suite before publishing.
 
 ## 13. Things intentionally not generalized further
 
@@ -216,6 +210,6 @@ Some explicit code is healthier than a universal abstraction:
 - District has a unique case-study interaction model.
 - Clipt blog has multiple perspective modes.
 - Camera/Resume/Gallery are separate feature modules because their state machines are unrelated.
-- Pixel-locked reference SVGs live in `reference-icons.tsx` so dependency upgrades cannot silently change their geometry.
+- Custom SVG primitives are stored locally when their geometry is part of the intended visual design.
 
 The template should be easy to edit, not "generic at any cost".

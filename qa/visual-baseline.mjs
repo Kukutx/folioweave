@@ -126,7 +126,7 @@ function freezeScript(currentRoute) {
     // These tiny raster brand icons render at fractional CSS sizes (~15.2px).
     // Their source files are SHA-256 verified by qa:assets; separate Chromium
     // surfaces can still differ by a handful of interpolated edge pixels.
-    // Screenshot parity therefore keeps their layout boxes but hides pixels.
+    // Screenshot comparison therefore keeps their layout boxes but hides pixels.
     for (const icon of document.querySelectorAll(".hero-brand-inline img")) {
       if (icon instanceof HTMLElement) {
         icon.style.setProperty("visibility", "hidden", "important");
@@ -156,7 +156,7 @@ function freezeScript(currentRoute) {
 
     // The badge PNG itself is SHA-256 verified by qa:assets. Its 55px render
     // starts at a fractional x coordinate and can differ by a few filtered edge
-    // pixels between otherwise identical Chromium surfaces, so visual parity
+    // pixels between otherwise identical Chromium surfaces, so visual comparison
     // verifies its layout box while asset QA verifies the pixels.
     const badge = document.querySelector(".case-study-badge-icon");
     if (badge instanceof HTMLElement) badge.style.visibility = "hidden";

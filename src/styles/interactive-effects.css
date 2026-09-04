@@ -1,4 +1,4 @@
-/* Interactive visual effects preserved from the reference site, kept as explicit source CSS. */
+/* Interactive visual effects are kept as explicit source CSS. */
 
         @media (max-width: 480px) {
           .presence-widget { font-size: 0.75rem; flex-direction: column; align-items: flex-start; gap: 4px; }

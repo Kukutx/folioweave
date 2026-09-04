@@ -44,8 +44,8 @@ for (const publicPath of manifest.templateExtras ?? []) {
 }
 
 const summary = {
-  expectedReferenceAssets: manifest.count,
-  exactReferenceAssets: exact,
+  expectedAssets: manifest.count,
+  exactAssets: exact,
   templateExtras: (manifest.templateExtras ?? []).length,
   failures: failures.length,
 };

@@ -2,10 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { notchShelfImages } from "@/content/media";
+import { useViewportActivity } from "@/hooks/use-viewport-activity";
 
 export function NotchShelfCarousel() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const active = useViewportActivity(rootRef, "300px 0px");
   const [index, setIndex] = useState(0),
     [direction, setDirection] = useState(1),
     [hover, setHover] = useState(false);
@@ -20,10 +23,10 @@ export function NotchShelfCarousel() {
     );
   };
   useEffect(() => {
-    if (hover) return;
+    if (hover || !active) return;
     const id = setInterval(next, 3000);
     return () => clearInterval(id);
-  }, [hover, next]);
+  }, [active, hover, next]);
   useEffect(() => {
     notchShelfImages.forEach((src) => {
       const image = new Image();
@@ -32,6 +35,7 @@ export function NotchShelfCarousel() {
   }, []);
   return (
     <div
+      ref={rootRef}
       className="notchshelf-carousel"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

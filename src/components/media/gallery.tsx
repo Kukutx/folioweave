@@ -7,6 +7,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  type MotionValue,
 } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
@@ -15,7 +16,24 @@ import {
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+  type RefObject,
 } from "react";
+
+function ParallaxMotion({
+  target,
+  children,
+}: {
+  target: RefObject<HTMLDivElement | null>;
+  children: (y: MotionValue<string>) => ReactNode;
+}) {
+  const { scrollYProgress } = useScroll({
+    target,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  return children(y);
+}
 
 export function PhotoCard({
   src,
@@ -44,16 +62,6 @@ export function PhotoCard({
     sy = useSpring(my, { stiffness: 150, damping: 15 });
   const rotateX = useTransform(sy, [-0.5, 0.5], ["10deg", "-10deg"]),
     rotateY = useTransform(sx, [-0.5, 0.5], ["-10deg", "10deg"]);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(
-    scrollYProgress,
-    [0, 1],
-    disableParallax ? ["0%", "0%"] : ["-10%", "10%"],
-  );
-
   // Next.js may hydrate after an eager image is already complete, so onLoad
   // can be missed even though the image bytes are ready. Reconcile cached
   // images after mount while keeping the normal onLoad path for cold loads.
@@ -68,6 +76,40 @@ export function PhotoCard({
     event.preventDefault();
     onClick?.();
   };
+
+  const renderImage = (parallaxY: MotionValue<string> | number) => (
+    <motion.img
+      ref={imageRef}
+      src={src}
+      alt="Photography"
+      onLoad={() => setLoading(false)}
+      loading="lazy"
+      decoding="async"
+      fetchPriority="low"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: loading ? 0 : 1, scale: hover ? 1.1 : 1 }}
+      transition={{
+        opacity: { duration: 0.3 },
+        scale: { duration: 0.4, ease: "easeOut" },
+      }}
+      style={{
+        width: "100%",
+        height: isPolaroid ? "100%" : "120%",
+        objectFit: "cover",
+        pointerEvents: "none",
+        y: isPolaroid ? 0 : parallaxY,
+        position: isPolaroid ? "relative" : "absolute",
+        top: isPolaroid ? 0 : "-10%",
+        left: 0,
+        borderRadius: isPolaroid ? 0 : "inherit",
+        willChange: isPolaroid || parallaxY !== 0 ? "transform" : "auto",
+        transform: isPolaroid ? "translateZ(0)" : undefined,
+        backfaceVisibility: isPolaroid || parallaxY !== 0 ? "hidden" : "visible",
+        WebkitBackfaceVisibility:
+          isPolaroid || parallaxY !== 0 ? "hidden" : "visible",
+      }}
+    />
+  );
 
   return (
     <motion.div
@@ -147,36 +189,11 @@ export function PhotoCard({
               }}
             />
           )}
-          <motion.img
-            ref={imageRef}
-            src={src}
-            alt="Photography"
-            onLoad={() => setLoading(false)}
-            loading="lazy"
-            decoding="async"
-            fetchPriority="low"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: loading ? 0 : 1, scale: hover ? 1.1 : 1 }}
-            transition={{
-              opacity: { duration: 0.3 },
-              scale: { duration: 0.4, ease: "easeOut" },
-            }}
-            style={{
-              width: "100%",
-              height: isPolaroid ? "100%" : "120%",
-              objectFit: "cover",
-              pointerEvents: "none",
-              y: isPolaroid ? 0 : y,
-              position: isPolaroid ? "relative" : "absolute",
-              top: isPolaroid ? 0 : "-10%",
-              left: 0,
-              borderRadius: isPolaroid ? 0 : "inherit",
-              willChange: "transform",
-              transform: "translateZ(0)",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-            }}
-          />
+          {!isPolaroid && !disableParallax ? (
+            <ParallaxMotion target={ref}>{renderImage}</ParallaxMotion>
+          ) : (
+            renderImage(0)
+          )}
         </div>
       </motion.div>
     </motion.div>

@@ -23,9 +23,9 @@ for (const viewport of viewports) {
     let ok = false;
     for (let attempt = 1; attempt <= 3; attempt += 1) {
       console.log(`\n=== ${viewport} ${route} (attempt ${attempt}) ===`);
-      const result = spawnSync(process.execPath, ["qa/parity.mjs", viewport], {
+      const result = spawnSync(process.execPath, ["qa/visual-routes.mjs", viewport], {
         cwd: process.cwd(),
-        env: { ...process.env, PARITY_ROUTES: route },
+        env: { ...process.env, VISUAL_ROUTES: route },
         encoding: "utf8",
         stdio: "inherit",
       });
@@ -47,6 +47,6 @@ const summary = {
   failed: failures.length,
   failures,
 };
-console.log("\nREFERENCE ROUTE SUMMARY");
+console.log("\nVISUAL ROUTE SUMMARY");
 console.log(JSON.stringify(summary, null, 2));
 if (failures.length) process.exitCode = 1;

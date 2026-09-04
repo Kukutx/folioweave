@@ -2,7 +2,7 @@
   "name": "folioweave",
   "version": "1.0.0",
   "private": true,
-  "description": "FolioWeave — a pixel-faithful, reusable Next.js portfolio theme with deterministic regression QA.",
+  "description": "A polished, production-ready Next.js portfolio starter for designers, developers, and creative professionals.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -37,15 +37,15 @@
     "qa:media": "node qa/media-health.mjs",
     "qa:fonts": "node qa/font-fallback-test.mjs",
     "qa:bundle": "node qa/bundle-budget.mjs",
-    "qa:resume": "node qa/resume-parity.mjs",
-    "qa:static": "node qa/static-home-parity.mjs",
-    "qa:parity": "node --expose-gc qa/parity.mjs",
-    "qa:reference-routes": "node qa/reference-routes.mjs",
+    "qa:resume": "node qa/resume-state.mjs",
+    "qa:static": "node qa/visual-home.mjs",
     "qa:core": "npm run qa:assets && npm run qa:functionality && npm run qa:quality && npm run qa:media",
     "qa:all": "node qa/run-with-server.mjs qa:assets qa:functionality qa:quality qa:media qa:fonts qa:resume qa:bundle",
-    "qa:reference": "node qa/run-with-server.mjs qa:static qa:reference-routes",
-    "qa:maintainer": "npm run qa:all && npm run qa:reference",
-    "audit:prod": "npm audit --omit=dev"
+    "qa:maintainer": "npm run qa:all && npm run qa:visual-compare",
+    "audit:prod": "npm audit --omit=dev",
+    "qa:visual-routes": "node --expose-gc qa/visual-routes.mjs",
+    "qa:visual-matrix": "node qa/visual-matrix.mjs",
+    "qa:visual-compare": "node qa/run-with-server.mjs qa:static qa:visual-matrix"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.1",

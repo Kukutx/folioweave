@@ -10,7 +10,7 @@ import {
 } from "./visual-baseline.mjs";
 
 const chrome = resolveChromePath();
-const original = process.env.ORIGINAL_URL || "http://127.0.0.1:4173";
+const baseline = process.env.BASELINE_URL || "http://127.0.0.1:4173";
 const next = process.env.NEXT_URL || "http://127.0.0.1:4181";
 const viewports = [
   { name: "desktop", width: 1440, height: 1000, fullPage: true },
@@ -147,17 +147,17 @@ for (const viewport of viewports) {
     locale: "en-IN",
   };
 
-  const originalPath = `qa/static-home/${viewport.name}-original.png`;
+  const baselinePath = `qa/static-home/${viewport.name}-baseline.png`;
   const nextPath = `qa/static-home/${viewport.name}-next.png`;
-  const originalContext = await browser.newContext(contextOptions);
-  await prepareVisualContext(originalContext);
-  const originalDimensions = await captureHome(
-    originalContext,
-    original,
-    originalPath,
+  const baselineContext = await browser.newContext(contextOptions);
+  await prepareVisualContext(baselineContext);
+  const baselineDimensions = await captureHome(
+    baselineContext,
+    baseline,
+    baselinePath,
     viewport,
   );
-  await originalContext.close();
+  await baselineContext.close();
 
   const nextContext = await browser.newContext(contextOptions);
   await prepareVisualContext(nextContext);
@@ -169,8 +169,8 @@ for (const viewport of viewports) {
   );
   await nextContext.close();
 
-  const difference = await diff(originalPath, nextPath);
-  const dimensions = [originalDimensions, nextDimensions];
+  const difference = await diff(baselinePath, nextPath);
+  const dimensions = [baselineDimensions, nextDimensions];
 
   const item = {
     viewport: viewport.name,

@@ -15,15 +15,15 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
-  ReferenceBabyIcon,
-  ReferenceCalendarIcon,
-  ReferenceClockIcon,
-  ReferenceCpuIcon,
-  ReferenceLayersIcon,
-  ReferencePaletteIcon,
-  ReferenceSparklesIcon,
-  ReferenceZapIcon,
-} from "./reference-icons";
+  PortfolioBabyIcon,
+  PortfolioCalendarIcon,
+  PortfolioClockIcon,
+  PortfolioCpuIcon,
+  PortfolioLayersIcon,
+  PortfolioPaletteIcon,
+  PortfolioSparklesIcon,
+  PortfolioZapIcon,
+} from "./portfolio-icons";
 import { siteCopyright } from "@/config/site";
 
 type Perspective = "standard" | "designer" | "eli5";
@@ -56,7 +56,7 @@ function StandardContent() {
   return (
     <>
       <h2>
-        <ReferenceCpuIcon className="content-icon" /> My Tech Stack
+        <PortfolioCpuIcon className="content-icon" /> My Tech Stack
       </h2>
       <p>
         I chose tools that allowed for the highest level of performance and the
@@ -125,7 +125,7 @@ function StandardContent() {
         models into a shared source file that both targets must use.
       </p>
       <h2>
-        <ReferenceZapIcon className="content-icon" /> The Technical Heart: Locker, Megaphone,
+        <PortfolioZapIcon className="content-icon" /> The Technical Heart: Locker, Megaphone,
         and Immortal Sync
       </h2>
       <p>
@@ -296,7 +296,7 @@ private func startClipboardMonitoring() {
         is closed.
       </p>
       <h2>
-        <ReferenceSparklesIcon className="content-icon" /> The Right Moves I Made
+        <PortfolioSparklesIcon className="content-icon" /> The Right Moves I Made
       </h2>
       <h3>Haptics as a Language</h3>
       <p>
@@ -320,7 +320,7 @@ private func startClipboardMonitoring() {
         app, including folder selection and pinned items.
       </p>
       <h2>
-        <ReferenceLayersIcon className="content-icon" /> The Evolution: Key Changes
+        <PortfolioLayersIcon className="content-icon" /> The Evolution: Key Changes
       </h2>
       <ul>
         <li>
@@ -594,7 +594,7 @@ function DesignerContent() {
         </div>
       </div>
       <h3>
-        <ReferencePaletteIcon size={20} className="content-icon" /> The &quot;iOS 26&quot;
+        <PortfolioPaletteIcon size={20} className="content-icon" /> The &quot;iOS 26&quot;
         Aesthetic
       </h3>
       <p>I leaned heavily into the future of iOS design:</p>
@@ -616,7 +616,7 @@ function DesignerContent() {
         </li>
       </ul>
       <h3>
-        <ReferenceZapIcon size={20} className="content-icon" /> Haptics as Feedback
+        <PortfolioZapIcon size={20} className="content-icon" /> Haptics as Feedback
       </h3>
       <p>I designed a &quot;Haptic Language&quot; for the app.</p>
       <div
@@ -697,10 +697,10 @@ export function CliptBlogPage() {
         <header className="blog-post-header">
           <div className="blog-post-meta">
             <span className="blog-date">
-              <ReferenceCalendarIcon size={14} /> Jan 26, 2026
+              <PortfolioCalendarIcon size={14} /> Jan 26, 2026
             </span>
             <span className="blog-read-time">
-              <ReferenceClockIcon size={14} /> 6 min read
+              <PortfolioClockIcon size={14} /> 6 min read
             </span>
           </div>
           <h1 className="blog-post-title">
@@ -740,8 +740,8 @@ export function CliptBlogPage() {
                     className={`perspective-tag ${perspective === item.id ? "active" : ""}`}
                     onClick={() => setPerspective(item.id)}
                   >
-                    {item.id === "designer" && <ReferencePaletteIcon size={16} />}{" "}
-                    {item.id === "eli5" && <ReferenceBabyIcon size={16} />} {item.label}
+                    {item.id === "designer" && <PortfolioPaletteIcon size={16} />}{" "}
+                    {item.id === "eli5" && <PortfolioBabyIcon size={16} />} {item.label}
                   </button>
                 ),
               )}

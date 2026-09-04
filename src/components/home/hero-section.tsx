@@ -30,7 +30,7 @@ export function Hero() {
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
-    // Match the original client-rendered preload timing without SSR head preloads.
+    // Warm secondary portraits after hydration without adding SSR head preloads.
     const loaders = portraitImages.map((src, index) => {
       const image = new Image();
       const markLoaded = () =>

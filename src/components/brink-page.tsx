@@ -178,9 +178,9 @@ function Phone({ screenshots }: { screenshots: string[] }) {
 
 export function BrinkPage() {
   const mobile = useMediaQuery("(max-width: 768px)");
-  // Keep the landing-page visuals identical to the deployed site. The original
-  // production CSP prevents external RSS artwork from loading, so the UI falls
-  // back to the text tiles. /api/podcasts remains available independently.
+  // Keep the landing-page visuals deterministic. External RSS artwork may be
+  // unavailable under restrictive production CSP rules, so the UI uses the
+  // text tiles. /api/podcasts remains available independently.
   const podcasts = fallbackPodcasts;
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const raf = useRef(0);

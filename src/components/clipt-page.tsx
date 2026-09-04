@@ -26,8 +26,8 @@ const container = {
 
 // The hero already owns opacity through the scroll MotionValue. Keeping opacity
 // in its variants too makes Framer Motion 13 resolve competing animation
-// sources differently from the original bundle and can leave the entire hero
-// transparent. This variant only orchestrates the child stagger.
+// sources during hydration and can leave the entire hero transparent. This
+// variant only orchestrates the child stagger.
 const heroContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.1 } },

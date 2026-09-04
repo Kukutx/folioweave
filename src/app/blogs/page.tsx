@@ -1,7 +1,7 @@
 import { routeMetadata } from "@/config/seo";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { ReferenceCalendarIcon, ReferenceClockIcon } from "@/components/reference-icons";
+import { PortfolioCalendarIcon, PortfolioClockIcon } from "@/components/portfolio-icons";
 import "@/styles/blogs.css";
 import { siteCopyright } from "@/config/site";
 
@@ -38,11 +38,11 @@ export default function BlogsPage() {
               <div className="blog-card-content">
                 <div className="blog-meta">
                   <span className="blog-date">
-                    <ReferenceCalendarIcon size={14} /> Jan 26, 2026
+                    <PortfolioCalendarIcon size={14} /> Jan 26, 2026
                   </span>
                   <span className="blog-separator">•</span>
                   <span className="blog-read-time">
-                    <ReferenceClockIcon size={14} /> 6 min read
+                    <PortfolioClockIcon size={14} /> 6 min read
                   </span>
                 </div>
                 <h2 className="blog-card-title">

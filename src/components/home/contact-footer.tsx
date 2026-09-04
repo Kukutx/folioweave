@@ -2,17 +2,17 @@ import { type CSSProperties, type RefObject } from "react";
 import { homeContent } from "@/content/home";
 import { siteConfig } from "@/config/site";
 import {
-  ReferenceEnvelopeIcon,
-  ReferenceInstagramIcon,
-  ReferenceLinkedInIcon,
-  ReferenceTwitterIcon,
-} from "../reference-icons";
+  PortfolioEnvelopeIcon,
+  PortfolioInstagramIcon,
+  PortfolioLinkedInIcon,
+  PortfolioTwitterIcon,
+} from "../portfolio-icons";
 
 const iconMap = {
-  Twitter: ReferenceTwitterIcon,
-  LinkedIn: ReferenceLinkedInIcon,
-  Instagram: ReferenceInstagramIcon,
-  Email: ReferenceEnvelopeIcon,
+  Twitter: PortfolioTwitterIcon,
+  LinkedIn: PortfolioLinkedInIcon,
+  Instagram: PortfolioInstagramIcon,
+  Email: PortfolioEnvelopeIcon,
 } as const;
 export function ContactFooter({
   sectionRef,

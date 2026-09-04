@@ -1,20 +1,30 @@
 # FolioWeave
 
-A reusable, high-fidelity **Next.js 16 portfolio theme** for designers, developers and creative professionals.
+A polished, production-ready **Next.js 16 portfolio starter** for designers, developers, and creative professionals.
 
-The repository ships with a complete demo portfolio, photography gallery, case studies, privacy pages, animated resume printer, camera interaction, weather/podcast integrations, SEO/JSON-LD, error states and deterministic browser QA.
+FolioWeave combines editorial storytelling, case studies, photography, expressive motion, and practical production tooling in a project that is easy to customize and extend.
 
-It does **not** use an iframe, redirect, reverse proxy, screenshot replacement or legacy Vite runtime.
+## Highlights
+
+- Responsive portfolio layout for desktop, tablet, and mobile
+- Motion-rich hero, work, photography, and contact sections
+- Interactive resume printer, camera, gallery/lightbox, and carousel components
+- Typed site, product, SEO, integration, and content configuration
+- App Router pages with metadata, JSON-LD, sitemap, robots, manifest, and custom error states
+- Weather and podcast Route Handlers with bounded external requests and caching
+- Accessibility-minded keyboard interactions and reduced-motion support
+- Automated browser, media, asset, quality, and bundle checks
 
 ## Stack
 
 - Next.js 16 App Router
-- React 19 + TypeScript
+- React 19
+- TypeScript
 - Framer Motion
 - Lenis
-- local/static demo assets
-- Route Handlers for weather and podcast data
-- deterministic browser, media, asset and pixel-regression QA
+- Lucide React
+- Local/static media assets
+- Next.js Route Handlers for external data
 
 ## Quick start
 
@@ -23,135 +33,81 @@ npm install
 npm run dev
 ```
 
-Production:
+For a production build:
 
 ```bash
 npm run check
-npm start -- -p 4181
+npm start
 ```
 
-Open `http://127.0.0.1:4181/`.
+## Customize
 
-## Make it yours
-
-Most customization happens here:
+Most portfolio content can be changed without touching framework internals:
 
 ```text
 src/config/site.ts       identity, domain, email, navigation, social, location, resume
-src/config/products.ts   products, routes, stores, support email, awards
+src/config/products.ts   products, routes, stores, support details, awards
 src/config/seo.ts        metadata and structured-data definitions
-src/config/podcasts.ts   RSS integrations
-src/config/cache.ts      cache + external-request timeout policy
-src/content/home.ts      greetings and footer quote
+src/config/podcasts.ts   podcast feed integrations
+src/config/cache.ts      cache and request-timeout policy
+src/content/home.ts      homepage content
 src/content/about.ts     About story and timeline
-src/content/work.ts      project copy and work images
-src/content/media.ts     portrait/gallery/photography media lists
+src/content/work.ts      project copy and work media
+src/content/media.ts     portrait, gallery, and photography media lists
 src/styles/theme.css     global design tokens
 ```
 
-The configuration and content layers are type-constrained so many malformed routes, URLs, emails, media paths, colors and content shapes fail during TypeScript validation instead of silently breaking at runtime.
+See [`docs/TEMPLATE.md`](docs/TEMPLATE.md) for the full customization guide.
 
-See [`docs/TEMPLATE.md`](docs/TEMPLATE.md) for the full customization workflow.
-
-## Architecture
+## Project structure
 
 ```text
-src/app/                  App Router routes, APIs, metadata, robots/sitemap/manifest
-src/config/               stable site/product/integration/cache configuration
-src/content/              user-editable portfolio content and media lists
-src/components/home/      Hero, Work, Photography, navigation/chrome/footer
-src/components/media/     resume printer, camera, carousel, gallery/lightbox
-src/components/           shared privacy, route, motion and reference primitives
-src/hooks/                Lenis, shared media-query store, managed timers
+src/app/                  routes, APIs, metadata, sitemap, robots, manifest
+src/config/               site, product, integration, SEO, and cache configuration
+src/content/              editable portfolio content and media lists
+src/components/home/      homepage feature sections
+src/components/media/     gallery, carousel, camera, and resume interactions
+src/components/           shared page and motion primitives
+src/hooks/                scrolling, responsive state, and lifecycle hooks
 src/lib/                  framework-independent utilities
-src/styles/               theme, shared and route-specific styles
-public/                   demo/reference assets
-qa/                       repeatable functionality, quality and visual checks
+src/styles/               theme and route-specific styles
+public/                   bundled demo media and static assets
+qa/                       automated validation and browser checks
 ```
 
-The larger homepage modules are split by feature rather than by tiny helper function. This keeps the project reusable without turning it into an over-generalized component framework.
+## Validation
 
-## Verification
-
-Static/build checks:
+Run lightweight checks while developing:
 
 ```bash
 npm run lint
 npm run typecheck
-npm run check
-npm run audit:prod
 ```
 
-Run the self-contained production/browser suite:
+Before publishing:
 
 ```bash
+npm run check
+npm run audit:prod
 npm run qa:all
 ```
 
-`qa:all` automatically starts the current `.next` production build on a temporary localhost port, waits for readiness, runs the browser checks, and shuts the temporary server down. No manually running preview server is required. It covers:
+`qa:all` runs the production browser suite and covers core interactions, accessibility and quality rules, media health, font fallback behavior, the resume state machine, and bundle budgets.
 
-- protected assets;
-- real user interactions;
-- accessibility/security/SEO quality rules;
-- loaded-but-invisible media and stale skeletons;
-- font-fallback layout stability;
-- Resume printer state-machine timing and terminal states;
-- JS/CSS bundle budgets.
-
-Maintainers with the optional reference mirror running on port `4173` (or `ORIGINAL_URL`) can additionally run:
-
-```bash
-npm run qa:reference
-```
-
-`qa:reference` starts its own temporary Next production server too, so only the external reference mirror must already exist. That suite covers strict deterministic home and full-route visual parity against the optional reference mirror. Dynamic UI is behavior-tested separately and frozen only for screenshot comparison.
-
-Browser QA auto-detects Chrome, Chromium or Edge on Windows, macOS and Linux. Set `CHROME_PATH` only for a non-standard installation.
-
-## Quality guarantees
-
-The current QA guards against:
-
-- broken or loaded-but-invisible images;
-- stale loading skeletons;
-- accidental nested vertical scroll containers;
-- unlabeled or non-keyboard-accessible custom buttons;
-- unsafe `target="_blank"` links;
-- duplicate IDs and missing image alt attributes;
-- browser console/page errors and same-origin 4xx/5xx responses;
-- iframe/legacy-runtime regressions;
-- missing canonical/description/manifest metadata;
-- security-header regressions;
-- custom 404/noindex regressions;
-- font-fallback layout shifts;
-- bundle-size regressions.
+Browser QA auto-detects Chrome, Chromium, or Edge. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
 
 ## Demo assets
 
-The demo/reference assets are intentionally preserved so the repository works as a complete example immediately after cloning. `npm run qa:assets` protects **103 reference assets** with SHA-256 hashes.
+The repository includes demo photography, resumes, product artwork, fonts, and other media so the starter works immediately after cloning.
 
-The MIT license covers the software source and documentation. Demo photography, resumes, product/brand artwork, trademarks and other reference media in `public/` are **not automatically licensed for reuse by the MIT software license**. Replace them with assets you own or are licensed to use before publishing your own portfolio.
+The MIT license covers the software source and documentation. Demo media, brand artwork, trademarks, and third-party assets under `public/` are **not automatically licensed for reuse** by the software license. Replace them with assets you own or are licensed to use before publishing your own portfolio.
 
 See [`docs/ASSETS.md`](docs/ASSETS.md).
 
-## Scroll model
-
-The document is the only vertical page scroller. On mobile, the About story gallery is intentionally horizontal-only. Quality QA fails if a nested vertical page scroller is introduced.
-
 ## Security and reliability
 
-- restrictive CSP and security headers;
-- camera permission scoped to self;
-- safe JSON-LD script serialization;
-- time-bounded external weather/RSS requests;
-- no runtime CDN script dependency;
-- managed timers and MediaStream cleanup;
-- custom 404, route error and global error recovery;
-- local asset hash manifest;
-- Dependabot + GitHub Actions validation.
+The project includes restrictive security headers, safe JSON-LD serialization, bounded external requests, managed timer and media-stream cleanup, custom error recovery, asset integrity checks, Dependabot, and GitHub Actions validation.
 
 ## License
 
-Source code and documentation: [MIT](LICENSE).
-
-See the demo-asset licensing note above and in [`docs/ASSETS.md`](docs/ASSETS.md).
+Source code and documentation are licensed under the [MIT License](LICENSE).

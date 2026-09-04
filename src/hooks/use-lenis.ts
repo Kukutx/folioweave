@@ -5,7 +5,13 @@ import { useEffect } from "react";
 
 export function useLenis() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const nativeTouchScroll = window.matchMedia(
+      "(hover: none) and (pointer: coarse)",
+    ).matches;
+    if (reducedMotion || nativeTouchScroll) return;
 
     const lenis = new Lenis({
       duration: 1.1,
@@ -20,10 +26,25 @@ export function useLenis() {
       lenis.raf(time);
       frame = window.requestAnimationFrame(raf);
     };
-    frame = window.requestAnimationFrame(raf);
+    const start = () => {
+      if (!frame) frame = window.requestAnimationFrame(raf);
+    };
+    const stop = () => {
+      if (!frame) return;
+      window.cancelAnimationFrame(frame);
+      frame = 0;
+    };
+    const onVisibilityChange = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    start();
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      stop();
       lenis.destroy();
       delete window.__lenis;
     };

@@ -174,7 +174,7 @@ const summary = {
   idlePaper,
   trace,
 };
-await fs.writeFile("qa/resume-parity-report.json", JSON.stringify(summary, null, 2));
+await fs.writeFile("qa/resume-state-report.json", JSON.stringify(summary, null, 2));
 console.log(JSON.stringify(summary, null, 2));
 if (!printDelaysOk || !closeDelaysOk || !orderOk || !readyPaperOk || !idlePaperOk) {
   process.exitCode = 1;

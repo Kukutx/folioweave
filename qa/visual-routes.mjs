@@ -11,7 +11,7 @@ import {
 } from "./visual-baseline.mjs";
 
 const chrome = resolveChromePath();
-const original = process.env.ORIGINAL_URL || "http://127.0.0.1:4173";
+const baseline = process.env.BASELINE_URL || "http://127.0.0.1:4173";
 const next = process.env.NEXT_URL || process.env.BASE_URL || "http://127.0.0.1:4181";
 const allRoutes = [
   "/",
@@ -28,7 +28,7 @@ const allRoutes = [
   "/notchshelf-privacypolicy",
 ];
 const requestedRoutes = new Set(
-  (process.env.PARITY_ROUTES || "")
+  (process.env.VISUAL_ROUTES || "")
     .split(",")
     .map((route) => route.trim())
     .filter(Boolean),
@@ -40,7 +40,7 @@ const allViewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
 ];
-const requested = process.argv[2] || process.env.PARITY_VIEWPORT;
+const requested = process.argv[2] || process.env.VISUAL_VIEWPORT;
 const viewports = requested
   ? allViewports.filter((viewport) => viewport.name === requested)
   : allViewports;
@@ -117,7 +117,7 @@ async function inspect(page, url, route, shot, fullPage = true) {
   await waitForRenderableAssets(page);
 
   // District's long case-study page uses lazy project imagery in the rebuilt app.
-  // Materialize those six images for visual parity so we compare rendered content,
+  // Materialize those six images for visual visual so we compare rendered content,
   // while functionality/media QA continues to verify the real on-demand behavior.
   if (route === "/district") {
     await page.evaluate(async () => {
@@ -201,12 +201,12 @@ async function inspect(page, url, route, shot, fullPage = true) {
   return { ...data, status: response?.status() || 0, issues };
 }
 
-async function pixelDiff(originalPath, nextPath, diffPath) {
-  const [originalBuffer, nextBuffer] = await Promise.all([
-    fs.readFile(originalPath),
+async function pixelDiff(baselinePath, nextPath, diffPath) {
+  const [baselineBuffer, nextBuffer] = await Promise.all([
+    fs.readFile(baselinePath),
     fs.readFile(nextPath),
   ]);
-  const a = PNG.sync.read(originalBuffer);
+  const a = PNG.sync.read(baselineBuffer);
   const b = PNG.sync.read(nextBuffer);
   if (a.width !== b.width || a.height !== b.height) {
     return {
@@ -254,12 +254,12 @@ for (const viewport of viewports) {
       deviceScaleFactor: 1,
       reducedMotion: "reduce",
     };
-    const originalContext = await browser.newContext(contextOptions);
-    await prepareVisualContext(originalContext);
-    const originalPage = await originalContext.newPage();
-    const originalPath = path.resolve(
+    const baselineContext = await browser.newContext(contextOptions);
+    await prepareVisualContext(baselineContext);
+    const baselinePage = await baselineContext.newPage();
+    const baselinePath = path.resolve(
       "qa/screens",
-      `${viewport.name}-${safe}-original.png`,
+      `${viewport.name}-${safe}-baseline.png`,
     );
     const nextPath = path.resolve(
       "qa/screens",
@@ -269,22 +269,22 @@ for (const viewport of viewports) {
       "qa/screens",
       `${viewport.name}-${safe}-diff.png`,
     );
-    // qa:static already owns full-page homepage pixel parity on desktop/tablet/mobile.
-    // Avoid duplicating the 14k–22k px home capture here; parity still checks the
+    // qa:static already owns full-page homepage pixel visual on desktop/tablet/mobile.
+    // Avoid duplicating the 14k–22k px home capture here; visual still checks the
     // homepage viewport plus full document geometry/semantics.
     const fullPage = viewport.name === "desktop" && route !== "/";
 
     // Visual state is deterministically frozen, so capture sequentially to keep
     // long-page screenshots memory-safe on CI and low-pagefile machines.
     const a = await inspect(
-      originalPage,
-      original + route,
+      baselinePage,
+      baseline + route,
       route,
-      originalPath,
+      baselinePath,
       fullPage,
     );
-    await originalPage.close();
-    await originalContext.close();
+    await baselinePage.close();
+    await baselineContext.close();
     const nextContext = await browser.newContext(contextOptions);
     await prepareVisualContext(nextContext);
     const nextPage = await nextContext.newPage();
@@ -297,7 +297,7 @@ for (const viewport of viewports) {
     );
     await nextPage.close();
     await nextContext.close();
-    const diff = await pixelDiff(originalPath, nextPath, diffPath);
+    const diff = await pixelDiff(baselinePath, nextPath, diffPath);
     const item = {
       viewport: viewport.name,
       route,
@@ -336,7 +336,7 @@ for (const viewport of viewports) {
     global.gc?.();
   }
 }
-await fs.writeFile("qa/parity-report.json", JSON.stringify(report, null, 2));
+await fs.writeFile("qa/visual-report.json", JSON.stringify(report, null, 2));
 
 const summary = {
   checks: report.length,
@@ -356,7 +356,7 @@ const summary = {
 console.log("\nSUMMARY");
 console.log(JSON.stringify(summary, null, 2));
 
-const parityOk =
+const visualOk =
   summary.statusOk === summary.checks &&
   summary.titleEqual === summary.checks &&
   summary.textEqual === summary.checks &&
@@ -365,4 +365,4 @@ const parityOk =
   summary.sameDimensions === summary.checks &&
   summary.pixelExact === summary.checks;
 
-if (!parityOk) process.exitCode = 1;
+if (!visualOk) process.exitCode = 1;

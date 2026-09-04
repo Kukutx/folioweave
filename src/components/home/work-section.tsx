@@ -71,7 +71,7 @@ function ExternalLink({
   );
 }
 
-function OriginalBookOpenIcon({ size = 16 }: { size?: number }) {
+function BookOpenGlyph({ size = 16 }: { size?: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -458,7 +458,7 @@ export function WorkSection() {
                             "transparent";
                         }}
                       >
-                        Read the Story <OriginalBookOpenIcon size={16} />
+                        Read the Story <BookOpenGlyph size={16} />
                       </Link>
                     </div>
                   </div>

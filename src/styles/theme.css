@@ -7,7 +7,7 @@
   --color-text: #111;
   --color-text-secondary: #666;
 
-  /* Shared page/card/editor tokens inherited from the original design system. */
+  /* Shared page, card, and editor tokens used across the design system. */
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f7;
   --bg-tertiary: #fafafa;

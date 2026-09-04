@@ -1,6 +1,6 @@
 # Contributing to FolioWeave
 
-Thanks for helping improve the theme.
+Thanks for helping improve FolioWeave.
 
 ## Development
 
@@ -18,39 +18,38 @@ npm run check
 npm run qa:assets
 ```
 
-For browser QA, start the production build on port 4181:
+For the complete browser suite:
 
 ```bash
-npm start -- -p 4181
 npm run qa:all
 ```
 
-`qa:all` is self-contained and does not require the private/local reference mirror.
-
-Maintainers who also have the reference mirror on port 4173 can run:
+Maintainers can run the optional visual comparison suite when a baseline deployment is available:
 
 ```bash
-npm run qa:reference
+npm run qa:visual-compare
 ```
+
+Set `BASELINE_URL` when the baseline is not running at the default local address.
 
 ## Design constraints
 
-- Do not add iframe, reverse-proxy, screenshot or legacy-runtime fallbacks.
 - Preserve the single vertical document scroller.
-- Keep user-editable identity/content in `src/config/` and `src/content/` rather than scattering constants through components.
+- Keep user-editable identity and content in `src/config/` and `src/content/`.
 - Prefer focused feature modules over universal abstractions.
-- Keep dynamic behavior tests separate from deterministic visual parity.
-- Do not remove protected demo/reference assets without intentionally updating `qa/assets-manifest.json` and documenting why.
+- Keep interaction tests separate from deterministic visual checks.
+- Preserve accessibility, reduced-motion behavior, and keyboard interactions.
+- Update `qa/assets-manifest.json` deliberately when protected demo assets change.
 
 ## Browser QA
 
-QA auto-detects Chrome, Chromium or Edge on Windows, macOS and Linux. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
+QA auto-detects Chrome, Chromium, or Edge on Windows, macOS, and Linux. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
 
 ## Pull requests
 
 Keep changes focused and explain:
 
 1. what problem is being solved;
-2. whether DOM/visual behavior changes;
-3. which QA commands were run;
-4. any intentional parity or asset-manifest changes.
+2. whether behavior or visuals change;
+3. which validation commands were run;
+4. any intentional asset-manifest or visual-baseline changes.

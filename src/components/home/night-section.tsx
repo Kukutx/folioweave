@@ -7,7 +7,7 @@ import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 import { useMobileViewport } from "@/hooks/use-media-query";
 
 const NIGHT_STAR_LAYOUT = (() => {
-  // Seeded pseudo-random layout keeps the original organic star field while
+  // Seeded pseudo-random layout keeps an organic star field while
   // producing identical SSR and hydration output in Next.js.
   let seed = 123456789;
   const random = () => {
@@ -176,9 +176,6 @@ export function NightAndSimple({
             lineHeight: 0,
             position: "relative",
             overflow: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            backfaceVisibility: "hidden",
-            transform: "translateZ(0)",
             opacity: 1,
           }}
         >
@@ -189,6 +186,7 @@ export function NightAndSimple({
               display: "block",
               overflow: "hidden",
               y: mobile ? 0 : y,
+              willChange: mobile ? "auto" : "transform",
             }}
           >
             <img
@@ -203,10 +201,6 @@ export function NightAndSimple({
                 width: "100%",
                 height: "auto",
                 display: "block",
-                willChange: mobile ? "auto" : "transform",
-                transform: "translateZ(0)",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
                 imageRendering: "auto",
               }}
             />
