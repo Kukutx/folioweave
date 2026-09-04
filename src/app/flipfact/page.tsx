@@ -1,8 +1,10 @@
+import { requireDemoRoutes } from "@/portfolio/demo-routes";
 import { routeMetadata } from "@/config/seo";
 import "@/styles/flipfact.css";
 
 export const metadata = routeMetadata.flipfactPrivacy;
 export default function Page() {
+  requireDemoRoutes();
   return (
     <div className="flipfact-privacy-page">
       <div className="flipfact-privacy-container">

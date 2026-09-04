@@ -6,6 +6,13 @@ export type HexColor = `#${string}`;
 export type LocaleCode = `${string}-${string}`;
 export type TimeZoneId = `${string}/${string}`;
 export type TwitterHandle = `@${string}`;
+export type SocialIconName =
+  | "twitter"
+  | "linkedin"
+  | "instagram"
+  | "github"
+  | "email"
+  | "website";
 
 export type NavigationItem = {
   label: string;
@@ -16,6 +23,7 @@ export type NavigationItem = {
 
 export type SocialLink = {
   label: string;
+  icon: SocialIconName;
   href: AbsoluteHttpUrl | `mailto:${string}`;
   brand: HexColor;
 };
@@ -52,9 +60,18 @@ export type SiteConfig = {
     longitude: number;
   };
   resume: {
+    enabled: boolean;
     image: InternalPath;
     pdf: InternalPath;
     downloadName: `${string}.pdf`;
+  };
+  features: {
+    weather: boolean;
+    about: boolean;
+    work: boolean;
+    photography: boolean;
+    resume: boolean;
+    demoRoutes: boolean;
   };
   assets: {
     socialPreview: InternalPath;

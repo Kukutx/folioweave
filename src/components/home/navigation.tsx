@@ -14,6 +14,14 @@ import { siteConfig } from "@/config/site";
 import { scrollToElement } from "@/lib/scroll";
 import { ContactCycleButton, TimeWeatherWidget } from "./chrome";
 
+const navigation = siteConfig.navigation.filter((item) => {
+  if (!siteConfig.features.demoRoutes && item.href === "/blogs") return false;
+  if (item.sectionId === "about") return siteConfig.features.about;
+  if (item.sectionId === "work") return siteConfig.features.work;
+  if (item.sectionId === "photography") return siteConfig.features.photography;
+  return true;
+});
+
 function MenuGlyph({ size = 20 }: { size?: number }) {
   return (
     <svg
@@ -73,8 +81,10 @@ export function MainNav({
     return `#${channel}${channel}${channel}`;
   });
   useEffect(() => {
-    const sections = ["about", "work", "photography"]
-      .map((id) => {
+    const sections = navigation
+      .filter((item) => item.sectionId)
+      .map((item) => {
+        const id = item.sectionId as string;
         const element = document.getElementById(id);
         return element ? { id, element } : null;
       })
@@ -185,14 +195,16 @@ export function MainNav({
             }}
           >
             <Link href="/" className="logo">
-              OG
+              {siteConfig.identity.initials}
             </Link>
-            <div className="nav-widgets">
-              <TimeWeatherWidget />
-            </div>
+            {siteConfig.features.weather && (
+              <div className="nav-widgets">
+                <TimeWeatherWidget />
+              </div>
+            )}
           </div>
           <div className="nav-links">
-            {siteConfig.navigation.map((item) =>
+            {navigation.map((item) =>
               item.sectionId ? (
                 <a
                   key={item.href}
@@ -230,7 +242,7 @@ export function MainNav({
         onClick={() => setOpen(false)}
       >
         <div className="mobile-nav-menu" onClick={(e) => e.stopPropagation()}>
-          {siteConfig.navigation.map((item) =>
+          {navigation.map((item) =>
             item.sectionId ? (
               <a
                 key={item.href}

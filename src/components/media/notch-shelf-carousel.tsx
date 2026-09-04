@@ -6,7 +6,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { notchShelfImages } from "@/content/media";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
 
-export function NotchShelfCarousel() {
+export function NotchShelfCarousel({
+  images = notchShelfImages,
+}: {
+  images?: readonly string[];
+} = {}) {
+  const slides = images.length ? images : notchShelfImages;
   const rootRef = useRef<HTMLDivElement>(null);
   const active = useViewportActivity(rootRef, "300px 0px");
   const [index, setIndex] = useState(0),
@@ -14,25 +19,25 @@ export function NotchShelfCarousel() {
     [hover, setHover] = useState(false);
   const next = useCallback(() => {
     setDirection(1);
-    setIndex((v) => (v + 1) % notchShelfImages.length);
-  }, []);
+    setIndex((value) => (value + 1) % slides.length);
+  }, [slides.length]);
   const prev = () => {
     setDirection(-1);
-    setIndex(
-      (v) => (v - 1 + notchShelfImages.length) % notchShelfImages.length,
-    );
+    setIndex((value) => (value - 1 + slides.length) % slides.length);
   };
   useEffect(() => {
     if (hover || !active) return;
-    const id = setInterval(next, 3000);
-    return () => clearInterval(id);
+    const id = window.setInterval(next, 3000);
+    return () => window.clearInterval(id);
   }, [active, hover, next]);
   useEffect(() => {
-    notchShelfImages.forEach((src) => {
+    slides.forEach((src) => {
       const image = new Image();
       image.src = src;
     });
-  }, []);
+  }, [slides]);
+  const currentIndex = index % slides.length;
+
   return (
     <div
       ref={rootRef}
@@ -43,9 +48,9 @@ export function NotchShelfCarousel() {
       <div className="notchshelf-carousel-container">
         <AnimatePresence initial={false} custom={direction}>
           <motion.img
-            key={index}
-            src={notchShelfImages[index]}
-            alt={`NotchShelf Screenshot ${index + 1}`}
+            key={currentIndex}
+            src={slides[currentIndex]}
+            alt={`Carousel screenshot ${currentIndex + 1}`}
             custom={direction}
             initial={{ x: direction > 0 ? "100%" : "-100%" }}
             animate={{ x: 0 }}
@@ -74,15 +79,15 @@ export function NotchShelfCarousel() {
           <ChevronRight size={24} />
         </button>
         <div className="notchshelf-carousel-dots">
-          {notchShelfImages.map((_, i) => (
+          {slides.map((_, slideIndex) => (
             <button
-              key={i}
-              className={`notchshelf-carousel-dot ${i === index ? "active" : ""}`}
+              key={slideIndex}
+              className={`notchshelf-carousel-dot ${slideIndex === currentIndex ? "active" : ""}`}
               onClick={() => {
-                setDirection(i > index ? 1 : -1);
-                setIndex(i);
+                setDirection(slideIndex > currentIndex ? 1 : -1);
+                setIndex(slideIndex);
               }}
-              aria-label={`Go to slide ${i + 1}`}
+              aria-label={`Go to slide ${slideIndex + 1}`}
             />
           ))}
         </div>

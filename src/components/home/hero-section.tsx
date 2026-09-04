@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState, type CSSProperties } from "react";
+import { Fragment, useEffect, useState, type CSSProperties } from "react";
 import { AboutSection } from "../about-section";
 import { CharReveal } from "../motion-text";
 import { ResumePrinter, type ResumeState } from "../media-interactions";
@@ -9,8 +9,22 @@ import { homeContent } from "@/content/home";
 import { portraitImages } from "@/content/media";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import { mailto, siteConfig } from "@/config/site";
+import type { PortfolioRichTextSegment } from "@/portfolio/schema";
 
 const greetings = homeContent.greetings;
+
+function RichText({ segments }: { segments: readonly PortfolioRichTextSegment[] }) {
+  return segments.map((segment, index) =>
+    "text" in segment ? (
+      <Fragment key={index}>{segment.text}</Fragment>
+    ) : (
+      <span className="hero-brand-inline" key={`${segment.brand.name}-${index}`}>
+        <img src={segment.brand.icon} alt={segment.brand.name} />{" "}
+        {segment.brand.name}
+      </span>
+    ),
+  );
+}
 
 export function Hero() {
   const mobile = useMobileViewport(),
@@ -149,26 +163,10 @@ export function Hero() {
                   }}
                 >
                   <p className="hero-role-line">
-                    {`${siteConfig.identity.role} at `}
-                    <span className="hero-brand-inline">
-                      <img src="/assets/cred-icon-6de258e2.png" alt="CRED" />{" "}
-                      {siteConfig.identity.company}
-                    </span>
+                    <RichText segments={homeContent.hero.roleLine} />
                   </p>
                   <p className="hero-summary">
-                    {`Based in ${siteConfig.identity.country}, designing thoughtful digital experiences. Previously at `}
-                    <span className="hero-brand-inline">
-                      <img
-                        src="/assets/district-icon-fad26ad7.png"
-                        alt="District by Zomato"
-                      /> District by Zomato
-                    </span>
-                    , where I worked on how millions discover and book movies.
-                    On the side, I&apos;m building{" "}
-                    <span className="hero-brand-inline">
-                      <img src="/brink/logo.png" alt="Brink" /> Brink
-                    </span>
-                    , a podcast player.
+                    <RichText segments={homeContent.hero.summary} />
                   </p>
                 </motion.div>
                 <div id="profile-actions">
@@ -200,7 +198,9 @@ export function Hero() {
                         </motion.a>
                       )}
                     </AnimatePresence>
-                    <ResumePrinter state={resume} setState={setResume} />
+                    {siteConfig.resume.enabled && (
+                      <ResumePrinter state={resume} setState={setResume} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -336,7 +336,7 @@ export function Hero() {
             </div>
           </motion.div>
         </div>
-        <AboutSection />
+        {siteConfig.features.about && <AboutSection />}
       </div>
     </section>
   );
