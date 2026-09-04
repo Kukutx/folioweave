@@ -44,8 +44,3 @@ next-env.d.ts
 /qa/*-report.json
 /qa/screens/
 /qa/static-home/
-
-
-# local development tool metadata
-/AGENTS.md
-/CLAUDE.md
