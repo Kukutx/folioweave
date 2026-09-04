@@ -1,0 +1,732 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FolioWeave Portfolio Configuration",
+  "description": "The user-facing content and personalization configuration for FolioWeave.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "site",
+    "features",
+    "hero",
+    "about",
+    "projects",
+    "photography",
+    "footerBook",
+    "seo"
+  ],
+  "$defs": {
+    "localPath": {
+      "type": "string",
+      "pattern": "^/"
+    },
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{3,8}$"
+    },
+    "imageSize": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "richTextSegment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "brand"
+          ],
+          "properties": {
+            "brand": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "icon"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "icon": {
+                  "$ref": "#/$defs/localPath"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "projectImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "desktop",
+        "mobile",
+        "alt"
+      ],
+      "properties": {
+        "desktop": {
+          "$ref": "#/$defs/localPath"
+        },
+        "mobile": {
+          "$ref": "#/$defs/localPath"
+        },
+        "alt": {
+          "type": "string"
+        },
+        "desktopSize": {
+          "$ref": "#/$defs/imageSize"
+        },
+        "mobileSize": {
+          "$ref": "#/$defs/imageSize"
+        }
+      }
+    },
+    "projectAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "href"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "icon": {
+          "enum": [
+            "arrow",
+            "book"
+          ]
+        },
+        "tone": {
+          "enum": [
+            "default",
+            "accent"
+          ]
+        }
+      }
+    },
+    "projectBadge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "tone"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tone": {
+          "enum": [
+            "gold",
+            "blue"
+          ]
+        },
+        "href": {
+          "type": "string"
+        },
+        "previewImage": {
+          "$ref": "#/$defs/localPath"
+        },
+        "previewMaxWidth": {
+          "type": "number",
+          "minimum": 1
+        }
+      }
+    },
+    "projectStory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "image",
+        "imageAlt",
+        "body"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/$defs/localPath"
+        },
+        "imageAlt": {
+          "type": "string"
+        },
+        "imageSize": {
+          "$ref": "#/$defs/imageSize"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "enabled",
+        "layout",
+        "name",
+        "date",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "layout": {
+          "enum": [
+            "standard",
+            "featured",
+            "story",
+            "carousel"
+          ]
+        },
+        "featuredOnMobile": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "icon": {
+          "$ref": "#/$defs/localPath"
+        },
+        "image": {
+          "$ref": "#/$defs/projectImage"
+        },
+        "carouselImages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localPath"
+          }
+        },
+        "badge": {
+          "$ref": "#/$defs/projectBadge"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/projectAction"
+          }
+        },
+        "story": {
+          "$ref": "#/$defs/projectStory"
+        }
+      }
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "origin",
+        "themeColor",
+        "copyrightYear",
+        "contact",
+        "twitterHandle",
+        "socialLinks",
+        "navigation",
+        "location",
+        "resume",
+        "assets"
+      ],
+      "properties": {
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "firstName",
+            "initials",
+            "role",
+            "company",
+            "country",
+            "locale"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "firstName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "initials": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1
+            },
+            "company": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string",
+              "minLength": 1
+            },
+            "locale": {
+              "type": "string",
+              "minLength": 2
+            }
+          }
+        },
+        "origin": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://"
+        },
+        "themeColor": {
+          "$ref": "#/$defs/hexColor"
+        },
+        "copyrightYear": {
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 2200
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "email",
+            "helloSubject",
+            "hiSubject"
+          ],
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "helloSubject": {
+              "type": "string"
+            },
+            "hiSubject": {
+              "type": "string"
+            }
+          }
+        },
+        "twitterHandle": {
+          "type": "string"
+        },
+        "socialLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "icon",
+              "href",
+              "brand"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "icon": {
+                "enum": [
+                  "twitter",
+                  "linkedin",
+                  "instagram",
+                  "github",
+                  "email",
+                  "website"
+                ]
+              },
+              "href": {
+                "type": "string",
+                "minLength": 1
+              },
+              "brand": {
+                "$ref": "#/$defs/hexColor"
+              }
+            }
+          }
+        },
+        "navigation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "href",
+              "sectionId"
+            ],
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "href": {
+                "type": "string"
+              },
+              "sectionId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "newTab": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "city",
+            "country",
+            "timeZone",
+            "timeZoneLabel",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "city": {
+              "type": "string",
+              "minLength": 1
+            },
+            "country": {
+              "type": "string",
+              "minLength": 1
+            },
+            "timeZone": {
+              "type": "string",
+              "minLength": 1
+            },
+            "timeZoneLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          }
+        },
+        "resume": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "image",
+            "pdf",
+            "downloadName"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "image": {
+              "$ref": "#/$defs/localPath"
+            },
+            "pdf": {
+              "$ref": "#/$defs/localPath"
+            },
+            "downloadName": {
+              "type": "string",
+              "pattern": "\\.pdf$"
+            }
+          }
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "socialPreview",
+            "appStoreBadge"
+          ],
+          "properties": {
+            "socialPreview": {
+              "$ref": "#/$defs/localPath"
+            },
+            "appStoreBadge": {
+              "$ref": "#/$defs/localPath"
+            }
+          }
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weather",
+        "about",
+        "work",
+        "photography",
+        "resume",
+        "demoRoutes"
+      ],
+      "properties": {
+        "weather": {
+          "type": "boolean"
+        },
+        "about": {
+          "type": "boolean"
+        },
+        "work": {
+          "type": "boolean"
+        },
+        "photography": {
+          "type": "boolean"
+        },
+        "resume": {
+          "type": "boolean"
+        },
+        "demoRoutes": {
+          "type": "boolean",
+          "description": "Keep the bundled example detail routes available."
+        }
+      }
+    },
+    "hero": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "greetings",
+        "portraits",
+        "roleLine",
+        "summary"
+      ],
+      "properties": {
+        "greetings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "portraits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/localPath"
+          }
+        },
+        "roleLine": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/richTextSegment"
+          }
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/richTextSegment"
+          }
+        }
+      }
+    },
+    "about": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "timeline",
+        "story",
+        "galleryImages"
+      ],
+      "properties": {
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "year",
+              "title",
+              "desc"
+            ],
+            "properties": {
+              "year": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "desc": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "story": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "tone",
+                "text"
+              ],
+              "properties": {
+                "tone": {
+                  "enum": [
+                    "muted",
+                    "strong",
+                    "highlight"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "galleryImages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localPath"
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/project"
+      }
+    },
+    "photography": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intro",
+        "images"
+      ],
+      "properties": {
+        "intro": {
+          "type": "string"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/localPath"
+          }
+        }
+      }
+    },
+    "footerBook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "quote",
+        "author"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "quote": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "keywords",
+        "knowsAbout",
+        "caseStudiesDescription"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "knowsAbout": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "award": {
+          "type": "string"
+        },
+        "caseStudiesDescription": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

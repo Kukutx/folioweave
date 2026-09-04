@@ -5,6 +5,7 @@ import { useState, type RefObject } from "react";
 import { CharReveal } from "../motion-text";
 import { GalleryLightbox, PhotoCard } from "../media-interactions";
 import { photographyImages } from "@/content/media";
+import { homeContent } from "@/content/home";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 
@@ -38,7 +39,7 @@ export function Photography({
             variants={sectionChildVariants}
             style={{ fontSize: "1.1rem", marginBottom: "2rem" }}
           >
-            And hey, I love photography.
+            {homeContent.photographyIntro}
           </motion.p>
           <motion.div
             variants={sectionChildVariants}

@@ -1,4 +1,5 @@
 import type { InternalPath } from "@/config/schema";
+import type { PortfolioRichTextSegment } from "@/portfolio/schema";
 
 export type HomeContent = {
   greetings: readonly string[];
@@ -7,6 +8,11 @@ export type HomeContent = {
     quote: string;
     author: string;
   };
+  hero: {
+    roleLine: readonly PortfolioRichTextSegment[];
+    summary: readonly PortfolioRichTextSegment[];
+  };
+  photographyIntro: string;
 };
 
 export type AboutTimelineItem = {

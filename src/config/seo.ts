@@ -1,71 +1,12 @@
 import type { Metadata, MetadataRoute } from "next";
 import { products } from "./products";
 import { siteConfig } from "./site";
+import { portfolioSeo } from "@/portfolio";
 
 const { identity, origin, socialLinks, assets } = siteConfig;
 
-const rootDescription =
-  `${identity.name} - ${identity.role} in ${identity.country}. ${identity.role} at ${identity.company}, creating simple, user-centric digital experiences across fintech and consumer products. Designer portfolio showcasing UX/UI design work and case studies.`;
-
-const rootKeywords = [
-  identity.name,
-  identity.firstName,
-  "best product designer in india",
-  "best designer",
-  "best designer in india",
-  "product designer india",
-  "UX designer india",
-  "UI designer india",
-  "best UX designer",
-  "best UI designer",
-  "top product designer",
-  "award winning designer",
-  "CRED",
-  "CRED designer",
-  "fintech designer",
-  "product design portfolio",
-  "UX design portfolio",
-  "UI design portfolio",
-  "digital product designer",
-  "user experience designer",
-  "interface designer",
-  "mobile app designer",
-  "web designer india",
-  "design portfolio",
-  "product designer portfolio",
-  "best design portfolio",
-  "designer portfolio india",
-  "creative designer",
-  "design expert",
-  "product design expert",
-  "UX expert",
-  "UI expert",
-  "design consultant",
-  "product design consultant",
-  "user centered design",
-  "human centered design",
-  "design thinking",
-  "design systems",
-  "design strategy",
-  "interaction design",
-  "visual design",
-  "information architecture",
-  "usability",
-  "accessibility design",
-  "responsive design",
-  "mobile design",
-  "web design",
-  "app design",
-  "digital design",
-  "design innovation",
-  "design leadership",
-  "design awards",
-  "Google Play Best App",
-  "product design case study",
-  "UX case study",
-  "design process",
-  "design methodology",
-] as const;
+const rootDescription = portfolioSeo.description;
+const rootKeywords = portfolioSeo.keywords;
 
 export const rootMetadata: Metadata = {
   metadataBase: new URL(origin),
@@ -87,8 +28,7 @@ export const rootMetadata: Metadata = {
     type: "website",
     url: origin,
     title: `${identity.name} | ${identity.role} in ${identity.country} | ${identity.company}`,
-    description:
-      `${identity.name} - ${identity.role} in ${identity.country}. ${identity.role} at ${identity.company}, creating simple, user-centric digital experiences across fintech and consumer products.`,
+    description: rootDescription,
     siteName: `${identity.name} Portfolio`,
     locale: "en_IN",
     images: [
@@ -105,8 +45,7 @@ export const rootMetadata: Metadata = {
     creator: siteConfig.social.twitterHandle,
     site: siteConfig.social.twitterHandle,
     title: `${identity.name} | ${identity.role} in ${identity.country} | ${identity.company}`,
-    description:
-      `${identity.name} - ${identity.role} in ${identity.country}. ${identity.role} at ${identity.company}, creating simple, user-centric digital experiences.`,
+    description: rootDescription,
     images: [assets.socialPreview],
   },
   robots: {
@@ -131,22 +70,14 @@ export const personJsonLd = {
   worksFor: { "@type": "Organization", name: identity.company },
   url: origin,
   sameAs: socialLinks
-    .filter(({ label }) => label === "Twitter" || label === "LinkedIn")
+    .filter(
+      ({ icon }) =>
+        icon === "twitter" || icon === "linkedin" || icon === "github",
+    )
     .map(({ href }) => href),
-  description:
-    `${identity.role} in ${identity.country}. ${identity.role} at ${identity.company}, creating simple, user-centric digital experiences across fintech and consumer products.`,
-  knowsAbout: [
-    "Product Design",
-    "User Experience Design",
-    "User Interface Design",
-    "Digital Product Design",
-    "Mobile App Design",
-    "Web Design",
-    "Design Systems",
-    "User Research",
-    "Design Strategy",
-  ],
-  award: products.district.award,
+  description: rootDescription,
+  knowsAbout: [...portfolioSeo.knowsAbout],
+  ...(portfolioSeo.award ? { award: portfolioSeo.award } : {}),
   nationality: { "@type": "Country", name: identity.country },
 };
 
@@ -206,8 +137,7 @@ export const routeMetadata = {
   }),
   caseStudies: createRouteMetadata({
     title: `Case Studies | ${identity.name} - ${identity.role} in ${identity.country}`,
-    description:
-      `Product design case studies by ${identity.name}, product designer in ${identity.country}. Explore UX/UI design projects including District by Zomato, facilitating over 75 million ticket sales. Award-winning design portfolio.`,
+    description: portfolioSeo.caseStudiesDescription,
     path: "/case-studies",
   }),
   clipt: createRouteMetadata({

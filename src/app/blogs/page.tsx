@@ -1,3 +1,4 @@
+import { requireDemoRoutes } from "@/portfolio/demo-routes";
 import { routeMetadata } from "@/config/seo";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -7,6 +8,7 @@ import { siteCopyright } from "@/config/site";
 
 export const metadata = routeMetadata.blogs;
 export default function BlogsPage() {
+  requireDemoRoutes();
   return (
     <div className="writing-container">
       <header className="writing-header">
