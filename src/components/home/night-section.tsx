@@ -195,6 +195,10 @@ export function NightAndSimple({
               className="mountain-image"
               src="/media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp"
               alt=""
+              width={1920}
+              height={765}
+              decoding="async"
+              fetchPriority="low"
               style={{
                 width: "100%",
                 height: "auto",

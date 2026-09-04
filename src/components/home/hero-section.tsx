@@ -30,24 +30,24 @@ export function Hero() {
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
-    // With SSR, a cached preload can finish before React attaches onLoad.
-    // Reconcile the hidden preload images after hydration as a fallback.
-    const reconcileCachedPortraits = () => {
-      const loaded: Record<number, boolean> = {};
-      document
-        .querySelectorAll<HTMLImageElement>("img[data-portrait-preload]")
-        .forEach((image, index) => {
-          if (image.complete && image.naturalWidth > 0) loaded[index] = true;
-        });
-      if (!Object.keys(loaded).length) return;
-      setLoadedPortraits((current) => {
-        const missing = Object.keys(loaded).some((key) => !current[Number(key)]);
-        return missing ? { ...current, ...loaded } : current;
+    // Match the original client-rendered preload timing without SSR head preloads.
+    const loaders = portraitImages.map((src, index) => {
+      const image = new Image();
+      const markLoaded = () =>
+        setLoadedPortraits((current) =>
+          current[index] ? current : { ...current, [index]: true },
+        );
+      image.onload = markLoaded;
+      image.src = src;
+      if (image.complete && image.naturalWidth > 0) markLoaded();
+      return image;
+    });
+    return () => {
+      loaders.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
       });
     };
-    reconcileCachedPortraits();
-    const frame = window.requestAnimationFrame(reconcileCachedPortraits);
-    return () => window.cancelAnimationFrame(frame);
   }, []);
   useEffect(() => {
     if (!mobile || !("DeviceOrientationEvent" in window)) return;
@@ -335,24 +335,6 @@ export function Hero() {
               </div>
             </div>
           </motion.div>
-        </div>
-        <div style={{ display: "none" }}>
-          {portraitImages.map((src, index) => (
-            <img
-              key={src}
-              data-portrait-preload
-              src={src}
-              alt="preload"
-              fetchPriority={index === 0 ? "high" : "low"}
-              loading="eager"
-              onLoad={() =>
-                setLoadedPortraits((current) => ({
-                  ...current,
-                  [index]: true,
-                }))
-              }
-            />
-          ))}
         </div>
         <AboutSection />
       </div>

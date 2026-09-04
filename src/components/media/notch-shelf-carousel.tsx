@@ -24,6 +24,12 @@ export function NotchShelfCarousel() {
     const id = setInterval(next, 3000);
     return () => clearInterval(id);
   }, [hover, next]);
+  useEffect(() => {
+    notchShelfImages.forEach((src) => {
+      const image = new Image();
+      image.src = src;
+    });
+  }, []);
   return (
     <div
       className="notchshelf-carousel"
@@ -45,6 +51,8 @@ export function NotchShelfCarousel() {
             }}
             className="notchshelf-carousel-image"
             draggable={false}
+            decoding="async"
+            fetchPriority="low"
           />
         </AnimatePresence>
         <button

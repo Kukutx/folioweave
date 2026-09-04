@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Award, MessageSquareText } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "../motion-text";
 import { NotchShelfCarousel } from "../media-interactions";
@@ -36,6 +36,8 @@ function WorkImage({
       alt={alt}
       width={dimensions.width}
       height={dimensions.height}
+      decoding="async"
+      fetchPriority="low"
     />
   );
 }
@@ -97,6 +99,15 @@ export function WorkSection() {
     x: number;
     y: number;
   } | null>(null);
+  useEffect(() => {
+    [
+      "/media/5c0589_43f2662bccd344f6b5d833dc0ec16ea0~mv2.webp",
+      "/media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
+    ].forEach((src) => {
+      const image = new Image();
+      image.src = src;
+    });
+  }, []);
   const common = (description: string) => (
     <p
       style={{
@@ -143,6 +154,8 @@ export function WorkSection() {
                       <img
                         src={workItems.district.icon}
                         alt=""
+                        decoding="async"
+                        fetchPriority="low"
                         style={{
                           width: 24,
                           height: 24,
@@ -263,6 +276,10 @@ export function WorkSection() {
                       <img
                         src="/media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp"
                         alt="Deepinder Goyal's reply"
+                        width={2000}
+                        height={547}
+                        decoding="async"
+                        fetchPriority="low"
                         style={{
                           width: "100%",
                           height: "auto",
@@ -319,6 +336,8 @@ export function WorkSection() {
                       <img
                         src={workItems.brink.icon}
                         alt=""
+                        decoding="async"
+                        fetchPriority="low"
                         style={{
                           width: 24,
                           height: 24,
@@ -376,6 +395,8 @@ export function WorkSection() {
                       <img
                         src={workItems.clipt.icon}
                         alt=""
+                        decoding="async"
+                        fetchPriority="low"
                         style={{
                           width: 24,
                           height: 24,
@@ -510,6 +531,8 @@ export function WorkSection() {
                       <img
                         src={workItems.notchShelf.icon}
                         alt=""
+                        decoding="async"
+                        fetchPriority="low"
                         style={{
                           width: 24,
                           height: 24,

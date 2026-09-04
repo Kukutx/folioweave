@@ -171,6 +171,10 @@ export function PhotoCard({
               top: isPolaroid ? 0 : "-10%",
               left: 0,
               borderRadius: isPolaroid ? 0 : "inherit",
+              willChange: "transform",
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
             }}
           />
         </div>
@@ -198,22 +202,13 @@ export function GalleryLightbox({
     [images.length],
   );
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-        return;
-      }
+      if (event.key === "Escape") onClose();
       if (event.key === "ArrowLeft") move(-1);
       if (event.key === "ArrowRight") move(1);
     };
-    document.addEventListener("keydown", key, { capture: true });
-    return () => {
-      document.removeEventListener("keydown", key, { capture: true });
-      document.body.style.overflow = previousOverflow;
-    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
   }, [move, onClose]);
   return (
     <motion.div
@@ -240,7 +235,6 @@ export function GalleryLightbox({
       <button
         onClick={onClose}
         aria-label="Close gallery"
-        autoFocus
         style={{
           position: "absolute",
           top: "2rem",

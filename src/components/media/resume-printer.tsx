@@ -247,6 +247,7 @@ export function ResumePrinter({
               draggable={false}
               loading="eager"
               decoding="sync"
+              fetchPriority="low"
             />
           </motion.div>
         </div>
