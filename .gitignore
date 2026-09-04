@@ -40,12 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# generated visual-regression screenshots
-/qa/screens/
-
-
-# generated QA reports / diagnostics
+# generated QA artifacts
 /qa/*-report.json
-/qa/residuals/
-/qa/static-home/
 /qa/screens/
+/qa/static-home/
+
+
+# local development tool metadata
+/AGENTS.md
+/CLAUDE.md
