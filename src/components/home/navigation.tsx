@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useTransform, type MotionValue } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { scrollToElement } from "@/lib/scroll";
 import { ContactCycleButton, TimeWeatherWidget } from "./chrome";
@@ -44,11 +50,21 @@ export function MainNav({
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
-  const [compact, setCompact] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  const activeRef = useRef<string | null>(null);
-  const compactRef = useRef(false);
-
+  const { scrollY } = useScroll();
+  const paddingTarget = useTransform(
+    scrollY,
+    [0, 100],
+    ["0.75rem 1.5rem", "0.5rem 1rem"],
+  );
+  const topTarget = useTransform(scrollY, [0, 100], ["1.5rem", "1rem"]);
+  const gapTarget = useTransform(scrollY, [0, 100], ["3rem", "1.5rem"]);
+  const navPadding = useSpring(paddingTarget, {
+    stiffness: 150,
+    damping: 30,
+    mass: 0.5,
+  });
+  const navTop = useSpring(topTarget, { stiffness: 150, damping: 30, mass: 0.5 });
+  const navGap = useSpring(gapTarget, { stiffness: 150, damping: 30, mass: 0.5 });
   const borderColor = useTransform(themeProgress, (value) => {
     const channel = Math.round(255 * value);
     const alpha = 0.08 + 0.07 * value;
@@ -64,10 +80,7 @@ export function MainNav({
       .padStart(2, "0");
     return `#${channel}${channel}${channel}`;
   });
-
   useEffect(() => {
-    if (dismissed) return;
-
     const sections = navigation
       .filter((item) => item.sectionId)
       .map((item) => {
@@ -76,29 +89,11 @@ export function MainNav({
         return element ? { id, element } : null;
       })
       .filter(Boolean) as { id: string; element: HTMLElement }[];
-    const sectionIds = new Map<Element, string>(
-      sections.map(({ id, element }) => [element, id]),
-    );
     const ratios = new Map<string, number>();
 
-    const updateCompact = () => {
-      const next = window.scrollY > 96;
-      if (next === compactRef.current) return;
-      compactRef.current = next;
-      setCompact(next);
-    };
-
-    const updateActive = (next: string | null) => {
-      if (next === activeRef.current) return;
-      activeRef.current = next;
-      setActive(next);
-    };
-
     const resolveActive = () => {
-      updateCompact();
-
       if (window.scrollY < window.innerHeight * 0.9) {
-        updateActive(null);
+        setActive(null);
         return;
       }
 
@@ -124,14 +119,16 @@ export function MainNav({
         }
       }
 
-      updateActive(bestRatio > 0.1 || atBottom ? bestId : null);
+      setActive(bestRatio > 0.1 || atBottom ? bestId : null);
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const id = sectionIds.get(entry.target);
-          if (id) ratios.set(id, entry.intersectionRatio);
+          const section = sections.find(
+            ({ element }) => element === entry.target,
+          );
+          if (section) ratios.set(section.id, entry.intersectionRatio);
         });
         resolveActive();
       },
@@ -152,7 +149,6 @@ export function MainNav({
         resolveActive();
       });
     };
-    resolveActive();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
@@ -160,7 +156,7 @@ export function MainNav({
       window.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [dismissed]);
+  }, []);
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -172,43 +168,6 @@ export function MainNav({
     const offset = nav ? nav.getBoundingClientRect().bottom + 24 : 98;
     scrollToElement(target, { offset: -offset, duration: 1.2 });
   };
-
-  const dismiss = () => {
-    setOpen(false);
-    setDismissed(true);
-  };
-
-  if (dismissed) {
-    return (
-      <motion.button
-        type="button"
-        aria-label="Show navigation"
-        title="Show navigation"
-        onClick={() => setDismissed(false)}
-        style={{
-          position: "fixed",
-          top: "1rem",
-          right: "1rem",
-          zIndex: 20000,
-          width: 40,
-          height: 40,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 999,
-          border: "1px solid",
-          borderColor,
-          backgroundColor,
-          color,
-          boxShadow: "0 8px 24px rgba(0,0,0,.12)",
-          cursor: "pointer",
-        }}
-      >
-        <MenuGlyph size={18} />
-      </motion.button>
-    );
-  }
-
   return (
     <>
       <motion.nav
@@ -217,24 +176,14 @@ export function MainNav({
           backgroundColor,
           borderColor,
           color,
-          padding: compact ? "0.5rem 1rem" : "0.75rem 1.5rem",
-          top: compact ? "1rem" : "1.5rem",
+          padding: navPadding,
+          top: navTop,
           left: "50%",
           x: "-50%",
           zIndex: 20000,
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          transition:
-            "top 180ms ease, padding 180ms ease, box-shadow 180ms ease",
         }}
       >
-        <div
-          className="nav-content"
-          style={{
-            gap: compact ? "1.5rem" : "3rem",
-            transition: "gap 180ms ease",
-          }}
-        >
+        <motion.div className="nav-content" style={{ gap: navGap }}>
           <div
             className="nav-logo-group"
             style={{
@@ -281,46 +230,12 @@ export function MainNav({
           <button
             className={`mobile-menu-toggle ${open ? "open" : ""}`}
             aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X size={20} /> : <MenuGlyph size={20} />}
           </button>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.45rem",
-              flexShrink: 0,
-            }}
-          >
-            <ContactCycleButton compact />
-            <button
-              type="button"
-              className="cycle-btn-mobile-hide"
-              aria-label="Hide navigation"
-              title="Hide navigation"
-              onClick={dismiss}
-              style={{
-                width: 30,
-                height: 30,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flex: "0 0 auto",
-                padding: 0,
-                border: "1px solid rgba(127,127,127,.16)",
-                borderRadius: 999,
-                background: "rgba(127,127,127,.08)",
-                color: "inherit",
-                opacity: 0.72,
-                cursor: "pointer",
-              }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        </div>
+          <ContactCycleButton compact />
+        </motion.div>
       </motion.nav>
       <div
         className={`mobile-nav-overlay ${open ? "open" : ""}`}
