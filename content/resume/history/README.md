@@ -1,9 +1,5 @@
-# CV Archive
+# 个人简历
 
-Versioned CV repository for Liu Zhong Li.
-
-- `2026/2026-09-04/current/` — current approved CV source and final PDF
-- `2026/2026-09-04/archive/` — superseded generated artifacts
-- `legacy/undated/originals/` — historical CV/project PDFs preserved as reference
-
-The approved master typography and visual style are locked unless an explicit design change is requested.
+- 当前年份的最新简历按更新日期存放，PDF、DOCX、MD 放在同一个日期文件夹中。
+- 已结束年份的历史文件统一移入 `archive`，并继续按原日期归档。
+- 只归档和转换格式，不改写简历内容。
