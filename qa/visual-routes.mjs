@@ -13,8 +13,11 @@ import {
 const chrome = resolveChromePath();
 const baseline = process.env.BASELINE_URL || "http://127.0.0.1:4173";
 const next = process.env.NEXT_URL || process.env.BASE_URL || "http://127.0.0.1:4181";
-const allRoutes = [
-  "/",
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const demoRoutes = [
   "/blogs",
   "/blogs/clipt",
   "/brink",
@@ -27,6 +30,7 @@ const allRoutes = [
   "/habee-privacypolicy",
   "/notchshelf-privacypolicy",
 ];
+const allRoutes = ["/", ...(demoRoutesEnabled ? demoRoutes : [])];
 const requestedRoutes = new Set(
   (process.env.VISUAL_ROUTES || "")
     .split(",")

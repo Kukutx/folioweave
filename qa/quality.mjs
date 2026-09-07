@@ -4,8 +4,11 @@ import fs from "node:fs/promises";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
-const routes = [
-  "/",
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const demoRoutes = [
   "/blogs",
   "/blogs/clipt",
   "/brink",
@@ -18,6 +21,7 @@ const routes = [
   "/habee-privacypolicy",
   "/notchshelf-privacypolicy",
 ];
+const routes = ["/", ...(demoRoutesEnabled ? demoRoutes : [])];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
@@ -221,12 +225,28 @@ const notFoundOk =
   notFound.status === 404 &&
   notFoundHtml.includes("This page wandered off.") &&
   notFoundHtml.includes("noindex");
+const disabledDemoRouteStatuses = demoRoutesEnabled
+  ? {}
+  : Object.fromEntries(
+      await Promise.all(
+        demoRoutes.map(async (route) => {
+          const response = await fetch(base + route, { redirect: "manual" });
+          return [route, response.status];
+        }),
+      ),
+    );
+const demoRoutesOk =
+  demoRoutesEnabled ||
+  Object.values(disabledDemoRouteStatuses).every((status) => status === 404);
 const endpointChecks = {
   robots: robots.status,
   sitemap: sitemap.status,
   manifest: manifest.status,
   notFound: notFound.status,
   notFoundOk,
+  demoRoutesEnabled,
+  disabledDemoRouteStatuses,
+  demoRoutesOk,
 };
 
 const failures = report.filter(
@@ -264,7 +284,8 @@ const endpointsOk =
   robots.status === 200 &&
   sitemap.status === 200 &&
   manifest.status === 200 &&
-  notFoundOk;
+  notFoundOk &&
+  demoRoutesOk;
 const summary = {
   checks: report.length,
   passed: report.length - failures.length,

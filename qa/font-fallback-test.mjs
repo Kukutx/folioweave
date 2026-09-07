@@ -3,6 +3,11 @@ import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const routes = ["/", ...(demoRoutesEnabled ? ["/district", "/clipt"] : [])];
 const browser = await chromium.launch({
   executablePath: resolveChromePath(),
   headless: true,
@@ -57,7 +62,7 @@ async function scan(route, blockFonts = false) {
 }
 
 const comparisons = [];
-for (const route of ["/", "/district", "/clipt"]) {
+for (const route of routes) {
   const normal = await scan(route, false);
   const blocked = await scan(route, true);
   const close = (a, b) =>

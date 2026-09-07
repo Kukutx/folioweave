@@ -1,7 +1,11 @@
 import { spawnSync } from "node:child_process";
+import fs from "node:fs/promises";
 
-const routes = [
-  "/",
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const demoRoutes = [
   "/blogs",
   "/blogs/clipt",
   "/brink",
@@ -14,6 +18,7 @@ const routes = [
   "/habee-privacypolicy",
   "/notchshelf-privacypolicy",
 ];
+const routes = ["/", ...(demoRoutesEnabled ? demoRoutes : [])];
 const viewports = ["desktop", "mobile"];
 const failures = [];
 let passed = 0;

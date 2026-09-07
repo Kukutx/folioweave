@@ -4,8 +4,11 @@ import fs from "node:fs/promises";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
-const routes = [
-  "/",
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const demoRoutes = [
   "/blogs",
   "/blogs/clipt",
   "/brink",
@@ -18,6 +21,7 @@ const routes = [
   "/habee-privacypolicy",
   "/notchshelf-privacypolicy",
 ];
+const routes = ["/", ...(demoRoutesEnabled ? demoRoutes : [])];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
