@@ -1,7 +1,12 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  type MotionValue,
+} from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/config/site";
 
 function Pointer({
@@ -12,25 +17,27 @@ function Pointer({
   isAnimated = false,
   showName = true,
 }: {
-  x: number;
-  y: number;
+  x: number | MotionValue<number>;
+  y: number | MotionValue<number>;
   color: string;
   name: string;
   isAnimated?: boolean;
   showName?: boolean;
 }) {
   return (
-    <div
+    <motion.div
       style={{
         position: "absolute",
-        left: x,
-        top: y,
+        left: 0,
+        top: 0,
+        x,
+        y,
         pointerEvents: "none",
         zIndex: 15000,
         transition: isAnimated
-          ? "all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)"
+          ? "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)"
           : "none",
-        willChange: "transform, left, top",
+        willChange: "transform",
       }}
     >
       <svg
@@ -64,7 +71,7 @@ function Pointer({
           {name}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 export function DesignerCursors() {
@@ -81,7 +88,8 @@ export function DesignerCursors() {
     elementLabel: string;
   };
 
-  const [user, setUser] = useState({ x: -100, y: -100 });
+  const userX = useMotionValue(-100);
+  const userY = useMotionValue(-100);
   const [designer, setDesigner] = useState<DesignerState>({
     x: 100,
     y: 260,
@@ -90,8 +98,10 @@ export function DesignerCursors() {
   });
   const [phase, setPhase] = useState(0);
   const [visible, setVisible] = useState(true);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
+    let visibilityFrame = 0;
     const positionFrame = window.requestAnimationFrame(() => {
       setDesigner((current) => ({
         ...current,
@@ -99,28 +109,39 @@ export function DesignerCursors() {
         y: window.innerHeight / 2,
       }));
     });
-    const mouse = (event: MouseEvent) =>
-      setUser({ x: event.clientX, y: event.clientY });
-    const updateVisibility = () => {
-      const hero = document.querySelector(".hero-grid");
-      if (!hero) {
-        setVisible(false);
-        return;
-      }
-      const rect = hero.getBoundingClientRect();
-      setVisible(rect.bottom > 0 && rect.top < window.innerHeight);
+    const move = (event: PointerEvent) => {
+      userX.set(event.clientX);
+      userY.set(event.clientY);
     };
-    window.addEventListener("mousemove", mouse);
+    const updateVisibility = () => {
+      if (visibilityFrame) return;
+      visibilityFrame = window.requestAnimationFrame(() => {
+        visibilityFrame = 0;
+        const hero = document.querySelector(".hero-grid");
+        const nextVisible = Boolean(
+          hero &&
+            (() => {
+              const rect = hero.getBoundingClientRect();
+              return rect.bottom > 0 && rect.top < window.innerHeight;
+            })(),
+        );
+        if (nextVisible === visibleRef.current) return;
+        visibleRef.current = nextVisible;
+        setVisible(nextVisible);
+      });
+    };
+    window.addEventListener("pointermove", move, { passive: true });
     window.addEventListener("scroll", updateVisibility, { passive: true });
     window.addEventListener("resize", updateVisibility);
     updateVisibility();
     return () => {
       window.cancelAnimationFrame(positionFrame);
-      window.removeEventListener("mousemove", mouse);
+      if (visibilityFrame) window.cancelAnimationFrame(visibilityFrame);
+      window.removeEventListener("pointermove", move);
       window.removeEventListener("scroll", updateVisibility);
       window.removeEventListener("resize", updateVisibility);
     };
-  }, []);
+  }, [userX, userY]);
 
   useEffect(() => {
     if (!visible) return;
@@ -288,7 +309,7 @@ export function DesignerCursors() {
           zIndex: 30000,
         }}
       >
-        <Pointer x={user.x} y={user.y} color="#E23744" name="You" />
+        <Pointer x={userX} y={userY} color="#E23744" name="You" />
       </div>
     </>
   );
