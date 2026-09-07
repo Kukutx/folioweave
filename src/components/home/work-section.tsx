@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Award, MessageSquareText } from "lucide-react";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "../motion-text";
 import { NotchShelfCarousel } from "../media-interactions";
@@ -139,10 +139,12 @@ function ProjectBadge({
   badge,
   mobile,
   onPreview,
+  onPreviewEnd,
 }: {
   badge: PortfolioProjectBadge;
   mobile: boolean;
   onPreview: (event: React.MouseEvent<HTMLElement>, badge: PortfolioProjectBadge) => void;
+  onPreviewEnd: () => void;
 }) {
   const className =
     badge.tone === "blue"
@@ -154,6 +156,7 @@ function ProjectBadge({
           onPreview(event, badge),
         onMouseMove: (event: React.MouseEvent<HTMLElement>) =>
           onPreview(event, badge),
+        onMouseLeave: onPreviewEnd,
       }
     : {};
 
@@ -337,11 +340,22 @@ function ProjectCard({
   mobile: boolean;
   setPreview: React.Dispatch<React.SetStateAction<Preview | null>>;
 }) {
+  const previewFrame = useRef<number | null>(null);
   const classes = ["work-item"];
   if (project.image) classes.push("responsive-work-image");
   if (project.featuredOnMobile) {
     classes.push("mobile-featured-work", `mobile-work-${project.id}`);
   }
+
+  useEffect(
+    () => () => {
+      if (previewFrame.current !== null) {
+        window.cancelAnimationFrame(previewFrame.current);
+      }
+    },
+    [],
+  );
+
   const common = (description: string) => (
     <p
       style={{
@@ -359,12 +373,26 @@ function ProjectCard({
   ) => {
     if (!badge.previewImage) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    setPreview({
+    const next = {
       src: badge.previewImage,
       x: event.clientX || rect.left + rect.width / 2,
       y: event.clientY || rect.top + rect.height / 2,
       maxWidth: badge.previewMaxWidth,
+    };
+    if (previewFrame.current !== null) {
+      window.cancelAnimationFrame(previewFrame.current);
+    }
+    previewFrame.current = window.requestAnimationFrame(() => {
+      previewFrame.current = null;
+      setPreview(next);
     });
+  };
+  const onPreviewEnd = () => {
+    if (previewFrame.current !== null) {
+      window.cancelAnimationFrame(previewFrame.current);
+      previewFrame.current = null;
+    }
+    setPreview(null);
   };
 
   return (
@@ -399,7 +427,12 @@ function ProjectCard({
             <div className="work-meta">{project.date}</div>
             {common(project.description)}
             {project.badge && (
-              <ProjectBadge badge={project.badge} mobile={mobile} onPreview={onPreview} />
+              <ProjectBadge
+                badge={project.badge}
+                mobile={mobile}
+                onPreview={onPreview}
+                onPreviewEnd={onPreviewEnd}
+              />
             )}
             {project.actions?.length ? (
               <div>
