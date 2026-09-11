@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { getImageProps } from "next/image";
 import {
   Fragment,
   memo,
@@ -17,9 +18,27 @@ import { homeContent } from "@/content/home";
 import { portraitImages } from "@/content/media";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import { mailto, siteConfig } from "@/config/site";
+import { mediaDimensions } from "@/portfolio/media";
 import type { PortfolioRichTextSegment } from "@/portfolio/schema";
 
 const greetings = homeContent.greetings;
+const portraitSizes = "(max-width: 767px) 260px, 340px";
+function portraitProps(index: number) {
+  const src = portraitImages[index];
+  const { props } = getImageProps({
+    src,
+    alt: siteConfig.identity.name,
+    ...mediaDimensions(src),
+    sizes: portraitSizes,
+  });
+  return {
+    src: props.src,
+    srcSet: props.srcSet,
+    sizes: props.sizes,
+    width: props.width,
+    height: props.height,
+  };
+}
 // Greeting/portrait ticks must not rerender the independent About experience.
 const StableAboutSection = memo(AboutSection);
 
@@ -75,8 +94,11 @@ export function Hero() {
         setLoadedPortraits((current) =>
           current[index] ? current : { ...current, [index]: true },
         );
+      const next = portraitProps(index);
       image.onload = markLoaded;
-      image.src = portraitImages[index];
+      if (next.srcSet) image.srcset = next.srcSet;
+      if (next.sizes) image.sizes = next.sizes;
+      image.src = next.src;
       if (image.complete && image.naturalWidth > 0) markLoaded();
     }, 500);
     return () => {
@@ -286,6 +308,7 @@ export function Hero() {
                     </AnimatePresence>
                     <AnimatePresence mode="wait" initial={false}>
                       <motion.img
+                        {...portraitProps(portrait)}
                         ref={(image) => {
                           if (image?.complete && image.naturalWidth > 0) {
                             setLoadedPortraits((current) =>
@@ -296,7 +319,6 @@ export function Hero() {
                           }
                         }}
                         key={portrait}
-                        src={portraitImages[portrait]}
                         alt={siteConfig.identity.name}
                         className="polaroid-photo-image"
                         draggable={false}
