@@ -232,6 +232,10 @@ export function GalleryLightbox({
     [direction, setDirection] = useState(0);
   const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
   const dimensions = mediaDimensions(images[index].src);
+  const lightboxSizes =
+    dimensions.width <= dimensions.height
+      ? "(max-width: 767px) 85vw, 35vw"
+      : "(max-width: 767px) 85vw, 70vw";
   const move = useCallback(
     (d: number) => {
       setDirection(d);
@@ -443,7 +447,7 @@ export function GalleryLightbox({
             src={images[index].src}
             alt={images[index].alt}
             {...dimensions}
-            sizes="85vw"
+            sizes={lightboxSizes}
             onLoad={() => setDecodedSrc(images[index].src)}
             custom={direction}
             initial={{
