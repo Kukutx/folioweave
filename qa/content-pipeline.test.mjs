@@ -32,6 +32,8 @@ test("published asset bytes are the validated snapshot, not deferred source read
   try {
     const config = structuredClone(personal);
     config.features.demoRoutes = false;
+    config.features.work = false;
+    config.projects = [];
     for (const asset of collectAssets(config)) {
       const relative = path.join(
         asset.startsWith("/portfolio/") ? "content/assets" : "public",
@@ -99,6 +101,8 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
     const config = structuredClone(personal);
     config.features.resume = false;
     config.features.demoRoutes = false;
+    config.features.work = false;
+    config.projects = [];
     const downloadPath = "/portfolio/downloads/test.pdf";
     for (const asset of collectAssets(config)) {
       const relative = path.join(
