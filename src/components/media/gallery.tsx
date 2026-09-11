@@ -14,6 +14,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type RefObject,
@@ -236,6 +237,20 @@ export function GalleryLightbox({
     dimensions.width <= dimensions.height
       ? "(max-width: 767px) 85vw, 35vw"
       : "(max-width: 767px) 85vw, 70vw";
+  const lightboxImageStyle: CSSProperties = {
+    width:
+      decodedSrc === images[index].src
+        ? "auto"
+        : `min(${dimensions.width}px, 100%, ${(85 * dimensions.width) / dimensions.height}dvh)`,
+    height: "auto",
+    aspectRatio: `auto ${dimensions.width} / ${dimensions.height}`,
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+    position: "absolute",
+    borderRadius: 4,
+    boxShadow: "0 20px 50px rgba(0,0,0,.5)",
+  };
   const move = useCallback(
     (d: number, animate = true) => {
       setDirection(animate ? d : 0);
@@ -443,65 +458,55 @@ export function GalleryLightbox({
           position: "relative",
         }}
       >
-        <AnimatePresence initial={false} custom={direction}>
-          <MotionImage
-            key={index}
+        {reducedMotion || direction === 0 ? (
+          <Image
+            key={`static-${index}`}
             src={images[index].src}
             alt={images[index].alt}
             {...dimensions}
             sizes={lightboxSizes}
+            draggable={false}
             onLoad={() => setDecodedSrc(images[index].src)}
-            custom={direction}
-            initial={{
-              x: reducedMotion || direction === 0 ? 0 : direction > 0 ? 96 : -96,
-              opacity: reducedMotion || direction === 0 ? 1 : 0,
-              scale: reducedMotion || direction === 0 ? 1 : 0.96,
-            }}
-            animate={{ x: 0, opacity: 1, scale: 1 }}
-            exit={{
-              x: reducedMotion || direction === 0 ? 0 : direction < 0 ? 96 : -96,
-              opacity: direction === 0 ? 1 : 0,
-              scale: reducedMotion || direction === 0 ? 1 : 0.96,
-            }}
-            transition={{
-              x:
-                reducedMotion || direction === 0
-                  ? { duration: 0 }
-                  : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
-              opacity: {
-                duration: reducedMotion || direction === 0 ? 0 : 0.14,
-              },
-              scale:
-                reducedMotion || direction === 0
-                  ? { duration: 0 }
-                  : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
-            }}
-            style={{
-              width:
-                decodedSrc === images[index].src
-                  ? "auto"
-                  : `min(${dimensions.width}px, 100%, ${(85 * dimensions.width) / dimensions.height}dvh)`,
-              height: "auto",
-              // Reserve the source ratio while loading; once decoded, retain
-              // the browser's exact ratio (optimized image rounding included).
-              aspectRatio: `auto ${dimensions.width} / ${dimensions.height}`,
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "contain",
-              position: "absolute",
-              borderRadius: 4,
-              boxShadow: "0 20px 50px rgba(0,0,0,.5)",
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={1}
-            onDragEnd={(_, info) => {
-              const score = Math.abs(info.offset.x) * info.velocity.x;
-              if (score < -10000) move(1);
-              else if (score > 10000) move(-1);
-            }}
+            style={lightboxImageStyle}
           />
-        </AnimatePresence>
+        ) : (
+          <AnimatePresence initial={false} custom={direction}>
+            <MotionImage
+              key={index}
+              src={images[index].src}
+              alt={images[index].alt}
+              {...dimensions}
+              sizes={lightboxSizes}
+              onLoad={() => setDecodedSrc(images[index].src)}
+              custom={direction}
+              initial={{
+                x: direction > 0 ? 96 : -96,
+                opacity: 0,
+                scale: 0.96,
+              }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{
+                x: direction < 0 ? 96 : -96,
+                opacity: 0,
+                scale: 0.96,
+              }}
+              transition={{
+                x: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+                opacity: { duration: 0.14 },
+                scale: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+              }}
+              style={lightboxImageStyle}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(_, info) => {
+                const score = Math.abs(info.offset.x) * info.velocity.x;
+                if (score < -10000) move(1);
+                else if (score > 10000) move(-1);
+              }}
+            />
+          </AnimatePresence>
+        )}
       </div>
     </motion.dialog>,
     document.body,
