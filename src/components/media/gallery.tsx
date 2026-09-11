@@ -451,21 +451,24 @@ export function GalleryLightbox({
             onLoad={() => setDecodedSrc(images[index].src)}
             custom={direction}
             initial={{
-              x: reducedMotion ? 0 : direction > 0 ? 1000 : -1000,
+              x: reducedMotion ? 0 : direction > 0 ? 96 : -96,
               opacity: reducedMotion ? 1 : 0,
-              scale: reducedMotion ? 1 : 0.8,
+              scale: reducedMotion ? 1 : 0.96,
             }}
             animate={{ x: 0, opacity: 1, scale: 1 }}
             exit={{
-              x: reducedMotion ? 0 : direction < 0 ? 1000 : -1000,
+              x: reducedMotion ? 0 : direction < 0 ? 96 : -96,
               opacity: 0,
-              scale: reducedMotion ? 1 : 0.8,
+              scale: reducedMotion ? 1 : 0.96,
             }}
             transition={{
               x: reducedMotion
                 ? { duration: 0 }
-                : { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: reducedMotion ? 0 : 0.2 },
+                : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+              opacity: { duration: reducedMotion ? 0 : 0.14 },
+              scale: reducedMotion
+                ? { duration: 0 }
+                : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
             }}
             style={{
               width:
