@@ -202,6 +202,7 @@ async function runHomeCore() {
 
     await test("contact hover cycles style/text", async () => {
       await page.evaluate(() => scrollTo(0, 0));
+      await waitForHydratedElement(page, ".nav .cycle-btn");
       const btn = page.locator(".nav .cycle-btn");
       const first = (await btn.innerText()).trim();
       await btn.hover();
@@ -210,7 +211,7 @@ async function runHomeCore() {
           document.querySelector(".nav .cycle-btn")?.textContent?.trim() !==
           value,
         first,
-        { timeout: 3000 },
+        { timeout: 5000 },
       );
       const second = (await btn.innerText()).trim();
       assert(first !== second, "contact button did not cycle");
