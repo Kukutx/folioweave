@@ -1,6 +1,6 @@
 "use client";
 
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -11,7 +11,6 @@ import {
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -217,12 +216,6 @@ export function PhotoCard({
   );
 }
 
-function lightboxImageSizes(dimensions: { width: number; height: number }) {
-  return dimensions.width <= dimensions.height
-    ? "(max-width: 767px) 85vw, 35vw"
-    : "(max-width: 767px) 85vw, 70vw";
-}
-
 export function GalleryLightbox({
   images,
   initialIndex,
@@ -239,7 +232,10 @@ export function GalleryLightbox({
     [direction, setDirection] = useState(0);
   const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
   const dimensions = mediaDimensions(images[index].src);
-  const lightboxSizes = lightboxImageSizes(dimensions);
+  const lightboxSizes =
+    dimensions.width <= dimensions.height
+      ? "(max-width: 767px) 85vw, 35vw"
+      : "(max-width: 767px) 85vw, 70vw";
   const move = useCallback(
     (d: number) => {
       setDirection(d);
@@ -247,29 +243,6 @@ export function GalleryLightbox({
     },
     [images.length],
   );
-  useEffect(() => {
-    if (images.length < 2) return;
-    const adjacent = new Set([
-      (index + 1) % images.length,
-      (index - 1 + images.length) % images.length,
-    ]);
-    for (const adjacentIndex of adjacent) {
-      const asset = images[adjacentIndex];
-      const assetDimensions = mediaDimensions(asset.src);
-      const { props } = getImageProps({
-        src: asset.src,
-        alt: asset.alt,
-        ...assetDimensions,
-        sizes: lightboxImageSizes(assetDimensions),
-      });
-      const image = new window.Image();
-      image.decoding = "async";
-      if (props.srcSet) image.srcset = props.srcSet;
-      if (props.sizes) image.sizes = props.sizes;
-      image.src = props.src;
-      image.decode().catch(() => {});
-    }
-  }, [images, index]);
   useLayoutEffect(() => {
     const previousFocus =
       document.activeElement instanceof HTMLElement
