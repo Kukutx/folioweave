@@ -58,6 +58,8 @@
     "qa:runtime-trace-mobile:direct": "node qa/runtime-budget.mjs --trace --motion=normal --viewport=mobile",
     "qa:runtime-diagnostic": "node qa/run-with-server.mjs qa:runtime-diagnostic:direct",
     "qa:runtime-diagnostic:direct": "node qa/runtime-budget.mjs --diagnostic",
+    "qa:runtime-diagnostic-mobile": "node qa/run-with-server.mjs qa:runtime-diagnostic-mobile:direct",
+    "qa:runtime-diagnostic-mobile:direct": "node qa/runtime-budget.mjs --diagnostic --viewport=mobile",
     "qa:runtime-diagnostic-normal": "node qa/run-with-server.mjs qa:runtime-diagnostic-normal:direct",
     "qa:runtime-diagnostic-normal:direct": "node qa/runtime-budget.mjs --diagnostic --motion=normal",
     "qa:runtime-diagnostic-native": "node qa/run-with-server.mjs qa:runtime-diagnostic-native:direct",
