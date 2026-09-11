@@ -11,10 +11,8 @@ if (!profile.features.photography) {
   process.exit(0);
 }
 const first = profile.photography.images[0].src;
-const largeImage = (url) =>
-  url.pathname === "/_next/image" &&
-  url.searchParams.get("url") === first &&
-  Number(url.searchParams.get("w")) >= 1080;
+const lightboxImage = (url) =>
+  url.pathname === "/_next/image" && url.searchParams.get("url") === first;
 let releaseImage;
 const imageGate = new Promise((resolve) => {
   releaseImage = resolve;
@@ -29,10 +27,6 @@ try {
     reducedMotion: "reduce",
   });
   await installServiceFixtures(context, profile);
-  await context.route(largeImage, async (route) => {
-    await imageGate;
-    await route.continue().catch(() => {});
-  });
   const page = await context.newPage();
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:4181", {
     waitUntil: "networkidle",
@@ -43,8 +37,20 @@ try {
   });
   await photo.scrollIntoViewIfNeeded();
   await photo.locator("img").evaluate((img) => img.decode());
+
+  // The lightbox may legitimately use the same optimized candidate as the
+  // thumbnail for portrait photos. Disable cache only after the thumbnail is
+  // ready so the newly mounted lightbox image still exercises its undecoded
+  // geometry without depending on a fixed Next/Image width.
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Network.enable");
+  await cdp.send("Network.setCacheDisabled", { cacheDisabled: true });
+  await context.route(lightboxImage, async (route) => {
+    await imageGate;
+    await route.continue().catch(() => {});
+  });
   const requested = page.waitForRequest((request) =>
-    largeImage(new URL(request.url())),
+    lightboxImage(new URL(request.url())),
   );
   await photo.click();
   await requested;
