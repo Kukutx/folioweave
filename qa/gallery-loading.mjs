@@ -63,10 +63,28 @@ try {
     { contentFilter: "none", backdropFilter: "blur(10px)" },
     "blur belongs to the independent backdrop, not the moving image subtree",
   );
-  const image = dialog.locator("img");
-  const before = await image.boundingBox();
+  const visibleImageState = () =>
+    dialog.evaluate((el) => {
+      const image = [...el.querySelectorAll("img")].find(
+        (candidate) => getComputedStyle(candidate).opacity === "1",
+      );
+      if (!image) return null;
+      const rect = image.getBoundingClientRect();
+      return {
+        naturalWidth: image.naturalWidth,
+        box: {
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+        },
+      };
+    });
+  const beforeState = await visibleImageState();
+  assert.ok(beforeState, "lightbox has no visible image");
+  const before = beforeState.box;
   assert.equal(
-    await image.evaluate((img) => img.naturalWidth),
+    beforeState.naturalWidth,
     0,
     "test must inspect the undecoded image",
   );
@@ -75,8 +93,16 @@ try {
     "image fell back to a default placeholder size",
   );
   releaseImage();
-  await image.evaluate((img) => img.decode());
-  const after = await image.boundingBox();
+  await dialog.evaluate(async (el) => {
+    const image = [...el.querySelectorAll("img")].find(
+      (candidate) => getComputedStyle(candidate).opacity === "1",
+    );
+    if (!image) throw new Error("Lightbox has no visible image");
+    await image.decode();
+  });
+  const afterState = await visibleImageState();
+  assert.ok(afterState, "lightbox lost its visible image after decode");
+  const after = afterState.box;
   const deltas = Object.fromEntries(
     Object.keys(before).map((key) => [key, Math.abs(after[key] - before[key])]),
   );
