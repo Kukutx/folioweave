@@ -4,9 +4,7 @@ import Image from "next/image";
 import {
   AnimatePresence,
   motion,
-  useMotionValue,
   useScroll,
-  useSpring,
   useTransform,
   type MotionValue,
 } from "framer-motion";
@@ -87,12 +85,6 @@ export function PhotoCard({
   const hoverEnabled = !disableHover && !reducedMotion;
   const ref = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
-  const mx = useMotionValue(0),
-    my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 150, damping: 15 }),
-    sy = useSpring(my, { stiffness: 150, damping: 15 });
-  const rotateX = useTransform(sy, [-0.5, 0.5], ["10deg", "-10deg"]),
-    rotateY = useTransform(sx, [-0.5, 0.5], ["-10deg", "10deg"]);
   const interactive = Boolean(onClick);
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (!interactive || (event.key !== "Enter" && event.key !== " ")) return;
@@ -151,19 +143,6 @@ export function PhotoCard({
       }}
       viewport={{ once: true }}
       style={{ perspective: 1000, aspectRatio: isPolaroid ? "1/1.2" : "9/16" }}
-      onMouseMove={
-        !hoverEnabled
-          ? undefined
-          : (e) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              mx.set((e.clientX - r.left - r.width / 2) / r.width);
-              my.set((e.clientY - r.top - r.height / 2) / r.height);
-            }
-      }
-      onMouseLeave={() => {
-        mx.set(0);
-        my.set(0);
-      }}
       onClick={onClick}
       onKeyDown={interactive ? handleKeyDown : undefined}
       role={interactive ? "button" : undefined}
@@ -172,31 +151,47 @@ export function PhotoCard({
         interactive ? (ariaLabel ?? `Open image ${index + 1}`) : undefined
       }
     >
-      <motion.div
+      <div
         style={{
           width: "100%",
           height: "100%",
           borderRadius: isPolaroid ? 2 : 24,
           overflow: "hidden",
-          rotateX: isPolaroid && hoverEnabled ? rotateX : 0,
-          rotateY: isPolaroid && hoverEnabled ? rotateY : 0,
           cursor: interactive ? "pointer" : "default",
-          boxShadow: "0 4px 15px rgba(0,0,0,.1)",
+          boxShadow:
+            hoverEnabled && hover
+              ? "0 20px 40px rgba(0,0,0,.2)"
+              : "0 4px 15px rgba(0,0,0,.1)",
           position: "relative",
+          zIndex: hoverEnabled && hover ? 10 : undefined,
           background: isPolaroid ? "rgba(255,255,255,.9)" : "#fff",
           backdropFilter: isPolaroid ? "blur(4px)" : "none",
           WebkitBackdropFilter: isPolaroid ? "blur(4px)" : "none",
           padding: isPolaroid ? "12px 12px 40px 12px" : 0,
           border: isPolaroid ? "1px solid rgba(255,255,255,0.5)" : "none",
+          transition:
+            isPolaroid && hoverEnabled
+              ? "transform 180ms ease-out, box-shadow 250ms ease"
+              : "box-shadow 250ms ease",
+          transform: "rotateX(0deg) rotateY(0deg)",
         }}
-        onMouseEnter={() => setHover(hoverEnabled)}
-        onMouseLeave={() => setHover(false)}
-        whileHover={
-          hoverEnabled
-            ? { zIndex: 10, boxShadow: "0 20px 40px rgba(0,0,0,.2)" }
+        onMouseMove={
+          isPolaroid && hoverEnabled
+            ? (event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const x =
+                  (event.clientX - rect.left - rect.width / 2) / rect.width;
+                const y =
+                  (event.clientY - rect.top - rect.height / 2) / rect.height;
+                event.currentTarget.style.transform = `rotateX(${-y * 20}deg) rotateY(${x * 20}deg)`;
+              }
             : undefined
         }
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        onMouseEnter={() => setHover(hoverEnabled)}
+        onMouseLeave={(event) => {
+          setHover(false);
+          event.currentTarget.style.transform = "rotateX(0deg) rotateY(0deg)";
+        }}
       >
         <div
           style={{
@@ -219,7 +214,7 @@ export function PhotoCard({
             renderImage(0, true)
           )}
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
