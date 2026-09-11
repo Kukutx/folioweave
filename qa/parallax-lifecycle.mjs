@@ -53,21 +53,16 @@ try {
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (let cycle = 0; cycle < 2; cycle++) {
       await card.scrollIntoViewIfNeeded();
-      await page.waitForFunction(
-        () =>
-          document.querySelector(".captures-grid img")?.style.willChange ===
-          "transform",
-      );
-      assert.equal(await image.evaluate((img) => img.style.transform), "none");
+      await page.waitForFunction(() => {
+        const image = document.querySelector(".captures-grid img");
+        return image?.style.transform === "none" && image.style.willChange === "auto";
+      });
       await page.evaluate(() => scrollTo(0, 0));
-      await page.waitForFunction(
-        () =>
-          document.querySelector(".captures-grid img")?.style.willChange ===
-          "auto",
-      );
+      assert.equal(await image.evaluate((img) => img.style.transform), "none");
+      assert.equal(await image.evaluate((img) => img.style.willChange), "auto");
     }
     console.log(
-      "PASS parallax and compositing prewarm, stop offscreen, and reactivate; reduced motion keeps static image sampling",
+      "PASS parallax/compositing activate only near the viewport; reduced motion stays static without GPU prewarm",
     );
   } else console.log("PASS parallax: photography disabled");
   assert.deepEqual(errors, []);
