@@ -41,6 +41,54 @@ function portraitProps(index: number) {
 }
 // Greeting/portrait ticks must not rerender the independent About experience.
 const StableAboutSection = memo(AboutSection);
+const GreetingCycle = memo(function GreetingCycle({
+  active,
+  reducedMotion,
+}: {
+  active: boolean;
+  reducedMotion: boolean;
+}) {
+  const [greet, setGreet] = useState(0);
+  useEffect(() => {
+    if (!active || reducedMotion || greetings.length < 2) return;
+    const id = window.setInterval(
+      () => setGreet((value) => (value + 1) % greetings.length),
+      2000,
+    );
+    return () => window.clearInterval(id);
+  }, [active, reducedMotion]);
+  return (
+    <span
+      className="hero-greeting"
+      style={{
+        fontFamily: "var(--font-serif)",
+        fontWeight: 400,
+        fontStyle: "italic",
+        display: "block",
+        minHeight: "1.2em",
+        marginBottom: "-.1em",
+        color: "rgba(0,0,0,.75)",
+      }}
+    >
+      {reducedMotion ? (
+        <span style={{ display: "inline-block" }}>{greetings[0]},</span>
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={greet}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            style={{ display: "inline-block" }}
+          >
+            {greetings[greet]},
+          </motion.span>
+        </AnimatePresence>
+      )}
+    </span>
+  );
+});
 
 function RichText({
   segments,
@@ -66,21 +114,12 @@ export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const { active, reducedMotion } = useMotionActivity(heroRef);
   const mobile = useMobileViewport(),
-    [greet, setGreet] = useState(0),
     [portrait, setPortrait] = useState(0),
     [loadedPortraits, setLoadedPortraits] = useState<Record<number, boolean>>(
       {},
     ),
     [mobileTilt, setMobileTilt] = useState({ x: 0, y: 0 }),
     [resume, setResume] = useState<ResumeState>("idle");
-  useEffect(() => {
-    if (!active || greetings.length < 2) return;
-    const id = setInterval(
-      () => setGreet((v) => (v + 1) % greetings.length),
-      2000,
-    );
-    return () => clearInterval(id);
-  }, [active]);
   useEffect(() => {
     // Prepare only the next interaction, after the current portrait has loaded.
     if (!active || !loadedPortraits[portrait] || portraitImages.length < 2)
@@ -155,31 +194,10 @@ export function Hero() {
             <div className="hero-grid">
               <div className="hero-text-side">
                 <h1 className="hero-title">
-                  <span
-                    className="hero-greeting"
-                    style={{
-                      fontFamily: "var(--font-serif)",
-                      fontWeight: 400,
-                      fontStyle: "italic",
-                      display: "block",
-                      minHeight: "1.2em",
-                      marginBottom: "-.1em",
-                      color: "rgba(0,0,0,.75)",
-                    }}
-                  >
-                    <AnimatePresence mode="wait" initial={false}>
-                      <motion.span
-                        key={greet}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.5 }}
-                        style={{ display: "inline-block" }}
-                      >
-                        {greetings[greet]},
-                      </motion.span>
-                    </AnimatePresence>
-                  </span>
+                  <GreetingCycle
+                    active={active}
+                    reducedMotion={reducedMotion}
+                  />
                   <CharReveal delay={0.35} trigger className="hero-main-text">
                     {`I'm ${siteConfig.identity.name}`}
                   </CharReveal>{" "}
