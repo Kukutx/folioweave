@@ -237,8 +237,8 @@ export function GalleryLightbox({
       ? "(max-width: 767px) 85vw, 35vw"
       : "(max-width: 767px) 85vw, 70vw";
   const move = useCallback(
-    (d: number) => {
-      setDirection(d);
+    (d: number, animate = true) => {
+      setDirection(animate ? d : 0);
       setIndex((i) => (i + d + images.length) % images.length);
     },
     [images.length],
@@ -287,7 +287,9 @@ export function GalleryLightbox({
       }
       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        move(event.key === "ArrowLeft" ? -1 : 1);
+        // Keyboard navigation should respond on the next paint instead of
+        // waiting for the decorative slide transition used by pointer input.
+        move(event.key === "ArrowLeft" ? -1 : 1, false);
       }
     };
     window.addEventListener("keydown", key);
@@ -320,6 +322,9 @@ export function GalleryLightbox({
       aria-label="Photography viewer"
       onCancel={(event) => {
         event.preventDefault();
+        // Let Escape leave the native top layer immediately. Pointer-driven
+        // close actions still keep the decorative dialog exit animation.
+        dialogRef.current?.close();
         onClose();
       }}
       style={{
@@ -451,24 +456,28 @@ export function GalleryLightbox({
             onLoad={() => setDecodedSrc(images[index].src)}
             custom={direction}
             initial={{
-              x: reducedMotion ? 0 : direction > 0 ? 96 : -96,
-              opacity: reducedMotion ? 1 : 0,
-              scale: reducedMotion ? 1 : 0.96,
+              x: reducedMotion || direction === 0 ? 0 : direction > 0 ? 96 : -96,
+              opacity: reducedMotion || direction === 0 ? 1 : 0,
+              scale: reducedMotion || direction === 0 ? 1 : 0.96,
             }}
             animate={{ x: 0, opacity: 1, scale: 1 }}
             exit={{
-              x: reducedMotion ? 0 : direction < 0 ? 96 : -96,
-              opacity: 0,
-              scale: reducedMotion ? 1 : 0.96,
+              x: reducedMotion || direction === 0 ? 0 : direction < 0 ? 96 : -96,
+              opacity: direction === 0 ? 1 : 0,
+              scale: reducedMotion || direction === 0 ? 1 : 0.96,
             }}
             transition={{
-              x: reducedMotion
-                ? { duration: 0 }
-                : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
-              opacity: { duration: reducedMotion ? 0 : 0.14 },
-              scale: reducedMotion
-                ? { duration: 0 }
-                : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+              x:
+                reducedMotion || direction === 0
+                  ? { duration: 0 }
+                  : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
+              opacity: {
+                duration: reducedMotion || direction === 0 ? 0 : 0.14,
+              },
+              scale:
+                reducedMotion || direction === 0
+                  ? { duration: 0 }
+                  : { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
             }}
             style={{
               width:
