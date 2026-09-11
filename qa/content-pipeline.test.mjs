@@ -51,6 +51,7 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
   try {
     const config = structuredClone(personal);
     config.features.resume = false;
+    const downloadPath = "/portfolio/downloads/test.pdf";
     for (const asset of collectAssets(config)) {
       const relative = path.join(
         asset.startsWith("/portfolio/") ? "content/assets" : "public",
@@ -74,32 +75,33 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
       "[]",
     );
     await fs.mkdir(path.join(temporary, "content/blogs"), { recursive: true });
+    const downloadSource = path.join(
+      temporary,
+      "content/assets",
+      downloadPath.slice(1),
+    );
+    await fs.mkdir(path.dirname(downloadSource), { recursive: true });
+    await fs.writeFile(downloadSource, "%PDF-1.4\n% FolioWeave test download\n");
     const article = (draft) =>
-      `---\ntitle: Download\ndate: 2026-01-01\ndescription: Test\ndraft: ${draft}\n---\n\n[Download](${config.site.resume.pdf}#page=2)`;
+      `---\ntitle: Download\ndate: 2026-01-01\ndescription: Test\ndraft: ${draft}\n---\n\n[Download](${downloadPath}#page=2)`;
     const filename = path.join(temporary, "content/blogs/download.md");
     await fs.writeFile(filename, article(false));
     const published = await prepareContent(temporary, config);
-    assert.ok(published.media[config.site.resume.pdf]);
+    assert.ok(published.media[downloadPath]);
     await publishContent(published, temporary);
     assert.deepEqual(
-      await fs.readFile(
-        path.join(temporary, "public", config.site.resume.pdf.slice(1)),
-      ),
-      published.assets[config.site.resume.pdf],
+      await fs.readFile(path.join(temporary, "public", downloadPath.slice(1))),
+      published.assets[downloadPath],
     );
     await fs.writeFile(filename, article(true));
     const draft = await prepareContent(temporary, config);
-    assert.equal(draft.media[config.site.resume.pdf], undefined);
+    assert.equal(draft.media[downloadPath], undefined);
     await publishContent(draft, temporary);
     await assert.rejects(
-      fs.access(
-        path.join(temporary, "public", config.site.resume.pdf.slice(1)),
-      ),
+      fs.access(path.join(temporary, "public", downloadPath.slice(1))),
       { code: "ENOENT" },
     );
-    await fs.access(
-      path.join(temporary, "content/assets", config.site.resume.pdf.slice(1)),
-    );
+    await fs.access(downloadSource);
     await fs.writeFile(
       filename,
       article(false) + "\n\n[Broken](/blogs/unpublished)",
