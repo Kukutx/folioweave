@@ -97,12 +97,14 @@ async function viewerReady(page, dialog) {
     );
   });
 }
-const browser = await chromium.launch({ headless: true });
+const browserProbe = await chromium.launch({ headless: true });
+const browserVersion = browserProbe.version();
+await browserProbe.close();
 const environment = {
   node: process.version,
   platform: process.platform,
   arch: process.arch,
-  browser: browser.version(),
+  browser: browserVersion,
   logicalCpus: os.cpus().length,
   totalMemoryBytes: os.totalmem(),
 };
@@ -117,6 +119,7 @@ try {
         : ["reduce", "no-preference"]) {
         for (let sample = 1; sample <= (diagnostic ? 1 : 3); sample++) {
           const freeMemoryBefore = os.freemem();
+          const browser = await chromium.launch({ headless: true });
           const context = await browser.newContext({
             viewport: { width, height: 900 },
             isMobile: width < 768,
@@ -364,6 +367,7 @@ try {
             "missing performance samples",
           );
           await context.close();
+          await browser.close();
         }
         const samples = report.filter(
           (item) =>
@@ -415,7 +419,6 @@ try {
       }
   }
 } finally {
-  await browser.close();
   await fs.writeFile(
     diagnostic
       ? "qa/runtime-diagnostic-report.json"
