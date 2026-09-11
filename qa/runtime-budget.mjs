@@ -250,6 +250,11 @@ try {
             waitUntil: "networkidle",
             timeout: 60000,
           });
+          // Keep navigation/LCP cold, then restore normal browser caching for
+          // interaction measurements. Re-fetching already displayed thumbnails
+          // on every lightbox transition measures forced cache misses, not the
+          // page's real interaction cost.
+          await cdp.send("Network.setCacheDisabled", { cacheDisabled: false });
           await page.evaluate(() => document.fonts.ready);
           await page.waitForTimeout(1000);
           await page.evaluate(() => performance.mark("qa:hero-actions"));
