@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -241,6 +241,7 @@ export function GalleryLightbox({
     [keyboardClosing, setKeyboardClosing] = useState(false);
   const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
   const decodedSources = useRef(new Set<string>());
+  const preloaders = useRef(new Map<string, HTMLImageElement>());
   const dimensions = mediaDimensions(images[index].src);
   const lightboxSizes =
     dimensions.width <= dimensions.height
@@ -271,11 +272,6 @@ export function GalleryLightbox({
     };
   };
   const lightboxImageStyle = imageStyle(index);
-  const staticImageIndices = [
-    index,
-    (index + 1) % images.length,
-    (index - 1 + images.length) % images.length,
-  ].filter((value, position, values) => values.indexOf(value) === position);
   const move = useCallback(
     (d: number, animate = true) => {
       const nextIndex = (index + d + images.length) % images.length;
@@ -286,6 +282,46 @@ export function GalleryLightbox({
     },
     [images, index],
   );
+  useEffect(() => {
+    if (images.length < 2) return;
+    const frame = window.requestAnimationFrame(() => {
+      const adjacent = [
+        (index + 1) % images.length,
+        (index - 1 + images.length) % images.length,
+      ];
+      for (const imageIndex of adjacent) {
+        const asset = images[imageIndex];
+        if (
+          decodedSources.current.has(asset.src) ||
+          preloaders.current.has(asset.src)
+        )
+          continue;
+        const size = mediaDimensions(asset.src);
+        const sizes =
+          size.width <= size.height
+            ? "(max-width: 767px) 85vw, 35vw"
+            : "(max-width: 767px) 85vw, 70vw";
+        const { props } = getImageProps({
+          src: asset.src,
+          alt: "",
+          ...size,
+          sizes,
+        });
+        const preloader = new window.Image();
+        preloader.decoding = "async";
+        preloader.fetchPriority = "low";
+        preloader.sizes = props.sizes ?? sizes;
+        preloader.srcset = props.srcSet ?? "";
+        preloader.src = props.src;
+        preloaders.current.set(asset.src, preloader);
+        void preloader
+          .decode()
+          .then(() => decodedSources.current.add(asset.src))
+          .catch(() => {});
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [images, index]);
   useLayoutEffect(() => {
     const previousFocus =
       document.activeElement instanceof HTMLElement
@@ -490,35 +526,21 @@ export function GalleryLightbox({
         }}
       >
         {reducedMotion || direction === 0 ? (
-          <>
-            {staticImageIndices.map((imageIndex) => {
-              const asset = images[imageIndex];
-              const size = mediaDimensions(asset.src);
-              const visible = imageIndex === index;
-              const sizes =
-                size.width <= size.height
-                  ? "(max-width: 767px) 85vw, 35vw"
-                  : "(max-width: 767px) 85vw, 70vw";
-              return (
-                <Image
-                  key={`static-${imageIndex}`}
-                  src={asset.src}
-                  alt={visible ? asset.alt : ""}
-                  {...size}
-                  sizes={sizes}
-                  loading="eager"
-                  fetchPriority={visible ? "high" : "low"}
-                  draggable={false}
-                  aria-hidden={!visible}
-                  onLoad={() => {
-                    decodedSources.current.add(asset.src);
-                    if (visible) setDecodedSrc(asset.src);
-                  }}
-                  style={imageStyle(imageIndex, visible)}
-                />
-              );
-            })}
-          </>
+          <Image
+            key={`static-${index}`}
+            src={images[index].src}
+            alt={images[index].alt}
+            {...dimensions}
+            sizes={lightboxSizes}
+            loading="eager"
+            fetchPriority="high"
+            draggable={false}
+            onLoad={() => {
+              decodedSources.current.add(images[index].src);
+              setDecodedSrc(images[index].src);
+            }}
+            style={lightboxImageStyle}
+          />
         ) : (
           <AnimatePresence initial={false} custom={direction}>
             <MotionImage
