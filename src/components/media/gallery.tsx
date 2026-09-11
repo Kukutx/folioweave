@@ -19,7 +19,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import type { PortfolioMediaAsset } from "@/portfolio/schema";
 import { lockPageScroll } from "@/lib/scroll-lock";
 import { mediaDimensions } from "@/portfolio/media";
@@ -230,33 +230,54 @@ export function GalleryLightbox({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(initialIndex),
-    [direction, setDirection] = useState(0);
+    [direction, setDirection] = useState(0),
+    [keyboardClosing, setKeyboardClosing] = useState(false);
   const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
+  const decodedSources = useRef(new Set<string>());
   const dimensions = mediaDimensions(images[index].src);
   const lightboxSizes =
     dimensions.width <= dimensions.height
       ? "(max-width: 767px) 85vw, 35vw"
       : "(max-width: 767px) 85vw, 70vw";
-  const lightboxImageStyle: CSSProperties = {
-    width:
-      decodedSrc === images[index].src
-        ? "auto"
-        : `min(${dimensions.width}px, 100%, ${(85 * dimensions.width) / dimensions.height}dvh)`,
-    height: "auto",
-    aspectRatio: `auto ${dimensions.width} / ${dimensions.height}`,
-    maxWidth: "100%",
-    maxHeight: "100%",
-    objectFit: "contain",
-    position: "absolute",
-    borderRadius: 4,
-    boxShadow: "0 20px 50px rgba(0,0,0,.5)",
+  const imageStyle = (
+    imageIndex: number,
+    visible = true,
+  ): CSSProperties => {
+    const src = images[imageIndex].src;
+    const size = mediaDimensions(src);
+    return {
+      width:
+        visible && decodedSrc === src
+          ? "auto"
+          : `min(${size.width}px, 100%, ${(85 * size.width) / size.height}dvh)`,
+      height: "auto",
+      aspectRatio: `auto ${size.width} / ${size.height}`,
+      maxWidth: "100%",
+      maxHeight: "100%",
+      objectFit: "contain",
+      position: "absolute",
+      borderRadius: 4,
+      boxShadow: visible ? "0 20px 50px rgba(0,0,0,.5)" : "none",
+      opacity: visible ? 1 : 0,
+      pointerEvents: visible ? "auto" : "none",
+      zIndex: visible ? 1 : 0,
+    };
   };
+  const lightboxImageStyle = imageStyle(index);
+  const staticImageIndices = [
+    index,
+    (index + 1) % images.length,
+    (index - 1 + images.length) % images.length,
+  ].filter((value, position, values) => values.indexOf(value) === position);
   const move = useCallback(
     (d: number, animate = true) => {
+      const nextIndex = (index + d + images.length) % images.length;
+      const nextSrc = images[nextIndex].src;
       setDirection(animate ? d : 0);
-      setIndex((i) => (i + d + images.length) % images.length);
+      setDecodedSrc(decodedSources.current.has(nextSrc) ? nextSrc : null);
+      setIndex(nextIndex);
     },
-    [images.length],
+    [images, index],
   );
   useLayoutEffect(() => {
     const previousFocus =
@@ -329,14 +350,17 @@ export function GalleryLightbox({
       ref={dialogRef}
       initial={{ opacity: reducedMotion ? 1 : 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: reducedMotion ? 0 : 0.3 }}
+      exit={{ opacity: keyboardClosing ? 1 : 0 }}
+      transition={{ duration: reducedMotion || keyboardClosing ? 0 : 0.3 }}
       className="gallery-overlay"
       role="dialog"
       aria-modal="true"
       aria-label="Photography viewer"
       onCancel={(event) => {
         event.preventDefault();
+        // Keep React in charge of the native dialog lifecycle, but remove the
+        // decorative exit delay for keyboard Escape.
+        flushSync(() => setKeyboardClosing(true));
         onClose();
       }}
       style={{
@@ -459,16 +483,35 @@ export function GalleryLightbox({
         }}
       >
         {reducedMotion || direction === 0 ? (
-          <Image
-            key={`static-${index}`}
-            src={images[index].src}
-            alt={images[index].alt}
-            {...dimensions}
-            sizes={lightboxSizes}
-            draggable={false}
-            onLoad={() => setDecodedSrc(images[index].src)}
-            style={lightboxImageStyle}
-          />
+          <>
+            {staticImageIndices.map((imageIndex) => {
+              const asset = images[imageIndex];
+              const size = mediaDimensions(asset.src);
+              const visible = imageIndex === index;
+              const sizes =
+                size.width <= size.height
+                  ? "(max-width: 767px) 85vw, 35vw"
+                  : "(max-width: 767px) 85vw, 70vw";
+              return (
+                <Image
+                  key={`static-${imageIndex}`}
+                  src={asset.src}
+                  alt={visible ? asset.alt : ""}
+                  {...size}
+                  sizes={sizes}
+                  loading="eager"
+                  fetchPriority={visible ? "high" : "low"}
+                  draggable={false}
+                  aria-hidden={!visible}
+                  onLoad={() => {
+                    decodedSources.current.add(asset.src);
+                    if (visible) setDecodedSrc(asset.src);
+                  }}
+                  style={imageStyle(imageIndex, visible)}
+                />
+              );
+            })}
+          </>
         ) : (
           <AnimatePresence initial={false} custom={direction}>
             <MotionImage
@@ -477,7 +520,10 @@ export function GalleryLightbox({
               alt={images[index].alt}
               {...dimensions}
               sizes={lightboxSizes}
-              onLoad={() => setDecodedSrc(images[index].src)}
+              onLoad={() => {
+                decodedSources.current.add(images[index].src);
+                setDecodedSrc(images[index].src);
+              }}
               custom={direction}
               initial={{
                 x: direction > 0 ? 96 : -96,
