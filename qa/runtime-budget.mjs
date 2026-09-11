@@ -83,17 +83,22 @@ assert.ok(
 const diagnosticProfile =
   profileOption === "--profile=native" ? "native" : "constrained";
 async function viewerReady(page, dialog) {
-  await dialog
-    .locator("img")
-    .last()
-    .evaluate((img) => img.decode());
+  await dialog.locator("img").evaluateAll(async (images) => {
+    const visible = images.find((image) => getComputedStyle(image).opacity === "1");
+    if (!visible) throw new Error("Lightbox has no visible image");
+    await visible.decode();
+  });
   await page.waitForFunction(() => {
     const viewer = document.querySelector(".gallery-overlay[open]");
-    const images = viewer?.querySelectorAll("img");
+    const images = [...(viewer?.querySelectorAll("img") ?? [])];
+    const visible = images.filter(
+      (image) => getComputedStyle(image).opacity === "1",
+    );
     return (
-      images?.length === 1 &&
+      visible.length === 1 &&
       getComputedStyle(viewer).opacity === "1" &&
-      getComputedStyle(images[0]).opacity === "1"
+      visible[0].complete &&
+      visible[0].naturalWidth > 0
     );
   });
 }
