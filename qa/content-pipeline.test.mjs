@@ -26,21 +26,68 @@ const demo = JSON.parse(
 );
 
 test("published asset bytes are the validated snapshot, not deferred source reads", async () => {
-  const plan = await prepareContent(root, personal);
-  const output = generatedOutputs(plan).find(
-    (output) => output.target === "public/portfolio",
+  const temporary = await fs.mkdtemp(
+    path.join(os.tmpdir(), "folioweave-content-test-"),
   );
-  assert.ok(output.files.length > 0);
-  for (const [name, bytes] of output.files) {
-    assert.ok(
-      Buffer.isBuffer(bytes),
-      `${name} must be a validated byte snapshot`,
+  try {
+    const config = structuredClone(personal);
+    config.features.demoRoutes = false;
+    for (const asset of collectAssets(config)) {
+      const relative = path.join(
+        asset.startsWith("/portfolio/") ? "content/assets" : "public",
+        asset.slice(1),
+      );
+      await fs.mkdir(path.dirname(path.join(temporary, relative)), {
+        recursive: true,
+      });
+      await fs.copyFile(
+        path.join(root, relative),
+        path.join(temporary, relative),
+      );
+    }
+    await fs.copyFile(
+      path.join(root, "portfolio.schema.json"),
+      path.join(temporary, "portfolio.schema.json"),
     );
-    assert.equal(bytes.length, plan.media[`/portfolio/${name}`].bytes);
+    await fs.mkdir(path.join(temporary, "src/blog"), { recursive: true });
+    await fs.writeFile(
+      path.join(temporary, "src/blog/custom-posts.json"),
+      "[]",
+    );
+    await fs.mkdir(path.join(temporary, "content/blogs"), { recursive: true });
+
+    const originalPreview = config.site.assets.socialPreview;
+    const originalRelative = path.join(
+      originalPreview.startsWith("/portfolio/") ? "content/assets" : "public",
+      originalPreview.slice(1),
+    );
+    const snapshotPath = `/portfolio/profile/snapshot-test${path.extname(originalPreview)}`;
+    const snapshotSource = path.join(
+      temporary,
+      "content/assets",
+      snapshotPath.slice(1),
+    );
+    await fs.mkdir(path.dirname(snapshotSource), { recursive: true });
+    await fs.copyFile(path.join(temporary, originalRelative), snapshotSource);
+    config.site.assets.socialPreview = snapshotPath;
+
+    const plan = await prepareContent(temporary, config);
+    const output = generatedOutputs(plan, temporary).find(
+      (item) => item.target === "public/portfolio",
+    );
+    const entry = output.files.find(
+      ([name]) => name === snapshotPath.slice("/portfolio/".length),
+    );
+    assert.ok(entry, "snapshot fixture must be published");
+    const [name, bytes] = entry;
+    assert.ok(Buffer.isBuffer(bytes), `${name} must be a validated byte snapshot`);
+    assert.equal(bytes.length, plan.media[snapshotPath].bytes);
     assert.equal(
       createHash("sha256").update(bytes).digest("hex"),
-      plan.media[`/portfolio/${name}`].sha256,
+      plan.media[snapshotPath].sha256,
     );
+  } finally {
+    await fs.rm(temporary, { recursive: true });
   }
 });
 
@@ -51,6 +98,7 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
   try {
     const config = structuredClone(personal);
     config.features.resume = false;
+    config.features.demoRoutes = false;
     const downloadPath = "/portfolio/downloads/test.pdf";
     for (const asset of collectAssets(config)) {
       const relative = path.join(
