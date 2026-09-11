@@ -42,24 +42,22 @@ function ParallaxMotion({
   return children(y);
 }
 
-function VisiblePhoto({
+function ParallaxPhoto({
   target,
-  parallax,
   children,
 }: {
   target: RefObject<HTMLDivElement | null>;
-  parallax: boolean;
   children: (y: MotionValue<string> | number, active: boolean) => ReactNode;
 }) {
-  // One lifecycle owns both scroll subscriptions and image compositing. Keep
-  // fractional image sampling stable in view, without promoting distant cards.
+  // Only mount viewport/parallax observers when the caller actually enables
+  // the effect. Mobile and reduced-motion cards stay as lightweight images.
   const active = useViewportActivity(target);
-  return active && parallax ? (
+  return active ? (
     <ParallaxMotion target={target}>
       {(y) => children(y, active)}
     </ParallaxMotion>
   ) : (
-    children(0, active)
+    children(0, false)
   );
 }
 
@@ -204,12 +202,11 @@ export function PhotoCard({
           }}
         >
           {!isPolaroid ? (
-            <VisiblePhoto
-              target={ref}
-              parallax={!disableParallax && !reducedMotion}
-            >
-              {renderImage}
-            </VisiblePhoto>
+            !disableParallax && !reducedMotion ? (
+              <ParallaxPhoto target={ref}>{renderImage}</ParallaxPhoto>
+            ) : (
+              renderImage(0, false)
+            )
           ) : (
             renderImage(0, true)
           )}
