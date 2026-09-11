@@ -84,6 +84,8 @@
     "qa:regression-capture": "node qa/visual-integrity.mjs --update-regression"
   },
   "dependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "fast-xml-parser": "5.11.1",
     "framer-motion": "13.1.1",
     "gray-matter": "4.0.3",
@@ -116,9 +118,5 @@
   "overrides": {
     "motion-dom": "13.1.1",
     "motion-utils": "13.0.0"
-  },
-  "optionalDependencies": {
-    "@emnapi/core": "1.11.3",
-    "@emnapi/runtime": "1.11.3"
   }
 }
