@@ -160,6 +160,7 @@ try {
               interactions: [],
               eventDetails: [],
               shifts: [],
+              lcpDetails: null,
             };
             let sessionStart = 0,
               lastShift = 0,
@@ -193,8 +194,17 @@ try {
               }
             }).observe({ type: "layout-shift", buffered: true });
             new PerformanceObserver((list) => {
-              for (const entry of list.getEntries())
+              for (const entry of list.getEntries()) {
                 window.__runtimeMetrics.lcp = entry.startTime;
+                window.__runtimeMetrics.lcpDetails = {
+                  startTime: entry.startTime,
+                  renderTime: entry.renderTime,
+                  loadTime: entry.loadTime,
+                  size: entry.size,
+                  url: entry.url || null,
+                  element: entry.element?.outerHTML?.slice(0, 320) ?? null,
+                };
+              }
             }).observe({ type: "largest-contentful-paint", buffered: true });
             new PerformanceObserver((list) => {
               for (const entry of list.getEntries())
@@ -338,6 +348,7 @@ try {
               sample,
               cls: metrics.cls,
               lcp: metrics.lcp,
+              lcpDetails: metrics.lcpDetails,
               longestTaskMs: item.longestTaskMs,
               longestTask:
                 [...metrics.longTasks].sort(
