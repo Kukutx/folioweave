@@ -239,48 +239,35 @@ export function GalleryLightbox({
   const [index, setIndex] = useState(initialIndex),
     [direction, setDirection] = useState(0),
     [keyboardClosing, setKeyboardClosing] = useState(false);
-  const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
-  const decodedSources = useRef(new Set<string>());
   const preloaders = useRef(new Map<string, HTMLImageElement>());
   const dimensions = mediaDimensions(images[index].src);
   const lightboxSizes =
     dimensions.width <= dimensions.height
       ? "(max-width: 767px) 85vw, 35vw"
       : "(max-width: 767px) 85vw, 70vw";
-  const imageStyle = (
-    imageIndex: number,
-    visible = true,
-  ): CSSProperties => {
-    const src = images[imageIndex].src;
-    const size = mediaDimensions(src);
+  const imageStyle = (imageIndex: number): CSSProperties => {
+    const size = mediaDimensions(images[imageIndex].src);
     return {
-      width:
-        visible && decodedSrc === src
-          ? "auto"
-          : `min(${size.width}px, 100%, ${(85 * size.width) / size.height}dvh)`,
+      // Layout follows the authored source ratio and viewport, never the
+      // optimizer's selected raster width (for example a 384px srcset entry).
+      width: `min(${size.width}px, 100%, ${(85 * size.width) / size.height}dvh)`,
       height: "auto",
-      aspectRatio: `auto ${size.width} / ${size.height}`,
+      aspectRatio: `${size.width} / ${size.height}`,
       maxWidth: "100%",
       maxHeight: "100%",
       objectFit: "contain",
       position: "absolute",
       borderRadius: 4,
-      boxShadow: visible ? "0 20px 50px rgba(0,0,0,.5)" : "none",
-      opacity: visible ? 1 : 0,
-      pointerEvents: visible ? "auto" : "none",
-      zIndex: visible ? 1 : 0,
+      boxShadow: "0 20px 50px rgba(0,0,0,.5)",
     };
   };
   const lightboxImageStyle = imageStyle(index);
   const move = useCallback(
     (d: number, animate = true) => {
-      const nextIndex = (index + d + images.length) % images.length;
-      const nextSrc = images[nextIndex].src;
       setDirection(animate ? d : 0);
-      setDecodedSrc(decodedSources.current.has(nextSrc) ? nextSrc : null);
-      setIndex(nextIndex);
+      setIndex((current) => (current + d + images.length) % images.length);
     },
-    [images, index],
+    [images.length],
   );
   useEffect(() => {
     if (images.length < 2) return;
@@ -291,11 +278,7 @@ export function GalleryLightbox({
       ];
       for (const imageIndex of adjacent) {
         const asset = images[imageIndex];
-        if (
-          decodedSources.current.has(asset.src) ||
-          preloaders.current.has(asset.src)
-        )
-          continue;
+        if (preloaders.current.has(asset.src)) continue;
         const size = mediaDimensions(asset.src);
         const sizes =
           size.width <= size.height
@@ -314,10 +297,7 @@ export function GalleryLightbox({
         preloader.srcset = props.srcSet ?? "";
         preloader.src = props.src;
         preloaders.current.set(asset.src, preloader);
-        void preloader
-          .decode()
-          .then(() => decodedSources.current.add(asset.src))
-          .catch(() => {});
+        void preloader.decode().catch(() => {});
       }
     });
     return () => window.cancelAnimationFrame(frame);
@@ -535,10 +515,6 @@ export function GalleryLightbox({
             loading="eager"
             fetchPriority="high"
             draggable={false}
-            onLoad={() => {
-              decodedSources.current.add(images[index].src);
-              setDecodedSrc(images[index].src);
-            }}
             style={lightboxImageStyle}
           />
         ) : (
@@ -549,10 +525,6 @@ export function GalleryLightbox({
               alt={images[index].alt}
               {...dimensions}
               sizes={lightboxSizes}
-              onLoad={() => {
-                decodedSources.current.add(images[index].src);
-                setDecodedSrc(images[index].src);
-              }}
               custom={direction}
               initial={{
                 x: direction > 0 ? 96 : -96,
