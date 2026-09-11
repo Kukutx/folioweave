@@ -322,9 +322,6 @@ export function GalleryLightbox({
       aria-label="Photography viewer"
       onCancel={(event) => {
         event.preventDefault();
-        // Let Escape leave the native top layer immediately. Pointer-driven
-        // close actions still keep the decorative dialog exit animation.
-        dialogRef.current?.close();
         onClose();
       }}
       style={{
