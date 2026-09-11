@@ -135,10 +135,12 @@ try {
       await page.keyboard.press("Enter");
       const dialog = page.getByRole("dialog", { name: "Photography viewer" });
       await dialog.waitFor();
-      await dialog.locator("img").evaluate((img) => img.decode());
+      await dialog
+        .locator('img:not([aria-hidden="true"])')
+        .evaluate((img) => img.decode());
       await page.waitForTimeout(700);
       lightbox = await dialog.evaluate((el) => {
-        const img = el.querySelector("img");
+        const img = el.querySelector('img:not([aria-hidden="true"])');
         const r = img.getBoundingClientRect();
         const bounds = el.getBoundingClientRect();
         return {
@@ -183,19 +185,14 @@ try {
       lightbox.nextWorks = (
         await dialog.locator('[aria-live="polite"]').innerText()
       ).startsWith(`${nextNumber} /`);
-      await dialog
-        .locator("img")
-        .last()
-        .evaluate((img) => img.decode());
-      lightbox.nextRatioError = await dialog
-        .locator("img")
-        .last()
-        .evaluate((img) => {
-          const r = img.getBoundingClientRect();
-          return Math.abs(
-            r.width / r.height - img.naturalWidth / img.naturalHeight,
-          );
-        });
+      const currentImage = dialog.locator('img:not([aria-hidden="true"])');
+      await currentImage.evaluate((img) => img.decode());
+      lightbox.nextRatioError = await currentImage.evaluate((img) => {
+        const r = img.getBoundingClientRect();
+        return Math.abs(
+          r.width / r.height - img.naturalWidth / img.naturalHeight,
+        );
+      });
       await page.screenshot({
         path: `${directory}/${width}-lightbox-next.png`,
       });
@@ -207,19 +204,23 @@ try {
       if (portraitIndex > 1) {
         for (let index = 1; index < portraitIndex; index++)
           await page.keyboard.press("ArrowRight");
-        await page.waitForFunction(
-          () => document.querySelectorAll(".gallery-overlay img").length === 1,
+        await page.waitForFunction(() => {
+          const images = [...document.querySelectorAll(".gallery-overlay img")];
+          return images.filter(
+            (img) => getComputedStyle(img).opacity === "1",
+          ).length === 1;
+        });
+        const portraitImage = dialog.locator(
+          'img:not([aria-hidden="true"])',
         );
-        await dialog.locator("img").evaluate((img) => img.decode());
+        await portraitImage.evaluate((img) => img.decode());
         await page.waitForTimeout(500);
-        lightbox.portraitRatioError = await dialog
-          .locator("img")
-          .evaluate((img) => {
-            const r = img.getBoundingClientRect();
-            return Math.abs(
-              r.width / r.height - img.naturalWidth / img.naturalHeight,
-            );
-          });
+        lightbox.portraitRatioError = await portraitImage.evaluate((img) => {
+          const r = img.getBoundingClientRect();
+          return Math.abs(
+            r.width / r.height - img.naturalWidth / img.naturalHeight,
+          );
+        });
         await page.screenshot({
           path: `${directory}/${width}-lightbox-portrait.png`,
         });
