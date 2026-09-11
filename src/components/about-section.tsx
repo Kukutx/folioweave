@@ -141,17 +141,23 @@ function Toggle({
   }, [value]);
 
   useEffect(() => {
-    measure();
+    const frame = window.requestAnimationFrame(measure);
     if (typeof ResizeObserver === "undefined") {
       window.addEventListener("resize", measure);
-      return () => window.removeEventListener("resize", measure);
+      return () => {
+        window.cancelAnimationFrame(frame);
+        window.removeEventListener("resize", measure);
+      };
     }
     const observer = new ResizeObserver(measure);
     if (containerRef.current) observer.observe(containerRef.current);
     Object.values(buttonRefs.current).forEach((button) => {
       if (button) observer.observe(button);
     });
-    return () => observer.disconnect();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [mobile, measure]);
 
   return (

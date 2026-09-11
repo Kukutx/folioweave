@@ -86,33 +86,40 @@ export function TimeWeatherWidget() {
     temperature: null,
   });
   useEffect(() => {
-    const timeFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
-      timeZone: siteConfig.location.timeZone,
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-    const zoneFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
-      timeZone: siteConfig.location.timeZone,
-      timeZoneName: "short",
-    });
-    const tick = () => {
-      const now = new Date();
-      const dynamicLabel = zoneFormatter
-        .formatToParts(now)
-        .find((part) => part.type === "timeZoneName")?.value;
-      setClock({
-        time: timeFormatter.format(now),
-        timeZoneLabel: dynamicLabel || siteConfig.location.timeZoneLabel,
+    let interval = 0;
+    const frame = window.requestAnimationFrame(() => {
+      const timeFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
+        timeZone: siteConfig.location.timeZone,
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
       });
+      const zoneFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
+        timeZone: siteConfig.location.timeZone,
+        timeZoneName: "short",
+      });
+      const tick = () => {
+        const now = new Date();
+        const dynamicLabel = zoneFormatter
+          .formatToParts(now)
+          .find((part) => part.type === "timeZoneName")?.value;
+        setClock({
+          time: timeFormatter.format(now),
+          timeZoneLabel: dynamicLabel || siteConfig.location.timeZoneLabel,
+        });
+      };
+      tick();
+      interval = window.setInterval(tick, 10_000);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (interval) window.clearInterval(interval);
     };
-    tick();
-    const id = window.setInterval(tick, 10_000);
-    return () => clearInterval(id);
   }, []);
   useEffect(() => {
     if (!siteConfig.features.weather) return;
     const controller = new AbortController();
+    let timer = 0;
     const refresh = () => {
       if (document.hidden) return;
       fetch("/api/weather", {
@@ -136,12 +143,15 @@ export function TimeWeatherWidget() {
             setWeather({ icon: "—", temperature: null });
         });
     };
-    refresh();
-    const timer = window.setInterval(refresh, 300_000);
-    document.addEventListener("visibilitychange", refresh);
+    const startup = window.setTimeout(() => {
+      refresh();
+      timer = window.setInterval(refresh, 300_000);
+      document.addEventListener("visibilitychange", refresh);
+    }, 0);
     return () => {
       controller.abort();
-      window.clearInterval(timer);
+      window.clearTimeout(startup);
+      if (timer) window.clearInterval(timer);
       document.removeEventListener("visibilitychange", refresh);
     };
   }, []);
