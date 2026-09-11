@@ -11,6 +11,7 @@ import {
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -83,7 +84,12 @@ export function PhotoCard({
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const hoverEnabled = !disableHover && !reducedMotion;
   const ref = useRef<HTMLDivElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
+  useEffect(() => {
+    if (hoverEnabled || !tiltRef.current) return;
+    tiltRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
+  }, [hoverEnabled]);
   const interactive = Boolean(onClick);
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (!interactive || (event.key !== "Enter" && event.key !== " ")) return;
@@ -151,6 +157,7 @@ export function PhotoCard({
       }
     >
       <div
+        ref={tiltRef}
         style={{
           width: "100%",
           height: "100%",

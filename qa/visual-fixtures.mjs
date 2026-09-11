@@ -120,7 +120,13 @@ try {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.waitForFunction(() => {
         const root = document.querySelector(".story-photo-wrapper");
-        return root.querySelector("img").style.transform === "none" && root.firstElementChild.firstElementChild.style.transform === "none";
+        const tilt = root?.firstElementChild?.firstElementChild;
+        const tiltTransform = tilt?.style.transform;
+        return (
+          root?.querySelector("img")?.style.transform === "none" &&
+          (tiltTransform === "none" ||
+            tiltTransform === "rotateX(0deg) rotateY(0deg)")
+        );
       });
       await page.mouse.move(0, 0);
     }
