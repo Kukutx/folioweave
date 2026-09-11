@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -12,13 +13,21 @@ import {
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type RefObject,
 } from "react";
+import { createPortal } from "react-dom";
+import type { PortfolioMediaAsset } from "@/portfolio/schema";
+import { lockPageScroll } from "@/lib/scroll-lock";
+import { mediaDimensions } from "@/portfolio/media";
+import { useViewportActivity } from "@/hooks/use-viewport-activity";
+import { useMediaQuery } from "@/hooks/use-media-query";
+
+const MotionImage = motion.create(Image);
 
 function ParallaxMotion({
   target,
@@ -35,8 +44,29 @@ function ParallaxMotion({
   return children(y);
 }
 
+function VisiblePhoto({
+  target,
+  parallax,
+  children,
+}: {
+  target: RefObject<HTMLDivElement | null>;
+  parallax: boolean;
+  children: (y: MotionValue<string> | number, active: boolean) => ReactNode;
+}) {
+  // One lifecycle owns both scroll subscriptions and image compositing. Keep
+  // fractional image sampling stable in view, without promoting distant cards.
+  const active = useViewportActivity(target);
+  return active && parallax ? (
+    <ParallaxMotion target={target}>
+      {(y) => children(y, active)}
+    </ParallaxMotion>
+  ) : (
+    children(0, active)
+  );
+}
+
 export function PhotoCard({
-  src,
+  image,
   index,
   isPolaroid = false,
   onClick,
@@ -44,7 +74,7 @@ export function PhotoCard({
   disableParallax = false,
   ariaLabel,
 }: {
-  src: string;
+  image: PortfolioMediaAsset;
   index: number;
   isPolaroid?: boolean;
   onClick?: () => void;
@@ -52,24 +82,17 @@ export function PhotoCard({
   disableParallax?: boolean;
   ariaLabel?: string;
 }) {
+  const { src, alt } = image;
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const hoverEnabled = !disableHover && !reducedMotion;
   const ref = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [loading, setLoading] = useState(true),
-    [hover, setHover] = useState(false);
+  const [hover, setHover] = useState(false);
   const mx = useMotionValue(0),
     my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 150, damping: 15 }),
     sy = useSpring(my, { stiffness: 150, damping: 15 });
   const rotateX = useTransform(sy, [-0.5, 0.5], ["10deg", "-10deg"]),
     rotateY = useTransform(sx, [-0.5, 0.5], ["-10deg", "10deg"]);
-  // Next.js may hydrate after an eager image is already complete, so onLoad
-  // can be missed even though the image bytes are ready. Reconcile cached
-  // images after mount while keeping the normal onLoad path for cold loads.
-  useEffect(() => {
-    const image = imageRef.current;
-    if (image?.complete && image.naturalWidth > 0) setLoading(false);
-  }, [src]);
-
   const interactive = Boolean(onClick);
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (!interactive || (event.key !== "Enter" && event.key !== " ")) return;
@@ -77,20 +100,25 @@ export function PhotoCard({
     onClick?.();
   };
 
-  const renderImage = (parallaxY: MotionValue<string> | number) => (
-    <motion.img
-      ref={imageRef}
+  const renderImage = (
+    parallaxY: MotionValue<string> | number,
+    active: boolean,
+  ) => (
+    <MotionImage
       src={src}
-      alt="Photography"
-      onLoad={() => setLoading(false)}
+      alt={alt}
       loading="lazy"
-      decoding="async"
-      fetchPriority="low"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: loading ? 0 : 1, scale: hover ? 1.1 : 1 }}
+      fill
+      sizes={
+        isPolaroid
+          ? "(max-width: 767px) 70vw, 25vw"
+          : "(max-width: 767px) 100vw, 33vw"
+      }
+      initial={false}
+      animate={{ opacity: 1, scale: hoverEnabled && hover ? 1.1 : 1 }}
       transition={{
         opacity: { duration: 0.3 },
-        scale: { duration: 0.4, ease: "easeOut" },
+        scale: { duration: reducedMotion ? 0 : 0.4, ease: "easeOut" },
       }}
       style={{
         width: "100%",
@@ -98,13 +126,14 @@ export function PhotoCard({
         objectFit: "cover",
         pointerEvents: "none",
         y: isPolaroid ? 0 : parallaxY,
-        position: isPolaroid ? "relative" : "absolute",
+        position: "absolute",
         top: isPolaroid ? 0 : "-10%",
         left: 0,
         borderRadius: isPolaroid ? 0 : "inherit",
-        willChange: isPolaroid || parallaxY !== 0 ? "transform" : "auto",
+        willChange: isPolaroid || active ? "transform" : "auto",
         transform: isPolaroid ? "translateZ(0)" : undefined,
-        backfaceVisibility: isPolaroid || parallaxY !== 0 ? "hidden" : "visible",
+        backfaceVisibility:
+          isPolaroid || parallaxY !== 0 ? "hidden" : "visible",
         WebkitBackfaceVisibility:
           isPolaroid || parallaxY !== 0 ? "hidden" : "visible",
       }}
@@ -114,13 +143,16 @@ export function PhotoCard({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{
+        duration: reducedMotion ? 0 : 0.5,
+        delay: reducedMotion ? 0 : (index % 4) * 0.1,
+      }}
       viewport={{ once: true }}
       style={{ perspective: 1000, aspectRatio: isPolaroid ? "1/1.2" : "9/16" }}
       onMouseMove={
-        disableHover
+        !hoverEnabled
           ? undefined
           : (e) => {
               const r = e.currentTarget.getBoundingClientRect();
@@ -128,19 +160,17 @@ export function PhotoCard({
               my.set((e.clientY - r.top - r.height / 2) / r.height);
             }
       }
-      onMouseLeave={
-        disableHover
-          ? undefined
-          : () => {
-              mx.set(0);
-              my.set(0);
-            }
-      }
+      onMouseLeave={() => {
+        mx.set(0);
+        my.set(0);
+      }}
       onClick={onClick}
       onKeyDown={interactive ? handleKeyDown : undefined}
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
-      aria-label={interactive ? ariaLabel ?? `Open image ${index + 1}` : undefined}
+      aria-label={
+        interactive ? (ariaLabel ?? `Open image ${index + 1}`) : undefined
+      }
     >
       <motion.div
         style={{
@@ -148,25 +178,26 @@ export function PhotoCard({
           height: "100%",
           borderRadius: isPolaroid ? 2 : 24,
           overflow: "hidden",
-          rotateX: isPolaroid ? rotateX : 0,
-          rotateY: isPolaroid ? rotateY : 0,
-          cursor: "pointer",
+          rotateX: isPolaroid && hoverEnabled ? rotateX : 0,
+          rotateY: isPolaroid && hoverEnabled ? rotateY : 0,
+          cursor: interactive ? "pointer" : "default",
           boxShadow: "0 4px 15px rgba(0,0,0,.1)",
           position: "relative",
           background: isPolaroid ? "rgba(255,255,255,.9)" : "#fff",
           backdropFilter: isPolaroid ? "blur(4px)" : "none",
           WebkitBackdropFilter: isPolaroid ? "blur(4px)" : "none",
           padding: isPolaroid ? "12px 12px 40px 12px" : 0,
-          border: isPolaroid
-            ? "1px solid rgba(255,255,255,0.5)"
-            : "none",
+          border: isPolaroid ? "1px solid rgba(255,255,255,0.5)" : "none",
         }}
-        onMouseEnter={() => setHover(true)}
+        onMouseEnter={() => setHover(hoverEnabled)}
         onMouseLeave={() => setHover(false)}
-        whileHover={{ zIndex: 10, boxShadow: "0 20px 40px rgba(0,0,0,.2)" }}
+        whileHover={
+          hoverEnabled
+            ? { zIndex: 10, boxShadow: "0 20px 40px rgba(0,0,0,.2)" }
+            : undefined
+        }
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
-        {loading && <div className="skeleton-loader" />}
         <div
           style={{
             width: "100%",
@@ -177,22 +208,15 @@ export function PhotoCard({
             overflow: "hidden",
           }}
         >
-          {loading && (
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 1.5s infinite",
-              }}
-            />
-          )}
-          {!isPolaroid && !disableParallax ? (
-            <ParallaxMotion target={ref}>{renderImage}</ParallaxMotion>
+          {!isPolaroid ? (
+            <VisiblePhoto
+              target={ref}
+              parallax={!disableParallax && !reducedMotion}
+            >
+              {renderImage}
+            </VisiblePhoto>
           ) : (
-            renderImage(0)
+            renderImage(0, true)
           )}
         </div>
       </motion.div>
@@ -205,12 +229,17 @@ export function GalleryLightbox({
   initialIndex,
   onClose,
 }: {
-  images: readonly string[];
+  images: readonly PortfolioMediaAsset[];
   initialIndex: number;
   onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(initialIndex),
     [direction, setDirection] = useState(0);
+  const [decodedSrc, setDecodedSrc] = useState<string | null>(null);
+  const dimensions = mediaDimensions(images[index].src);
   const move = useCallback(
     (d: number) => {
       setDirection(d);
@@ -218,38 +247,105 @@ export function GalleryLightbox({
     },
     [images.length],
   );
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const dialog = dialogRef.current;
+    const root = document.documentElement;
+    const rootBackground = root.style.backgroundColor;
+    const rootBackgroundPriority =
+      root.style.getPropertyPriority("background-color");
+    // Reserve only an existing classic scrollbar; do not add a gutter on
+    // touch/overlay-scrollbar devices and change their normal page width.
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+    // Paint the reserved gutter while this modal owns it. A root :has()
+    // selector would invalidate document-wide styles on every open/close.
+    if (scrollbarWidth > 0) root.style.backgroundColor = "#000";
+    const releaseScroll = lockPageScroll();
+    dialog?.showModal();
+    dialog?.style.setProperty("--modal-scrollbar-width", `${scrollbarWidth}px`);
+    closeButtonRef.current?.focus({ preventScroll: true });
+
     const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-      if (event.key === "ArrowLeft") move(-1);
-      if (event.key === "ArrowRight") move(1);
+      // Native modality makes the background inert. Explicit wrapping keeps
+      // Tab in the viewer instead of moving into browser chrome at the edge.
+      if (event.key === "Tab") {
+        const controls = [
+          ...(dialog?.querySelectorAll<HTMLButtonElement>(
+            "button:not([disabled]):not([hidden])",
+          ) ?? []),
+        ];
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (
+          first &&
+          last &&
+          ((event.shiftKey && document.activeElement === first) ||
+            (!event.shiftKey && document.activeElement === last))
+        ) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus({ preventScroll: true });
+        }
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        move(event.key === "ArrowLeft" ? -1 : 1);
+      }
     };
     window.addEventListener("keydown", key);
-    return () => window.removeEventListener("keydown", key);
-  }, [move, onClose]);
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
+    return () => {
+      window.removeEventListener("keydown", key);
+      dialog?.close();
+      if (scrollbarWidth > 0) {
+        if (rootBackground)
+          root.style.setProperty(
+            "background-color",
+            rootBackground,
+            rootBackgroundPriority,
+          );
+        else root.style.removeProperty("background-color");
+      }
+      releaseScroll();
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [move]);
+  return createPortal(
+    <motion.dialog
+      ref={dialogRef}
+      initial={{ opacity: reducedMotion ? 1 : 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: reducedMotion ? 0 : 0.3 }}
       className="gallery-overlay"
       role="dialog"
       aria-modal="true"
       aria-label="Photography viewer"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,.95)",
+        width: "calc(100vw + var(--modal-scrollbar-width, 0px))",
+        height: "100dvh",
+        maxWidth: "none",
+        maxHeight: "none",
+        margin: 0,
+        padding: 0,
+        border: 0,
+        background: "transparent",
         zIndex: 20001,
-        display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backdropFilter: "blur(10px)",
+        contain: "layout paint",
       }}
       onClick={onClose}
     >
       <button
+        ref={closeButtonRef}
         onClick={onClose}
         aria-label="Close gallery"
         style={{
@@ -272,6 +368,8 @@ export function GalleryLightbox({
         <X size={24} />
       </button>
       <div
+        aria-live="polite"
+        aria-atomic="true"
         style={{
           position: "absolute",
           bottom: "2rem",
@@ -340,7 +438,7 @@ export function GalleryLightbox({
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "85vw",
-          height: "85vh",
+          height: "85dvh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -348,22 +446,40 @@ export function GalleryLightbox({
         }}
       >
         <AnimatePresence initial={false} custom={direction}>
-          <motion.img
+          <MotionImage
             key={index}
-            src={images[index]}
+            src={images[index].src}
+            alt={images[index].alt}
+            {...dimensions}
+            sizes="85vw"
+            onLoad={() => setDecodedSrc(images[index].src)}
             custom={direction}
             initial={{
-              x: direction > 0 ? 1000 : -1000,
-              opacity: 0,
-              scale: 0.8,
+              x: reducedMotion ? 0 : direction > 0 ? 1000 : -1000,
+              opacity: reducedMotion ? 1 : 0,
+              scale: reducedMotion ? 1 : 0.8,
             }}
             animate={{ x: 0, opacity: 1, scale: 1 }}
-            exit={{ x: direction < 0 ? 1000 : -1000, opacity: 0, scale: 0.8 }}
+            exit={{
+              x: reducedMotion ? 0 : direction < 0 ? 1000 : -1000,
+              opacity: 0,
+              scale: reducedMotion ? 1 : 0.8,
+            }}
             transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
+              x: reducedMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: reducedMotion ? 0 : 0.2 },
             }}
             style={{
+              width:
+                decodedSrc === images[index].src
+                  ? "auto"
+                  : `min(${dimensions.width}px, 100%, ${(85 * dimensions.width) / dimensions.height}dvh)`,
+              height: "auto",
+              // Reserve the source ratio while loading; once decoded, retain
+              // the browser's exact ratio (optimized image rounding included).
+              aspectRatio: `auto ${dimensions.width} / ${dimensions.height}`,
               maxWidth: "100%",
               maxHeight: "100%",
               objectFit: "contain",
@@ -382,6 +498,7 @@ export function GalleryLightbox({
           />
         </AnimatePresence>
       </div>
-    </motion.div>
+    </motion.dialog>,
+    document.body,
   );
 }

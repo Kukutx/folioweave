@@ -1,5 +1,5 @@
 import { Code2, Globe } from "lucide-react";
-import { type ComponentType, type CSSProperties, type RefObject } from "react";
+import { type ComponentType, type CSSProperties } from "react";
 import { homeContent } from "@/content/home";
 import { siteConfig } from "@/config/site";
 import type { SocialIconName } from "@/config/schema";
@@ -17,15 +17,13 @@ const iconMap = {
   email: PortfolioEnvelopeIcon,
   github: Code2,
   website: Globe,
-} satisfies Record<SocialIconName, ComponentType<{ size?: number; "aria-hidden"?: boolean }>>;
-export function ContactFooter({
-  sectionRef,
-}: {
-  sectionRef: RefObject<HTMLElement | null>;
-}) {
+} satisfies Record<
+  SocialIconName,
+  ComponentType<{ size?: number; "aria-hidden"?: boolean }>
+>;
+export function ContactFooter() {
   return (
     <section
-      ref={sectionRef}
       className="contact-section"
       id="contact"
       style={{
@@ -58,7 +56,9 @@ export function ContactFooter({
                   <div className="footer-book-corner2" />
                   <div className="footer-book-corner-fold" />
                   <div className="footer-book-page-text footer-book-page-text--left-title">
-                    <h3 className="footer-book-left-title">{homeContent.footerBook.title}</h3>
+                    <h3 className="footer-book-left-title">
+                      {homeContent.footerBook.title}
+                    </h3>
                   </div>
                 </div>
               </div>

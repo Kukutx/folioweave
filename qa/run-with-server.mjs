@@ -2,7 +2,6 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
-import { cleanupPlaywrightProcesses } from "./chrome.mjs";
 
 const scripts = process.argv.slice(2);
 if (!scripts.length) {
@@ -103,13 +102,10 @@ try {
     NEXT_URL: base,
   };
   console.log(`\nQA server ready: ${base}\n`);
-  cleanupPlaywrightProcesses();
   for (const script of scripts) {
     await runScript(script, env);
-    cleanupPlaywrightProcesses();
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
 } finally {
-  cleanupPlaywrightProcesses();
   stopTree(server);
 }

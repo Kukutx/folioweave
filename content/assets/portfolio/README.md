@@ -26,4 +26,5 @@ Reference files from `portfolio.json` using root-relative paths such as:
 "/portfolio/projects/my-project/desktop.webp"
 ```
 
-`npm run content:check` verifies configured local files exist before development and production builds.
+`npm run content:build
+npm run content:check` verifies configured local files exist before development and production builds.

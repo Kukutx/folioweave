@@ -24,7 +24,9 @@ import {
   PortfolioSparklesIcon,
   PortfolioZapIcon,
 } from "./portfolio-icons";
-import { siteCopyright } from "@/config/site";
+import { siteConfig, siteCopyright } from "@/config/site";
+import { formatBlogDate } from "@/blog/format";
+import type { CustomBlogPost } from "@/blog/types";
 
 type Perspective = "standard" | "designer" | "eli5";
 
@@ -670,7 +672,7 @@ function DesignerContent() {
   );
 }
 
-export function CliptBlogPage() {
+export function CliptBlogPage({ post }: { post: CustomBlogPost }) {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -697,14 +699,17 @@ export function CliptBlogPage() {
         <header className="blog-post-header">
           <div className="blog-post-meta">
             <span className="blog-date">
-              <PortfolioCalendarIcon size={14} /> Jan 26, 2026
+              <PortfolioCalendarIcon size={14} />
+              <time dateTime={post.date}>
+                {formatBlogDate(post.date, siteConfig.identity.locale)}
+              </time>
             </span>
             <span className="blog-read-time">
-              <PortfolioClockIcon size={14} /> 6 min read
+              <PortfolioClockIcon size={14} /> {post.readingMinutes} min read
             </span>
           </div>
           <h1 className="blog-post-title">
-            Clipt: How I built a clipboard history app and keyboard for iOS.
+            {post.title}
             <span
               style={{
                 display: "block",
@@ -714,18 +719,13 @@ export function CliptBlogPage() {
                 fontWeight: 500,
               }}
             >
-              (It&apos;s complex than you think)
+              {post.subtitle}
             </span>
           </h1>
-          <p className="writing-subtitle">
-            I did not want to create just another clipboard manager that sits in
-            a list. I wanted to build something that felt like a native part of
-            the OS, something that would make people wonder if Apple had finally
-            built a clipboard manager into a future version of iOS.
-          </p>
+          <p className="writing-subtitle">{post.intro}</p>
         </header>
         <img
-          src="/media/5c0589_42a00ff8590c4ff5b1cf8496183b08b8~mv2.webp"
+          src={post.cover}
           alt="Clipt Hero"
           className="blog-post-hero-image"
         />

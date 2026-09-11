@@ -9,6 +9,7 @@ import {
 import { Moon, RefreshCw, Sun, Sunset, Wifi, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { mailto, siteConfig } from "@/config/site";
+import { useMotionActivity } from "@/hooks/use-motion-activity";
 
 type Weather = { icon: string; temperature: number | null };
 
@@ -76,21 +77,35 @@ const weatherIcons = {
 } as const;
 
 export function TimeWeatherWidget() {
-  const [time, setTime] = useState("");
+  const [clock, setClock] = useState({
+    time: "",
+    timeZoneLabel: siteConfig.location.timeZoneLabel,
+  });
   const [weather, setWeather] = useState<Weather>({
-    icon: "⛅",
+    icon: "—",
     temperature: null,
   });
   useEffect(() => {
-    const tick = () =>
-      setTime(
-        new Intl.DateTimeFormat("en-US", {
-          timeZone: siteConfig.location.timeZone,
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }).format(new Date()),
-      );
+    const timeFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
+      timeZone: siteConfig.location.timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const zoneFormatter = new Intl.DateTimeFormat(siteConfig.identity.locale, {
+      timeZone: siteConfig.location.timeZone,
+      timeZoneName: "short",
+    });
+    const tick = () => {
+      const now = new Date();
+      const dynamicLabel = zoneFormatter
+        .formatToParts(now)
+        .find((part) => part.type === "timeZoneName")?.value;
+      setClock({
+        time: timeFormatter.format(now),
+        timeZoneLabel: dynamicLabel || siteConfig.location.timeZoneLabel,
+      });
+    };
     tick();
     const id = window.setInterval(tick, 10_000);
     return () => clearInterval(id);
@@ -98,18 +113,37 @@ export function TimeWeatherWidget() {
   useEffect(() => {
     if (!siteConfig.features.weather) return;
     const controller = new AbortController();
-    fetch("/api/weather", { signal: controller.signal })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((data) => {
-        const mode = data.isDay ? "day" : "night";
-        const code = Number(data.weatherCode) as keyof typeof weatherIcons.day;
-        setWeather({
-          icon: weatherIcons[mode][code] || (data.isDay ? "⛅" : "🌙"),
-          temperature: Math.round(data.temperature),
-        });
+    const refresh = () => {
+      if (document.hidden) return;
+      fetch("/api/weather", {
+        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(6000)]),
       })
-      .catch(() => setWeather({ icon: "⛅", temperature: null }));
-    return () => controller.abort();
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((data) => {
+          if (data.status !== "fresh" || !Number.isFinite(data.temperature))
+            throw new Error("Weather unavailable");
+          const mode = data.isDay ? "day" : "night";
+          const code = Number(
+            data.weatherCode,
+          ) as keyof typeof weatherIcons.day;
+          setWeather({
+            icon: weatherIcons[mode][code] || (data.isDay ? "⛅" : "🌙"),
+            temperature: Math.round(data.temperature),
+          });
+        })
+        .catch(() => {
+          if (!controller.signal.aborted)
+            setWeather({ icon: "—", temperature: null });
+        });
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 300_000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
+    };
   }, []);
   return (
     <div className="time-widget" style={{ fontSize: "0.75rem", opacity: 0.8 }}>
@@ -126,8 +160,8 @@ export function TimeWeatherWidget() {
           whiteSpace: "nowrap",
         }}
       >
-        <span className="time-label">{time}</span>
-        <span className="ist-label">{siteConfig.location.timeZoneLabel}</span>
+        <span className="time-label">{clock.time}</span>
+        <span className="timezone-label">{clock.timeZoneLabel}</span>
         {siteConfig.features.weather && (
           <span
             className="weather-label"
@@ -138,7 +172,9 @@ export function TimeWeatherWidget() {
             }
           >
             <span aria-hidden>{weather.icon}</span>
-            {weather.temperature !== null && <span>{weather.temperature}°</span>}
+            {weather.temperature !== null && (
+              <span>{weather.temperature}°</span>
+            )}
           </span>
         )}
       </div>
@@ -164,14 +200,17 @@ export function ContactCycleButton({ compact = false }: { compact?: boolean }) {
   const sx = useSpring(x, { stiffness: 320, damping: 28 }),
     sy = useSpring(y, { stiffness: 320, damping: 28 });
   const ref = useRef<HTMLDivElement>(null);
+  const { active: motionActive } = useMotionActivity(ref, {
+    finePointer: true,
+  });
   useEffect(() => {
-    if (!hovered) return;
+    if (!hovered || !motionActive) return;
     const id = window.setInterval(
       () => setIndex((v) => (v + 1) % buttonStyles.length),
       250,
     );
     return () => clearInterval(id);
-  }, [hovered]);
+  }, [hovered, motionActive]);
   const onMove = (e: React.MouseEvent) => {
     if (
       window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
@@ -201,10 +240,7 @@ export function ContactCycleButton({ compact = false }: { compact?: boolean }) {
       }}
     >
       <a
-        href={mailto(
-          siteConfig.contact.email,
-          siteConfig.contact.helloSubject,
-        )}
+        href={mailto(siteConfig.contact.email, siteConfig.contact.helloSubject)}
         className={`cycle-btn ${compact ? "cycle-btn-compact" : ""} ${buttonStyles[index][0]}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => {
@@ -229,7 +265,10 @@ export function ContactCycleButton({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function greetingForHour(hour: number): { message: string; icon: "sun" | "sunset" | "moon" } {
+function greetingForHour(hour: number): {
+  message: string;
+  icon: "sun" | "sunset" | "moon";
+} {
   if (hour >= 5 && hour < 12) {
     return {
       message: "Good morning! Start your day with some design inspiration.",
@@ -243,7 +282,10 @@ function greetingForHour(hour: number): { message: string; icon: "sun" | "sunset
     };
   }
   if (hour >= 17 && hour < 22) {
-    return { message: "Good evening! Thanks for stopping by.", icon: "sunset" as const };
+    return {
+      message: "Good evening! Thanks for stopping by.",
+      icon: "sunset" as const,
+    };
   }
   return {
     message: "Late night browsing? Me too. Enjoy the portfolio!",
@@ -288,7 +330,7 @@ export function GreetingToast() {
             position: "fixed",
             top: 80,
             left: "50%",
-            zIndex: 19000,
+            zIndex: "var(--layer-notice)",
             background: "rgba(255,255,255,.7)",
             backdropFilter: "blur(12px)",
             padding: "10px 20px",
@@ -341,11 +383,14 @@ export function GreetingToast() {
 
 async function connectivityPing() {
   try {
-    await fetch(`/favicon-32x32.png?ping=${Date.now()}`, {
-      cache: "no-store",
-      mode: "no-cors",
-    });
-    return true;
+    const response = await fetch(
+      `${siteConfig.assets.icon}?ping=${Date.now()}`,
+      {
+        cache: "no-store",
+        signal: AbortSignal.timeout(3000),
+      },
+    );
+    return response.ok;
   } catch {
     return false;
   }
@@ -405,7 +450,7 @@ export function OfflineScreen() {
           {leaving ? <Wifi size={26} /> : <WifiOff size={26} />}
         </div>
         <h1 className="offline-code" aria-hidden>
-          4<span className="offline-zero">0</span>4
+          OFF<span className="offline-zero">LINE</span>
         </h1>
         <p className="offline-note" aria-hidden>
           {leaving ? "back online!" : "well, you're offline"}

@@ -1,7 +1,7 @@
-import type { Metadata, MetadataRoute } from "next";
+import type { Metadata } from "next";
 import { products } from "./products";
 import { siteConfig } from "./site";
-import { portfolioSeo } from "@/portfolio";
+import { blogContent, portfolioSeo } from "@/portfolio";
 
 const { identity, origin, socialLinks, assets } = siteConfig;
 
@@ -109,17 +109,9 @@ function createRouteMetadata({
 
 export const routeMetadata = {
   blogs: createRouteMetadata({
-    title: `Blogs | ${identity.name}`,
-    description: "Thoughts on design, code, and building products.",
+    title: `${blogContent.title} | ${identity.name}`,
+    description: blogContent.description,
     path: "/blogs",
-  }),
-  cliptBlog: createRouteMetadata({
-    title:
-      `Clipt: How I built a clipboard history app and keyboard for iOS.(It's complex than you think) | ${identity.name}`,
-    description:
-      "My journey building Clipt, an iOS clipboard manager with a focus on native feel and performance.",
-    path: products.clipt.storyRoute,
-    image: "/media/5c0589_42a00ff8590c4ff5b1cf8496183b08b8~mv2.webp",
   }),
   brink: createRouteMetadata({
     title: "Brink — Podcasts in a calmer flow",
@@ -179,28 +171,6 @@ export const routeMetadata = {
   }),
 } satisfies Record<string, Metadata>;
 
-export const sitemapEntries = [
-  { path: "", changeFrequency: "monthly", priority: 1 },
-  { path: "/case-studies", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/district", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/clipt", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/blogs", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/blogs/clipt", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/brink", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/brink/privacy", changeFrequency: "yearly", priority: 0.2 },
-  { path: "/clipt-privacypolicy", changeFrequency: "yearly", priority: 0.2 },
-  { path: "/flipfact", changeFrequency: "yearly", priority: 0.2 },
-  { path: "/habee-privacypolicy", changeFrequency: "yearly", priority: 0.2 },
-  {
-    path: "/notchshelf-privacypolicy",
-    changeFrequency: "yearly",
-    priority: 0.2,
-  },
-] satisfies Array<{
-  path: string;
-  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
-  priority: number;
-}>;
 
 export const districtJsonLd = {
   "@context": "https://schema.org",

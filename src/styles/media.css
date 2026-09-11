@@ -1,0 +1,46 @@
+.work-image-container picture {
+  display: block;
+  width: 100%;
+}
+
+/* Keep the native closed-dialog display:none contract. A closed fixed dialog
+   wider than the document can otherwise create a transient horizontal gutter. */
+.gallery-overlay[open] {
+  display: flex;
+  /* Preserve the modal's fade layer until close, without changing the
+     fractional rasterization of each image into a permanent image layer. */
+  will-change: opacity;
+}
+
+/* The static backdrop owns blur; moving images must not share its filter node. */
+.gallery-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.notchshelf-carousel:focus-within .notchshelf-carousel-btn {
+  opacity: 1;
+}
+
+.notchshelf-carousel-btn[hidden] {
+  display: none;
+}
+
+/* Intrinsic content must never stretch to the HTML height attribute. */
+.blog-post-hero-image {
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .gallery-overlay .gallery-nav-btn {
+    top: auto;
+    bottom: 1rem;
+    width: 48px !important;
+    height: 48px !important;
+  }
+}

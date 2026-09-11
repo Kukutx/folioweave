@@ -9,18 +9,18 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { siteConfig } from "@/config/site";
-import { scrollToElement } from "@/lib/scroll";
+import { scrollToElement, scrollToPosition } from "@/lib/scroll";
+import { lockPageScroll } from "@/lib/scroll-lock";
+import { resolveNavigation } from "@/portfolio/publication-policy.mjs";
 import { ContactCycleButton, TimeWeatherWidget } from "./chrome";
 
-const navigation = siteConfig.navigation.filter((item) => {
-  if (item.demoOnly && !siteConfig.features.demoRoutes) return false;
-  if (item.sectionId === "about") return siteConfig.features.about;
-  if (item.sectionId === "work") return siteConfig.features.work;
-  if (item.sectionId === "photography") return siteConfig.features.photography;
-  return true;
-});
+const navigation = resolveNavigation(
+  siteConfig.navigation,
+  siteConfig.features,
+);
 
 function MenuGlyph({ size = 20 }: { size?: number }) {
   return (
@@ -49,6 +49,52 @@ export function MainNav({
   themeProgress: MotionValue<number>;
 }) {
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const toggle = toggleRef.current;
+    const releaseScroll = lockPageScroll();
+    const main = document.getElementById("main-content");
+    const wasInert = main?.inert ?? false;
+    if (main) main.inert = true;
+    menuRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+      }
+      if (event.key !== "Tab") return;
+      const items = [
+        toggleRef.current,
+        ...Array.from(
+          menuRef.current?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? [],
+        ),
+      ].filter(Boolean) as HTMLElement[];
+      const first = items[0],
+        last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const resize = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    document.addEventListener("keydown", keydown);
+    desktop.addEventListener("change", resize);
+    return () => {
+      document.removeEventListener("keydown", keydown);
+      desktop.removeEventListener("change", resize);
+      if (main) main.inert = wasInert;
+      releaseScroll();
+      toggle?.focus({ preventScroll: true });
+    };
+  }, [open]);
   const [active, setActive] = useState<string | null>(null);
   const { scrollY } = useScroll();
   const paddingTarget = useTransform(
@@ -63,8 +109,16 @@ export function MainNav({
     damping: 30,
     mass: 0.5,
   });
-  const navTop = useSpring(topTarget, { stiffness: 150, damping: 30, mass: 0.5 });
-  const navGap = useSpring(gapTarget, { stiffness: 150, damping: 30, mass: 0.5 });
+  const navTop = useSpring(topTarget, {
+    stiffness: 150,
+    damping: 30,
+    mass: 0.5,
+  });
+  const navGap = useSpring(gapTarget, {
+    stiffness: 150,
+    damping: 30,
+    mass: 0.5,
+  });
   const borderColor = useTransform(themeProgress, (value) => {
     const channel = Math.round(255 * value);
     const alpha = 0.08 + 0.07 * value;
@@ -133,9 +187,7 @@ export function MainNav({
         resolveActive();
       },
       {
-        threshold: [
-          0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
-        ],
+        threshold: [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         rootMargin: "-5% 0px -40% 0px",
       },
     );
@@ -159,14 +211,18 @@ export function MainNav({
   }, []);
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+      return;
     e.preventDefault();
-    setOpen(false);
-    const target = document.querySelector<HTMLElement>(id);
+    // Release inert/scroll lock before Lenis starts; unlocking cancels an active scroll.
+    flushSync(() => setOpen(false));
+    const target = document.getElementById(id.slice(1));
     if (!target) return;
 
     const nav = document.querySelector<HTMLElement>(".nav");
     const offset = nav ? nav.getBoundingClientRect().bottom + 24 : 98;
-    scrollToElement(target, { offset: -offset, duration: 1.2 });
+    window.history.pushState(null, "", id);
+    scrollToElement(target, { offset: -offset, duration: 1.2, force: true });
   };
   return (
     <>
@@ -180,7 +236,7 @@ export function MainNav({
           top: navTop,
           left: "50%",
           x: "-50%",
-          zIndex: 20000,
+          zIndex: "var(--layer-navigation)",
         }}
       >
         <motion.div className="nav-content" style={{ gap: navGap }}>
@@ -194,7 +250,23 @@ export function MainNav({
               flexShrink: 0,
             }}
           >
-            <Link href="/" className="logo">
+            <Link
+              href="/"
+              className="logo"
+              onClick={(event) => {
+                if (
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                )
+                  return;
+                event.preventDefault();
+                flushSync(() => setOpen(false));
+                window.history.pushState(null, "", "/");
+                scrollToPosition(0, { force: true });
+              }}
+            >
               {siteConfig.identity.initials}
             </Link>
             {siteConfig.features.weather && (
@@ -228,6 +300,10 @@ export function MainNav({
             )}
           </div>
           <button
+            ref={toggleRef}
+            type="button"
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
             className={`mobile-menu-toggle ${open ? "open" : ""}`}
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((v) => !v)}
@@ -238,6 +314,12 @@ export function MainNav({
         </motion.div>
       </motion.nav>
       <div
+        id="mobile-navigation"
+        ref={menuRef}
+        role="navigation"
+        aria-label="Mobile navigation"
+        aria-hidden={!open}
+        inert={!open}
         className={`mobile-nav-overlay ${open ? "open" : ""}`}
         onClick={() => setOpen(false)}
       >

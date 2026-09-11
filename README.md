@@ -40,7 +40,7 @@ For first-time personalization, run:
 npm run personalize
 ```
 
-The wizard updates only the public content layer and never rewrites layout or animation components.
+The wizard updates author content and rebuilds validated publication outputs; it does not rewrite layout or animation components.
 
 ## Personalize
 
@@ -49,27 +49,26 @@ The primary user-facing surface is intentionally small:
 ```text
 portfolio.json          identity, hero, About, projects, photos, SEO, feature toggles
 portfolio.schema.json   editor autocomplete and validation hints
-public/portfolio/       your portraits, photography, project artwork, and resume
+content/assets/portfolio/       your portraits, photography, project artwork, and resume
 ```
 
 Typical workflow:
 
 1. Run `npm run personalize` for identity, location, contact, social links, and an optional clean starting state. Optional values can be removed explicitly with `-`.
-2. Put your own files under `public/portfolio/`.
+2. Put your own files under `content/assets/portfolio/`.
 3. Edit `portfolio.json` to add projects, photos, About content, and links.
-4. Run `npm run content:check`.
+4. Run `npm run content:build` followed by `npm run content:check`.
 5. Start the site with `npm run dev`.
 
-Projects live in `portfolio.json > projects` and support four visual layouts:
+Projects live in `portfolio.json > projects` with independent presentation fields:
 
-- `standard` — image + copy
-- `featured` — featured/mobile-emphasized project
-- `story` — project plus an editorial story block
-- `carousel` — project with a screenshot carousel
+- `media.kind: image | carousel` — one image or a reusable carousel
+- `mobileTreatment: standard | featured` — mobile presentation
+- optional `story` — an editorial block with either media kind
 
 Each project has `enabled`, so work can be staged without deleting content. Photography, About, Resume, weather, and bundled demo routes also have feature switches.
 
-`src/config/` and `src/content/` are internal compatibility/adaptation layers. Normal personalization should not require editing them.
+`src/config/` and `src/content/` are internal typed content views. Normal personalization should not require editing them.
 
 See [`docs/PERSONALIZATION.md`](docs/PERSONALIZATION.md) for the full content model and [`docs/TEMPLATE.md`](docs/TEMPLATE.md) for advanced theme and extension guidance.
 
@@ -78,13 +77,13 @@ See [`docs/PERSONALIZATION.md`](docs/PERSONALIZATION.md) for the full content mo
 ```text
 portfolio.json               single user-facing content source
 portfolio.schema.json        JSON schema for editors
-public/portfolio/            recommended location for personal assets
+content/assets/portfolio/            recommended location for personal assets
 scripts/personalize.mjs      first-run personalization wizard
 scripts/portfolio-check.mjs  content and local-asset validation
 src/portfolio/               typed runtime adapter for portfolio.json
 src/app/                     routes, APIs, metadata, sitemap, robots, manifest
 src/config/                  integration/cache/SEO adapters and shared types
-src/content/                 compatibility exports for feature components
+src/content/                 typed content exports for feature components
 src/components/home/         homepage feature sections
 src/components/media/        gallery, carousel, camera, and resume interactions
 src/hooks/                   scrolling, responsive state, and lifecycle hooks
@@ -101,6 +100,7 @@ Content is validated automatically before development and production builds.
 Run it directly with:
 
 ```bash
+npm run content:build
 npm run content:check
 ```
 
@@ -121,7 +121,25 @@ npm run qa:all
 
 `qa:all` runs the production browser suite and covers core interactions, accessibility and quality rules, media health, font fallback behavior, the resume state machine, and bundle budgets.
 
+`npm run qa:boundary` enforces the reusable-versus-personal path policy described in [`docs/BRANCHING.md`](docs/BRANCHING.md). It also writes a local classification report for promotion work from `personal` to `develop`.
+
 Browser QA auto-detects Chrome, Chromium, or Edge. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
+
+## Markdown blogs
+
+Add `content/blogs/my-post.md` and FolioWeave turns it into `/blogs/my-post` automatically. The same file also feeds the blog index, reading-time estimate, per-post SEO/Open Graph metadata, sitemap, and browser QA. No route component or article registry is required for normal posts.
+
+The minimum frontmatter is:
+
+```md
+---
+title: "My post"
+date: "2026-09-07"
+description: "A short summary."
+---
+```
+
+Optional fields are `subtitle`, `cover`, `tags`, and `draft`. See `content/blogs/_README.md` and `docs/PERSONALIZATION.md` for the full format. Custom React blog routes can still coexist with Markdown when an article needs specialized interactivity.
 
 ## Deployment
 
@@ -131,7 +149,7 @@ FolioWeave uses standard Next.js conventions and requires no provider-specific c
 
 The repository includes complete product, blog, case-study, and privacy pages as working examples. They are enabled by default so the starter is fully demonstrable after cloning.
 
-For a clean personal portfolio, `npm run personalize` removes demo projects/content from the public config and sets `features.demoRoutes` to `false`. Bundled example routes then return 404, disappear from the sitemap, and the demo podcast API is disabled, while the underlying example source remains available for reference.
+For a clean personal portfolio, `npm run personalize` removes demo projects/content from the public config and sets `features.demoRoutes` to `false`. Bundled example routes, including the custom Clipt blog example, then return 404 and disappear from the sitemap, while the underlying example source remains available for reference. Your own published Markdown files in `content/blogs/` remain independent of `demoRoutes` and make `/blogs` available automatically.
 
 ## Demo assets
 
@@ -148,3 +166,8 @@ The project includes restrictive security headers, safe JSON-LD serialization, b
 ## License
 
 Source code and documentation are licensed under the [MIT License](LICENSE).
+## Architecture and privacy
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for author/published asset separation,
+transactional generation, route registration, client boundaries and visual contracts.
+The repository is private; deployment access is a separate concern.

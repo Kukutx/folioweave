@@ -3,6 +3,8 @@ import path from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import { prepareContent } from "./content-build.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configPath = path.join(root, "portfolio.json");
@@ -76,19 +78,9 @@ function initialsFor(name) {
   );
 }
 
-function slugFor(value) {
-  return (
-    value
-      .normalize("NFKD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "portfolio"
-  );
-}
-
 function writePlaceholderAssets(initials) {
-  const dir = path.join(root, "public", "portfolio", "profile");
+  initials = initials.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+  const dir = path.join(root, "content", "assets", "portfolio", "profile");
   fs.mkdirSync(dir, { recursive: true });
   const portrait = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1440"><rect width="1200" height="1440" fill="#e9e9e9"/><circle cx="600" cy="570" r="230" fill="#c9c9c9"/><rect x="250" y="850" width="700" height="420" rx="210" fill="#c9c9c9"/><text x="600" y="1320" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" fill="#777">${initials}</text></svg>`;
   const socialPreview = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630"><rect width="1200" height="630" fill="#f3f3f3"/><text x="600" y="330" text-anchor="middle" font-family="Arial,sans-serif" font-size="128" font-weight="700" fill="#222">${initials}</text></svg>`;
@@ -235,13 +227,16 @@ portfolio.seo.keywords = [name, role, `${role} portfolio`, `${role} ${country}`,
 portfolio.seo.knowsAbout = [role];
 portfolio.seo.caseStudiesDescription = `Selected work and case studies by ${name}, ${role}.`;
 delete portfolio.seo.award;
+portfolio.blog = {
+  title: "Blogs",
+  description: `Notes from ${firstName} about building software, products, and systems.`,
+};
 
 for (const dir of ["profile", "photography", "projects", "resume"]) {
-  fs.mkdirSync(path.join(root, "public", "portfolio", dir), { recursive: true });
+  fs.mkdirSync(path.join(root, "content", "assets", "portfolio", dir), { recursive: true });
 }
 
 if (cleanStart) {
-  const slug = slugFor(name);
   writePlaceholderAssets(initials);
   portfolio.hero.portraits = ["/portfolio/profile/portrait-placeholder.svg"];
   portfolio.about.timeline = [];
@@ -260,23 +255,22 @@ if (cleanStart) {
   portfolio.features.resume = false;
   portfolio.features.demoRoutes = false;
   portfolio.features.weather = Boolean(geo);
-  portfolio.site.resume = {
-    image: "/portfolio/resume/resume.jpg",
-    pdf: "/portfolio/resume/resume.pdf",
-    downloadName: `${slug}-resume.pdf`,
-  };
   portfolio.site.assets.socialPreview = "/portfolio/profile/social-preview-placeholder.svg";
   portfolio.site.assets.icon = "/portfolio/profile/icon-placeholder.svg";
   portfolio.site.assets.appleTouchIcon = "/portfolio/profile/icon-placeholder.svg";
 }
 
+await prepareContent(root, portfolio);
+const previousConfig = fs.readFileSync(configPath, "utf8");
 fs.writeFileSync(configPath, `${JSON.stringify(portfolio, null, 2)}\n`, "utf8");
+const generated = spawnSync(process.execPath, [path.join(root, "scripts/content-build.mjs")], { cwd: root, stdio: "inherit" });
+if (generated.status !== 0) { fs.writeFileSync(configPath, previousConfig); rl?.close(); process.exit(generated.status ?? 1); }
 rl?.close();
 
 console.log("\n✓ portfolio.json updated");
-console.log("✓ public/portfolio/{profile,photography,projects,resume} is ready");
+console.log("✓ content/assets/portfolio/{profile,photography,projects,resume} is ready");
 console.log("\nNext:");
-console.log("  1. Put your files under public/portfolio/");
+console.log("  1. Put source files under content/assets/portfolio/ (never edit generated public/portfolio/)");
 console.log("  2. Edit portfolio.json to add projects/photos and enable sections");
-console.log("  3. Run npm run content:check");
+console.log("  3. Run npm run content:build && npm run content:check");
 console.log("  4. Run npm run dev\n");

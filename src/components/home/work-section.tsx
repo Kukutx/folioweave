@@ -1,20 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import Image, { getImageProps } from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Award, MessageSquareText } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "../motion-text";
-import { NotchShelfCarousel } from "../media-interactions";
+import { MediaCarousel } from "../media/media-carousel";
 import { workProjects } from "@/content/work";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import type {
   PortfolioProject,
   PortfolioProjectAction,
   PortfolioProjectBadge,
+  PortfolioProjectImage,
 } from "@/portfolio/schema";
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
+import { mediaDimensions } from "@/portfolio/media";
 
 type Preview = {
   src: string;
@@ -23,23 +26,39 @@ type Preview = {
   maxWidth?: number;
 };
 
-function WorkImage({ project }: { project: PortfolioProject }) {
-  const isMobile = useMobileViewport();
-  const image = project.image;
-  if (!image) return null;
-  const src = isMobile ? image.mobile : image.desktop;
-  const dimensions =
-    (isMobile ? image.mobileSize : image.desktopSize) ??
-    (isMobile ? [2000, 1744] : [2000, 1206]);
+function WorkImage({
+  image,
+  projectName,
+}: {
+  image: PortfolioProjectImage;
+  projectName: string;
+}) {
+  const dimensions = mediaDimensions(image.src);
+  const common = {
+    alt: image.alt || projectName,
+    sizes: "(max-width: 768px) 100vw, 60vw",
+  };
+  const { props } = getImageProps({ ...common, src: image.src, ...dimensions });
+  const mobile = image.mobile
+    ? getImageProps({
+        ...common,
+        src: image.mobile,
+        ...mediaDimensions(image.mobile),
+      }).props
+    : null;
   return (
-    <img
-      src={src}
-      alt={image.alt || project.name}
-      width={dimensions[0]}
-      height={dimensions[1]}
-      decoding="async"
-      fetchPriority="low"
-    />
+    <picture>
+      {mobile && (
+        <source
+          media="(max-width: 767px)"
+          srcSet={mobile.srcSet}
+          sizes={mobile.sizes}
+          width={mobile.width}
+          height={mobile.height}
+        />
+      )}
+      <img {...props} alt={common.alt} />
+    </picture>
   );
 }
 
@@ -99,28 +118,20 @@ function ActionLink({ action }: { action: PortfolioProjectAction }) {
         },
       }
     : {};
+  const newTab = action.newTab ?? !action.href.startsWith("/");
+  const tabProps = newTab
+    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+    : {};
 
   if (action.href.startsWith("/")) {
     return (
-      <Link
-        href={action.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={style}
-        {...hoverProps}
-      >
+      <Link href={action.href} {...tabProps} style={style} {...hoverProps}>
         {content}
       </Link>
     );
   }
   return (
-    <a
-      href={action.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={style}
-      {...hoverProps}
-    >
+    <a href={action.href} {...tabProps} style={style} {...hoverProps}>
       {content}
     </a>
   );
@@ -143,13 +154,14 @@ function ProjectBadge({
 }: {
   badge: PortfolioProjectBadge;
   mobile: boolean;
-  onPreview: (event: React.MouseEvent<HTMLElement>, badge: PortfolioProjectBadge) => void;
+  onPreview: (
+    event: React.MouseEvent<HTMLElement>,
+    badge: PortfolioProjectBadge,
+  ) => void;
   onPreviewEnd: () => void;
 }) {
   const className =
-    badge.tone === "blue"
-      ? "award-badge-blue"
-      : "award-badge shimmer-badge";
+    badge.tone === "blue" ? "award-badge-blue" : "award-badge shimmer-badge";
   const previewProps = badge.previewImage
     ? {
         onMouseEnter: (event: React.MouseEvent<HTMLElement>) =>
@@ -202,10 +214,10 @@ function StoryBlock({
 }) {
   const story = project.story;
   if (!story) return null;
-  const dimensions = story.imageSize ?? [2000, 547];
+  const dimensions = mediaDimensions(story.image);
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: 0.2 }}
@@ -283,13 +295,11 @@ function StoryBlock({
           }
           style={{ position: "relative", display: "inline-block" }}
         >
-          <img
+          <Image
             src={story.image}
             alt={story.imageAlt}
-            width={dimensions[0]}
-            height={dimensions[1]}
-            decoding="async"
-            fetchPriority="low"
+            {...dimensions}
+            sizes="(max-width: 768px) 100vw, 400px"
             style={{
               width: "100%",
               height: "auto",
@@ -305,7 +315,7 @@ function StoryBlock({
         </motion.div>
         <motion.p
           variants={sectionChildVariants}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
           style={{
@@ -325,10 +335,15 @@ function StoryBlock({
 }
 
 function ProjectMedia({ project }: { project: PortfolioProject }) {
-  if (project.layout === "carousel" && project.carouselImages?.length) {
-    return <NotchShelfCarousel images={project.carouselImages} />;
+  const isMobile = useMobileViewport();
+  if (project.media.kind === "carousel") {
+    const slides = project.media.images.map((slide) => ({
+      src: isMobile ? (slide.mobile ?? slide.src) : slide.src,
+      alt: slide.alt,
+    }));
+    return <MediaCarousel images={slides} />;
   }
-  return <WorkImage project={project} />;
+  return <WorkImage image={project.media.image} projectName={project.name} />;
 }
 
 function ProjectCard({
@@ -342,8 +357,9 @@ function ProjectCard({
 }) {
   const previewFrame = useRef<number | null>(null);
   const classes = ["work-item"];
-  if (project.image) classes.push("responsive-work-image");
-  if (project.featuredOnMobile) {
+  if (project.media.kind === "image") classes.push("responsive-work-image");
+  if (project.media.kind === "carousel") classes.push("work-carousel-enabled");
+  if (project.mobileTreatment === "featured") {
     classes.push("mobile-featured-work", `mobile-work-${project.id}`);
   }
 
@@ -409,11 +425,11 @@ function ProjectCard({
           <div className="work-text-side">
             <span className="work-text-company">
               {project.icon && (
-                <img
+                <Image
                   src={project.icon}
                   alt=""
-                  decoding="async"
-                  fetchPriority="low"
+                  width={24}
+                  height={24}
                   style={{
                     width: 24,
                     height: 24,
@@ -437,13 +453,16 @@ function ProjectCard({
             {project.actions?.length ? (
               <div>
                 {project.actions.map((action) => (
-                  <ActionLink key={`${project.id}-${action.label}`} action={action} />
+                  <ActionLink
+                    key={`${project.id}-${action.label}`}
+                    action={action}
+                  />
                 ))}
               </div>
             ) : null}
           </div>
         </div>
-        {project.layout === "story" && (
+        {project.story && (
           <StoryBlock project={project} setPreview={setPreview} />
         )}
       </div>
@@ -455,17 +474,6 @@ export function WorkSection() {
   const mobile = useMobileViewport();
   const [preview, setPreview] = useState<Preview | null>(null);
 
-  useEffect(() => {
-    const preload = workProjects.flatMap((project) => [
-      project.story?.image,
-      project.badge?.previewImage,
-    ]).filter((src): src is string => Boolean(src));
-    preload.forEach((src) => {
-      const image = new Image();
-      image.src = src;
-    });
-  }, []);
-
   if (!workProjects.length) return null;
 
   return (
@@ -473,12 +481,15 @@ export function WorkSection() {
       <section id="work">
         <motion.div
           variants={sectionRevealVariants}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, margin: "-10%" }}
           className="section-inner"
         >
-          <motion.div variants={sectionChildVariants} style={{ marginBottom: "4rem" }}>
+          <motion.div
+            variants={sectionChildVariants}
+            style={{ marginBottom: "4rem" }}
+          >
             <h2 className="section-label">
               <CharReveal>Work</CharReveal>
             </h2>

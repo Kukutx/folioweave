@@ -1,10 +1,25 @@
-import { requireDemoRoutes } from "@/portfolio/demo-routes";
-import { routeMetadata } from "@/config/seo";
+import type { Metadata } from "next";
+import { requirePublishedRoute } from "@/portfolio/route-guard";
+import { notFound } from "next/navigation";
+import { getCustomBlogPost } from "@/blog";
+import { createBlogMetadata } from "@/blog/metadata";
+import { BlogPostingJsonLd } from "@/components/blog/blog-json-ld";
 import { CliptBlogPage } from "@/components/clipt-blog-page";
 import "@/styles/blogs.css";
 
-export const metadata = routeMetadata.cliptBlog;
+export function generateMetadata(): Metadata {
+  const post = getCustomBlogPost("clipt");
+  return post ? createBlogMetadata(post) : {};
+}
+
 export default function Page() {
-  requireDemoRoutes();
-  return <CliptBlogPage />;
+  requirePublishedRoute("/blogs/clipt");
+  const post = getCustomBlogPost("clipt");
+  if (!post) notFound();
+  return (
+    <>
+      <BlogPostingJsonLd post={post} />
+      <CliptBlogPage post={post} />
+    </>
+  );
 }

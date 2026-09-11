@@ -1,4 +1,4 @@
-import { requireDemoRoutes } from "@/portfolio/demo-routes";
+import { requirePublishedRoute } from "@/portfolio/route-guard";
 import { products } from "@/config/products";
 import { routeMetadata } from "@/config/seo";
 import { PrivacyPageShell, PrivacySection, privacyClass } from "@/components/privacy-page";
@@ -6,7 +6,7 @@ import "@/styles/privacy.css";
 
 export const metadata = routeMetadata.cliptPrivacy;
 export default function Page() {
-  requireDemoRoutes();
+  requirePublishedRoute("/clipt-privacypolicy");
   return (
     <PrivacyPageShell prefix="clipt" subtitle="Clipt App">
           <PrivacySection prefix="clipt" title="1. Introduction">

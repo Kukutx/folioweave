@@ -1,10 +1,18 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Fragment, useEffect, useState, type CSSProperties } from "react";
+import {
+  Fragment,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import { useMotionActivity } from "@/hooks/use-motion-activity";
 import { AboutSection } from "../about-section";
 import { CharReveal } from "../motion-text";
-import { ResumePrinter, type ResumeState } from "../media-interactions";
+import { ResumePrinter, type ResumeState } from "../media/resume-printer";
 import { homeContent } from "@/content/home";
 import { portraitImages } from "@/content/media";
 import { useMobileViewport } from "@/hooks/use-media-query";
@@ -12,13 +20,22 @@ import { mailto, siteConfig } from "@/config/site";
 import type { PortfolioRichTextSegment } from "@/portfolio/schema";
 
 const greetings = homeContent.greetings;
+// Greeting/portrait ticks must not rerender the independent About experience.
+const StableAboutSection = memo(AboutSection);
 
-function RichText({ segments }: { segments: readonly PortfolioRichTextSegment[] }) {
+function RichText({
+  segments,
+}: {
+  segments: readonly PortfolioRichTextSegment[];
+}) {
   return segments.map((segment, index) =>
     "text" in segment ? (
       <Fragment key={index}>{segment.text}</Fragment>
     ) : (
-      <span className="hero-brand-inline" key={`${segment.brand.name}-${index}`}>
+      <span
+        className="hero-brand-inline"
+        key={`${segment.brand.name}-${index}`}
+      >
         <img src={segment.brand.icon} alt={segment.brand.name} />{" "}
         {segment.brand.name}
       </span>
@@ -27,44 +44,51 @@ function RichText({ segments }: { segments: readonly PortfolioRichTextSegment[] 
 }
 
 export function Hero() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { active, reducedMotion } = useMotionActivity(heroRef);
   const mobile = useMobileViewport(),
     [greet, setGreet] = useState(0),
     [portrait, setPortrait] = useState(0),
-    [loadedPortraits, setLoadedPortraits] = useState<Record<number, boolean>>({}),
+    [loadedPortraits, setLoadedPortraits] = useState<Record<number, boolean>>(
+      {},
+    ),
     [mobileTilt, setMobileTilt] = useState({ x: 0, y: 0 }),
     [resume, setResume] = useState<ResumeState>("idle");
-  const reducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   useEffect(() => {
+    if (!active || greetings.length < 2) return;
     const id = setInterval(
       () => setGreet((v) => (v + 1) % greetings.length),
       2000,
     );
     return () => clearInterval(id);
-  }, []);
+  }, [active]);
   useEffect(() => {
-    // Warm secondary portraits after hydration without adding SSR head preloads.
-    const loaders = portraitImages.map((src, index) => {
-      const image = new Image();
+    // Prepare only the next interaction, after the current portrait has loaded.
+    if (!active || !loadedPortraits[portrait] || portraitImages.length < 2)
+      return;
+    const index = (portrait + 1) % portraitImages.length;
+    if (loadedPortraits[index]) return;
+    let image: HTMLImageElement | undefined;
+    const timer = window.setTimeout(() => {
+      image = new Image();
       const markLoaded = () =>
         setLoadedPortraits((current) =>
           current[index] ? current : { ...current, [index]: true },
         );
       image.onload = markLoaded;
-      image.src = src;
+      image.src = portraitImages[index];
       if (image.complete && image.naturalWidth > 0) markLoaded();
-      return image;
-    });
+    }, 500);
     return () => {
-      loaders.forEach((image) => {
+      window.clearTimeout(timer);
+      if (image) {
         image.onload = null;
         image.onerror = null;
-      });
+      }
     };
-  }, []);
+  }, [active, loadedPortraits, portrait]);
   useEffect(() => {
-    if (!mobile || !("DeviceOrientationEvent" in window)) return;
+    if (!active || !mobile || !("DeviceOrientationEvent" in window)) return;
     let frame = 0;
     const onOrientation = (event: DeviceOrientationEvent) => {
       if (frame) return;
@@ -79,30 +103,19 @@ export function Hero() {
       });
     };
 
-    const enable = async () => {
-      try {
-        const orientation = window.DeviceOrientationEvent as typeof DeviceOrientationEvent & {
-          requestPermission?: () => Promise<"granted" | "denied">;
-        };
-        if (
-          typeof orientation.requestPermission === "function" &&
-          (await orientation.requestPermission()) !== "granted"
-        )
-          return;
-        window.addEventListener("deviceorientation", onOrientation, { passive: true });
-      } catch {
-        // iOS can require an explicit gesture; static card remains the safe fallback.
-      }
-    };
-    void enable();
+    // Do not request sensor permissions implicitly for decorative motion.
+    window.addEventListener("deviceorientation", onOrientation, {
+      passive: true,
+    });
     return () => {
       window.removeEventListener("deviceorientation", onOrientation);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [mobile]);
+  }, [active, mobile]);
   const next = () => setPortrait((v) => (v + 1) % portraitImages.length);
   return (
     <section
+      ref={heroRef}
       id="home"
       className="hero-section"
       style={{ "--mouse-x": "50%", "--mouse-y": "50%" } as CSSProperties}
@@ -112,7 +125,7 @@ export function Hero() {
           className={`hero-wrapper ${resume !== "idle" && resume !== "collapsing" && resume !== "morphing" ? "is-resume-active" : ""}`}
         >
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="hero-content"
@@ -132,7 +145,7 @@ export function Hero() {
                       color: "rgba(0,0,0,.75)",
                     }}
                   >
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence mode="wait" initial={false}>
                       <motion.span
                         key={greet}
                         initial={{ opacity: 0, y: 20 }}
@@ -146,7 +159,7 @@ export function Hero() {
                     </AnimatePresence>
                   </span>
                   <CharReveal delay={0.35} trigger className="hero-main-text">
-                    {`I am ${siteConfig.identity.name}`}
+                    {`I'm ${siteConfig.identity.name}`}
                   </CharReveal>{" "}
                   <span className="hero-wave" aria-hidden>
                     👋
@@ -154,7 +167,7 @@ export function Hero() {
                 </h1>
                 <motion.div
                   className="hero-bio"
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.6,
@@ -210,7 +223,7 @@ export function Hero() {
                   role="button"
                   tabIndex={0}
                   aria-label={`Show next portrait. Photo ${portrait + 1} of ${portraitImages.length}.`}
-                  initial={{ opacity: 0, scale: 0.86, rotate: 6, y: -12 }}
+                  initial={false}
                   animate={{ opacity: 1, scale: 1, rotate: 6, y: 0 }}
                   transition={{
                     type: "spring",
@@ -240,8 +253,8 @@ export function Hero() {
                     position: "relative",
                     transformOrigin: "center",
                     willChange: "transform",
-                    rotateX: mobile ? mobileTilt.x : 0,
-                    rotateY: mobile ? mobileTilt.y : 0,
+                    rotateX: mobile && active ? mobileTilt.x : 0,
+                    rotateY: mobile && active ? mobileTilt.y : 0,
                     transformStyle: "preserve-3d",
                   }}
                 >
@@ -254,7 +267,7 @@ export function Hero() {
                     }}
                   >
                     <AnimatePresence>
-                      {!loadedPortraits[portrait] && (
+                      {active && !loadedPortraits[portrait] && (
                         <motion.div
                           initial={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
@@ -271,8 +284,17 @@ export function Hero() {
                         />
                       )}
                     </AnimatePresence>
-                                        <AnimatePresence mode="wait" initial={false}>
+                    <AnimatePresence mode="wait" initial={false}>
                       <motion.img
+                        ref={(image) => {
+                          if (image?.complete && image.naturalWidth > 0) {
+                            setLoadedPortraits((current) =>
+                              current[portrait]
+                                ? current
+                                : { ...current, [portrait]: true },
+                            );
+                          }
+                        }}
                         key={portrait}
                         src={portraitImages[portrait]}
                         alt={siteConfig.identity.name}
@@ -280,7 +302,7 @@ export function Hero() {
                         draggable={false}
                         loading="eager"
                         decoding="async"
-                        fetchPriority="high"
+                        fetchPriority={portrait === 0 ? "high" : "auto"}
                         onLoad={() =>
                           setLoadedPortraits((current) => ({
                             ...current,
@@ -336,7 +358,7 @@ export function Hero() {
             </div>
           </motion.div>
         </div>
-        {siteConfig.features.about && <AboutSection />}
+        {siteConfig.features.about && <StableAboutSection />}
       </div>
     </section>
   );

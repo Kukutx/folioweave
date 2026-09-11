@@ -2,15 +2,12 @@
 
 import Lenis from "lenis";
 import { useEffect } from "react";
+import { useMediaQuery } from "./use-media-query";
 
 export function useLenis() {
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const nativeTouchScroll = useMediaQuery("(hover: none) and (pointer: coarse)");
   useEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const nativeTouchScroll = window.matchMedia(
-      "(hover: none) and (pointer: coarse)",
-    ).matches;
     if (reducedMotion || nativeTouchScroll) return;
 
     const lenis = new Lenis({
@@ -48,5 +45,5 @@ export function useLenis() {
       lenis.destroy();
       delete window.__lenis;
     };
-  }, []);
+  }, [reducedMotion, nativeTouchScroll]);
 }

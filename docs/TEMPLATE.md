@@ -1,179 +1,76 @@
-# Template and Extension Guide
+# Extending FolioWeave
 
-Normal portfolio personalization belongs in `portfolio.json`, not in framework internals. Start with [`PERSONALIZATION.md`](PERSONALIZATION.md).
+Normal editing belongs in `portfolio.json`, `content/blogs/` and
+`content/assets/portfolio/`. See [PERSONALIZATION.md](PERSONALIZATION.md).
 
-This guide covers changes that go beyond replacing identity, projects, photos, and copy.
+## Content contracts
 
-## 1. Public content boundary
+Extend `portfolio.schema.json`, update both the personal and demo author profiles,
+and add a pipeline test. Run `npm run content:build` to generate the TypeScript
+contract, validator, sanitized configuration, published article index and media
+manifest. `content:check` rejects source errors and stale or extra outputs.
 
-The intended user-facing content surface is:
+Cross-field rules belong in `src/portfolio/content-policy.mjs`; filesystem and
+image checks belong in `scripts/content-build.mjs`. Do not duplicate schema
+validation in each UI component. Breaking schema changes are intentional; there
+is no legacy runtime adapter.
 
-```text
-portfolio.json
-public/portfolio/
-```
+## Pages and sections
 
-Internal adapters under `src/portfolio/`, `src/config/`, and `src/content/` keep the rest of the app strongly typed and should normally stay unchanged.
+Register hand-authored routes in `src/portfolio/routes.json`, implement their
+App Router page and call `requirePublishedRoute("/your-route")`. The registry
+feeds publication, internal-link validation, sitemap and QA. Markdown routes are
+derived from content automatically.
 
-When adding a reusable content option, prefer extending `portfolio.json` + `portfolio.schema.json` and deriving it in `src/portfolio/` instead of adding a second editable source.
+Home navigation uses known section IDs from the publication policy and matching
+hashes. Optional sections are filtered by feature flags. Add a section to the
+server-side `HomePage` composition and policy together.
 
-## 2. Visual theme
+Preserve the editorial value of truly custom pages. A single generic page builder,
+plugin framework or CMS is not necessary for reusable portfolio content.
 
-Edit `src/styles/theme.css` first for global design tokens:
+## Rendering and motion
 
-- main sans / serif / handwritten font stacks
-- accent color
-- text hierarchy
-- page/card backgrounds
-- borders
-- shadows
-- editor/collaboration accents
+Keep static composition on the server; pass server-rendered children to small
+client interaction shells. Stateful camera, resume and gallery behavior remains
+explicit. Import components directly rather than expanding client barrel imports.
 
-Route-specific CSS remains separate when a page needs specialized selectors or layout behavior.
+Reuse `useMediaQuery`, `useViewportActivity`, `useMotionActivity` and the
+scroll helpers. Continuous motion must respect reduced-motion preference,
+visibility and pointer capability. Decorative effects must not mutate content
+styles. Server HTML must remain readable before JavaScript loads.
 
-Avoid broad search/replace in `globals.css` before checking whether the property is already a theme token.
+Use `MediaCarousel` for image sequences and `mediaDimensions` for intrinsic
+image geometry. Use responsive source selection for real alternate artwork.
+Thumbnail cropping remains owned by its fixed-ratio card.
 
-## 3. Project layouts
+## Styling
 
-Homepage projects are rendered from `portfolio.json > projects`.
-
-The built-in variants intentionally stay limited:
-
-- `standard`
-- `featured`
-- `story`
-- `carousel`
-
-These cover the repeated homepage patterns without pretending that every case study should use the same universal page builder.
-
-If a new homepage presentation can be reused, add another project variant. If it is truly unique editorial content, create a dedicated App Router page instead.
-
-## 4. Custom project/case-study routes
-
-For a custom project page:
-
-1. add the homepage card to `portfolio.json > projects`;
-2. create a route under `src/app/`;
-3. point a project `actions[].href` at that route;
-4. add route-specific metadata in `src/config/seo.ts` when necessary;
-5. include the route in the sitemap if it should be indexed;
-6. run the validation suite.
-
-The bundled product/blog/privacy routes are examples. Set `features.demoRoutes` to `false` to remove them from the public site without deleting their source.
-
-## 5. Navigation and scrolling
-
-Navigation content comes from `portfolio.json > site.navigation` through `siteConfig.navigation`.
-
-Section entries use a hash route plus a `sectionId`. Internal pages use a site path and `sectionId: null`.
-
-The project uses shared helpers:
-
-- `useMediaQuery` / `useMobileViewport` for responsive state
-- `useLenis` for desktop smooth-scroll lifecycle
-- native touch scrolling on coarse-pointer devices
-- `scrollToElement` / `scrollToPosition` for consistent Lenis/fallback scrolling
-
-Do not create independent page-level Lenis instances or ad-hoc resize listeners unless a feature genuinely needs different behavior.
-
-## 6. Live integrations
-
-### Weather
-
-- enabled by `portfolio.json > features.weather`
-- location comes from `site.location`
-- cache policy comes from `src/config/cache.ts`
-- Route Handler: `src/app/api/weather/route.ts`
-
-### Podcasts
-
-- feeds come from `src/config/podcasts.ts`
-- raw RSS is fetched with a request timeout
-- only compact parsed summaries are cached
-- cache/timeout policy lives in `src/config/cache.ts`
-- Route Handler: `src/app/api/podcasts/route.ts`
-
-Keep integration mechanics separate from portfolio content.
-
-## 7. Privacy pages
-
-Use shared primitives from `src/components/privacy-page.tsx`:
-
-```tsx
-<PrivacyPageShell prefix="myapp" subtitle="MyApp">
-  <PrivacySection prefix="myapp" title="1. Introduction">
-    <p>...</p>
-  </PrivacySection>
-</PrivacyPageShell>
-```
-
-For an analytics-oriented policy, reuse `AnalyticsPrivacy` rather than duplicating its section structure.
-
-## 8. Error states
-
-The template includes:
-
-- `app/not-found.tsx`
-- `app/error.tsx`
-- `app/global-error.tsx`
-
-Their shared styling lives in `src/styles/system-state.css`.
-
-Quality QA checks that unknown routes return HTTP 404 and include `noindex`.
-
-## 9. Asset policy
-
-Personal assets should normally live under `public/portfolio/`.
-
-Bundled demo assets remain under their original paths because they form a working example site and are covered by QA integrity checks.
-
-`qa/assets-manifest.json` records protected demo assets. Do not run automated "delete unused assets" cleanup against `public/` without deliberately updating that policy.
-
-Run:
+`src/app/globals.css` preserves the ordered portfolio stylesheet cascade.
+Readable source is divided by responsibility under `src/styles/portfolio/`.
+Tokens belong in `src/styles/theme.css`; new component-local rules should use
+CSS Modules. Do not move declarations across cascade boundaries without geometry
+and screenshot checks.
 
 ```bash
-npm run qa:assets
-```
-
-before and after demo-asset maintenance.
-
-## 10. Content validation
-
-`npm run content:check` verifies `portfolio.json` and configured local asset paths.
-
-It runs automatically before development/build commands. Extend `scripts/portfolio-check.mjs` when adding a new public content field that references a local asset or has an important cross-field invariant.
-
-The JSON schema exists for editor assistance; the Node validator is the authoritative project-specific semantic check.
-
-## 11. Full validation workflow
-
-During normal development:
-
-```bash
-npm run content:check
-npm run lint
-npm run typecheck
-```
-
-Before publishing:
-
-```bash
+npm run format:styles
 npm run check
 npm run audit:prod
 npm run qa:all
+npm run qa:visual-fixtures
 ```
 
-The browser suite covers assets, functionality, quality, media health, font fallback, the Resume state machine, and bundle budgets.
+The browser matrix tests six widths and classic scrollbars. Lifecycle tests add
+interruption, keyboard, hash restoration and no-JavaScript checks. Review the
+screenshots alongside assertions.
 
-## 12. What remains intentionally explicit
+## Integrations and privacy
 
-Some explicit code is healthier than a universal abstraction:
+Weather and podcasts use bounded requests and the shared cache policy. Missing
+weather is an explicit unavailable state, not a fabricated temperature or icon.
+Keep upstream response limits and request cancellation when adding integrations.
 
-- custom case-study page storytelling
-- the multi-perspective Clipt blog example
-- camera/resume/gallery state machines
-- specialized privacy/legal copy
-- integration/cache mechanics
-- custom SVG geometry that belongs to the visual design
-
-FolioWeave centralizes repeated portfolio content, not every possible application concern.
+Protected generic demo media remains under `public/` and is checked against
+`qa/assets-manifest.json`. Author assets are separate. Private GitHub visibility,
+deployment access and code/content ownership are independent boundaries; see
+[ARCHITECTURE.md](ARCHITECTURE.md).
