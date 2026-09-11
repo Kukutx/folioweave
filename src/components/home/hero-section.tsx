@@ -121,34 +121,6 @@ export function Hero() {
     [mobileTilt, setMobileTilt] = useState({ x: 0, y: 0 }),
     [resume, setResume] = useState<ResumeState>("idle");
   useEffect(() => {
-    // Prepare only the next interaction, after the current portrait has loaded.
-    if (!active || !loadedPortraits[portrait] || portraitImages.length < 2)
-      return;
-    const index = (portrait + 1) % portraitImages.length;
-    if (loadedPortraits[index]) return;
-    let image: HTMLImageElement | undefined;
-    const timer = window.setTimeout(() => {
-      image = new Image();
-      const markLoaded = () =>
-        setLoadedPortraits((current) =>
-          current[index] ? current : { ...current, [index]: true },
-        );
-      const next = portraitProps(index);
-      image.onload = markLoaded;
-      if (next.srcSet) image.srcset = next.srcSet;
-      if (next.sizes) image.sizes = next.sizes;
-      image.src = next.src;
-      if (image.complete && image.naturalWidth > 0) markLoaded();
-    }, 500);
-    return () => {
-      window.clearTimeout(timer);
-      if (image) {
-        image.onload = null;
-        image.onerror = null;
-      }
-    };
-  }, [active, loadedPortraits, portrait]);
-  useEffect(() => {
     if (!active || !mobile || !("DeviceOrientationEvent" in window)) return;
     let frame = 0;
     const onOrientation = (event: DeviceOrientationEvent) => {
