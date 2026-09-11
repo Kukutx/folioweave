@@ -39,7 +39,7 @@ function portraitProps(index: number) {
     height: props.height,
   };
 }
-// Greeting/portrait ticks must not rerender the independent About experience.
+// Small, frequently changing islands must not rerender the whole Hero/About tree.
 const StableAboutSection = memo(AboutSection);
 const GreetingCycle = memo(function GreetingCycle({
   active,
@@ -90,6 +90,75 @@ const GreetingCycle = memo(function GreetingCycle({
   );
 });
 
+const PortraitImage = memo(function PortraitImage({
+  active,
+  index,
+}: {
+  active: boolean;
+  index: number;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <>
+      <AnimatePresence>
+        {active && !loaded && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(90deg, #e5e5e5 0%, #f0f0f0 50%, #e5e5e5 100%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer 1.5s infinite",
+              zIndex: 10,
+            }}
+          />
+        )}
+      </AnimatePresence>
+      <motion.img
+        {...portraitProps(index)}
+        ref={(image) => {
+          if (image?.complete && image.naturalWidth > 0) setLoaded(true);
+        }}
+        alt={siteConfig.identity.name}
+        className="polaroid-photo-image"
+        draggable={false}
+        loading="eager"
+        decoding="async"
+        fetchPriority={index === 0 ? "high" : "auto"}
+        onLoad={() => setLoaded(true)}
+        initial={{
+          opacity: 0,
+          scale: 1.035,
+          filter: "brightness(1.12)",
+        }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          filter: "brightness(1)",
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0.985,
+          filter: "brightness(1.06)",
+        }}
+        transition={{
+          duration: 0.34,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "block",
+        }}
+      />
+    </>
+  );
+});
+
 function RichText({
   segments,
 }: {
@@ -115,9 +184,6 @@ export function Hero() {
   const { active, reducedMotion } = useMotionActivity(heroRef);
   const mobile = useMobileViewport(),
     [portrait, setPortrait] = useState(0),
-    [loadedPortraits, setLoadedPortraits] = useState<Record<number, boolean>>(
-      {},
-    ),
     [mobileTilt, setMobileTilt] = useState({ x: 0, y: 0 }),
     [resume, setResume] = useState<ResumeState>("idle");
   useEffect(() => {
@@ -278,74 +344,8 @@ export function Hero() {
                       background: "#e5e5e5",
                     }}
                   >
-                    <AnimatePresence>
-                      {active && !loadedPortraits[portrait] && (
-                        <motion.div
-                          initial={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{
-                            position: "absolute",
-                            inset: 0,
-                            background:
-                              "linear-gradient(90deg, #e5e5e5 0%, #f0f0f0 50%, #e5e5e5 100%)",
-                            backgroundSize: "200% 100%",
-                            animation: "shimmer 1.5s infinite",
-                            zIndex: 10,
-                          }}
-                        />
-                      )}
-                    </AnimatePresence>
                     <AnimatePresence mode="wait" initial={false}>
-                      <motion.img
-                        {...portraitProps(portrait)}
-                        ref={(image) => {
-                          if (image?.complete && image.naturalWidth > 0) {
-                            setLoadedPortraits((current) =>
-                              current[portrait]
-                                ? current
-                                : { ...current, [portrait]: true },
-                            );
-                          }
-                        }}
-                        key={portrait}
-                        alt={siteConfig.identity.name}
-                        className="polaroid-photo-image"
-                        draggable={false}
-                        loading="eager"
-                        decoding="async"
-                        fetchPriority={portrait === 0 ? "high" : "auto"}
-                        onLoad={() =>
-                          setLoadedPortraits((current) => ({
-                            ...current,
-                            [portrait]: true,
-                          }))
-                        }
-                        initial={{
-                          opacity: 0,
-                          scale: 1.035,
-                          filter: "brightness(1.12)",
-                        }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                          filter: "brightness(1)",
-                        }}
-                        exit={{
-                          opacity: 0,
-                          scale: 0.985,
-                          filter: "brightness(1.06)",
-                        }}
-                        transition={{
-                          duration: 0.34,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "block",
-                        }}
-                      />
+                      <PortraitImage key={portrait} active={active} index={portrait} />
                     </AnimatePresence>
                     <motion.div
                       key={`flash-${portrait}`}
