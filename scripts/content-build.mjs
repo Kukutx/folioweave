@@ -162,10 +162,18 @@ export function generatedOutputs(prepared, root = projectRoot) {
   ];
 }
 
-export async function publishContent(prepared, root = projectRoot) {
-  if (path.resolve(root) === projectRoot) {
-    assertProfilePublicationAllowed(root, prepared.config);
+export function assertProjectPublicationAllowed(
+  prepared,
+  root = projectRoot,
+  options,
+) {
+  if (path.resolve(root) === projectRoot || options?.targetBranch) {
+    assertProfilePublicationAllowed(root, prepared.config, options);
   }
+}
+
+export async function publishContent(prepared, root = projectRoot, options) {
+  assertProjectPublicationAllowed(prepared, root, options);
   await commitGeneratedOutputs(root, generatedOutputs(prepared, root));
 }
 
