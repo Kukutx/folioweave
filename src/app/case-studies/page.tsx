@@ -1,4 +1,4 @@
-import { requireDemoRoutes } from "@/portfolio/demo-routes";
+import { requirePublishedRoute } from "@/portfolio/route-guard";
 import { routeMetadata } from "@/config/seo";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -7,7 +7,7 @@ import "@/styles/case-studies.css";
 export const metadata = routeMetadata.caseStudies;
 
 export default function CaseStudiesPage() {
-  requireDemoRoutes();
+  requirePublishedRoute("/case-studies");
   return (
     <div className="case-studies-page">
       <div className="case-studies-container">

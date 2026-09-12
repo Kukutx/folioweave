@@ -1,0 +1,18 @@
+/* Continuous CSS decoration follows the same lifecycle as JS motion. */
+[data-motion-active="false"] .falling-star {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    /* A nonzero universal duration activates the default transition-property:
+       all, even on elements that never declared a transition. Theme updates
+       then animate inherited colors across the whole document. */
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -44,7 +44,21 @@ async function readFeed(feed: (typeof podcastFeeds)[number]) {
     });
     if (!response.ok) throw new Error(String(response.status));
 
-    const xml = await response.text();
+    const maximumBytes = 8 * 1024 * 1024;
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error("Empty feed");
+    const chunks: Uint8Array[] = [];
+    let bytes = 0;
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        bytes += value.byteLength;
+        if (bytes > maximumBytes) throw new Error("Feed exceeds 8 MiB");
+        chunks.push(value);
+      }
+    } finally { await reader.cancel(); reader.releaseLock(); }
+    const xml = Buffer.concat(chunks).toString("utf8");
     const parsed = parser.parse(xml);
     const channel = (parsed?.rss?.channel ?? parsed?.feed ?? {}) as Record<
       string,

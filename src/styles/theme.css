@@ -5,7 +5,20 @@
   --font-hand: "Caveat Portfolio", cursive;
   --color-accent: #0071e3;
   --color-text: #111;
+  --color-heading: #171717;
   --color-text-secondary: #666;
+  --color-body: #686868;
+  --color-muted: #747474;
+  --color-subtle: #929292;
+  --color-success: #34c759;
+  --color-highlight: #ffd54f;
+  --layer-navigation: 20000;
+  --layer-decoration: 15000;
+  --layer-notice: 19000;
+  --layer-pointer: 30000;
+  --space-section: 6rem;
+  --radius-pill: 999px;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Shared page, card, and editor tokens used across the design system. */
   --bg-primary: #ffffff;

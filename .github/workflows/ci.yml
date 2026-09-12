@@ -19,6 +19,42 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: node node_modules/playwright-core/cli.js install --with-deps chromium firefox webkit
+      - run: npm run qa:boundary
       - run: npm run check
       - run: npm run audit:prod
       - run: npm run qa:all
+      - run: npm run qa:visual-fixtures
+      - run: npm run qa:profiles
+      - run: node qa/run-with-server.mjs qa:browsers
+      - uses: actions/upload-artifact@v7.0.1
+        if: failure()
+        with:
+          name: verification-failure
+          path: |
+            qa/*-report.json
+            qa/screens/
+
+  visual-regression:
+    # Golden images are platform-specific. Do not compare Linux rasterization
+    # to Windows, or silently capture a new baseline inside CI.
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node node_modules/playwright-core/cli.js install chromium
+      - run: npm run build
+      - run: npm run qa:visual-compare
+      - uses: actions/upload-artifact@v7.0.1
+        if: always()
+        with:
+          name: visual-review
+          retention-days: 7
+          path: |
+            qa/visual-regression-report.json
+            qa/screens/regression-*/

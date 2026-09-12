@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { CSSProperties, ReactNode } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const settle = {
   type: "spring" as const,
@@ -26,8 +27,10 @@ export function WordReveal({
   trigger?: boolean;
 }) {
   const words = children.split(" ");
-  const viewProps =
-    typeof trigger === "boolean"
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const viewProps = reducedMotion
+    ? { animate: "visible" }
+    : typeof trigger === "boolean"
       ? { animate: trigger ? "visible" : "hidden" }
       : { whileInView: "visible", viewport: { once: false, margin: "-10%" } };
   return (
@@ -46,10 +49,13 @@ export function WordReveal({
         hidden: { opacity: 0 },
         visible: {
           opacity: 1,
-          transition: { staggerChildren: 0.08, delayChildren: 0.04 + delay },
+          transition: {
+            staggerChildren: reducedMotion ? 0 : 0.08,
+            delayChildren: reducedMotion ? 0 : 0.04 + delay,
+          },
         },
       }}
-      initial="hidden"
+      initial={false}
       {...viewProps}
       className={className}
     >
@@ -57,8 +63,16 @@ export function WordReveal({
         <motion.span
           key={`${word}-${index}`}
           variants={{
-            visible: { opacity: 1, y: 0, transition: settle },
-            hidden: { opacity: 0, y: 20, transition: settle },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: reducedMotion ? { duration: 0 } : settle,
+            },
+            hidden: {
+              opacity: 0,
+              y: 20,
+              transition: reducedMotion ? { duration: 0 } : settle,
+            },
           }}
           style={{ marginRight: "0.25em", display: "inline-block" }}
         >
@@ -81,8 +95,10 @@ export function CharReveal({
   trigger?: boolean;
 }) {
   const chars = Array.from(children);
-  const viewProps =
-    typeof trigger === "boolean"
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const viewProps = reducedMotion
+    ? { animate: "visible" }
+    : typeof trigger === "boolean"
       ? { animate: trigger ? "visible" : "hidden" }
       : { whileInView: "visible", viewport: { once: false, margin: "-10%" } };
   return (
@@ -98,10 +114,13 @@ export function CharReveal({
         hidden: { opacity: 0 },
         visible: {
           opacity: 1,
-          transition: { staggerChildren: 0.045, delayChildren: 0.04 + delay },
+          transition: {
+            staggerChildren: reducedMotion ? 0 : 0.045,
+            delayChildren: reducedMotion ? 0 : 0.04 + delay,
+          },
         },
       }}
-      initial="hidden"
+      initial={false}
       {...viewProps}
       className={className}
     >
@@ -113,13 +132,13 @@ export function CharReveal({
               opacity: 1,
               y: 0,
               filter: "blur(0px)",
-              transition: settle,
+              transition: reducedMotion ? { duration: 0 } : settle,
             },
             hidden: {
               opacity: 0,
               y: 24,
               filter: "blur(10px)",
-              transition: settle,
+              transition: reducedMotion ? { duration: 0 } : settle,
             },
           }}
           style={{ display: "inline-block", whiteSpace: "pre" }}
@@ -146,7 +165,7 @@ export function FadeIn({
     <motion.div
       className={className}
       style={style}
-      initial={{ opacity: 0, y: 30 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}

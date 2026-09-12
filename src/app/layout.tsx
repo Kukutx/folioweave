@@ -5,6 +5,8 @@ import { serializeJsonLd } from "@/lib/json-ld";
 import "./globals.css";
 import "@/styles/theme.css";
 import "@/styles/interactive-effects.css";
+import "@/styles/media.css";
+import "@/styles/motion.css";
 
 export const metadata = rootMetadata;
 

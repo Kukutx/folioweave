@@ -1,0 +1,23 @@
+{
+  "coreBranches": ["main", "develop"],
+  "personalBranch": "personal",
+  "profileConfig": "portfolio.json",
+  "profileSpecificFiles": [
+    "portfolio.json",
+    "src/portfolio/config.generated.ts",
+    "src/portfolio/media.generated.ts",
+    "src/blog/posts.generated.ts"
+  ],
+  "demoProfile": "governance/demo-portfolio.json",
+  "personalOnlyPrefixes": [
+    "content/blogs/",
+    "content/assets/portfolio/",
+    "public/portfolio/",
+    "qa/baselines/personal/"
+  ],
+  "sharedExceptions": [
+    "content/blogs/_README.md",
+    "content/assets/portfolio/README.md",
+    "public/portfolio/README.md"
+  ]
+}

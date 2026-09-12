@@ -1,25 +1,13 @@
 import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import { publicationRoutes } from "./blog-routes.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
 const maxJsBytes = Number(process.env.MAX_JS_KB || 260) * 1024;
 const maxCssBytes = Number(process.env.MAX_CSS_KB || 30) * 1024;
-const routes = [
-  "/",
-  "/blogs",
-  "/blogs/clipt",
-  "/brink",
-  "/brink/privacy",
-  "/case-studies",
-  "/clipt",
-  "/clipt-privacypolicy",
-  "/district",
-  "/flipfact",
-  "/habee-privacypolicy",
-  "/notchshelf-privacypolicy",
-];
+const routes = await publicationRoutes();
 
 const browser = await chromium.launch({ executablePath: chrome, headless: true });
 const report = [];

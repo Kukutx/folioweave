@@ -141,17 +141,23 @@ function Toggle({
   }, [value]);
 
   useEffect(() => {
-    measure();
+    const frame = window.requestAnimationFrame(measure);
     if (typeof ResizeObserver === "undefined") {
       window.addEventListener("resize", measure);
-      return () => window.removeEventListener("resize", measure);
+      return () => {
+        window.cancelAnimationFrame(frame);
+        window.removeEventListener("resize", measure);
+      };
     }
     const observer = new ResizeObserver(measure);
     if (containerRef.current) observer.observe(containerRef.current);
     Object.values(buttonRefs.current).forEach((button) => {
       if (button) observer.observe(button);
     });
-    return () => observer.disconnect();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [mobile, measure]);
 
   return (
@@ -277,7 +283,7 @@ function ModernTimeline() {
       {aboutTimeline.map((item, index) => (
         <motion.div
           key={item.year}
-          className={`profile-timeline-item ${item.year === "2026" ? "is-current" : ""}`}
+          className={`profile-timeline-item ${item.current ? "is-current" : ""}`}
           initial={{ opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
@@ -320,7 +326,7 @@ export function AboutSection() {
       id="about"
       className="profile-about-section"
       variants={sectionVariants}
-      initial="hidden"
+      initial={false}
       whileInView="visible"
       viewport={{ once: true, margin: "-15%" }}
     >
@@ -347,22 +353,22 @@ export function AboutSection() {
         className="story-gallery"
         aria-label="Personal photos"
       >
-        {storyGalleryImages.map((src, index) => {
+        {storyGalleryImages.map((image, index) => {
           const styles = [
             [-6, 10],
             [5, -15],
             [7, 20],
             [-5, -5],
-          ][index];
+          ][index % 4];
           return (
             <div
-              key={src}
+              key={`${image.src}-${index}`}
               className="story-photo-wrapper"
               style={{
                 transform: `rotate(${styles[0]}deg) translateY(${styles[1]}px)`,
               }}
             >
-              <PhotoCard src={src} index={index} isPolaroid />
+              <PhotoCard image={image} index={index} isPolaroid />
             </div>
           );
         })}

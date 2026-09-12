@@ -1,23 +1,12 @@
-import { cleanupPlaywrightProcesses, resolveChromePath } from "./chrome.mjs";
+import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import { installServiceFixtures } from "./service-fixtures.mjs";
+import { publicationRoutes } from "./blog-routes.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
-const routes = [
-  "/",
-  "/blogs",
-  "/blogs/clipt",
-  "/brink",
-  "/brink/privacy",
-  "/case-studies",
-  "/clipt",
-  "/clipt-privacypolicy",
-  "/district",
-  "/flipfact",
-  "/habee-privacypolicy",
-  "/notchshelf-privacypolicy",
-];
+const routes = await publicationRoutes();
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
@@ -38,6 +27,7 @@ async function scan(viewport, route) {
   });
   try {
     const context = await browser.newContext({ viewport });
+    await installServiceFixtures(context);
     const page = await context.newPage();
     const consoleErrors = [];
     const pageErrors = [];
@@ -152,7 +142,6 @@ async function scan(viewport, route) {
     return { ...state, consoleErrors, pageErrors };
   } finally {
     await browser.close().catch(() => {});
-    cleanupPlaywrightProcesses();
   }
 }
 

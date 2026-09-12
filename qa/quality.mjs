@@ -1,23 +1,17 @@
-import { cleanupPlaywrightProcesses, resolveChromePath } from "./chrome.mjs";
+import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import { installServiceFixtures } from "./service-fixtures.mjs";
+import {
+  disabledDemoRoutes as resolveDisabledDemoRoutes,
+  publicationRoutes,
+} from "./blog-routes.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
-const routes = [
-  "/",
-  "/blogs",
-  "/blogs/clipt",
-  "/brink",
-  "/brink/privacy",
-  "/case-studies",
-  "/clipt",
-  "/clipt-privacypolicy",
-  "/district",
-  "/flipfact",
-  "/habee-privacypolicy",
-  "/notchshelf-privacypolicy",
-];
+const routes = await publicationRoutes();
+const disabledRoutes = await resolveDisabledDemoRoutes();
+const demoRoutesEnabled = disabledRoutes.length === 0;
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile", width: 390, height: 844 },
@@ -45,6 +39,7 @@ for (const viewport of viewports) {
       reducedMotion: "reduce",
     });
     const page = await context.newPage();
+    await installServiceFixtures(context);
     const consoleErrors = [];
     const pageErrors = [];
     const badResponses = [];
@@ -123,17 +118,17 @@ for (const viewport of viewports) {
       const hero = document.querySelector("#home.hero-section");
       const gallery = document.querySelector(".story-gallery");
       const homeScrollModel =
-        hero && gallery
+        hero
           ? {
               heroOverflowX: getComputedStyle(hero).overflowX,
               heroOverflowY: getComputedStyle(hero).overflowY,
-              galleryOverflowX: getComputedStyle(gallery).overflowX,
-              galleryOverflowY: getComputedStyle(gallery).overflowY,
+              galleryOverflowX: gallery ? getComputedStyle(gallery).overflowX : null,
+              galleryOverflowY: gallery ? getComputedStyle(gallery).overflowY : null,
               ok:
                 getComputedStyle(hero).overflowX === "clip" &&
                 getComputedStyle(hero).overflowY === "visible" &&
-                getComputedStyle(gallery).overflowX === "auto" &&
-                getComputedStyle(gallery).overflowY === "hidden",
+                (!gallery || (getComputedStyle(gallery).overflowX === "auto" &&
+                getComputedStyle(gallery).overflowY === "hidden")),
             }
           : null;
       return {
@@ -173,7 +168,7 @@ for (const viewport of viewports) {
     const ok =
       item.status === 200 &&
       item.title.length > 0 &&
-      item.h1Count >= 1 &&
+      (route.startsWith("/blogs") ? item.h1Count === 1 : item.h1Count >= 1) &&
       item.duplicateIds.length === 0 &&
       item.unlabeledButtons.length === 0 &&
       item.imagesWithoutAlt.length === 0 &&
@@ -198,7 +193,6 @@ for (const viewport of viewports) {
     await context.close();
   }
   await browser.close();
-cleanupPlaywrightProcesses();
 }
 
 const homeResponse = await fetch(base, { redirect: "manual" });
@@ -221,19 +215,35 @@ const notFoundOk =
   notFound.status === 404 &&
   notFoundHtml.includes("This page wandered off.") &&
   notFoundHtml.includes("noindex");
+const disabledDemoRouteStatuses = demoRoutesEnabled
+  ? {}
+  : Object.fromEntries(
+      await Promise.all(
+        disabledRoutes.map(async (route) => {
+          const response = await fetch(base + route, { redirect: "manual" });
+          return [route, response.status];
+        }),
+      ),
+    );
+const demoRoutesOk =
+  demoRoutesEnabled ||
+  Object.values(disabledDemoRouteStatuses).every((status) => status === 404);
 const endpointChecks = {
   robots: robots.status,
   sitemap: sitemap.status,
   manifest: manifest.status,
   notFound: notFound.status,
   notFoundOk,
+  demoRoutesEnabled,
+  disabledDemoRouteStatuses,
+  demoRoutesOk,
 };
 
 const failures = report.filter(
   (item) =>
     item.status !== 200 ||
     !item.title ||
-    item.h1Count < 1 ||
+    (item.route.startsWith("/blogs") ? item.h1Count !== 1 : item.h1Count < 1) ||
     item.duplicateIds.length ||
     item.unlabeledButtons.length ||
     item.imagesWithoutAlt.length ||
@@ -264,7 +274,8 @@ const endpointsOk =
   robots.status === 200 &&
   sitemap.status === 200 &&
   manifest.status === 200 &&
-  notFoundOk;
+  notFoundOk &&
+  demoRoutesOk;
 const summary = {
   checks: report.length,
   passed: report.length - failures.length,

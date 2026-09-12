@@ -1,1 +1,1 @@
-export { notchShelfImages, photographyImages, portraitImages, storyGalleryImages } from "@/portfolio";
+export { photographyImages, portraitImages, storyGalleryImages } from "@/portfolio";

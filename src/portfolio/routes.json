@@ -1,0 +1,12 @@
+[
+  { "path": "/blogs/clipt", "demoOnly": true },
+  { "path": "/brink", "demoOnly": true },
+  { "path": "/brink/privacy", "demoOnly": true },
+  { "path": "/case-studies", "demoOnly": true },
+  { "path": "/clipt", "demoOnly": true },
+  { "path": "/clipt-privacypolicy", "demoOnly": true },
+  { "path": "/district", "demoOnly": true },
+  { "path": "/flipfact", "demoOnly": true },
+  { "path": "/habee-privacypolicy", "demoOnly": true },
+  { "path": "/notchshelf-privacypolicy", "demoOnly": true }
+]

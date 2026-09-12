@@ -1,12 +1,10 @@
-import rawPortfolio from "../../portfolio.json";
-import type { EmailAddress, SiteConfig } from "@/config/schema";
-import type { HomeContent, MediaList, WorkItem } from "@/content/schema";
+import generatedPortfolio from "./config.generated";
 import type {
   PortfolioConfig,
   PortfolioProject,
 } from "./schema";
 
-export const portfolio = rawPortfolio as unknown as PortfolioConfig;
+export const portfolio: PortfolioConfig = generatedPortfolio;
 
 const sourceSite = portfolio.site;
 
@@ -37,11 +35,11 @@ export const siteConfig = {
   },
   assets: sourceSite.assets,
   features: portfolio.features,
-} as unknown as SiteConfig;
+};
 
 export const siteCopyright = `© ${siteConfig.copyrightYear} ${siteConfig.identity.name}. All rights reserved.`;
 
-export function mailto(email: EmailAddress, subject?: string) {
+export function mailto(email: PortfolioConfig["site"]["contact"]["email"], subject?: string) {
   return `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
 }
 
@@ -53,42 +51,20 @@ export const homeContent = {
     summary: portfolio.hero.summary,
   },
   photographyIntro: portfolio.photography.intro,
-} as HomeContent;
+};
 
 export const aboutTimeline = portfolio.about.timeline;
 export const aboutStory = portfolio.about.story;
 
-export const portraitImages = portfolio.hero.portraits as MediaList;
-export const storyGalleryImages = portfolio.about.galleryImages as MediaList;
-export const photographyImages = portfolio.photography.images as MediaList;
+export const portraitImages = portfolio.hero.portraits;
+export const storyGalleryImages = portfolio.about.galleryImages;
+export const photographyImages = portfolio.photography.images;
 
 export const workProjects = portfolio.projects.filter(
   (project): project is PortfolioProject => project.enabled,
 );
 
-export const workItems = Object.fromEntries(
-  workProjects
-    .filter((project) => project.image)
-    .map((project) => [
-      project.id,
-      {
-        name: project.name,
-        date: project.date,
-        description: project.description,
-        ...(project.icon ? { icon: project.icon } : {}),
-        ...(project.image
-          ? {
-              desktopImage: project.image.desktop,
-              mobileImage: project.image.mobile,
-            }
-          : {}),
-      },
-    ]),
-) as Record<string, WorkItem>;
-
-export const notchShelfImages =
-  workProjects.find((project) => project.id === "notchshelf")?.carouselImages ?? [];
-
 export const portfolioSeo = portfolio.seo;
+export const blogContent = portfolio.blog;
 
 export type { PortfolioProject, PortfolioRichTextSegment } from "./schema";

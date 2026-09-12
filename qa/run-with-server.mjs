@@ -2,7 +2,6 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
-import { cleanupPlaywrightProcesses } from "./chrome.mjs";
 
 const scripts = process.argv.slice(2);
 if (!scripts.length) {
@@ -32,14 +31,31 @@ async function freePort() {
 
 function runScript(script, env) {
   return new Promise((resolve, reject) => {
-    const npmCli =
-      process.env.npm_execpath ||
-      path.resolve(path.dirname(process.execPath), "node_modules/npm/bin/npm-cli.js");
-    const child = spawn(process.execPath, [npmCli, "run", script], {
-      cwd: process.cwd(),
-      env,
-      stdio: "inherit",
-    });
+    const npmCli = process.env.npm_execpath;
+    const child = npmCli
+      ? spawn(process.execPath, [npmCli, "run", script], {
+          cwd: process.cwd(),
+          env,
+          stdio: "inherit",
+        })
+      : process.platform === "win32"
+        ? spawn(
+            process.execPath,
+            [
+              path.resolve(
+                path.dirname(process.execPath),
+                "node_modules/npm/bin/npm-cli.js",
+              ),
+              "run",
+              script,
+            ],
+            { cwd: process.cwd(), env, stdio: "inherit" },
+          )
+        : spawn("npm", ["run", script], {
+            cwd: process.cwd(),
+            env,
+            stdio: "inherit",
+          });
     child.on("error", reject);
     child.on("exit", (code, signal) => {
       if (code === 0) resolve();
@@ -103,13 +119,10 @@ try {
     NEXT_URL: base,
   };
   console.log(`\nQA server ready: ${base}\n`);
-  cleanupPlaywrightProcesses();
   for (const script of scripts) {
     await runScript(script, env);
-    cleanupPlaywrightProcesses();
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
 } finally {
-  cleanupPlaywrightProcesses();
   stopTree(server);
 }

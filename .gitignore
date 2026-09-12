@@ -16,9 +16,15 @@
 # next.js
 /.next/
 /out/
+/.generated/
+/public/portfolio/
+/public/.portfolio-build-*/
 
 # production
 /build
+
+# local, non-deployed originals and unused personal media
+/.personal-assets-source/
 
 # misc
 .DS_Store

@@ -1,233 +1,104 @@
 # Personalizing FolioWeave
 
-FolioWeave keeps normal portfolio editing separate from layout and framework code.
+## Authoring workflow
 
-For most users, personalization means editing **one file** and replacing files in **one public folder**:
-
-```text
-portfolio.json
-public/portfolio/
-```
-
-## Recommended first run
+Edit `portfolio.json`, add original assets under `content/assets/portfolio/`,
+and write articles under `content/blogs/`. Browser URLs remain `/portfolio/...`.
 
 ```bash
-npm install
+npm ci
 npm run personalize
-npm run content:check
 npm run dev
 ```
 
-`npm run personalize` asks first whether you want a clean portfolio, then collects identity, location, contact, and social details. A clean start removes bundled demo projects/content from `portfolio.json`, disables demo routes and optional empty sections, creates neutral placeholder profile/social-preview assets, and keeps navigation definitions so sections reappear automatically when re-enabled.
+The wizard updates identity, contact details and optional social links. Enter
+keeps a value; `-` clears optional values. A clean start removes demo content
+from the author configuration, creates neutral placeholders, and disables empty
+sections. It preserves existing source files without publishing unreferenced ones.
 
-For optional company/social fields, press Enter to keep the shown value or type `-` to remove it.
-
-Clean mode creates a neutral SVG social-preview placeholder so no demo branding leaks into metadata. Replace it with a 1200×630 PNG, JPEG, or WebP before publishing for the widest social-platform compatibility.
-
-## Content map
-
-### `site`
-
-Use this for stable identity and site-level information:
-
-- display name / first name / initials
-- role, optional company, and locale
-- city/country, coordinates and time zone (the public country is derived from this location block)
-- production domain
-- contact email and email subjects
-- social links and their icons
-- navigation
-- resume paths
-- social preview / shared static assets
-
-The personalization wizard can resolve latitude, longitude, and time zone from city/country using Open-Meteo. When updating an existing portfolio, an offline lookup keeps the current location data. During a clean start, a failed lookup falls back to UTC/0,0 so demo location data is never carried into the new portfolio.
-
-### `features`
-
-Feature switches let a portfolio start small and grow later:
-
-```json
-{
-  "weather": true,
-  "about": true,
-  "work": true,
-  "photography": true,
-  "resume": true,
-  "demoRoutes": true
-}
-```
-
-`demoRoutes: false` hides the bundled example product/blog/privacy/case-study routes, removes them from the sitemap, and disables the demo-only podcast API. `weather: false` hides weather from the time widget and makes `/api/weather` return 404. Navigation definitions stay in the config and are filtered by these feature switches at render time. Use `demoOnly: true` on a navigation item when it should disappear together with the bundled demo routes.
-
-### `hero`
-
-`portraits` controls the portrait rotation.
-
-`roleLine` and `summary` are arrays so text and small inline brand marks can be mixed without editing JSX:
-
-```json
-[
-  { "text": "Designer at " },
-  { "brand": { "name": "Studio", "icon": "/portfolio/profile/studio.svg" } }
-]
-```
-
-For plain text, use a single `{ "text": "..." }` entry.
-
-### `about`
-
-- `timeline` — year/title/description items
-- `story` — rich paragraphs using `muted`, `strong`, and `highlight` text tones
-- `galleryImages` — images used by the About story gallery
-
-The whole section can be disabled with `features.about`.
-
-### `projects`
-
-Projects are data-driven. Add, remove, reorder, or disable array items without editing `work-section.tsx`.
-
-Common fields:
-
-```json
-{
-  "id": "my-project",
-  "enabled": true,
-  "layout": "standard",
-  "featuredOnMobile": false,
-  "name": "My Project",
-  "date": "2026",
-  "description": "What the project is and why it matters.",
-  "image": {
-    "desktop": "/portfolio/projects/my-project/desktop.webp",
-    "mobile": "/portfolio/projects/my-project/mobile.webp",
-    "alt": "My Project preview"
-  },
-  "actions": [
-    { "label": "View Project", "href": "https://example.com", "icon": "arrow" }
-  ]
-}
-```
-
-Available layouts:
-
-- `standard` — the normal work image + copy pattern
-- `featured` — same core structure with optional mobile emphasis
-- `story` — adds an editorial story block below the project
-- `carousel` — replaces the work image with a screenshot carousel
-
-Optional project features:
-
-- `icon`
-- `badge` with `gold` or `blue` tone
-- linked badges
-- hover preview images for badges
-- `actions` with arrow/book icons
-- story image/body
-- desktop/mobile intrinsic image sizes
-
-The bundled six projects use the same generic project model. They are no longer hardcoded into the homepage component.
-
-### `photography`
-
-`images` can contain any number of photos. There is no fixed 18-image requirement.
-
-If you do not use photography, set:
-
-```json
-"photography": false
-```
-
-under `features`.
-
-### `seo`
-
-Root metadata, Open Graph, Twitter metadata, the Web App Manifest, and Person JSON-LD derive from this block plus `site.identity`. Company and award are optional; locale controls the Open Graph locale, and location is not inferred as nationality.
-
-The detailed bundled example routes still have route-specific metadata in `src/config/seo.ts`; those routes can be disabled entirely through `features.demoRoutes`.
-
-
-## Asset convention
-
-Use this structure for your own files:
-
-```text
-public/portfolio/
-├─ profile/
-│  ├─ portrait.webp
-│  ├─ icon.png
-│  └─ social-preview.png
-├─ photography/
-│  ├─ photo-01.webp
-│  └─ photo-02.webp
-├─ projects/
-│  ├─ project-a/
-│  │  ├─ desktop.webp
-│  │  └─ mobile.webp
-│  └─ project-b/
-└─ resume/
-   └─ resume.pdf
-```
-
-Then reference files with site-root paths, for example:
-
-```json
-"/portfolio/projects/project-a/desktop.webp"
-```
-
-FolioWeave intentionally favors local assets. The production Content Security Policy only permits same-origin images by default, so using `public/portfolio/` also avoids third-party image availability and privacy issues.
-
-## Automatic validation
-
-Run:
+After manual edits:
 
 ```bash
+npm run content:build
 npm run content:check
 ```
 
-The checker validates the important runtime structure and verifies every configured local asset exists under `public/`.
+Development and production builds invoke this pipeline automatically. Never edit
+`public/portfolio/` or generated TypeScript: they are replaceable outputs.
 
-It detects issues such as:
+## Configuration
 
-- malformed identity, email, origin, locale, coordinates, or time zone
-- non-boolean feature flags
-- invalid social, navigation, badge, or project-action URLs
-- duplicate project IDs or unsupported project layouts
-- invalid intrinsic image dimensions
-- enabled projects without media or carousel projects without slides
-- missing portraits, project media, photography, resume, or preview files
-- asset paths that point outside `public/`
-- SVG social previews that should be replaced with a raster asset before publishing
+- `site`: identity, origin, locale, location/time zone, contact, social links,
+  navigation, resume and site icons.
+- `features`: weather, about, work, photography, resume and demoRoutes switches.
+- `hero`: greetings, portraits, and rich-text role/summary segments.
+- `about`: story paragraphs, gallery images and timeline items. Set
+  `current: true` on at most one timeline item; the year is display content.
+- `interlude`: transition headings, descriptions and mountain artwork.
+- `projects`: ordered project cards, actions and optional stories.
+- `photography`: intro and ordered image/alt pairs.
+- `blog`, `footerBook`, `seo`: editorial copy and metadata.
 
-`content:check` also runs automatically before `npm run dev` and `npm run build`, so a broken configuration fails early instead of producing a partially broken deployment.
+Feature switches affect navigation, content serialization and asset publication.
+They are not access controls for an independently deployed website.
 
-## What not to edit for normal personalization
+Rich text uses `{ "text": "..." }` or
+`{ "brand": { "name": "Studio", "icon": "/portfolio/profile/studio.svg" } }`.
+Media entries use `{ "src": "/portfolio/photography/photo.webp", "alt": "..." }`.
+Image dimensions are measured automatically; do not supply manual size fields.
 
-These are implementation/adaptation layers, not the normal user content surface:
+## Projects
 
-```text
-src/config/site.ts
-src/config/products.ts
-src/content/home.ts
-src/content/about.ts
-src/content/work.ts
-src/content/media.ts
-src/portfolio/
+Each project has a unique `id`, `enabled`, name/copy and discriminated
+`media.kind` (`image` or `carousel`). `mobileTreatment` controls its mobile
+presentation. An optional `story` can accompany either media kind.
+
+Use `media.image.mobile` or a carousel slide's `mobile` for genuine alternate
+artwork. Omit it when the same image works at every width. Actions link to HTTPS
+destinations or registered internal pages. Add meaningful role, constraints and
+outcomes to your own copy; never invent results to fill a template.
+
+Disabling a project retains its author content and original files but removes it
+from the client configuration and publication output.
+
+## Articles
+
+Create `content/blogs/my-post.md`:
+
+```md
+---
+title: "My post"
+date: "2026-09-08"
+description: "A short summary."
+---
+
+## A section
+
+Article body.
 ```
 
-They convert `portfolio.json` into the typed shapes used by the app.
+Optional frontmatter: `subtitle`, `cover`, `tags`, `draft`. Images must use
+local paths. Drafts remain author content; their images are not published unless
+another published item references the same file.
 
-Edit components only when you are changing behavior or design, not when you are changing who the portfolio belongs to.
+Markdown automatically creates routes, index entries, metadata and sitemap entries.
+For interactive React articles, add metadata to `src/blog/custom-posts.json`,
+register the page in `src/portfolio/routes.json` and use its route guard.
+Only the route registry owns the custom page's `demoOnly` flag.
 
-## Adding genuinely custom pages
+## Assets and validation
 
-The single config file is intentionally for repeated portfolio content, not for forcing every case study into a universal page builder.
+Keep originals in `content/assets/portfolio/`. Missing referenced files fail
+validation, including references retained for disabled content. Unreferenced
+originals are allowed and never copied to publication output.
 
-For a project that needs unique storytelling or interaction:
+The pipeline verifies schema, locale/time zone, routes, project IDs, actual image
+metadata and output drift. Photography has a 2 MiB per-image limit; other
+configured images have a 4 MiB limit. Publication output is regenerated under a
+lock and rolled back on ordinary errors.
 
-1. add the project summary to `portfolio.json > projects`;
-2. add a normal route under `src/app/`;
-3. link the project action to that route;
-4. add route-specific SEO when needed;
-5. run the normal validation suite.
+Replace placeholder social previews with your own raster artwork before public
+promotion. Only use media you own or have permission to publish.
 
-This keeps common editing easy without turning FolioWeave into a CMS.
+See [ARCHITECTURE.md](ARCHITECTURE.md), [BRANCHING.md](BRANCHING.md) and
+[VISUAL-QA.md](VISUAL-QA.md) for implementation, privacy and verification contracts.

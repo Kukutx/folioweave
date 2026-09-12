@@ -3,13 +3,13 @@
 import { useEffect, useState, type RefObject } from "react";
 
 export function useViewportActivity(
-  ref: RefObject<Element | null>,
+  ref: RefObject<Element | null> | string,
   rootMargin = "240px 0px",
 ) {
   const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const element = ref.current;
+    const element = typeof ref === "string" ? document.querySelector(ref) : ref.current;
     if (!element) return;
 
     let intersecting = false;

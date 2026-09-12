@@ -2,16 +2,20 @@
 
 import Lenis from "lenis";
 import { useEffect } from "react";
+import { useMediaQuery } from "./use-media-query";
 
 export function useLenis() {
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const nativeTouchScroll = useMediaQuery("(hover: none) and (pointer: coarse)");
   useEffect(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const nativeTouchScroll = window.matchMedia(
+    // useSyncExternalStore hydrates from a server-safe `false` snapshot. Read the
+    // browser queries again here so Lenis is never created for a single effect
+    // turn on touch devices or reduced-motion sessions before the store syncs.
+    const reduceNow = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const touchNow = window.matchMedia(
       "(hover: none) and (pointer: coarse)",
     ).matches;
-    if (reducedMotion || nativeTouchScroll) return;
+    if (reducedMotion || nativeTouchScroll || reduceNow || touchNow) return;
 
     const lenis = new Lenis({
       duration: 1.1,
@@ -48,5 +52,5 @@ export function useLenis() {
       lenis.destroy();
       delete window.__lenis;
     };
-  }, []);
+  }, [reducedMotion, nativeTouchScroll]);
 }

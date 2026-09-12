@@ -1,6 +1,8 @@
 import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import assert from "node:assert/strict";
+import { loadQaProfile } from "./profile.mjs";
 
 const base = process.env.BASE_URL || process.env.NEXT_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
@@ -40,6 +42,15 @@ await page.addInitScript(() => {
 });
 
 await page.goto(`${base}/`, { waitUntil: "domcontentloaded" });
+if (!loadQaProfile().features.resume) {
+  try {
+    assert.equal(await page.locator(".resume-printer").count(), 0);
+    console.log("PASS disabled resume is absent");
+  } finally {
+    await browser.close();
+  }
+  process.exit(0);
+}
 await page.waitForTimeout(2500);
 
 await page.evaluate(async () => {

@@ -1,8 +1,14 @@
 import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import { FONT_SENTINEL_ROUTES } from "../src/portfolio/publication-policy.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
+const portfolio = JSON.parse(
+  await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
+);
+const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
+const routes = ["/", ...(demoRoutesEnabled ? FONT_SENTINEL_ROUTES : [])];
 const browser = await chromium.launch({
   executablePath: resolveChromePath(),
   headless: true,
@@ -17,13 +23,15 @@ async function scan(route, blockFonts = false) {
   });
 
   if (blockFonts) {
-    await context.route(/\/fonts\/(?:google|satoshi)-.*\.woff2/, (request) =>
+    await context.route(/\/fonts\/.*\.woff2?(?:\?|$)/, (request) =>
       request.abort(),
     );
   }
 
   const page = await context.newPage();
   await page.goto(`${base}${route}`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => document.fonts.load('400 24px "Caveat Portfolio"').catch(() => []));
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1500);
 
   const data = await page.evaluate(() => {
@@ -34,6 +42,8 @@ async function scan(route, blockFonts = false) {
 
     return {
       height: document.documentElement.scrollHeight,
+      overflow: document.documentElement.scrollWidth > innerWidth + 1,
+      contentVisible: Boolean(document.querySelector("h1")?.getBoundingClientRect().height),
       blockHeight: block?.getBoundingClientRect().height,
       workHeight: firstWork?.getBoundingClientRect().height,
       faces: [...document.fonts]
@@ -44,7 +54,7 @@ async function scan(route, blockFonts = false) {
           style: font.style,
         }))
         .filter((font) =>
-          /Google Sans|Inter|Newsreader|Instrument|Satoshi/.test(font.family),
+          /Google Sans|Inter|Newsreader|Instrument|Satoshi|Caveat/.test(font.family),
         ),
     };
   });
@@ -57,13 +67,16 @@ async function scan(route, blockFonts = false) {
 }
 
 const comparisons = [];
-for (const route of ["/", "/district", "/clipt"]) {
+for (const route of routes) {
   const normal = await scan(route, false);
   const blocked = await scan(route, true);
   const close = (a, b) =>
     a === undefined || b === undefined || Math.abs(a - b) <= 0.01;
   comparisons.push({
     route,
+    fontsBlocked: blocked.faces.length === 0,
+    contentVisible: normal.contentVisible && blocked.contentVisible,
+    overflow: normal.overflow || blocked.overflow,
     heightEqual: normal.height === blocked.height,
     blockHeightEqual: close(normal.blockHeight, blocked.blockHeight),
     workHeightEqual: close(normal.workHeight, blocked.workHeight),
@@ -73,7 +86,7 @@ for (const route of ["/", "/district", "/clipt"]) {
 await browser.close();
 const failures = comparisons.filter(
   (item) =>
-    !item.heightEqual || !item.blockHeightEqual || !item.workHeightEqual,
+    !item.fontsBlocked || !item.contentVisible || item.overflow,
 );
 const summary = {
   checks: comparisons.length,

@@ -1,1 +1,1 @@
-export { workItems, workProjects } from "@/portfolio";
+export { workProjects } from "@/portfolio";

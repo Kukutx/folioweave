@@ -13,6 +13,7 @@ export function scrollToPosition(
     force,
   }: SmoothScrollOptions = {},
 ) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) behavior = "instant";
   if (behavior === "smooth" && window.__lenis) {
     window.__lenis.scrollTo(top, { duration, force });
     return;
