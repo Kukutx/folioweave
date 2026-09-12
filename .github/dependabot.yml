@@ -10,13 +10,31 @@ updates:
       npm-minor-patch:
         patterns:
           - "*"
+        exclude-patterns:
+          - framer-motion
+          - playwright-core
         update-types:
           - minor
+          - patch
+      motion-minor-patch:
+        patterns:
+          - framer-motion
+        update-types:
+          - minor
+          - patch
+      playwright-patch:
+        patterns:
+          - playwright-core
+        update-types:
           - patch
     ignore:
       - dependency-name: "*"
         update-types:
           - version-update:semver-major
+      # Browser minor releases intentionally require a reviewed baseline migration.
+      - dependency-name: playwright-core
+        update-types:
+          - version-update:semver-minor
 
   - package-ecosystem: github-actions
     directory: /

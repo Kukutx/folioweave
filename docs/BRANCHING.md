@@ -18,11 +18,14 @@ those profiles on separate branches prevents personal content from becoming the
 default template; it does not make that content confidential.
 
 Run `npm run qa:boundary` to classify profile changes and verify that reusable
-source does not depend on `src/demo/`. CI applies the PR base branch or pushed
-branch policy. Promote shared patches from `personal` to `develop` to `main`;
-exclude the profile-specific paths in the report and regenerate outputs from the
-destination profile. Never treat merging a whole `personal` branch into `main` as
-a content export mechanism.
+source does not depend on `src/demo/`. On `personal`, the check compares the net
+tree with `main` and fails if any reusable path exists only on the personal
+branch. CI fetches the relevant shared base explicitly, so this check cannot
+silently fall back to an empty shallow-clone comparison. Promote shared patches
+through `develop` to `main` before updating `personal`; exclude only the
+profile-specific paths in the report and regenerate outputs from the destination
+profile. Never treat merging a whole `personal` branch into `main` as a content
+export mechanism.
 
 All content producers use `npm run content:build`. Publication re-checks the
 branch/profile boundary immediately before generated outputs are replaced, so the

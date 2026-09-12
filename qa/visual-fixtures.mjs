@@ -16,7 +16,10 @@ await fs.mkdir(sandboxRoot, { recursive: true });
 const temporary = await fs.mkdtemp(path.join(sandboxRoot, "visual-"));
 const dependencyLink = path.join(temporary, "node_modules");
 const screens = path.join(root, "qa/screens/fixtures");
-await fs.mkdir(screens, { recursive: true });
+if (!minimalHome) {
+  await fs.rm(screens, { recursive: true, force: true });
+  await fs.mkdir(screens, { recursive: true });
+}
 // A disposable copy keeps fixtures, personal test data, and development routes
 // out of the real app, its build output, and its Git index.
 for (const entry of ["src", "public", "tsconfig.json", "package.json", "next.config.ts"]) {
