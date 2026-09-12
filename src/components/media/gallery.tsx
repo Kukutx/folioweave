@@ -105,7 +105,7 @@ export function PhotoCard({
       src={src}
       alt={alt}
       loading="lazy"
-      fill
+      {...mediaDimensions(src)}
       sizes={
         isPolaroid
           ? "(max-width: 767px) 70vw, 25vw"
