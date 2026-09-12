@@ -127,6 +127,7 @@ export function DesignerCursors() {
   useEffect(() => {
     if (!visible || reducedMotion) return;
     const timers: number[] = [];
+    const decorativeAnimations = new Set<Animation>();
     const later = (fn: () => void, delay: number) => {
       const timer = window.setTimeout(fn, delay);
       timers.push(timer);
@@ -178,16 +179,23 @@ export function DesignerCursors() {
           elementLabel: label,
         }));
 
-        const oldTransform = target.style.transform;
-        const oldTransition = target.style.transition;
-        target.style.transition =
-          "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)";
         const dx = (Math.random() - 0.5) * 4;
         const dy = (Math.random() - 0.5) * 4;
-        target.style.transform = `translate(${dx}px, ${dy}px)`;
+        const animation = target.animate(
+          [
+            { transform: "translate(0px, 0px)" },
+            { transform: `translate(${dx}px, ${dy}px)` },
+          ],
+          {
+            duration: 300,
+            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+            fill: "forwards",
+          },
+        );
+        decorativeAnimations.add(animation);
         later(() => {
-          target.style.transform = oldTransform;
-          target.style.transition = oldTransition;
+          animation.cancel();
+          decorativeAnimations.delete(animation);
         }, 600);
 
         if (phase === 0) {
@@ -210,7 +218,11 @@ export function DesignerCursors() {
     };
 
     later(run, 1000);
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      decorativeAnimations.forEach((animation) => animation.cancel());
+      decorativeAnimations.clear();
+    };
   }, [phase, reducedMotion, visible]);
 
   useEffect(() => {
