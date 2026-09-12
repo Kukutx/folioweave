@@ -25,21 +25,10 @@ const homeReloadScrollReset = `
     navigation?.type !== "reload"
   ) return;
 
-  const previous = history.scrollRestoration;
+  document.documentElement.dataset.homeReloadScrollRestoration =
+    history.scrollRestoration;
   history.scrollRestoration = "manual";
   scrollTo(0, 0);
-  addEventListener(
-    "pageshow",
-    () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          scrollTo(0, 0);
-          history.scrollRestoration = previous;
-        });
-      });
-    },
-    { once: true },
-  );
 })();
 `;
 
