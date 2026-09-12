@@ -31,14 +31,31 @@ async function freePort() {
 
 function runScript(script, env) {
   return new Promise((resolve, reject) => {
-    const npmCli =
-      process.env.npm_execpath ||
-      path.resolve(path.dirname(process.execPath), "node_modules/npm/bin/npm-cli.js");
-    const child = spawn(process.execPath, [npmCli, "run", script], {
-      cwd: process.cwd(),
-      env,
-      stdio: "inherit",
-    });
+    const npmCli = process.env.npm_execpath;
+    const child = npmCli
+      ? spawn(process.execPath, [npmCli, "run", script], {
+          cwd: process.cwd(),
+          env,
+          stdio: "inherit",
+        })
+      : process.platform === "win32"
+        ? spawn(
+            process.execPath,
+            [
+              path.resolve(
+                path.dirname(process.execPath),
+                "node_modules/npm/bin/npm-cli.js",
+              ),
+              "run",
+              script,
+            ],
+            { cwd: process.cwd(), env, stdio: "inherit" },
+          )
+        : spawn("npm", ["run", script], {
+            cwd: process.cwd(),
+            env,
+            stdio: "inherit",
+          });
     child.on("error", reject);
     child.on("exit", (code, signal) => {
       if (code === 0) resolve();
