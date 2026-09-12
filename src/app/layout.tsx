@@ -16,6 +16,22 @@ export const viewport: Viewport = {
   themeColor: siteConfig.themeColor,
 };
 
+const homeReloadScrollReset = `
+(() => {
+  const navigation = performance.getEntriesByType("navigation")[0];
+  if (
+    location.pathname !== "/" ||
+    location.hash ||
+    navigation?.type !== "reload"
+  ) return;
+
+  document.documentElement.dataset.homeReloadScrollRestoration =
+    history.scrollRestoration;
+  history.scrollRestoration = "manual";
+  scrollTo(0, 0);
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -24,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang={siteConfig.identity.locale}>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: homeReloadScrollReset }} />
         {children}
         <script
           type="application/ld+json"
