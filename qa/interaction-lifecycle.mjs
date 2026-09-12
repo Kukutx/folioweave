@@ -9,6 +9,7 @@ const browser = await chromium.launch({
   headless: true,
 });
 const report = [];
+await fs.rm("qa/screens/lifecycle", { recursive: true, force: true });
 await fs.mkdir("qa/screens/lifecycle", { recursive: true });
 try {
   const desktop = await browser.newContext({
@@ -40,7 +41,9 @@ try {
     window.__lenis?.scrollTo(3000, { immediate: true });
     window.scrollTo(0, 3000);
   });
-  await page.waitForTimeout(800);
+  await page
+    .locator("[data-designer-overlay]")
+    .waitFor({ state: "detached", timeout: 5000 });
   assert.equal(
     await page.locator(".hero-bio p").first().getAttribute("style"),
     before,

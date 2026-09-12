@@ -15,6 +15,7 @@ const label = `after${classicScrollbars ? "-classic" : ""}`;
 const directory = regression
   ? `qa/screens/regression-${process.pid}`
   : `qa/screens/integrity-${label}`;
+await fs.rm(directory, { recursive: true, force: true });
 await fs.mkdir(directory, { recursive: true });
 const report = [];
 const browser = await chromium.launch({
@@ -318,10 +319,17 @@ try {
     }
   }
 }
-if (regression)
-  await verifyVisualBaseline({
-    report,
-    directory,
-    browserVersion: browser.version(),
-    update: updateRegression,
-  });
+if (regression) {
+  let passed = false;
+  try {
+    await verifyVisualBaseline({
+      report,
+      directory,
+      browserVersion: browser.version(),
+      update: updateRegression,
+    });
+    passed = true;
+  } finally {
+    if (passed) await fs.rm(directory, { recursive: true, force: true });
+  }
+}

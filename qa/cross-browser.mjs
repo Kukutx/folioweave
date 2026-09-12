@@ -4,6 +4,7 @@ import { chromium, firefox, webkit } from "playwright-core";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
 const report = [];
+await fs.rm("qa/screens/browsers", { recursive: true, force: true });
 await fs.mkdir("qa/screens/browsers", { recursive: true });
 try {
   for (const engine of [chromium, firefox, webkit]) {

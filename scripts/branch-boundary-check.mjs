@@ -17,10 +17,41 @@ const { targetBranch: branch, core, personal } = boundary;
 const errors = [...boundary.errors];
 
 function git(...args) {
-  return execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+  return execFileSync("git", args, {
+    cwd: root,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }).trim();
 }
 
 const hasGitMetadata = fs.existsSync(path.join(root, ".git"));
+
+function gitRefExists(ref) {
+  if (!hasGitMetadata || !ref) return false;
+  try {
+    git("rev-parse", "--verify", "--quiet", `${ref}^{commit}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function resolveDiffBase() {
+  if (!hasGitMetadata) return null;
+  const candidates = [];
+  if (process.env.BOUNDARY_SHARED_BASE)
+    candidates.push(process.env.BOUNDARY_SHARED_BASE);
+  if (process.env.GITHUB_BASE_REF) {
+    candidates.push(
+      `origin/${process.env.GITHUB_BASE_REF}`,
+      process.env.GITHUB_BASE_REF,
+    );
+  }
+  if (personal) candidates.push("origin/main", "main");
+  else if (core && branch) candidates.push(`origin/${branch}`, branch);
+  else candidates.push("develop", "origin/develop", "main", "origin/main");
+  return [...new Set(candidates)].find(gitRefExists) ?? null;
+}
 
 const projectName = path.basename(root);
 const projectNameLower = projectName.toLowerCase();
@@ -81,7 +112,6 @@ if (core) {
   const leaked = [
     ...walk(path.join(root, "content", "blogs")),
     ...walk(path.join(root, "content", "assets", "portfolio")),
-    ...walk(path.join(root, "public", "portfolio")),
     ...walk(path.join(root, "qa", "baselines", "personal")),
   ]
     .map(relative)
@@ -93,29 +123,45 @@ if (core) {
   }
 }
 
+const sharedBase = resolveDiffBase();
 let changedFiles = [];
 if (hasGitMetadata) {
-  try {
-    const tracked = git("diff", "--name-only", "develop", "--")
-      .split(/\r?\n/)
-      .filter(Boolean);
-    const untracked = git("ls-files", "--others", "--exclude-standard")
+  const untracked = git("ls-files", "--others", "--exclude-standard")
+    .split(/\r?\n/)
+    .filter(Boolean);
+  if (sharedBase) {
+    const tracked = git("diff", "--name-only", sharedBase, "--")
       .split(/\r?\n/)
       .filter(Boolean);
     changedFiles = [...new Set([...tracked, ...untracked])].sort();
-  } catch {
-    changedFiles = git("status", "--short")
+  } else {
+    const workingTree = git("status", "--short")
       .split(/\r?\n/)
       .filter(Boolean)
       .map((line) => line.slice(3));
+    changedFiles = [...new Set([...workingTree, ...untracked])].sort();
   }
+}
+
+const sharedChanges = changedFiles.filter((file) => !isPersonalOnly(file));
+const profileChanges = changedFiles.filter((file) => isPersonalOnly(file));
+if (personal && !sharedBase) {
+  errors.push(
+    "Cannot verify personal/shared convergence because no main reference is available. Fetch origin/main before running the boundary check.",
+  );
+}
+if (personal && sharedChanges.length) {
+  errors.push(
+    `Reusable changes exist only on ${policy.personalBranch}: ${sharedChanges.join(", ")}. Promote them through develop -> main before updating personal.`,
+  );
 }
 
 const report = {
   targetBranch: branch,
   policy: core ? "core" : personal ? "personal" : "feature",
-  sharedChanges: changedFiles.filter((file) => !isPersonalOnly(file)),
-  profileChanges: changedFiles.filter((file) => isPersonalOnly(file)),
+  sharedBase,
+  sharedChanges,
+  profileChanges,
   errors,
 };
 fs.writeFileSync(
@@ -130,6 +176,7 @@ if (errors.length) {
 } else {
   console.log(
     `Branch boundary OK — ${branch || "detached"} uses the ${report.policy} policy; ` +
-      `${report.sharedChanges.length} shared and ${report.profileChanges.length} profile-specific changed paths classified.`,
+      `${report.sharedChanges.length} shared and ${report.profileChanges.length} profile-specific changed paths classified` +
+      `${sharedBase ? ` against ${sharedBase}` : ""}.`,
   );
 }
