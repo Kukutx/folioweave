@@ -10,9 +10,14 @@ const demo = JSON.parse(
   await fs.readFile(path.join(root, "governance/demo-portfolio.json"), "utf8"),
 );
 await prepareContent(root, demo);
-const custom = JSON.parse(
-  await fs.readFile(path.join(root, "src/blog/custom-posts.json"), "utf8"),
-);
+const custom = [
+  ...JSON.parse(
+    await fs.readFile(path.join(root, "src/blog/custom-posts.json"), "utf8"),
+  ),
+  ...JSON.parse(
+    await fs.readFile(path.join(root, "src/demo/custom-posts.json"), "utf8"),
+  ),
+];
 const routes = JSON.parse(
   await fs.readFile(path.join(root, "src/portfolio/routes.json"), "utf8"),
 );

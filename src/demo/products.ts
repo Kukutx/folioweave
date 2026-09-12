@@ -1,4 +1,4 @@
-import type { ProductDefinition } from "./schema";
+import type { ProductDefinition } from "@/config/schema";
 
 export const products = {
   district: {

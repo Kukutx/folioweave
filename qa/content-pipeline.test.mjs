@@ -52,8 +52,13 @@ test("published asset bytes are the validated snapshot, not deferred source read
       path.join(temporary, "portfolio.schema.json"),
     );
     await fs.mkdir(path.join(temporary, "src/blog"), { recursive: true });
+    await fs.mkdir(path.join(temporary, "src/demo"), { recursive: true });
     await fs.writeFile(
       path.join(temporary, "src/blog/custom-posts.json"),
+      "[]",
+    );
+    await fs.writeFile(
+      path.join(temporary, "src/demo/custom-posts.json"),
       "[]",
     );
     await fs.mkdir(path.join(temporary, "content/blogs"), { recursive: true });
@@ -122,8 +127,13 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
       path.join(temporary, "portfolio.schema.json"),
     );
     await fs.mkdir(path.join(temporary, "src/blog"), { recursive: true });
+    await fs.mkdir(path.join(temporary, "src/demo"), { recursive: true });
     await fs.writeFile(
       path.join(temporary, "src/blog/custom-posts.json"),
+      "[]",
+    );
+    await fs.writeFile(
+      path.join(temporary, "src/demo/custom-posts.json"),
       "[]",
     );
     await fs.mkdir(path.join(temporary, "content/blogs"), { recursive: true });
@@ -239,6 +249,21 @@ test("personal and demo profiles validate through the same pipeline", async () =
   }
 });
 
+test("demo custom posts are removed from non-demo publication", async () => {
+  const demoPlan = await prepareContent(root, demo);
+  assert.deepEqual(
+    demoPlan.customPosts.map((post) => post.slug),
+    ["clipt"],
+  );
+
+  const nonDemo = structuredClone(demo);
+  nonDemo.features.demoRoutes = false;
+  nonDemo.features.work = false;
+  nonDemo.projects = [];
+  const nonDemoPlan = await prepareContent(root, nonDemo);
+  assert.deepEqual(nonDemoPlan.customPosts, []);
+});
+
 test("disabled content is retained in source but stripped from payload and publication", async () => {
   const config = structuredClone(personal);
   config.projects.forEach((project) => {
@@ -300,7 +325,7 @@ test("publication removes old output without removing author sources", async () 
     await fs.mkdir(path.join(temporary, "content/assets/portfolio"), {
       recursive: true,
     });
-    await fs.mkdir(path.join(temporary, "src/blog"), { recursive: true });
+    await fs.mkdir(path.join(temporary, "src/demo"), { recursive: true });
     await fs.writeFile(
       path.join(temporary, "public/portfolio/old.txt"),
       "old generated output",

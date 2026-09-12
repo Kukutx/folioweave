@@ -1,15 +1,16 @@
+import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { formatBlogDate, getBlogIndexPosts } from "@/blog";
-import { routeMetadata } from "@/config/seo";
+import { blogMetadata } from "@/config/seo";
 import { PortfolioCalendarIcon, PortfolioClockIcon } from "@/components/portfolio-icons";
 import { siteConfig, siteCopyright } from "@/config/site";
 import { blogContent } from "@/portfolio";
 import "@/styles/blogs.css";
 
-export const metadata = routeMetadata.blogs;
+export const metadata = blogMetadata;
 
 export default function BlogsPage() {
   const posts = getBlogIndexPosts();
@@ -19,22 +20,22 @@ export default function BlogsPage() {
     <div className="writing-container">
       <header className="writing-header">
         <div>
-          {siteConfig.features.demoRoutes ? (
-            <>
-              <h1 className="writing-title">OG Blogs</h1>
-              <p className="writing-subtitle">
-                Thoughts on{" "}
-                <span className="highlight-yellow">design engineering</span>,{" "}
-                <span className="highlight-yellow">product philosophy</span>, and the{" "}
-                <span className="highlight-yellow">obsession with detail</span>.
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="writing-title">{blogContent.title}</h1>
-              <p className="writing-subtitle">{blogContent.description}</p>
-            </>
-          )}
+          <h1 className="writing-title">
+            {blogContent.heading ?? blogContent.title}
+          </h1>
+          <p className="writing-subtitle">
+            {blogContent.intro?.length
+              ? blogContent.intro.map((segment, index) =>
+                  segment.tone === "highlight" ? (
+                    <span className="highlight-yellow" key={index}>
+                      {segment.text}
+                    </span>
+                  ) : (
+                    <Fragment key={index}>{segment.text}</Fragment>
+                  ),
+                )
+              : blogContent.description}
+          </p>
         </div>
       </header>
       <main className="writing-list-container">
@@ -59,11 +60,8 @@ export default function BlogsPage() {
                   <span className="blog-date">
                     <PortfolioCalendarIcon size={14} />
                     <time dateTime={post.date}>
-                      {siteConfig.features.demoRoutes &&
-                      post.kind === "custom" &&
-                      post.slug === "clipt"
-                        ? "Jan 26, 2026"
-                        : formatBlogDate(post.date, siteConfig.identity.locale)}
+                      {post.displayDate ??
+                        formatBlogDate(post.date, siteConfig.identity.locale)}
                     </time>
                   </span>
                   <span className="blog-separator">•</span>

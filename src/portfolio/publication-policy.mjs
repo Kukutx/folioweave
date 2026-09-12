@@ -4,8 +4,6 @@ export const DEMO_ONLY_ROUTES = Object.freeze(
   routeDefinitions.filter((route) => route.demoOnly).map((route) => route.path),
 );
 
-export const FONT_SENTINEL_ROUTES = Object.freeze(["/district", "/clipt"]);
-
 export const HOME_SECTIONS = Object.freeze([
   "home",
   "about",

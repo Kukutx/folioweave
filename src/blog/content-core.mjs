@@ -23,6 +23,7 @@ export const CUSTOM_BLOG_FIELDS = new Set([
   "title",
   "subtitle",
   "date",
+  "displayDate",
   "description",
   "excerpt",
   "intro",
@@ -343,6 +344,12 @@ export function normalizeCustomBlogPosts(value) {
       const title = requireText(raw.title, "title", label, issues);
       const subtitle = optionalText(raw.subtitle, "subtitle", label, issues);
       const date = normalizeDate(raw.date, label, issues);
+      const displayDate = optionalText(
+        raw.displayDate,
+        "displayDate",
+        label,
+        issues,
+      );
       const description = requireText(
         raw.description,
         "description",
@@ -369,6 +376,7 @@ export function normalizeCustomBlogPosts(value) {
         title,
         ...(subtitle ? { subtitle } : {}),
         date,
+        ...(displayDate ? { displayDate } : {}),
         description,
         ...(excerpt ? { excerpt } : {}),
         ...(intro ? { intro } : {}),

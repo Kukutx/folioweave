@@ -1,48 +1,44 @@
-# Demo Asset Policy
+# Asset policy
 
-FolioWeave includes bundled demo media so the starter can be explored immediately after cloning.
+FolioWeave separates author-owned source media from generated publication output and bundled demo media.
 
-## License boundary
+## Author assets
 
-The MIT license covers the software source and documentation. Demo photography, resumes, product or brand artwork, trademarks, fonts, and other third-party media under `public/` are not automatically licensed for reuse by the software license.
-
-Before publishing your own portfolio, replace demo media with assets you own or are licensed to use.
-
-## Asset inventory
-
-`qa/assets-manifest.json` records the expected path, size, and SHA-256 hash for protected demo files used by the project.
-
-The main asset groups are:
+Put original personal files under:
 
 ```text
-public/assets/   UI icons, badges, and decorative assets
-public/fonts/    local fonts
-public/media/    bundled demo portfolio/product media
-public/portfolio/ recommended home for your own profile, project, photo, and resume assets
+content/assets/portfolio/
+  profile/
+  projects/
+  photography/
+  resume/
+  blogs/
 ```
 
-Run the asset check after changing or removing protected files:
+Reference them from `portfolio.json` or Markdown with browser paths beginning `/portfolio/...`.
+
+`npm run content:build` validates the references and atomically publishes only the required files to `public/portfolio/`. **Do not author files directly in `public/portfolio/`; it is generated output.**
+
+Unreferenced originals are allowed and remain in author storage. Draft-only Blog assets and disabled/unreferenced content are not published unless another published item references them.
+
+Photography has a 2 MiB per-image source limit; other configured images have a 4 MiB limit. Image dimensions and hashes are measured automatically.
+
+## Bundled demo assets
+
+The reusable starter also contains demo media under shared `public/` paths so the canonical demo can run immediately.
+
+`qa/assets-manifest.json` records protected demo paths, sizes, and SHA-256 hashes. Run:
 
 ```bash
 npm run qa:assets
 ```
 
-## Cleanup guidelines
+after an intentional demo asset change.
 
-Remove assets only when you have confirmed they are no longer used by routes, content configuration, CSS, or runtime interactions.
+## License boundary
 
-Some files may be loaded dynamically and therefore will not always appear in simple static import scans. When intentionally removing a protected asset, update `qa/assets-manifest.json` in the same change.
+The MIT license covers software source and documentation. It does **not** automatically grant redistribution rights for every bundled photograph, logo, trademark, font, resume, or product screenshot.
 
-## Publishing your own portfolio
+Before publishing a personal site, replace demo media with assets you own or are licensed to use. Before creating a public FolioWeave repository, review every bundled demo asset for redistribution rights; replace or clearly exclude anything whose public redistribution is not established.
 
-Put your own files under `public/portfolio/` and reference them from `portfolio.json`. `npm run content:check` verifies those configured local paths exist before development/builds.
-
-A typical customization pass should replace:
-
-- profile and photography images
-- resume previews and downloads
-- project screenshots and product artwork
-- company and product logos
-- social preview images
-- store badges or third-party brand marks that are not yours
-- any font whose license does not permit your intended use
+See `docs/PUBLIC-PRIVATE.md` for the clean-history public export model.

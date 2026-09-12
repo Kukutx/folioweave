@@ -23,7 +23,7 @@ import {
   PortfolioPaletteIcon,
   PortfolioSparklesIcon,
   PortfolioZapIcon,
-} from "./portfolio-icons";
+} from "@/components/portfolio-icons";
 import { siteCopyright } from "@/config/site";
 import type { CustomBlogPost } from "@/blog/types";
 

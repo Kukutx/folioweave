@@ -1,9 +1,9 @@
 import { requirePublishedRoute } from "@/portfolio/route-guard";
-import { routeMetadata } from "@/config/seo";
-import { CliptPage } from "@/components/clipt-page";
-import "@/styles/clipt.css";
+import { demoRouteMetadata } from "@/demo/seo";
+import { CliptPage } from "@/demo/components/clipt-page";
+import "@/demo/styles/clipt.css";
 
-export const metadata = routeMetadata.clipt;
+export const metadata = demoRouteMetadata.clipt;
 export default function Page() {
   requirePublishedRoute("/clipt");
   return <CliptPage />;

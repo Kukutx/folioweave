@@ -597,7 +597,34 @@ const portfolio = {
   },
   "blog": {
     "title": "Blogs",
-    "description": "Thoughts on design, code, and building products."
+    "heading": "OG Blogs",
+    "description": "Thoughts on design, code, and building products.",
+    "intro": [
+      {
+        "text": "Thoughts on "
+      },
+      {
+        "text": "design engineering",
+        "tone": "highlight"
+      },
+      {
+        "text": ", "
+      },
+      {
+        "text": "product philosophy",
+        "tone": "highlight"
+      },
+      {
+        "text": ", and the "
+      },
+      {
+        "text": "obsession with detail",
+        "tone": "highlight"
+      },
+      {
+        "text": "."
+      }
+    ]
   },
   "interlude": {
     "title": "Sometimes, I zoom out.",

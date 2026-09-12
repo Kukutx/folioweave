@@ -52,7 +52,7 @@ function CarouselContent({
   return (
     <div
       ref={rootRef}
-      className="notchshelf-carousel"
+      className="media-carousel"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocus={() => setFocused(true)}
@@ -61,7 +61,7 @@ function CarouselContent({
           setFocused(false);
       }}
     >
-      <div className="notchshelf-carousel-container">
+      <div className="media-carousel-container">
         <AnimatePresence initial={false} custom={direction}>
           <MotionImage
             key={currentIndex}
@@ -80,13 +80,13 @@ function CarouselContent({
                 ease: "easeInOut",
               },
             }}
-            className="notchshelf-carousel-image"
+            className="media-carousel-image"
             draggable={false}
           />
         </AnimatePresence>
         <button
           hidden={slides.length < 2}
-          className="notchshelf-carousel-btn notchshelf-carousel-btn-prev"
+          className="media-carousel-btn media-carousel-btn-prev"
           onClick={prev}
           aria-label="Previous image"
         >
@@ -94,17 +94,17 @@ function CarouselContent({
         </button>
         <button
           hidden={slides.length < 2}
-          className="notchshelf-carousel-btn notchshelf-carousel-btn-next"
+          className="media-carousel-btn media-carousel-btn-next"
           onClick={next}
           aria-label="Next image"
         >
           <ChevronRight size={24} />
         </button>
-        <div className="notchshelf-carousel-dots">
+        <div className="media-carousel-dots">
           {slides.map((_, slideIndex) => (
             <button
               key={slideIndex}
-              className={`notchshelf-carousel-dot ${slideIndex === currentIndex ? "active" : ""}`}
+              className={`media-carousel-dot ${slideIndex === currentIndex ? "active" : ""}`}
               onClick={() => {
                 setDirection(slideIndex > currentIndex ? 1 : -1);
                 setIndex(slideIndex);

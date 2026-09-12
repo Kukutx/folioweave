@@ -4,6 +4,8 @@ Drop a lowercase kebab-case `.md` file in this folder and FolioWeave will publis
 The filename becomes the route slug, so `building-devmate.md` becomes `/blogs/building-devmate`.
 Files beginning with `_` or `.` are ignored by the blog engine.
 
+While `npm run dev` is running, saving/adding/removing a post automatically rebuilds the article index and routes; no Next.js restart is required. Invalid content keeps the last valid generated output and prints the validation error.
+
 Use this frontmatter shape:
 
 ```md

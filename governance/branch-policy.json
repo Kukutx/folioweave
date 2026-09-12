@@ -1,12 +1,16 @@
 {
-  "coreBranches": ["main", "develop"],
+  "coreBranches": [
+    "main",
+    "develop"
+  ],
   "personalBranch": "personal",
   "profileConfig": "portfolio.json",
   "profileSpecificFiles": [
     "portfolio.json",
     "src/portfolio/config.generated.ts",
     "src/portfolio/media.generated.ts",
-    "src/blog/posts.generated.ts"
+    "src/blog/posts.generated.ts",
+    "src/blog/custom-posts.generated.ts"
   ],
   "demoProfile": "governance/demo-portfolio.json",
   "personalOnlyPrefixes": [

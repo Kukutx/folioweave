@@ -1,27 +1,34 @@
-# Branch and content boundaries
+# Branch, profile, and repository boundaries
 
-The GitHub repository `Kukutx/folioweave` is private (verified 2026-09-08).
-Branch names themselves are never a privacy boundary.
+Branches are workflow tools, not privacy boundaries.
+
+## Current private development repository
+
+The current repository uses core branches plus a personal author profile while FolioWeave is being developed:
 
 | Ownership | main / develop | personal |
 | --- | --- | --- |
-| App, schema, scripts, QA, docs | reusable implementation | shared improvements |
-| portfolio.json | governance/demo-portfolio.json | personal profile |
-| content/assets/portfolio/, content/blogs/ | shared README files only | author media and posts |
-| Generated profile, media and article files | regenerated from demo | regenerated from personal |
-| public/portfolio/ | generated, ignored | generated, ignored |
+| reusable app, schema, scripts, QA, docs | canonical | inherits shared implementation |
+| `portfolio.json` | canonical demo profile | personal profile |
+| `content/assets/portfolio/`, `content/blogs/` | shared README files only | author media/posts |
+| generated profile/media/article files | generated from demo | generated from personal |
+| `qa/baselines/personal/` | absent | personal golden state |
 
-Run `npm run qa:boundary` to classify changes. CI applies the PR base branch or
-pushed branch policy. Promote shared patches from personal to develop to main;
-exclude the profile-specific paths in the report and regenerate outputs from
-the destination profile. Never treat merging a whole personal branch into main
-as a content export mechanism.
+`npm run qa:boundary` classifies changes and also verifies that reusable source does not depend on `src/demo/`.
 
-All content producers use `npm run content:build`. Schema changes are deliberately
-breaking: update both author profiles and their tests together. There is no
-runtime compatibility adapter or legacy migration CLI.
+Never merge a whole personal branch into a core branch as a publishing mechanism. Shared changes move to `develop`/`main`; author inputs stay personal.
 
-Private visibility does not revoke historical downloads, public forks or external
-deployments. A future public edition must be a reviewed, clean-history export.
-Do not make the current repository's personal history public again. See
-[ARCHITECTURE.md](ARCHITECTURE.md) for the publication and recovery contract.
+Schema changes deliberately update the canonical demo profile and generated contracts together.
+
+## Recommended public architecture
+
+Once FolioWeave is published for others to use, prefer **two repositories**:
+
+- public `folioweave`: reusable product + reviewed demo;
+- private `folioweave-personal`: deployed personal instance, with the public repository configured as `upstream`.
+
+This removes the need to use a branch as an author/privacy boundary.
+
+If a repository has ever contained personal content, do not simply switch that repository to public. Create a reviewed clean-history export from validated core `main`.
+
+See [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md) for the migration and update workflow.

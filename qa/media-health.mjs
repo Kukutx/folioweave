@@ -83,7 +83,7 @@ async function scan(viewport, route) {
         Boolean(image.closest(".resume-paper")) ||
         Boolean(image.closest(".gallery-overlay")) ||
         Boolean(image.closest(".camera-view")) ||
-        Boolean(image.closest(".notchshelf-carousel")) ||
+        Boolean(image.closest(".media-carousel")) ||
         // AnimatePresence can keep an outgoing Brink phone screenshot at
         // opacity 0 briefly while its replacement is already visible.
         (image.classList.contains("brink-phoneShot") &&

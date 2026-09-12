@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getCustomBlogPost } from "@/blog";
 import { createBlogMetadata } from "@/blog/metadata";
 import { BlogPostingJsonLd } from "@/components/blog/blog-json-ld";
-import { CliptBlogPage } from "@/components/clipt-blog-page";
+import { CliptBlogPage } from "@/demo/components/clipt-blog-page";
 import "@/styles/blogs.css";
 
 export function generateMetadata(): Metadata {

@@ -1,10 +1,10 @@
 import { requirePublishedRoute } from "@/portfolio/route-guard";
-import { products } from "@/config/products";
-import { routeMetadata } from "@/config/seo";
-import { AnalyticsPrivacy } from "@/components/analytics-privacy";
-import "@/styles/privacy.css";
+import { products } from "@/demo/products";
+import { demoRouteMetadata } from "@/demo/seo";
+import { AnalyticsPrivacy } from "@/demo/components/analytics-privacy";
+import "@/demo/styles/privacy.css";
 
-export const metadata = routeMetadata.notchShelfPrivacy;
+export const metadata = demoRouteMetadata.notchShelfPrivacy;
 export default function Page() {
   requirePublishedRoute("/notchshelf-privacypolicy");
   return (

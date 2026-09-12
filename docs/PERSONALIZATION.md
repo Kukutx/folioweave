@@ -23,7 +23,7 @@ npm run content:build
 npm run content:check
 ```
 
-Development and production builds invoke this pipeline automatically. Never edit
+Development and production builds invoke this pipeline automatically. `npm run dev` also watches the authoring inputs and atomically rebuilds valid content without restarting Next.js. Invalid edits leave the last valid generated output in place and print the validation error. Never edit
 `public/portfolio/` or generated TypeScript: they are replaceable outputs.
 
 ## Configuration
@@ -37,7 +37,7 @@ Development and production builds invoke this pipeline automatically. Never edit
 - `interlude`: transition headings, descriptions and mountain artwork.
 - `projects`: ordered project cards, actions and optional stories.
 - `photography`: intro and ordered image/alt pairs.
-- `blog`, `footerBook`, `seo`: editorial copy and metadata.
+- `blog`, `footerBook`, `seo`: editorial copy and metadata. `blog.heading` and `blog.intro` optionally provide an editorial visible heading/highlight treatment while `blog.title` remains the metadata title.
 
 Feature switches affect navigation, content serialization and asset publication.
 They are not access controls for an independently deployed website.
@@ -81,10 +81,10 @@ Optional frontmatter: `subtitle`, `cover`, `tags`, `draft`. Images must use
 local paths. Drafts remain author content; their images are not published unless
 another published item references the same file.
 
-Markdown automatically creates routes, index entries, metadata and sitemap entries.
+With `npm run dev` running, adding, editing or removing a Markdown file rebuilds the Blog publication automatically. Markdown creates routes, index entries, metadata and sitemap entries.
 For interactive React articles, add metadata to `src/blog/custom-posts.json`,
 register the page in `src/portfolio/routes.json` and use its route guard.
-Only the route registry owns the custom page's `demoOnly` flag.
+Only the route registry owns the custom page's `demoOnly` flag. Bundled interactive examples keep their metadata in `src/demo/custom-posts.json`; the content build combines both registries and generates only the currently published custom-post runtime index.
 
 ## Assets and validation
 

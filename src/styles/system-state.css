@@ -3,18 +3,18 @@
   display: grid;
   place-items: center;
   padding: 32px;
-  background: var(--bg-primary, #fff);
-  color: var(--text-primary, #1d1d1f);
+  background: var(--ui-bg-primary, #fff);
+  color: var(--ui-text-primary, #1d1d1f);
   font-family: var(--font-main, "Helvetica Neue", Helvetica, Arial, sans-serif);
 }
 .system-state-card {
   width: min(620px, 100%);
   text-align: center;
   padding: clamp(36px, 7vw, 72px);
-  border: 1px solid var(--border-light, #e8e8ed);
+  border: 1px solid var(--ui-border-light, #e8e8ed);
   border-radius: 32px;
-  background: var(--card-bg, #fff);
-  box-shadow: 0 24px 80px var(--shadow, rgba(0, 0, 0, 0.1));
+  background: var(--ui-card-bg, #fff);
+  box-shadow: 0 24px 80px var(--ui-shadow, rgba(0, 0, 0, 0.1));
 }
 .system-state-code {
   display: block;
@@ -25,7 +25,7 @@
   font-weight: 400;
   line-height: 0.9;
   letter-spacing: -0.05em;
-  color: var(--text-tertiary, #6e6e73);
+  color: var(--ui-text-tertiary, #6e6e73);
 }
 .system-state-title {
   margin: 0;
@@ -36,7 +36,7 @@
 .system-state-copy {
   max-width: 42ch;
   margin: 18px auto 0;
-  color: var(--text-secondary, #86868b);
+  color: var(--ui-text-secondary, #86868b);
   line-height: 1.6;
 }
 .system-state-actions {
@@ -48,10 +48,10 @@
 }
 .system-state-action {
   appearance: none;
-  border: 1px solid var(--border, #d2d2d7);
+  border: 1px solid var(--ui-border, #d2d2d7);
   border-radius: 999px;
   padding: 11px 18px;
-  background: var(--text-primary, #1d1d1f);
+  background: var(--ui-text-primary, #1d1d1f);
   color: #fff;
   font: inherit;
   font-size: 0.92rem;
@@ -61,7 +61,7 @@
 }
 .system-state-action-secondary {
   background: transparent;
-  color: var(--text-primary, #1d1d1f);
+  color: var(--ui-text-primary, #1d1d1f);
 }
 .system-state-action:focus-visible {
   outline: 3px solid

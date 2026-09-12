@@ -1,55 +1,78 @@
 # Contributing to FolioWeave
 
-Thanks for helping improve FolioWeave.
+Thanks for improving FolioWeave.
 
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
+
+Normal author content lives in:
+
+```text
+portfolio.json
+content/assets/portfolio/
+content/blogs/
+```
+
+Do not hand-edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`; the content pipeline owns them.
+
+Reusable implementation belongs in the normal `src/` modules. Branded/example implementation belongs under `src/demo/`; thin filesystem route entry points remain under `src/app/`.
+
+## Required checks
 
 Before opening a pull request:
 
 ```bash
-npm run lint
-npm run typecheck
 npm run check
-npm run qa:assets
+npm run audit:prod
+npm run qa:boundary
 ```
 
-For the complete browser suite:
+For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite:
 
 ```bash
-npm run qa:all
+npm run qa:maintainer
 ```
 
-Maintainers can run the optional visual comparison suite when a baseline deployment is available:
+`qa:maintainer` includes runtime budgets, interaction/quality/media checks, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit coverage.
 
-```bash
-npm run qa:visual-compare
-```
+## Visual compatibility
 
-Set `BASELINE_URL` when the baseline is not running at the default local address.
+An approved visual is a compatibility contract.
 
-## Design constraints
+Refactors, performance improvements, dependency upgrades, and abstractions must preserve the approved output unless the previous visual has been explicitly identified as incorrect. A test suite passing is not evidence that an unreviewed visual change is acceptable.
 
-- Preserve the single vertical document scroller.
-- Keep user-editable identity and content in `src/config/` and `src/content/`.
-- Prefer focused feature modules over universal abstractions.
-- Keep interaction tests separate from deterministic visual checks.
-- Preserve accessibility, reduced-motion behavior, and keyboard interactions.
-- Update `qa/assets-manifest.json` deliberately when protected demo assets change.
+When visual regression fails:
 
-## Browser QA
+1. identify the cause;
+2. compare the affected breakpoint/state;
+3. fix accidental drift;
+4. update only deliberately changed baseline files after review.
 
-QA auto-detects Chrome, Chromium, or Edge on Windows, macOS, and Linux. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
+Never regenerate all baselines simply to make CI green.
+
+See `docs/DESIGN-SYSTEM.md` and `docs/VISUAL-QA.md`.
+
+## Architecture constraints
+
+- Keep authoring inputs separate from generated/publication outputs.
+- Reusable modules must not depend on `src/demo/`.
+- Prefer focused feature modules over a universal plugin/page-builder abstraction.
+- Keep server composition static where possible and interaction islands focused.
+- Preserve keyboard behavior, focus restoration, reduced motion, no-JavaScript readability, and the single document scroller.
+- Keep continuous animation work scoped to its useful viewport/document lifetime.
+- Update protected demo asset manifests only for intentional asset changes.
+
+`npm run qa:boundary` also runs the reusable-vs-demo dependency guard.
 
 ## Pull requests
 
-Keep changes focused and explain:
+Explain:
 
-1. what problem is being solved;
+1. the problem being solved;
 2. whether behavior or visuals change;
 3. which validation commands were run;
-4. any intentional asset-manifest or visual-baseline changes.
+4. any intentional profile, asset-manifest, or visual-baseline changes.

@@ -331,7 +331,7 @@ async function runHomeMedia() {
 
     await test("carousel project controls", async () => {
       if (!carouselProjects.length) return { skipped: true };
-      const carousels = page.locator(".notchshelf-carousel");
+      const carousels = page.locator(".media-carousel");
       assert(
         (await carousels.count()) === carouselProjects.length,
         `expected ${carouselProjects.length} carousels`,
@@ -343,15 +343,15 @@ async function runHomeMedia() {
         await carousel.scrollIntoViewIfNeeded();
         await carousel.hover();
         await page.waitForTimeout(250);
-        const images = carousel.locator("img.notchshelf-carousel-image");
+        const images = carousel.locator("img.media-carousel-image");
         const first = await images.last().getAttribute("src");
         if (project.media.images.length > 1) {
           await carousel.locator('button[aria-label="Next image"]').click();
           await page.waitForFunction(
             ({ carouselIndex, value }) => {
-              const nodes = document.querySelectorAll(".notchshelf-carousel");
+              const nodes = document.querySelectorAll(".media-carousel");
               return nodes[carouselIndex]
-                ?.querySelector("img.notchshelf-carousel-image:last-of-type")
+                ?.querySelector("img.media-carousel-image:last-of-type")
                 ?.getAttribute("src") !== value;
             },
             { carouselIndex: index, value: first },
@@ -363,7 +363,7 @@ async function runHomeMedia() {
           assert(first !== second, `${project.id} carousel did not advance`);
         }
         assert(
-          (await carousel.locator(".notchshelf-carousel-dot").count()) ===
+          (await carousel.locator(".media-carousel-dot").count()) ===
             project.media.images.length,
           `${project.id}: expected ${project.media.images.length} dots`,
         );
