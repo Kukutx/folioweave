@@ -66,6 +66,6 @@ For ordinary content editing, `npm run content:check` is a faster sanity check. 
 - [Common recipes](RECIPES.md)
 - [Design system and visual contract](DESIGN-SYSTEM.md)
 - [Architecture](ARCHITECTURE.md)
-- [Public core + private personal workflow](PUBLIC-PRIVATE.md)
+- [Repository and branch model](REPOSITORY-MODEL.md)
 - [Deployment](DEPLOYMENT.md)
 - [Upgrading](UPGRADING.md)

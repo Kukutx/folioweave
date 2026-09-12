@@ -2,21 +2,11 @@
 
 Treat upgrades as code integration, not as replacement of author content.
 
-## Public template clone or fork
+## Same repository: update `personal` from `main`
 
-Add the canonical project as an upstream remote if it is not already present:
-
-```bash
-git remote add upstream https://github.com/OWNER/folioweave.git
-git fetch upstream
-git merge upstream/main
-```
-
-Resolve normal code conflicts, then run the release validation suite.
-
-## Private personal repository
-
-The private instance owns these author paths:
+In the maintained FolioWeave repository, shared implementation lands on `main`
+and the public personal site lives on `personal`. The personal branch owns these
+author paths:
 
 ```text
 portfolio.json
@@ -25,23 +15,41 @@ content/blogs/
 qa/baselines/personal/
 ```
 
-Generated files and `public/portfolio/` are outputs, not conflict-resolution sources.
+Generated files and `public/portfolio/` are outputs, not conflict-resolution
+sources.
 
 Before an upgrade:
 
 ```bash
 git status
-git fetch upstream
+git fetch origin
+git switch personal
+git merge origin/main
 ```
 
-Keep a normal Git backup/branch before a large upgrade. Merge the public `upstream/main`, preserving the intent of the private author-owned files when conflicts occur.
-
-If upstream changed `portfolio.schema.json`, do not blindly choose either side of `portfolio.json`. Keep the personal content and adapt it to the new schema deliberately. Then regenerate:
+Keep a normal backup branch before a large integration. Preserve the intent of
+the author-owned files when conflicts occur. If `portfolio.schema.json` changed,
+do not blindly choose either side of `portfolio.json`; adapt the personal profile
+to the new schema deliberately, then regenerate:
 
 ```bash
 npm run content:build
 npm run content:check
 ```
+
+## Fork or downstream repository
+
+If your portfolio is a fork/clone of FolioWeave, add the canonical project as an
+upstream remote if needed:
+
+```bash
+git remote add upstream https://github.com/OWNER/folioweave.git
+git fetch upstream
+git merge upstream/main
+```
+
+Resolve shared-code conflicts while preserving your author inputs, regenerate the
+publication outputs, and run the release validation suite.
 
 ## Validate the result
 
@@ -58,7 +66,8 @@ Review the site locally before deploying.
 
 ## Visual compatibility
 
-An upstream refactor is not permission to accept a changed visual. If visual comparison fails:
+An upstream refactor is not permission to accept a changed visual. If visual
+comparison fails:
 
 1. identify the exact component and breakpoint;
 2. determine whether the old visual was actually wrong;
@@ -83,6 +92,10 @@ Resolve the author inputs first, then run `npm run content:build`.
 
 ## Demo changes
 
-The reusable repository may update `governance/demo-portfolio.json` and `src/demo/`. A private personal instance can take those shared implementation changes while keeping `features.demoRoutes: false`; the publication pipeline removes demo-only custom posts/routes from the personal runtime.
+The reusable starter may update `governance/demo-portfolio.json` and `src/demo/`.
+The `personal` branch can take those shared implementation changes while keeping
+`features.demoRoutes: false`; the publication pipeline removes demo-only custom
+posts/routes from the personal runtime.
 
-See [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md) for the recommended repository topology.
+See [REPOSITORY-MODEL.md](REPOSITORY-MODEL.md) for branch ownership and the
+shared-change workflow.

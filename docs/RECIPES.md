@@ -147,7 +147,7 @@ npm run qa:maintainer
 
 FolioWeave uses standard Next.js deployment conventions. Vercel can use the normal Next.js preset; other compatible hosts can use their standard Next.js integration. Repository visibility and deployment visibility are separate concerns.
 
-For a public reusable core plus a private deployed instance, follow [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md).
+For the public `main`/`develop` starter and public `personal` profile workflow, follow [REPOSITORY-MODEL.md](REPOSITORY-MODEL.md).
 
 ## Validate a content edit
 
