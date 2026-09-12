@@ -227,10 +227,12 @@ portfolio.seo.keywords = [name, role, `${role} portfolio`, `${role} ${country}`,
 portfolio.seo.knowsAbout = [role];
 portfolio.seo.caseStudiesDescription = `Selected work and case studies by ${name}, ${role}.`;
 delete portfolio.seo.award;
-portfolio.blog = {
-  title: "Blogs",
-  description: `Notes from ${firstName} about building software, products, and systems.`,
-};
+if (cleanStart) {
+  portfolio.blog = {
+    title: "Blogs",
+    description: `Notes from ${firstName} about building software, products, and systems.`,
+  };
+}
 
 for (const dir of ["profile", "photography", "projects", "resume"]) {
   fs.mkdirSync(path.join(root, "content", "assets", "portfolio", dir), { recursive: true });

@@ -35,8 +35,11 @@ describe the same version even if an author edits a source during the build.
 Unreferenced originals are allowed in the author directory. Disabled content is
 removed from the runtime configuration, not only hidden with CSS. Draft images
 are not copied into `public/portfolio/`. Rebuild before deployment after changing
-publication flags. Publishing while a development server is serving an old build
-is unsupported: stop, build, then restart.
+publication flags. During local development, `scripts/dev.mjs` watches the authoring
+inputs and runs this same atomic publication pipeline without restarting Next.js.
+Invalid edits keep the last valid generated output and report the validation error.
+The publication lock remains authoritative, so do not run competing manual writers
+against an active content rebuild.
 
 If a process is killed during output replacement, inspect
 `.generated/content-transaction-*` before rebuilding. Its `previous-*` entries
@@ -63,6 +66,16 @@ The same policy feeds navigation filtering, link checks, sitemap, custom article
 publication and browser test targets. Markdown routes are derived from published
 posts, so they do not need manual registration. Optional sections stay in source
 navigation and become visible when their feature is enabled.
+
+### Demo implementation boundary
+
+Bundled branded examples are implementation examples, not reusable configuration.
+Their product data, metadata, components, and route-specific styles live under
+`src/demo/`. App Router entry files stay under `src/app/` as thin filesystem route
+shims and may import that demo layer. Reusable modules under `src/config/`,
+`src/components/`, `src/content/`, `src/hooks/`, and `src/lib/` must not depend on
+`src/demo/`. `qa/demo-boundary.test.mjs` enforces that dependency direction and
+keeps known demo-brand copy out of the generic config/component layers.
 
 ## Server and client ownership
 
@@ -121,6 +134,12 @@ intrinsic sizing retains the original optimized-image rounding and appearance.
 
 ## Visual ownership and verification
 
+Approved visual output is a compatibility contract. Refactoring, performance work,
+dependency upgrades, and abstraction do not permit visible drift unless the prior
+visual is explicitly identified as incorrect. Never regenerate baselines merely to
+silence a failure; review the cause and accept only the intended regions. See
+[DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
+
 `src/app/globals.css` is an ordered import manifest; readable implementation lives
 in `src/styles/portfolio/`. Keep this order when moving declarations: it preserves
 the existing cascade. New shell-local styles use a CSS Module. Tokens belong in
@@ -161,14 +180,15 @@ scans only after measuring larger content sets, not by weakening integrity check
 
 ## Privacy
 
-`Kukutx/folioweave` was changed to **private on 2026-09-08**. Visibility applies to
-all branches. Previously downloaded copies and independent deployments are not
-revoked by this change. A private repository does not make a deployed website
-private; use deployment authentication if the site must be access-controlled.
+Repository visibility and deployment visibility are independent. Branch names are
+a workflow boundary, never a privacy boundary. If a Git history has ever contained
+private author content, changing the repository to public later can expose that
+history even when the current tree is clean. Publish reusable editions from a
+reviewed clean-history export instead of reusing a personal-history repository.
 
 Branches describe code promotion; profiles describe site identity. The boundary
-checker classifies all profile-derived outputs with their author inputs. When
-publishing a reusable edition later, create a reviewed, clean-history public
-export. Do not make this repository's personal history public again. No force
-push, history rewrite, deployment change or additional remote change is part of
-the implementation.
+checker classifies profile-derived outputs with their author inputs. The recommended
+long-term topology is a public reusable core plus a private deployed personal
+instance that consumes the public core as upstream. A private repository also does
+not make a deployed website private; use deployment authentication when the site
+itself must be access-controlled. See [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md).

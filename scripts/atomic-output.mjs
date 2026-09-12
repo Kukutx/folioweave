@@ -29,7 +29,7 @@ export async function commitGeneratedOutputs(root, outputs) {
       const allowed =
         relative === "public/portfolio" ||
         relative === ".generated/publication.json" ||
-        relative === "src/blog/posts.generated.ts" ||
+        /^src\/blog\/[\w-]+\.generated\.ts$/.test(relative) ||
         /^src\/portfolio\/(?:[\w-]+\.generated\.ts|portfolio-validator\.(?:cjs|d\.cts))$/.test(
           relative,
         );

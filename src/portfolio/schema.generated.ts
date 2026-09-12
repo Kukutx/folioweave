@@ -218,8 +218,22 @@ export interface PortfolioConfig {
     images: MediaAsset[];
   };
   blog: {
+    /**
+     * Blog title used for metadata and as the default visible heading.
+     */
     title: string;
+    /**
+     * Optional visible heading when the editorial heading differs from the metadata title.
+     */
+    heading?: string;
     description: string;
+    /**
+     * Optional rich intro. When omitted, description is rendered as plain text.
+     */
+    intro?: {
+      text: string;
+      tone?: "highlight";
+    }[];
   };
   footerBook: {
     title: string;

@@ -1,10 +1,8 @@
 import "server-only";
-import { markdownPosts } from "./posts.generated";
 import { siteConfig } from "@/config/site";
-import { customBlogPosts } from "./custom-posts";
-import {
-  publishedCustomBlogPosts as resolvePublishedCustomBlogPosts,
-} from "./content-core.mjs";
+import { markdownPosts } from "./posts.generated";
+import { customBlogPosts } from "./custom-posts.generated";
+import { publishedCustomBlogPosts as resolvePublishedCustomBlogPosts } from "./content-core.mjs";
 import type { BlogPostSummary, CustomBlogPost, MarkdownBlogPost } from "./types";
 
 export function getMarkdownBlogPosts(): MarkdownBlogPost[] {

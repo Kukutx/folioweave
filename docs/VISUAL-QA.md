@@ -1,5 +1,7 @@
 # Visual contracts
 
+A reviewed visual baseline is a compatibility contract, not a disposable test artifact. Refactors, performance work, and dependency changes must preserve approved output unless the previous visual has been explicitly judged incorrect. Never regenerate the whole baseline set simply to make a regression test pass. See [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
+
 The browser and React reviews resulted in native modal layering, responsive
 image source selection before hydration, removal of eager original-image
 preloads, and explicit coverage of optional media states. These changes are

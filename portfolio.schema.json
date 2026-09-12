@@ -794,11 +794,38 @@
       "properties": {
         "title": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "description": "Blog title used for metadata and as the default visible heading."
+        },
+        "heading": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional visible heading when the editorial heading differs from the metadata title."
         },
         "description": {
           "type": "string",
           "minLength": 1
+        },
+        "intro": {
+          "type": "array",
+          "description": "Optional rich intro. When omitted, description is rendered as plain text.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "tone": {
+                "enum": [
+                  "highlight"
+                ]
+              }
+            }
+          }
         }
       }
     },

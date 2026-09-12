@@ -1,9 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { products } from "@/config/products";
+import { products } from "@/demo/products";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { podcastFeeds } from "@/config/podcasts";
+import { podcastFeeds } from "@/demo/podcasts";
 import {
   useEffect,
   useMemo,

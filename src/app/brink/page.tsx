@@ -1,9 +1,9 @@
 import { requirePublishedRoute } from "@/portfolio/route-guard";
-import { routeMetadata } from "@/config/seo";
-import { BrinkPage } from "@/components/brink-page";
-import "@/styles/brink.css";
+import { demoRouteMetadata } from "@/demo/seo";
+import { BrinkPage } from "@/demo/components/brink-page";
+import "@/demo/styles/brink.css";
 
-export const metadata = routeMetadata.brink;
+export const metadata = demoRouteMetadata.brink;
 export default function Page() {
   requirePublishedRoute("/brink");
   return <BrinkPage />;

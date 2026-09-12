@@ -1,173 +1,204 @@
 # FolioWeave
 
-A polished, production-ready **Next.js 16 portfolio starter** for designers, developers, and creative professionals.
+A polished, opinionated **Next.js 16 portfolio starter** for developers, designers, and creative professionals.
 
-FolioWeave combines editorial storytelling, case studies, photography, expressive motion, and practical production tooling while keeping day-to-day personalization in one place.
+FolioWeave combines editorial storytelling, tactile software-like interactions, photography, project case studies, Markdown writing, and production QA. Day-to-day personalization stays in a deliberately small authoring surface; layout and interaction code remain reusable.
 
-## Highlights
+## Start here
 
-- Responsive portfolio layout for desktop, tablet, and mobile
-- Motion-rich hero, work, photography, and contact sections
-- Interactive resume printer, camera, gallery/lightbox, and carousel components
-- **Single-file portfolio content configuration** with editor schema support
-- Data-driven projects that can be added, removed, hidden, or reordered without editing JSX
-- App Router pages with metadata, JSON-LD, sitemap, robots, manifest, and custom error states
-- Weather and podcast Route Handlers with bounded external requests and caching
-- Accessibility-minded keyboard interactions and reduced-motion support
-- Automated content, browser, media, asset, quality, and bundle checks
-
-## Stack
-
-- Next.js 16 App Router
-- React 19
-- TypeScript
-- Framer Motion
-- Lenis
-- Lucide React
-- Local/static media assets
-- Next.js Route Handlers for external data
-
-## Quick start
+Requirements: Node.js 24 and npm.
 
 ```bash
-npm install
+npm ci
+npm run personalize
 npm run dev
 ```
 
-For first-time personalization, run:
+Open `http://localhost:3000`.
 
-```bash
-npm run personalize
-```
+For the guided five-minute path, read [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
-The wizard updates author content and rebuilds validated publication outputs; it does not rewrite layout or animation components.
+## What you edit
 
-## Personalize
-
-The primary user-facing surface is intentionally small:
+Normal personalization uses three places:
 
 ```text
-portfolio.json          identity, hero, About, projects, photos, SEO, feature toggles
-portfolio.schema.json   editor autocomplete and validation hints
-content/assets/portfolio/       your portraits, photography, project artwork, and resume
+portfolio.json
+content/assets/portfolio/
+content/blogs/
 ```
 
-Typical workflow:
+`portfolio.json` owns identity, location, links, Hero/About copy, projects, photography order, resume, Blog presentation, SEO, and feature switches.
 
-1. Run `npm run personalize` for identity, location, contact, social links, and an optional clean starting state. Optional values can be removed explicitly with `-`.
-2. Put your own files under `content/assets/portfolio/`.
-3. Edit `portfolio.json` to add projects, photos, About content, and links.
-4. Run `npm run content:build` followed by `npm run content:check`.
-5. Start the site with `npm run dev`.
+`content/assets/portfolio/` owns original author media. Browser URLs remain `/portfolio/...`.
 
-Projects live in `portfolio.json > projects` with independent presentation fields:
+`content/blogs/` owns Markdown posts.
 
-- `media.kind: image | carousel` — one image or a reusable carousel
-- `mobileTreatment: standard | featured` — mobile presentation
-- optional `story` — an editorial block with either media kind
+Do **not** edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`. They are validated publication output and are replaced by the content pipeline.
 
-Each project has `enabled`, so work can be staged without deleting content. Photography, About, Resume, weather, and bundled demo routes also have feature switches.
+While `npm run dev` is running, valid changes to profile content, assets, Markdown, schema, custom-blog metadata, and the route registry are rebuilt automatically. Invalid content leaves the last valid generated output in place and prints the validation error.
 
-`src/config/` and `src/content/` are internal typed content views. Normal personalization should not require editing them.
+## Highlights
 
-See [`docs/PERSONALIZATION.md`](docs/PERSONALIZATION.md) for the full content model and [`docs/TEMPLATE.md`](docs/TEMPLATE.md) for advanced theme and extension guidance.
+- Responsive portfolio for desktop, tablet, and mobile
+- Data-driven projects, photography, About content, resume, links, and feature switches
+- Markdown Blog with automatic routes, index, reading time, metadata, sitemap, and drafts
+- Motion-rich Hero, Work, Photography, Contact, Designer Cursors, camera, gallery/lightbox, and resume printer
+- Server-first composition with focused client interaction islands
+- Accessibility-minded keyboard/focus behavior and live reduced-motion support
+- Atomic content publication with schema, route, asset, image, and link validation
+- Runtime, bundle, browser, media, lifecycle, visual, and profile QA
+- Chromium, Firefox, and WebKit release coverage
+- Explicit reusable-core vs demo vs author-content boundaries
 
-## Project structure
+## Add content
+
+### Project
+
+Put source artwork under:
 
 ```text
-portfolio.json               single user-facing content source
-portfolio.schema.json        JSON schema for editors
-content/assets/portfolio/            recommended location for personal assets
-scripts/personalize.mjs      first-run personalization wizard
-scripts/portfolio-check.mjs  content and local-asset validation
-src/portfolio/               typed runtime adapter for portfolio.json
-src/app/                     routes, APIs, metadata, sitemap, robots, manifest
-src/config/                  integration/cache/SEO adapters and shared types
-src/content/                 typed content exports for feature components
-src/components/home/         homepage feature sections
-src/components/media/        gallery, carousel, camera, and resume interactions
-src/hooks/                   scrolling, responsive state, and lifecycle hooks
-src/lib/                     framework-independent utilities
-src/styles/                  theme and route-specific styles
-public/                      bundled demo assets and static files
-qa/                          automated browser and release validation
+content/assets/portfolio/projects/my-app/
 ```
 
-## Validation
+then add the project to `portfolio.json > projects`. Image dimensions are measured automatically. Projects support single images, carousels, mobile art direction, actions, badges, and an optional editorial story.
 
-Content is validated automatically before development and production builds.
+### Photography
 
-Run it directly with:
+Add originals under `content/assets/portfolio/photography/` and reference them in `portfolio.json > photography.images`.
 
-```bash
-npm run content:build
-npm run content:check
-```
+### Blog
 
-Run lightweight code checks while developing:
-
-```bash
-npm run lint
-npm run typecheck
-```
-
-Before publishing:
-
-```bash
-npm run check
-npm run audit:prod
-npm run qa:all
-```
-
-`qa:all` runs the production browser suite and covers core interactions, accessibility and quality rules, media health, font fallback behavior, the resume state machine, and bundle budgets.
-
-`npm run qa:boundary` enforces the reusable-versus-personal path policy described in [`docs/BRANCHING.md`](docs/BRANCHING.md). It also writes a local classification report for promotion work from `personal` to `develop`.
-
-Browser QA auto-detects Chrome, Chromium, or Edge. Set `CHROME_PATH` only when the browser is installed in a non-standard location.
-
-## Markdown blogs
-
-Add `content/blogs/my-post.md` and FolioWeave turns it into `/blogs/my-post` automatically. The same file also feeds the blog index, reading-time estimate, per-post SEO/Open Graph metadata, sitemap, and browser QA. No route component or article registry is required for normal posts.
-
-The minimum frontmatter is:
+Create `content/blogs/my-post.md`:
 
 ```md
 ---
 title: "My post"
-date: "2026-09-07"
+date: "2026-09-12"
 description: "A short summary."
+tags:
+  - Engineering
+draft: false
 ---
+
+## A section
+
+Normal Markdown.
 ```
 
-Optional fields are `subtitle`, `cover`, `tags`, and `draft`. See `content/blogs/_README.md` and `docs/PERSONALIZATION.md` for the full format. Custom React blog routes can still coexist with Markdown when an article needs specialized interactivity.
+It becomes `/blogs/my-post`. The Blog index appears automatically when at least one post is published. With local development already running, adding/removing the file updates the route without restarting Next.
+
+See [docs/RECIPES.md](docs/RECIPES.md) for copyable examples.
+
+## Architecture
+
+FolioWeave separates four concerns:
+
+```text
+Reusable core
+  src/components/
+  src/config/
+  src/content/
+  src/hooks/
+  src/lib/
+  src/portfolio/
+  src/styles/
+
+Demo / examples
+  src/demo/
+  thin filesystem route entries under src/app/
+
+Author inputs
+  portfolio.json
+  content/assets/portfolio/
+  content/blogs/
+
+Generated publication
+  public/portfolio/
+  src/portfolio/*.generated.ts
+  src/blog/posts.generated.ts
+```
+
+Reusable modules are not allowed to depend on `src/demo/`; `npm run qa:boundary` enforces that rule.
+
+The homepage remains intentionally opinionated rather than becoming a universal page-builder/plugin framework. Common author content is data-driven; genuinely new interaction or section types can remain explicit code.
+
+Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full contracts.
+
+## Design philosophy
+
+FolioWeave combines:
+
+- editorial storytelling;
+- tactile software objects;
+- playful system metaphors.
+
+An approved visual is treated as a compatibility contract. Refactors and performance work must not silently redesign it. Visual baseline updates require an understood, intentional change rather than “making tests green.”
+
+See [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) and [docs/VISUAL-QA.md](docs/VISUAL-QA.md).
+
+## Validation
+
+Fast content validation:
+
+```bash
+npm run content:check
+```
+
+Code/build validation:
+
+```bash
+npm run check
+npm run audit:prod
+```
+
+Full release validation:
+
+```bash
+npm run qa:maintainer
+```
+
+The maintainer suite covers runtime budgets, interaction/accessibility, media health, bundle budgets, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit.
 
 ## Deployment
 
-FolioWeave uses standard Next.js conventions and requires no provider-specific configuration. Vercel can deploy it with the default Next.js preset; other platforms that support Next.js can use their standard integration.
+FolioWeave uses standard Next.js deployment conventions. Vercel can use the normal Next.js preset; other platforms that support the current Next.js runtime can use their standard adapter.
 
-## Bundled example routes
+Set `site.origin` in `portfolio.json` to the canonical production URL before release, and validate the production build.
 
-The repository includes complete product, blog, case-study, and privacy pages as working examples. They are enabled by default so the starter is fully demonstrable after cloning.
+## Public template vs private personal site
 
-For a clean personal portfolio, `npm run personalize` removes demo projects/content from the public config and sets `features.demoRoutes` to `false`. Bundled example routes, including the custom Clipt blog example, then return 404 and disappear from the sitemap, while the underlying example source remains available for reference. Your own published Markdown files in `content/blogs/` remain independent of `demoRoutes` and make `/blogs` available automatically.
+Branches are not privacy boundaries.
 
-## Demo assets
+For a public FolioWeave project, the recommended long-term setup is:
 
-The repository includes demo photography, resumes, product artwork, fonts, and other media so the starter works immediately after cloning.
+- **public `folioweave`** — reusable core + reviewed demo;
+- **private `folioweave-personal`** — your deployed instance and author media, with the public repository configured as an upstream.
 
-The MIT license covers the software source and documentation. Demo media, brand artwork, trademarks, and third-party assets under `public/` are **not automatically licensed for reuse** by the software license. Replace them with assets you own or are licensed to use before publishing your own portfolio.
+If a repository has ever contained personal content, do not simply change it to public. Create a reviewed clean-history export.
 
-See [`docs/ASSETS.md`](docs/ASSETS.md).
+See [docs/PUBLIC-PRIVATE.md](docs/PUBLIC-PRIVATE.md).
 
-## Security and reliability
+## Documentation
 
-The project includes restrictive security headers, safe JSON-LD serialization, bounded external requests, managed timer and media-stream cleanup, custom error recovery, cross-platform lockfile validation, asset checks, Dependabot, and GitHub Actions validation.
+- [Five-minute quick start](docs/QUICKSTART.md)
+- [Personalization reference](docs/PERSONALIZATION.md)
+- [Common recipes](docs/RECIPES.md)
+- [Design system](docs/DESIGN-SYSTEM.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Extending the template](docs/TEMPLATE.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Upgrading](docs/UPGRADING.md)
+- [Visual QA](docs/VISUAL-QA.md)
+- [Branch/repository boundaries](docs/BRANCHING.md)
+- [Asset policy](docs/ASSETS.md)
+
+## Demo routes and media
+
+The canonical starter contains complete example/product routes so the project is demonstrable after cloning. Their implementation is isolated under `src/demo/`. Setting `features.demoRoutes: false` removes them from the published route set, sitemap, and QA targets while keeping the example source available for reference.
+
+The MIT license covers software and documentation. It does not automatically grant reuse/redistribution rights for every bundled photo, logo, trademark, font, or product screenshot. Review [docs/ASSETS.md](docs/ASSETS.md) before publishing or redistributing demo media.
 
 ## License
 
-Source code and documentation are licensed under the [MIT License](LICENSE).
-## Architecture and privacy
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for author/published asset separation,
-transactional generation, route registration, client boundaries and visual contracts.
-The repository is private; deployment access is a separate concern.
+Software source and documentation are licensed under the [MIT License](LICENSE).

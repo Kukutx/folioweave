@@ -278,7 +278,7 @@ html {
 }
 .hero-brand-inline {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--ui-text-primary);
   white-space: nowrap;
 }
 .hero-brand-inline img {

@@ -15,12 +15,15 @@ function git(...args) {
   return execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
 }
 
+const hasGitMetadata = fs.existsSync(path.join(root, ".git"));
 const branch =
   process.env.BOUNDARY_TARGET ||
   process.env.GITHUB_BASE_REF ||
   process.env.GITHUB_REF_NAME ||
-  git("branch", "--show-current");
-const core = policy.coreBranches.includes(branch);
+  (hasGitMetadata ? git("branch", "--show-current") : "snapshot");
+const canonicalSnapshot =
+  !hasGitMetadata && isDeepStrictEqual(portfolio, demoPortfolio);
+const core = policy.coreBranches.includes(branch) || canonicalSnapshot;
 const personal = branch === policy.personalBranch;
 const errors = [];
 
@@ -67,19 +70,21 @@ if (core) {
 }
 
 let changedFiles = [];
-try {
-  const tracked = git("diff", "--name-only", "develop", "--")
-    .split(/\r?\n/)
-    .filter(Boolean);
-  const untracked = git("ls-files", "--others", "--exclude-standard")
-    .split(/\r?\n/)
-    .filter(Boolean);
-  changedFiles = [...new Set([...tracked, ...untracked])].sort();
-} catch {
-  changedFiles = git("status", "--short")
-    .split(/\r?\n/)
-    .filter(Boolean)
-    .map((line) => line.slice(3));
+if (hasGitMetadata) {
+  try {
+    const tracked = git("diff", "--name-only", "develop", "--")
+      .split(/\r?\n/)
+      .filter(Boolean);
+    const untracked = git("ls-files", "--others", "--exclude-standard")
+      .split(/\r?\n/)
+      .filter(Boolean);
+    changedFiles = [...new Set([...tracked, ...untracked])].sort();
+  } catch {
+    changedFiles = git("status", "--short")
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((line) => line.slice(3));
+  }
 }
 
 const report = {

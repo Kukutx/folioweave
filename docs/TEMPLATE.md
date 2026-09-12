@@ -1,7 +1,7 @@
 # Extending FolioWeave
 
 Normal editing belongs in `portfolio.json`, `content/blogs/` and
-`content/assets/portfolio/`. See [PERSONALIZATION.md](PERSONALIZATION.md).
+`content/assets/portfolio/`. See [PERSONALIZATION.md](PERSONALIZATION.md). Branded/example implementation belongs in `src/demo/`; reusable config/components must not depend on that layer.
 
 ## Content contracts
 
@@ -27,7 +27,7 @@ hashes. Optional sections are filtered by feature flags. Add a section to the
 server-side `HomePage` composition and policy together.
 
 Preserve the editorial value of truly custom pages. A single generic page builder,
-plugin framework or CMS is not necessary for reusable portfolio content.
+plugin framework or CMS is not necessary for reusable portfolio content. Thin App Router entry points for bundled examples remain under `src/app/`, but their components, metadata, product data and route CSS live under `src/demo/`.
 
 ## Rendering and motion
 
@@ -45,6 +45,8 @@ image geometry. Use responsive source selection for real alternate artwork.
 Thumbnail cropping remains owned by its fixed-ratio card.
 
 ## Styling
+
+Approved visual output is a compatibility contract: refactors and performance work must not silently redesign it. See [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
 
 `src/app/globals.css` preserves the ordered portfolio stylesheet cascade.
 Readable source is divided by responsibility under `src/styles/portfolio/`.

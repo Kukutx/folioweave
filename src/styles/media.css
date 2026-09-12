@@ -23,11 +23,11 @@
   backdrop-filter: blur(10px);
 }
 
-.notchshelf-carousel:focus-within .notchshelf-carousel-btn {
+.media-carousel:focus-within .media-carousel-btn {
   opacity: 1;
 }
 
-.notchshelf-carousel-btn[hidden] {
+.media-carousel-btn[hidden] {
   display: none;
 }
 

@@ -1,10 +1,10 @@
 import { requirePublishedRoute } from "@/portfolio/route-guard";
-import { districtJsonLd, routeMetadata } from "@/config/seo";
-import { DistrictPage } from "@/components/district-page";
+import { demoRouteMetadata, districtJsonLd } from "@/demo/seo";
+import { DistrictPage } from "@/demo/components/district-page";
 import { serializeJsonLd } from "@/lib/json-ld";
-import "@/styles/district.css";
+import "@/demo/styles/district.css";
 
-export const metadata = routeMetadata.district;
+export const metadata = demoRouteMetadata.district;
 
 export default function Page() {
   requirePublishedRoute("/district");

@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { AppStoreBadge } from "./route-shared";
-import { products } from "@/config/products";
+import { products } from "@/demo/products";
 import { siteCopyright } from "@/config/site";
 
 const item = {

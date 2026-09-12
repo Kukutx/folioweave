@@ -31,8 +31,8 @@ body {
     Helvetica,
     Arial,
     sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--ui-bg-primary);
+  color: var(--ui-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;

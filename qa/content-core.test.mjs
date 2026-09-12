@@ -6,6 +6,7 @@ import test from "node:test";
 import {
   BlogContentError,
   loadMarkdownBlogPosts,
+  normalizeCustomBlogPosts,
   publishedMarkdownBlogPosts,
 } from "../src/blog/content-core.mjs";
 
@@ -107,5 +108,37 @@ test("Markdown dependencies include inline and reference download links", async 
       ]);
       assert.equal(publishedMarkdownBlogPosts(posts)[0].bodyLinks, undefined);
     },
+  );
+});
+
+
+test("custom blog displayDate is explicit presentation data", () => {
+  const [post] = normalizeCustomBlogPosts([
+    {
+      slug: "example",
+      title: "Example",
+      date: "2026-01-26",
+      displayDate: "Jan 26, 2026",
+      description: "Example post",
+      tags: [],
+      readingMinutes: 1,
+    },
+  ]);
+  assert.equal(post.date, "2026-01-26");
+  assert.equal(post.displayDate, "Jan 26, 2026");
+  assert.throws(
+    () =>
+      normalizeCustomBlogPosts([
+        {
+          slug: "bad",
+          title: "Bad",
+          date: "2026-01-26",
+          displayDate: 123,
+          description: "Bad post",
+          tags: [],
+          readingMinutes: 1,
+        },
+      ]),
+    /displayDate must be a non-empty string/,
   );
 });

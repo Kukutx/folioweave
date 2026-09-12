@@ -1,7 +1,7 @@
 import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
-import { FONT_SENTINEL_ROUTES } from "../src/portfolio/publication-policy.mjs";
+const FONT_SENTINEL_ROUTES = Object.freeze(["/district", "/clipt"]);
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const portfolio = JSON.parse(

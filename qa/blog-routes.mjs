@@ -15,12 +15,15 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const blogsDir = path.join(root, "content", "blogs");
-const customPostsPath = path.join(root, "src", "blog", "custom-posts.json");
+const customPostsPaths = [
+  path.join(root, "src", "blog", "custom-posts.json"),
+  path.join(root, "src", "demo", "custom-posts.json"),
+];
 
 function loadBlogRoutes() {
   const portfolio = loadQaProfile();
   const customPosts = normalizeCustomBlogPosts(
-    JSON.parse(fs.readFileSync(customPostsPath, "utf8")),
+    customPostsPaths.flatMap((file) => JSON.parse(fs.readFileSync(file, "utf8"))),
   );
   const markdown = publishedMarkdownBlogPosts(
     loadMarkdownBlogPosts({

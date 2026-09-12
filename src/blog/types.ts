@@ -4,6 +4,7 @@ export type BlogPostSummary = {
   title: string;
   subtitle?: string;
   date: string;
+  displayDate?: string;
   description: string;
   excerpt?: string;
   intro?: string;
