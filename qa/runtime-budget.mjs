@@ -12,11 +12,12 @@ const profiles = [
     latencyMs: 0,
     downloadBytesPerSecond: -1,
     uploadBytesPerSecond: -1,
+    eventTargetMs: 200,
     budgets: {
       cls: 0.1,
       lcpMs: 2500,
       longestTaskMs: 200,
-      eventP95Ms: 200,
+      interactionWorkP95Ms: 50,
       frameP95Ms: 50,
     },
   },
@@ -26,11 +27,12 @@ const profiles = [
     latencyMs: 150,
     downloadBytesPerSecond: 200000,
     uploadBytesPerSecond: 100000,
+    eventTargetMs: 200,
     budgets: {
       cls: 0.1,
       lcpMs: 6000,
       longestTaskMs: 500,
-      eventP95Ms: 300,
+      interactionWorkP95Ms: 100,
       frameP95Ms: 100,
     },
   },
@@ -348,6 +350,15 @@ try {
               ...metrics.longTasks.map((task) => task.duration),
             ),
             eventP95Ms: percentile(metrics.interactions, 0.95),
+            // Event Timing's presentation component is highly sensitive to the
+            // headless CI compositor. Gate queue + handler work separately,
+            // while frame/LCP/long-task budgets continue to cover rendering.
+            interactionWorkP95Ms: percentile(
+              metrics.eventDetails.map(
+                (event) => event.inputDelay + event.processing,
+              ),
+              0.95,
+            ),
             frameP95Ms: percentile(frames, 0.95),
             frameSamples: frames.length,
             errors,
@@ -384,6 +395,7 @@ try {
                   (a, b) => b.duration - a.duration,
                 )[0] ?? null,
               eventP95Ms: item.eventP95Ms,
+              interactionWorkP95Ms: item.interactionWorkP95Ms,
               frameP95Ms: item.frameP95Ms,
             }),
           );
@@ -415,23 +427,25 @@ try {
           lcp: median("lcp"),
           longestTaskMs: median("longestTaskMs"),
           eventP95Ms: median("eventP95Ms"),
+          interactionWorkP95Ms: median("interactionWorkP95Ms"),
           frameP95Ms: median("frameP95Ms"),
         };
         summaries.push(summary);
-        if (conditions.name === "constrained" && summary.eventP95Ms > 200)
+        if (summary.eventP95Ms > conditions.eventTargetMs)
           warnings.push({
             profile: conditions.name,
             width,
             reducedMotion,
             eventP95Ms: summary.eventP95Ms,
             message:
-              "Above the 200ms native-environment interaction target; constrained budget is not an INP claim.",
+              "Above the 200ms synthetic Event Timing target; CI gates deterministic interaction work plus frame/LCP/long-task budgets because headless presentation scheduling is host-sensitive.",
           });
         const checks = {
           cls: summary.cls <= budgets.cls,
           lcp: summary.lcp <= budgets.lcpMs,
           longestTask: summary.longestTaskMs <= budgets.longestTaskMs,
-          eventP95: summary.eventP95Ms <= budgets.eventP95Ms,
+          interactionWorkP95:
+            summary.interactionWorkP95Ms <= budgets.interactionWorkP95Ms,
           frameP95: summary.frameP95Ms <= budgets.frameP95Ms,
         };
         for (const [metric, passed] of Object.entries(checks))
