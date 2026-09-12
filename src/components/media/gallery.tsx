@@ -361,9 +361,10 @@ export function GalleryLightbox({
       }
       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        // Keyboard navigation should respond on the next paint instead of
-        // waiting for the decorative slide transition used by pointer input.
-        move(event.key === "ArrowLeft" ? -1 : 1, false);
+        // This listener is attached directly to window, outside React's
+        // discrete-event priority. Commit the keyboard swap synchronously so
+        // the next paint is not delayed by the default scheduler queue.
+        flushSync(() => move(event.key === "ArrowLeft" ? -1 : 1, false));
       }
     };
     window.addEventListener("keydown", key);
