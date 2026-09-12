@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { assertProjectPublicationAllowed } from "../scripts/content-build.mjs";
 import {
   assertProfilePublicationAllowed,
   evaluateProfileBoundary,
@@ -44,25 +44,18 @@ test("profile boundary keeps core and personal publication roles distinct", () =
   );
 });
 
-test("content build cannot replace generated personal output with demo output", () => {
+test("content build blocks demo publication before generated output replacement", () => {
   const generated = path.join(root, "src", "portfolio", "config.generated.ts");
   const before = fs.readFileSync(generated, "utf8");
-  const run = spawnSync(
-    process.execPath,
-    [path.join(root, "scripts", "content-build.mjs")],
-    {
-      cwd: root,
-      env: { ...process.env, BOUNDARY_TARGET: "personal" },
-      encoding: "utf8",
-    },
+
+  assert.throws(
+    () =>
+      assertProjectPublicationAllowed({ config: demo }, root, {
+        targetBranch: "personal",
+      }),
+    /Profile publication blocked/,
   );
 
-  assert.notEqual(
-    run.status,
-    0,
-    "demo publication unexpectedly succeeded as personal",
-  );
-  assert.match(`${run.stdout}\n${run.stderr}`, /Profile publication blocked/);
   assert.equal(
     fs.readFileSync(generated, "utf8"),
     before,
