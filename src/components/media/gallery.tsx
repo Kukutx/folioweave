@@ -397,10 +397,13 @@ export function GalleryLightbox({
       aria-label="Photography viewer"
       onCancel={(event) => {
         event.preventDefault();
-        // Keep React in charge of the native dialog lifecycle, but remove the
-        // decorative exit delay for keyboard Escape.
-        flushSync(() => setKeyboardClosing(true));
-        onClose();
+        // Native dialog cancel is outside React's discrete-event priority.
+        // Commit both the zero-delay exit mode and parent unmount together so
+        // keyboard Escape reaches its next paint without scheduler latency.
+        flushSync(() => {
+          setKeyboardClosing(true);
+          onClose();
+        });
       }}
       style={{
         position: "fixed",
@@ -547,6 +550,10 @@ export function GalleryLightbox({
                     ...imageStyle(imageIndex),
                     opacity: current ? 1 : 0,
                     pointerEvents: current ? "auto" : "none",
+                    // Keep the warm lightbox trio on compositor-backed layers
+                    // so the first keyboard swap does not pay a cold raster cost.
+                    willChange: "opacity",
+                    transform: "translateZ(0)",
                   }}
                 />
               );
