@@ -20,7 +20,8 @@ files. The personalization wizard uses the same pipeline.
 3. Resolve the published profile, registered routes and published articles.
 4. Read actual image dimensions, sizes and hashes.
 5. Prepare all configuration, type, validator, article and media outputs.
-6. Commit generated outputs under an exclusive lock, rolling back on failure.
+6. Re-check the branch/profile publication boundary immediately before writing.
+7. Commit generated outputs under an exclusive lock, rolling back on failure.
 
 Image references must be canonical local image paths, without URL parameters,
 fragments or encoded path aliases. Profile image/PDF/icon fields are distinct

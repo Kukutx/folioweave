@@ -7,3 +7,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## FolioWeave profile safety
+
+- `portfolio.json` is author-owned on `personal`. Never copy `governance/demo-portfolio.json` over it, even temporarily.
+- Never use `git checkout`, `git restore`, file copy, or scripted replacement on author-owned profile/assets merely to run Demo or QA checks.
+- Use the existing sandboxed profile QA (`npm run qa:profiles`, `npm run qa:visual-fixtures`) or a separate disposable Git worktree for alternate-profile verification.
+- `npm run content:build` enforces the branch/profile publication boundary. Do not bypass that guard to make a check pass.
