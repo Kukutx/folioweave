@@ -223,9 +223,11 @@ earlier interrupted `qa:maintainer` invocation passed.
 - Carousels pause for keyboard focus and reduced motion; original images are
   not eagerly fetched in addition to the optimized image requests.
 
-Fixture sandboxes are retained next to the repository for diagnosis. Each
-contains a `node_modules` junction/symlink to this repository: do not recursively
-delete through that link. They are not Git worktrees and contain no commits.
+Fixture sandboxes live only under ignored `.generated/qa-sandboxes/` inside the
+FolioWeave project. Each run removes its `node_modules` junction/symlink first,
+then deletes the disposable sandbox before exiting. QA must never create or retain
+sibling project, verification, cleanup, artifact, or Git-worktree directories.
+
 ## Interaction lifecycle
 
 `npm run qa:profiles` exercises an isolated real homepage with optional sections,
