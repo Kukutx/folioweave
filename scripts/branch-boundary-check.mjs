@@ -22,6 +22,43 @@ function git(...args) {
 
 const hasGitMetadata = fs.existsSync(path.join(root, ".git"));
 
+const projectName = path.basename(root);
+const projectNameLower = projectName.toLowerCase();
+const siblingResidue = fs
+  .readdirSync(path.dirname(root), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && entry.name !== projectName)
+  .map((entry) => entry.name)
+  .filter((name) => {
+    const lower = name.toLowerCase();
+    return (
+      lower.startsWith(`${projectNameLower}-`) ||
+      lower.startsWith(`.${projectNameLower}-`)
+    );
+  });
+if (siblingResidue.length) {
+  errors.push(
+    `Sibling FolioWeave workspace residue is forbidden: ${siblingResidue.join(", ")}. Keep exactly one top-level project directory.`,
+  );
+}
+
+if (hasGitMetadata) {
+  const normalizeWorkspacePath = (value) => {
+    const resolved = path.resolve(value);
+    return process.platform === "win32" ? resolved.toLowerCase() : resolved;
+  };
+  const normalizedRoot = normalizeWorkspacePath(root);
+  const externalWorktrees = git("worktree", "list", "--porcelain")
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith("worktree "))
+    .map((line) => path.resolve(line.slice("worktree ".length)))
+    .filter((worktree) => normalizeWorkspacePath(worktree) !== normalizedRoot);
+  if (externalWorktrees.length) {
+    errors.push(
+      `Additional Git worktrees are forbidden: ${externalWorktrees.join(", ")}. Keep FolioWeave in one project directory.`,
+    );
+  }
+}
+
 function walk(directory) {
   if (!fs.existsSync(directory)) return [];
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

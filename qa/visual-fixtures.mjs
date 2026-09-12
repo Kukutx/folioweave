@@ -10,9 +10,11 @@ import { installServiceFixtures } from "./service-fixtures.mjs";
 
 const root = process.cwd();
 const minimalHome = process.argv.includes("--minimal-home");
-// Webpack's Next entry resolver needs the app and dependencies on the same
-// Windows drive. Use a sibling sandbox, not a potentially cross-drive TEMP.
-const temporary = await fs.mkdtemp(path.join(path.dirname(root), ".folioweave-visual-"));
+// Keep disposable QA state inside the one FolioWeave project directory.
+const sandboxRoot = path.join(root, ".generated", "qa-sandboxes");
+await fs.mkdir(sandboxRoot, { recursive: true });
+const temporary = await fs.mkdtemp(path.join(sandboxRoot, "visual-"));
+const dependencyLink = path.join(temporary, "node_modules");
 const screens = path.join(root, "qa/screens/fixtures");
 await fs.mkdir(screens, { recursive: true });
 // A disposable copy keeps fixtures, personal test data, and development routes
@@ -20,7 +22,7 @@ await fs.mkdir(screens, { recursive: true });
 for (const entry of ["src", "public", "tsconfig.json", "package.json", "next.config.ts"]) {
   await fs.cp(path.join(root, entry), path.join(temporary, entry), { recursive: true });
 }
-await fs.symlink(path.join(root, "node_modules"), path.join(temporary, "node_modules"), process.platform === "win32" ? "junction" : "dir");
+await fs.symlink(path.join(root, "node_modules"), dependencyLink, process.platform === "win32" ? "junction" : "dir");
 if (!minimalHome) await fs.copyFile(path.join(root, "qa/fixtures/visual-page.tsx"), path.join(temporary, "src/app/page.tsx"));
 if (!minimalHome) await fs.copyFile(path.join(root, "qa/fixtures/carousel-states.tsx"), path.join(temporary, "src/app/carousel-states.tsx"));
 const config = JSON.parse(await fs.readFile("portfolio.json", "utf8"));
@@ -154,8 +156,11 @@ try {
   await browser?.close();
   if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(server.pid), "/T", "/F"], { stdio: "ignore" });
   else server.kill("SIGTERM");
-  await fs.writeFile(path.join(root, minimalHome ? "qa/profile-matrix-report.json" : "qa/visual-fixtures-report.json"), JSON.stringify({ report, temporary }, null, 2));
-  // Keep the disposable directory for failure diagnosis; never recursively
-  // remove a tree containing a junction to the user's dependencies.
-  console.log(`Fixture sandbox retained for inspection: ${temporary}`);
+  await fs.writeFile(path.join(root, minimalHome ? "qa/profile-matrix-report.json" : "qa/visual-fixtures-report.json"), JSON.stringify({ report, sandbox: "project-scoped disposable" }, null, 2));
+  // Unlink dependencies first so recursive cleanup can never follow the junction.
+  await fs.unlink(dependencyLink).catch((error) => { if (error?.code !== "ENOENT") throw error; });
+  await fs.rm(temporary, { recursive: true, force: true });
+  const remainingSandboxes = await fs.readdir(sandboxRoot).catch(() => []);
+  if (!remainingSandboxes.length) await fs.rmdir(sandboxRoot).catch(() => {});
+  console.log("Fixture sandbox cleaned up inside .generated/.");
 }

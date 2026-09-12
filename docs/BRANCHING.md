@@ -28,8 +28,11 @@ All content producers use `npm run content:build`. Publication re-checks the
 branch/profile boundary immediately before generated outputs are replaced, so the
 canonical Demo cannot be published over `personal` even if `portfolio.json` is
 accidentally replaced. Never copy `governance/demo-portfolio.json` over the real
-`portfolio.json`, even temporarily; use `npm run qa:profiles`,
-`npm run qa:visual-fixtures`, or a disposable worktree for alternate-profile QA.
+`portfolio.json`, even temporarily; use `npm run qa:profiles` or
+`npm run qa:visual-fixtures` for alternate-profile QA. FolioWeave uses one
+top-level project directory only: do not create sibling verification, cleanup,
+artifact, or Git-worktree directories. Temporary QA state stays under ignored
+project-local paths and is cleaned up by the command that creates it.
 Schema changes are deliberately breaking: update both author profiles and their
 tests together. There is no runtime compatibility adapter or legacy migration CLI.
 
