@@ -29,7 +29,51 @@ function useSectionRef(id: string) {
   return ref;
 }
 
+function usePlainReloadScrollReset() {
+  useLayoutEffect(() => {
+    const navigation = performance.getEntriesByType("navigation")[0] as
+      PerformanceNavigationTiming | undefined;
+    if (
+      window.location.pathname !== "/" ||
+      window.location.hash ||
+      navigation?.type !== "reload"
+    )
+      return;
+
+    const previous =
+      document.documentElement.dataset.homeReloadScrollRestoration === "manual"
+        ? "manual"
+        : "auto";
+    const reset = () => {
+      window.__lenis?.scrollTo(0, { immediate: true, force: true });
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    };
+
+    window.history.scrollRestoration = "manual";
+    reset();
+    let secondFrame = 0;
+    const frame = window.requestAnimationFrame(() => {
+      reset();
+      secondFrame = window.requestAnimationFrame(reset);
+    });
+    const timer = window.setTimeout(() => {
+      reset();
+      window.history.scrollRestoration = previous;
+      delete document.documentElement.dataset.homeReloadScrollRestoration;
+    }, 500);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (secondFrame) window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(timer);
+      window.history.scrollRestoration = previous;
+      delete document.documentElement.dataset.homeReloadScrollRestoration;
+    };
+  }, []);
+}
+
 export function HomeExperience({ children }: { children: ReactNode }) {
+  usePlainReloadScrollReset();
   useLenis();
   const mobile = useMobileViewport();
   const desktop = useMediaQuery("(min-width: 768px)");
