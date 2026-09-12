@@ -31,6 +31,10 @@ function useSectionRef(id: string) {
 export function HomeExperience({ children }: { children: ReactNode }) {
   useLenis();
   const mobile = useMobileViewport();
+  // `useMediaQuery` intentionally hydrates from a false server snapshot. Use
+  // a positive desktop query for desktop-only decoration so mobile never
+  // hydrates DesignerCursors just to remove them on the first client update.
+  const desktop = useMediaQuery("(min-width: 768px)");
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const nightRef = useSectionRef("interlude");
   const photographyRef = useSectionRef(
@@ -100,7 +104,7 @@ export function HomeExperience({ children }: { children: ReactNode }) {
       <motion.div className={`app ${styles.root}`} style={{ backgroundColor }}>
         <GreetingToast />
         <OfflineScreen />
-        {!mobile && <DesignerCursors />}
+        {desktop && <DesignerCursors />}
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

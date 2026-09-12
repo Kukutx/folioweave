@@ -1,6 +1,6 @@
 "use client";
 
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import {
   AnimatePresence,
   motion,
@@ -238,8 +238,8 @@ export function GalleryLightbox({
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [index, setIndex] = useState(initialIndex),
     [direction, setDirection] = useState(0),
-    [keyboardClosing, setKeyboardClosing] = useState(false);
-  const preloaders = useRef(new Map<string, HTMLImageElement>());
+    [keyboardClosing, setKeyboardClosing] = useState(false),
+    [warmImageIndices, setWarmImageIndices] = useState([initialIndex]);
   const dimensions = mediaDimensions(images[index].src);
   const lightboxSizes =
     dimensions.width <= dimensions.height
@@ -262,6 +262,9 @@ export function GalleryLightbox({
     };
   };
   const lightboxImageStyle = imageStyle(index);
+  const staticImageIndices = [...warmImageIndices, index].filter(
+    (value, position, values) => values.indexOf(value) === position,
+  );
   const move = useCallback(
     (d: number, animate = true) => {
       setDirection(animate ? d : 0);
@@ -271,37 +274,49 @@ export function GalleryLightbox({
   );
   useEffect(() => {
     if (images.length < 2) return;
-    const frame = window.requestAnimationFrame(() => {
-      const adjacent = [
-        (index + 1) % images.length,
+    const timer = window.setTimeout(() => {
+      const desired = [
         (index - 1 + images.length) % images.length,
+        index,
+        (index + 1) % images.length,
+      ].filter((value, position, values) => values.indexOf(value) === position);
+      setWarmImageIndices(desired);
+    }, 100);
+    return () => window.clearTimeout(timer);
+  }, [images.length, index]);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (images.length < 2) {
+      dialog.dataset.neighborPreloadReady = "true";
+      return;
+    }
+    dialog.dataset.neighborPreloadReady = "false";
+    const adjacent = [
+      (index - 1 + images.length) % images.length,
+      (index + 1) % images.length,
+    ];
+    if (!adjacent.every((imageIndex) => warmImageIndices.includes(imageIndex)))
+      return;
+    let cancelled = false;
+    const frame = window.requestAnimationFrame(() => {
+      const neighbors = [
+        ...dialog.querySelectorAll<HTMLImageElement>(
+          'img[data-gallery-neighbor="true"]',
+        ),
       ];
-      for (const imageIndex of adjacent) {
-        const asset = images[imageIndex];
-        if (preloaders.current.has(asset.src)) continue;
-        const size = mediaDimensions(asset.src);
-        const sizes =
-          size.width <= size.height
-            ? "(max-width: 767px) 85vw, 35vw"
-            : "(max-width: 767px) 85vw, 70vw";
-        const { props } = getImageProps({
-          src: asset.src,
-          alt: "",
-          ...size,
-          sizes,
-        });
-        const preloader = new window.Image();
-        preloader.decoding = "async";
-        preloader.fetchPriority = "low";
-        preloader.sizes = props.sizes ?? sizes;
-        preloader.srcset = props.srcSet ?? "";
-        preloader.src = props.src;
-        preloaders.current.set(asset.src, preloader);
-        void preloader.decode().catch(() => {});
-      }
+      void Promise.allSettled(
+        neighbors.map((image) => image.decode().catch(() => {})),
+      ).then(() => {
+        if (!cancelled && dialogRef.current)
+          dialogRef.current.dataset.neighborPreloadReady = "true";
+      });
     });
-    return () => window.cancelAnimationFrame(frame);
-  }, [images, index]);
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
+  }, [images.length, index, warmImageIndices]);
   useLayoutEffect(() => {
     const previousFocus =
       document.activeElement instanceof HTMLElement
@@ -506,17 +521,36 @@ export function GalleryLightbox({
         }}
       >
         {reducedMotion || direction === 0 ? (
-          <Image
-            key={`static-${index}`}
-            src={images[index].src}
-            alt={images[index].alt}
-            {...dimensions}
-            sizes={lightboxSizes}
-            loading="eager"
-            fetchPriority="high"
-            draggable={false}
-            style={lightboxImageStyle}
-          />
+          <>
+            {staticImageIndices.map((imageIndex) => {
+              const asset = images[imageIndex];
+              const size = mediaDimensions(asset.src);
+              const sizes =
+                size.width <= size.height
+                  ? "(max-width: 767px) 85vw, 35vw"
+                  : "(max-width: 767px) 85vw, 70vw";
+              const current = imageIndex === index;
+              return (
+                <Image
+                  key={asset.src}
+                  src={asset.src}
+                  alt={current ? asset.alt : ""}
+                  aria-hidden={!current}
+                  data-gallery-neighbor={current ? undefined : "true"}
+                  {...size}
+                  sizes={sizes}
+                  loading="eager"
+                  fetchPriority={current ? "high" : "auto"}
+                  draggable={false}
+                  style={{
+                    ...imageStyle(imageIndex),
+                    opacity: current ? 1 : 0,
+                    pointerEvents: current ? "auto" : "none",
+                  }}
+                />
+              );
+            })}
+          </>
         ) : (
           <AnimatePresence initial={false} custom={direction}>
             <MotionImage

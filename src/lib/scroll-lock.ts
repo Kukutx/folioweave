@@ -39,6 +39,7 @@ export function lockPageScroll() {
     document.body.style.overflow = previous.overflow;
     root.style.scrollbarGutter = previous.gutter;
     if (!previous.stopped) previous.lenis?.start();
-    window.scrollTo({ left: previous.x, top: previous.y, behavior: "instant" });
+    if (window.scrollX !== previous.x || window.scrollY !== previous.y)
+      window.scrollTo({ left: previous.x, top: previous.y, behavior: "instant" });
   };
 }

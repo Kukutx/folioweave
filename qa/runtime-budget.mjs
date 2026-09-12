@@ -82,25 +82,35 @@ assert.ok(
 );
 const diagnosticProfile =
   profileOption === "--profile=native" ? "native" : "constrained";
-async function viewerReady(page, dialog) {
+async function afterPaint(page) {
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+}
+async function viewerReady(page, dialog, { neighbors = false } = {}) {
   await dialog.locator("img").evaluateAll(async (images) => {
     const visible = images.find((image) => getComputedStyle(image).opacity === "1");
     if (!visible) throw new Error("Lightbox has no visible image");
     await visible.decode();
   });
-  await page.waitForFunction(() => {
+  await page.waitForFunction((requireNeighbors) => {
     const viewer = document.querySelector(".gallery-overlay[open]");
     const images = [...(viewer?.querySelectorAll("img") ?? [])];
     const visible = images.filter(
       (image) => getComputedStyle(image).opacity === "1",
     );
     return (
+      viewer &&
       visible.length === 1 &&
       getComputedStyle(viewer).opacity === "1" &&
       visible[0].complete &&
-      visible[0].naturalWidth > 0
+      visible[0].naturalWidth > 0 &&
+      (!requireNeighbors || viewer.dataset.neighborPreloadReady === "true")
     );
-  });
+  }, neighbors);
 }
 const browserProbe = await chromium.launch({ headless: true });
 const browserVersion = browserProbe.version();
@@ -309,10 +319,16 @@ try {
                 name: "Photography viewer",
               });
               await dialog.waitFor();
-              await viewerReady(page, dialog);
+              // The lightbox warms adjacent images after the opening frame.
+              // Start keyboard interaction timing only after that warm-up
+              // completes, so this measures app presentation work rather than
+              // a synthetic race with image fetch/decode.
+              await viewerReady(page, dialog, { neighbors: true });
               await page.keyboard.press("ArrowRight");
+              await afterPaint(page);
               await viewerReady(page, dialog);
               await page.keyboard.press("Escape");
+              await afterPaint(page);
               await dialog.waitFor({ state: "detached" });
             }
           await page.waitForTimeout(500);
