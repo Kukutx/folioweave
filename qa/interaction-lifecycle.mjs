@@ -25,6 +25,23 @@ try {
     "0s",
     "CSS must not retarget the navigation's scroll-linked Motion values",
   );
+  await page
+    .locator("#about")
+    .evaluate((el) =>
+      scrollTo(0, el.getBoundingClientRect().top + scrollY - 100),
+    );
+  await page.waitForTimeout(100);
+  assert.ok(
+    await page.evaluate(() => scrollY > 100),
+    "reload fixture did not scroll",
+  );
+  assert.equal(new URL(page.url()).hash, "");
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForTimeout(100);
+  assert.ok(
+    (await page.evaluate(() => scrollY)) < 4,
+    "plain home reload restored the previous section instead of the hero",
+  );
   assert.equal(
     await page.locator("[data-floating-home]").count(),
     0,
