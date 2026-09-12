@@ -40,7 +40,7 @@
     "qa:css": "node qa/css-contract.mjs",
     "qa:bundle": "node qa/bundle-budget.mjs",
     "qa:resume": "node qa/resume-state.mjs",
-    "qa:boundary": "node scripts/branch-boundary-check.mjs && node --test qa/demo-boundary.test.mjs",
+    "qa:boundary": "node scripts/branch-boundary-check.mjs && node --test qa/demo-boundary.test.mjs qa/profile-boundary.test.mjs",
     "qa:visual-integrity": "node qa/visual-integrity.mjs",
     "qa:visual-classic": "node qa/visual-integrity.mjs --classic-scrollbars",
     "qa:visual-fixtures": "node qa/visual-fixtures.mjs",

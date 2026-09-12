@@ -25,6 +25,11 @@ try {
     "0s",
     "CSS must not retarget the navigation's scroll-linked Motion values",
   );
+  assert.equal(
+    await page.locator("[data-floating-home]").count(),
+    0,
+    "floating home control should stay hidden in the hero",
+  );
   await page.locator("[data-designer-overlay]").waitFor();
   const before = await page
     .locator(".hero-bio p")
@@ -46,6 +51,19 @@ try {
     0,
     "offscreen cursor remains active",
   );
+  const floatingHome = page.locator("[data-floating-home]");
+  await floatingHome.waitFor();
+  assert.equal(await floatingHome.isVisible(), true);
+  await floatingHome.click();
+  await page.waitForFunction(() => scrollY < 4);
+  await page.waitForTimeout(300);
+  assert.equal(
+    await page.locator("[data-floating-home]").count(),
+    0,
+    "floating home control did not dismiss after returning to the hero",
+  );
+  assert.equal(new URL(page.url()).pathname, "/");
+  assert.equal(new URL(page.url()).hash, "");
   assert.equal(await page.locator("main").count(), 1);
   for (const id of ["home", "about", "work", "photography", "contact"]) {
     if (await page.locator(`#${id}`).count())
@@ -126,7 +144,7 @@ try {
     );
   }
   report.push(
-    "desktop: interruption cleanup, one main landmark, live motion preference, zero reduced-motion CSS transitions",
+    "desktop: interruption cleanup, floating home return, one main landmark, live motion preference, zero reduced-motion CSS transitions",
   );
   await desktop.close();
 

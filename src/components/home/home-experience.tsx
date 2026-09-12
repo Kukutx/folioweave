@@ -9,6 +9,7 @@ import {
 } from "framer-motion";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { MainNav } from "./navigation";
+import { FloatingHomeButton } from "./floating-home-button";
 import { GreetingToast, OfflineScreen } from "./chrome";
 import { DesignerCursors } from "./designer-cursors";
 import { useLenis } from "@/hooks/use-lenis";
@@ -106,6 +107,7 @@ export function HomeExperience({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <MainNav themeProgress={themeProgress} />
+        <FloatingHomeButton themeProgress={themeProgress} />
         <HomeForeground value={color}>{children}</HomeForeground>
       </motion.div>
     </MotionConfig>

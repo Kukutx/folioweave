@@ -20,6 +20,7 @@ import { resolvePublishedRoutes } from "../src/portfolio/publication-policy.mjs"
 
 import { prepareContract } from "./generate-portfolio-contract.mjs";
 import { commitGeneratedOutputs } from "./atomic-output.mjs";
+import { assertProfilePublicationAllowed } from "./profile-boundary.mjs";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -162,6 +163,9 @@ export function generatedOutputs(prepared, root = projectRoot) {
 }
 
 export async function publishContent(prepared, root = projectRoot) {
+  if (path.resolve(root) === projectRoot) {
+    assertProfilePublicationAllowed(root, prepared.config);
+  }
   await commitGeneratedOutputs(root, generatedOutputs(prepared, root));
 }
 
