@@ -66,13 +66,14 @@ The browser matrix tests six widths and classic scrollbars. Lifecycle tests add
 interruption, keyboard, hash restoration and no-JavaScript checks. Review the
 screenshots alongside assertions.
 
-## Integrations and privacy
+## Integrations and publication
 
 Weather and podcasts use bounded requests and the shared cache policy. Missing
 weather is an explicit unavailable state, not a fabricated temperature or icon.
 Keep upstream response limits and request cancellation when adding integrations.
 
 Protected generic demo media remains under `public/` and is checked against
-`qa/assets-manifest.json`. Author assets are separate. Private GitHub visibility,
-deployment access and code/content ownership are independent boundaries; see
-[ARCHITECTURE.md](ARCHITECTURE.md).
+`qa/assets-manifest.json`. Author assets are separate. Repository visibility,
+deployment access, profile ownership and media licensing are independent
+boundaries; see [ARCHITECTURE.md](ARCHITECTURE.md) and
+[REPOSITORY-MODEL.md](REPOSITORY-MODEL.md).

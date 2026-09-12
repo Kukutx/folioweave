@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # Shared changes are validated once through their pull request. The personal
+  # branch is maintained directly, so it keeps push validation.
   push:
-    branches: [main, develop, personal]
+    branches: [personal]
   pull_request:
 
 permissions:

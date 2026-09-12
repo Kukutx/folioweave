@@ -40,7 +40,7 @@
     "qa:css": "node qa/css-contract.mjs",
     "qa:bundle": "node qa/bundle-budget.mjs",
     "qa:resume": "node qa/resume-state.mjs",
-    "qa:boundary": "node scripts/branch-boundary-check.mjs && node --test qa/demo-boundary.test.mjs qa/public-export.test.mjs",
+    "qa:boundary": "node scripts/branch-boundary-check.mjs && node --test qa/demo-boundary.test.mjs",
     "qa:visual-integrity": "node qa/visual-integrity.mjs",
     "qa:visual-classic": "node qa/visual-integrity.mjs --classic-scrollbars",
     "qa:visual-fixtures": "node qa/visual-fixtures.mjs",
@@ -80,8 +80,7 @@
     "qa:upstream-check": "node qa/upstream-health.mjs",
     "qa:browsers": "node qa/cross-browser.mjs",
     "qa:regression-check": "node qa/visual-integrity.mjs --regression",
-    "qa:regression-capture": "node qa/visual-integrity.mjs --update-regression",
-    "export:public": "node scripts/export-public.mjs"
+    "qa:regression-capture": "node qa/visual-integrity.mjs --update-regression"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",

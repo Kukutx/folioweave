@@ -166,18 +166,16 @@ FolioWeave uses standard Next.js deployment conventions. Vercel can use the norm
 
 Set `site.origin` in `portfolio.json` to the canonical production URL before release, and validate the production build.
 
-## Public template vs private personal site
+## Public repository and personal profile
 
-Branches are not privacy boundaries.
+FolioWeave uses one public repository. `main`/`develop` keep the reusable starter
+and canonical demo clean, while `personal` carries the maintained public author
+profile and its media. The branch split protects template ownership, not privacy.
 
-For a public FolioWeave project, the recommended long-term setup is:
-
-- **public `folioweave`** — reusable core + reviewed demo;
-- **private `folioweave-personal`** — your deployed instance and author media, with the public repository configured as an upstream.
-
-If a repository has ever contained personal content, do not simply change it to public. Create a reviewed clean-history export.
-
-See [docs/PUBLIC-PRIVATE.md](docs/PUBLIC-PRIVATE.md).
+Only commit material intended for public access; secrets and confidential content
+must stay outside Git history. See
+[docs/REPOSITORY-MODEL.md](docs/REPOSITORY-MODEL.md) for the shared-change,
+personal-content, and downstream/fork workflow.
 
 ## Documentation
 
@@ -190,6 +188,7 @@ See [docs/PUBLIC-PRIVATE.md](docs/PUBLIC-PRIVATE.md).
 - [Deployment](docs/DEPLOYMENT.md)
 - [Upgrading](docs/UPGRADING.md)
 - [Visual QA](docs/VISUAL-QA.md)
+- [Repository model](docs/REPOSITORY-MODEL.md)
 - [Branch/repository boundaries](docs/BRANCHING.md)
 - [Asset policy](docs/ASSETS.md)
 

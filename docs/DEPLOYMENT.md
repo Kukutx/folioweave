@@ -34,7 +34,7 @@ Create a project from the repository and use the standard Next.js preset. No Fol
 
 Recommended settings:
 
-- Production branch: the branch that represents the deployable instance (`main` in a dedicated personal repository).
+- Production branch: `personal` for the maintained personal site in this repository; use `main` only when deploying the reusable starter/demo profile.
 - Build command: the normal Next.js build (`npm run build`).
 - Install command: `npm ci`.
 - Node.js: the version declared in `package.json`.
@@ -58,4 +58,4 @@ Verify:
 - disabled demo routes return 404 on a personal profile;
 - the production URL and social preview metadata use the intended domain.
 
-For a public reusable repository versus a private deployed instance, see [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md).
+See [REPOSITORY-MODEL.md](REPOSITORY-MODEL.md) for the public branch and profile ownership model.

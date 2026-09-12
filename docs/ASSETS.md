@@ -39,6 +39,6 @@ after an intentional demo asset change.
 
 The MIT license covers software source and documentation. It does **not** automatically grant redistribution rights for every bundled photograph, logo, trademark, font, resume, or product screenshot.
 
-Before publishing a personal site, replace demo media with assets you own or are licensed to use. Before creating a public FolioWeave repository, review every bundled demo asset for redistribution rights; replace or clearly exclude anything whose public redistribution is not established.
+Before publishing a personal site, replace demo media with assets you own or are licensed to use. Because the FolioWeave repository is public, every tracked author asset must be intentionally publishable. Public availability does not automatically grant reuse rights to other users; keep licensing and ownership clear for personal media and review bundled demo assets before redistribution.
 
-See `docs/PUBLIC-PRIVATE.md` for the clean-history public export model.
+See [REPOSITORY-MODEL.md](REPOSITORY-MODEL.md) for the public repository and branch ownership model.

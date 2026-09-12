@@ -178,17 +178,21 @@ generation/validation once and whose compiler performs TypeScript checking.
 Keep validated byte snapshots and atomic publication: optimize further asset
 scans only after measuring larger content sets, not by weakening integrity checks.
 
-## Privacy
+## Repository visibility and ownership
 
-Repository visibility and deployment visibility are independent. Branch names are
-a workflow boundary, never a privacy boundary. If a Git history has ever contained
-private author content, changing the repository to public later can expose that
-history even when the current tree is clean. Publish reusable editions from a
-reviewed clean-history export instead of reusing a personal-history repository.
+Repository visibility and deployment visibility are independent. The current
+FolioWeave repository is public, so every committed branch and its history must be
+safe to publish. A branch name is a workflow/profile boundary, never an access
+boundary.
 
-Branches describe code promotion; profiles describe site identity. The boundary
-checker classifies profile-derived outputs with their author inputs. The recommended
-long-term topology is a public reusable core plus a private deployed personal
-instance that consumes the public core as upstream. A private repository also does
-not make a deployed website private; use deployment authentication when the site
-itself must be access-controlled. See [PUBLIC-PRIVATE.md](PUBLIC-PRIVATE.md).
+`main` and `develop` own the reusable starter and canonical demo profile;
+`personal` owns the maintained public author profile. The boundary checker keeps
+profile-derived outputs with their author inputs and prevents personal content from
+becoming the starter default. It also protects the reusable-core/demo dependency
+boundary.
+
+Secrets, credentials, private records and confidential media must stay outside Git
+history. If a future authoring workflow genuinely requires confidentiality, use a
+real access boundary rather than a branch convention. Deployment authentication
+remains a separate choice from repository visibility. See
+[REPOSITORY-MODEL.md](REPOSITORY-MODEL.md).
