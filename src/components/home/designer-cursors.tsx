@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  type MotionValue,
-} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useMotionActivity } from "@/hooks/use-motion-activity";
 import { siteConfig } from "@/config/site";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function Pointer({
   x,
@@ -18,27 +13,25 @@ function Pointer({
   isAnimated = false,
   showName = true,
 }: {
-  x: number | MotionValue<number>;
-  y: number | MotionValue<number>;
+  x: number;
+  y: number;
   color: string;
   name: string;
   isAnimated?: boolean;
   showName?: boolean;
 }) {
   return (
-    <motion.div
+    <div
       style={{
         position: "absolute",
-        left: 0,
-        top: 0,
-        x,
-        y,
+        left: x,
+        top: y,
         pointerEvents: "none",
-        zIndex: "var(--layer-decoration)",
+        zIndex: 15000,
         transition: isAnimated
-          ? "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)"
+          ? "all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)"
           : "none",
-        willChange: "transform",
+        willChange: "transform, left, top",
       }}
     >
       <svg
@@ -72,7 +65,7 @@ function Pointer({
           {name}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 export function DesignerCursors() {
@@ -89,8 +82,7 @@ export function DesignerCursors() {
     elementLabel: string;
   };
 
-  const userX = useMotionValue(-100);
-  const userY = useMotionValue(-100);
+  const [user, setUser] = useState({ x: -100, y: -100 });
   const [designer, setDesigner] = useState<DesignerState>({
     x: 100,
     y: 260,
@@ -98,12 +90,10 @@ export function DesignerCursors() {
     elementLabel: "",
   });
   const [phase, setPhase] = useState(0);
-  const { active: visible } = useMotionActivity(".hero-grid", {
-    finePointer: true,
-  });
+  const [visible, setVisible] = useState(true);
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   useEffect(() => {
-    if (!visible) return;
     const positionFrame = window.requestAnimationFrame(() => {
       setDesigner((current) => ({
         ...current,
@@ -111,19 +101,31 @@ export function DesignerCursors() {
         y: window.innerHeight / 2,
       }));
     });
-    const mouse = (event: MouseEvent) => {
-      userX.set(event.clientX);
-      userY.set(event.clientY);
+    const mouse = (event: MouseEvent) =>
+      setUser({ x: event.clientX, y: event.clientY });
+    const updateVisibility = () => {
+      const hero = document.querySelector(".hero-grid");
+      if (!hero) {
+        setVisible(false);
+        return;
+      }
+      const rect = hero.getBoundingClientRect();
+      setVisible(rect.bottom > 0 && rect.top < window.innerHeight);
     };
     window.addEventListener("mousemove", mouse);
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("resize", updateVisibility);
+    updateVisibility();
     return () => {
       window.cancelAnimationFrame(positionFrame);
       window.removeEventListener("mousemove", mouse);
+      window.removeEventListener("scroll", updateVisibility);
+      window.removeEventListener("resize", updateVisibility);
     };
-  }, [visible, userX, userY]);
+  }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || reducedMotion) return;
     const timers: number[] = [];
     const later = (fn: () => void, delay: number) => {
       const timer = window.setTimeout(fn, delay);
@@ -176,6 +178,18 @@ export function DesignerCursors() {
           elementLabel: label,
         }));
 
+        const oldTransform = target.style.transform;
+        const oldTransition = target.style.transition;
+        target.style.transition =
+          "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)";
+        const dx = (Math.random() - 0.5) * 4;
+        const dy = (Math.random() - 0.5) * 4;
+        target.style.transform = `translate(${dx}px, ${dy}px)`;
+        later(() => {
+          target.style.transform = oldTransform;
+          target.style.transition = oldTransition;
+        }, 600);
+
         if (phase === 0) {
           later(() => {
             setDesigner((current) => ({ ...current, targetRect: null }));
@@ -197,9 +211,24 @@ export function DesignerCursors() {
 
     later(run, 1000);
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [phase, visible]);
+  }, [phase, reducedMotion, visible]);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (!visible || reducedMotion) return;
+    const old = document.body.style.cursor;
+    document.body.style.cursor = "none";
+    const style = document.createElement("style");
+    style.id = "next-hide-cursor";
+    style.textContent =
+      'body,a,button,input,[role="button"]{cursor:none!important}';
+    document.head.appendChild(style);
+    return () => {
+      document.body.style.cursor = old;
+      style.remove();
+    };
+  }, [reducedMotion, visible]);
+
+  if (!visible || reducedMotion) return null;
   return (
     <>
       <div
@@ -209,7 +238,7 @@ export function DesignerCursors() {
           position: "absolute",
           inset: 0,
           pointerEvents: "none",
-          zIndex: "var(--layer-decoration)",
+          zIndex: 15000,
         }}
       >
         <AnimatePresence>
@@ -257,14 +286,15 @@ export function DesignerCursors() {
       </div>
       <div
         aria-hidden="true"
+        data-user-pointer
         style={{
           position: "fixed",
           inset: 0,
           pointerEvents: "none",
-          zIndex: "var(--layer-pointer)",
+          zIndex: 30000,
         }}
       >
-        <Pointer x={userX} y={userY} color="#E23744" name="You" />
+        <Pointer x={user.x} y={user.y} color="#E23744" name="You" />
       </div>
     </>
   );

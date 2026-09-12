@@ -24,8 +24,7 @@ import {
   PortfolioSparklesIcon,
   PortfolioZapIcon,
 } from "./portfolio-icons";
-import { siteConfig, siteCopyright } from "@/config/site";
-import { formatBlogDate } from "@/blog/format";
+import { siteCopyright } from "@/config/site";
 import type { CustomBlogPost } from "@/blog/types";
 
 type Perspective = "standard" | "designer" | "eli5";
@@ -699,10 +698,7 @@ export function CliptBlogPage({ post }: { post: CustomBlogPost }) {
         <header className="blog-post-header">
           <div className="blog-post-meta">
             <span className="blog-date">
-              <PortfolioCalendarIcon size={14} />
-              <time dateTime={post.date}>
-                {formatBlogDate(post.date, siteConfig.identity.locale)}
-              </time>
+              <PortfolioCalendarIcon size={14} /> Jan 26, 2026
             </span>
             <span className="blog-read-time">
               <PortfolioClockIcon size={14} /> {post.readingMinutes} min read

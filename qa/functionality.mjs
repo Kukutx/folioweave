@@ -108,6 +108,25 @@ async function runHomeCore() {
     await page.goto(base, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(700);
 
+
+    await test("designer cursors preserve reference desktop behavior", async () => {
+      const designerOverlay = page.locator("[data-designer-overlay]");
+      const userPointer = page.locator("[data-user-pointer]");
+      await designerOverlay.waitFor({ state: "attached", timeout: 3000 });
+      await userPointer.waitFor({ state: "attached", timeout: 3000 });
+      await page.mouse.move(500, 300);
+      await page.waitForTimeout(80);
+      assert(
+        await userPointer.getByText("You", { exact: true }).isVisible(),
+        "reference You cursor is not visible on desktop",
+      );
+      assert(
+        (await page.evaluate(() => getComputedStyle(document.body).cursor)) === "none",
+        "native cursor is not hidden while the reference cursor treatment is active",
+      );
+      return { cursor: "You", nativeCursor: "none" };
+    });
+
     await test("hero greeting cycles", async () => {
       const first = (await page.locator(".hero-greeting").innerText()).trim();
       if (new Set(portfolio.hero.greetings).size === 1) {
@@ -508,6 +527,46 @@ async function runCamera() {
 async function runCasePages() {
   const browser = await launch();
   try {
+
+    await test("demo blog index preserves reference presentation", async () => {
+      const context = await browser.newContext({
+        viewport: { width: 1440, height: 1000 },
+      });
+      try {
+        const page = await context.newPage();
+        const response = await page.goto(`${base}/blogs`, {
+          waitUntil: "domcontentloaded",
+        });
+        if (!demoRoutesEnabled) {
+          assert(response?.status() === 404 || response?.ok(), `status ${response?.status()}`);
+          return { enabled: false, status: response?.status() };
+        }
+        assert(
+          (await page.locator(".writing-title").innerText()).trim() === "OG Blogs",
+          "demo blog title drifted from the reference presentation",
+        );
+        const highlights = await page
+          .locator(".writing-header .highlight-yellow")
+          .allTextContents();
+        assert(
+          JSON.stringify(highlights.map((value) => value.trim())) ===
+            JSON.stringify([
+              "design engineering",
+              "product philosophy",
+              "obsession with detail",
+            ]),
+          `demo blog highlights drifted: ${JSON.stringify(highlights)}`,
+        );
+        assert(
+          (await page.locator(".blog-date").first().innerText()).includes("Jan 26, 2026"),
+          "demo blog date drifted from Jan 26, 2026",
+        );
+        return { title: "OG Blogs", highlights: highlights.length, date: "Jan 26, 2026" };
+      } finally {
+        await context.close();
+      }
+    });
+
     await test("Clipt blog switches all 3 perspectives", async () => {
       const context = await browser.newContext({
         viewport: { width: 1440, height: 1000 },
@@ -521,6 +580,10 @@ async function runCasePages() {
           assert(response?.status() === 404, `status ${response?.status()}`);
           return { enabled: false, status: response.status() };
         }
+        assert(
+          (await page.locator(".blog-post-meta .blog-date").innerText()).includes("Jan 26, 2026"),
+          "Clipt article date drifted from Jan 26, 2026",
+        );
         await waitForHydratedElement(page, ".perspective-tag");
         await page
           .locator(".perspective-tag")

@@ -19,8 +19,22 @@ export default function BlogsPage() {
     <div className="writing-container">
       <header className="writing-header">
         <div>
-          <h1 className="writing-title">{blogContent.title}</h1>
-          <p className="writing-subtitle">{blogContent.description}</p>
+          {siteConfig.features.demoRoutes ? (
+            <>
+              <h1 className="writing-title">OG Blogs</h1>
+              <p className="writing-subtitle">
+                Thoughts on{" "}
+                <span className="highlight-yellow">design engineering</span>,{" "}
+                <span className="highlight-yellow">product philosophy</span>, and the{" "}
+                <span className="highlight-yellow">obsession with detail</span>.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="writing-title">{blogContent.title}</h1>
+              <p className="writing-subtitle">{blogContent.description}</p>
+            </>
+          )}
         </div>
       </header>
       <main className="writing-list-container">
@@ -45,7 +59,11 @@ export default function BlogsPage() {
                   <span className="blog-date">
                     <PortfolioCalendarIcon size={14} />
                     <time dateTime={post.date}>
-                      {formatBlogDate(post.date, siteConfig.identity.locale)}
+                      {siteConfig.features.demoRoutes &&
+                      post.kind === "custom" &&
+                      post.slug === "clipt"
+                        ? "Jan 26, 2026"
+                        : formatBlogDate(post.date, siteConfig.identity.locale)}
                     </time>
                   </span>
                   <span className="blog-separator">•</span>
