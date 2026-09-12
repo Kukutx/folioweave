@@ -108,6 +108,9 @@ export async function verifyVisualBaseline({
     );
     return;
   }
+  const diffs = "qa/screens/regression-diffs";
+  await fs.rm(diffs, { recursive: true, force: true });
+
   const previous = JSON.parse(
     await fs.readFile(manifest, "utf8").catch(() => {
       throw new Error(
@@ -124,7 +127,6 @@ export async function verifyVisualBaseline({
   );
   const deltas = compareGeometry(previous.geometry, report);
   const pixels = [];
-  const diffs = "qa/screens/regression-diffs";
   await fs.mkdir(diffs, { recursive: true });
   for (const file of files) {
     const bytes = await fs.readFile(path.join(baseline, file));
@@ -164,6 +166,7 @@ export async function verifyVisualBaseline({
     pixels.every((item) => item.ratio <= 0.002),
     `Pixel regression exceeds 0.2%: ${JSON.stringify(pixels.filter((item) => item.ratio > 0.002))}`,
   );
+  await fs.rm(diffs, { recursive: true, force: true });
   console.log(
     `Visual regression passed: ${files.length} regions; maximum geometry drift ${maximumGeometry}px`,
   );

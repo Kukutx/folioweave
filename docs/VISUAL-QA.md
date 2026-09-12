@@ -19,8 +19,11 @@ shared application behavior; profile content and artwork remain separate.
   the current profile's first hero portrait; no private image path is embedded
   in the shared fixture. Its route never enters the production app.
 - Both checks write ignored screenshots under `qa/screens/` and JSON reports
-  under `qa/`. Inspect screenshots as well as assertions: hit testing alone
-  cannot establish which element is painted on top of another inert element.
+  under `qa/`. Stable named review directories are cleared before capture;
+  successful pixel-regression runs also delete their per-run screenshots and diff
+  images, while failures retain them for diagnosis/artifact upload. Inspect
+  retained failure screenshots as well as assertions: hit testing alone cannot
+  establish which element is painted on top of another inert element.
 
 Install the lockfile-pinned browsers with
 `node node_modules/playwright-core/cli.js install chromium firefox webkit`.
