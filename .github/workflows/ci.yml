@@ -28,19 +28,36 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Classify validation impact
+        id: impact
+        run: node scripts/ci-impact.mjs
+      - name: Check pull-request patch whitespace
+        if: github.event_name == 'pull_request'
+        run: git diff --check origin/${{ github.base_ref }} HEAD --
+      - name: Documentation-only fast path
+        if: steps.impact.outputs.full != 'true'
+        run: echo "Documentation-only change; skipping dependency, build, browser, and runtime work."
       - run: npm ci
+        if: steps.impact.outputs.full == 'true'
       - run: node node_modules/playwright-core/cli.js install --with-deps chromium firefox webkit
+        if: steps.impact.outputs.full == 'true'
       - run: npm run check
+        if: steps.impact.outputs.full == 'true'
       - run: npm run audit:prod
+        if: steps.impact.outputs.full == 'true'
       - name: Run reference runtime and QA suite
+        if: steps.impact.outputs.full == 'true'
         run: npm run qa:all
         env:
           QA_RUNTIME_REFERENCE: "1"
       - run: npm run qa:visual-fixtures
+        if: steps.impact.outputs.full == 'true'
       - run: npm run qa:profiles
+        if: steps.impact.outputs.full == 'true'
       - run: node qa/run-with-server.mjs qa:browsers
+        if: steps.impact.outputs.full == 'true'
       - uses: actions/upload-artifact@v7.0.1
-        if: failure()
+        if: failure() && steps.impact.outputs.full == 'true'
         with:
           name: verification-failure
           path: |
@@ -60,12 +77,22 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Classify visual impact
+        id: impact
+        run: node scripts/ci-impact.mjs
+      - name: Documentation-only visual fast path
+        if: steps.impact.outputs.full != 'true'
+        run: echo "Documentation-only change; no production pixels can change."
       - run: npm ci
+        if: steps.impact.outputs.full == 'true'
       - run: node node_modules/playwright-core/cli.js install chromium
+        if: steps.impact.outputs.full == 'true'
       - run: npm run build
+        if: steps.impact.outputs.full == 'true'
       - run: npm run qa:visual-compare
+        if: steps.impact.outputs.full == 'true'
       - uses: actions/upload-artifact@v7.0.1
-        if: failure()
+        if: failure() && steps.impact.outputs.full == 'true'
         with:
           name: visual-review
           retention-days: 7
