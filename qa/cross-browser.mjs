@@ -3,9 +3,12 @@ import fs from "node:fs/promises";
 import { chromium, firefox, webkit } from "playwright-core";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
+const screenshots = "qa/screens/browsers";
+const keepScreenshots = process.env.KEEP_QA_SCREENSHOTS === "1";
 const report = [];
-await fs.rm("qa/screens/browsers", { recursive: true, force: true });
-await fs.mkdir("qa/screens/browsers", { recursive: true });
+let passed = false;
+await fs.rm(screenshots, { recursive: true, force: true });
+await fs.mkdir(screenshots, { recursive: true });
 try {
   for (const engine of [chromium, firefox, webkit]) {
     const browser = await engine.launch({ headless: true });
@@ -131,9 +134,14 @@ try {
       await browser.close();
     }
   }
+  passed = true;
 } finally {
   await fs.writeFile(
     "qa/cross-browser-report.json",
     JSON.stringify(report, null, 2),
   );
+  if (passed && !keepScreenshots) {
+    await fs.rm(screenshots, { recursive: true, force: true });
+    await fs.rmdir("qa/screens").catch(() => {});
+  }
 }

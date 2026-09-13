@@ -8,9 +8,12 @@ const browser = await chromium.launch({
   executablePath: resolveChromePath(),
   headless: true,
 });
+const screenshots = "qa/screens/lifecycle";
+const keepScreenshots = process.env.KEEP_QA_SCREENSHOTS === "1";
 const report = [];
-await fs.rm("qa/screens/lifecycle", { recursive: true, force: true });
-await fs.mkdir("qa/screens/lifecycle", { recursive: true });
+let passed = false;
+await fs.rm(screenshots, { recursive: true, force: true });
+await fs.mkdir(screenshots, { recursive: true });
 try {
   const desktop = await browser.newContext({
     viewport: { width: 1440, height: 900 },
@@ -221,11 +224,16 @@ try {
   report.push("no JavaScript: headings and works visible without hydration");
   assert.deepEqual(errors, []);
   await plain.close();
+  passed = true;
 } finally {
   await browser.close();
   await fs.writeFile(
     "qa/interaction-lifecycle-report.json",
     JSON.stringify(report, null, 2),
   );
+  if (passed && !keepScreenshots) {
+    await fs.rm(screenshots, { recursive: true, force: true });
+    await fs.rmdir("qa/screens").catch(() => {});
+  }
 }
 console.log(report.join("\n"));

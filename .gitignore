@@ -23,9 +23,6 @@
 # production
 /build
 
-# local, non-deployed originals and unused personal media
-/.personal-assets-source/
-
 # misc
 .DS_Store
 *.pem
@@ -49,4 +46,3 @@ next-env.d.ts
 # generated QA artifacts
 /qa/*-report.json
 /qa/screens/
-/qa/static-home/
