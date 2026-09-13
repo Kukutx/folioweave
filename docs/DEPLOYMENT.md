@@ -47,6 +47,10 @@ governance, workflow, unknown path, or unavailable parent commit proceeds with a
 normal build. This reduces redundant preview/production build work without
 changing which branch owns production.
 
+When the ignore policy changes, verify it with both a documentation-only commit
+and a deployable change: the former should be reported by Vercel as ignored or
+skipped, while the latter must still build normally.
+
 After attaching a custom domain, update `site.origin`, rebuild, and redeploy so canonical URLs, sitemap, Open Graph metadata, and JSON-LD point at the real production origin.
 
 ## Other Next.js hosts
