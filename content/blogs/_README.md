@@ -1,7 +1,7 @@
 # Markdown blogs
 
 Drop a lowercase kebab-case `.md` file in this folder and FolioWeave will publish it automatically.
-The filename becomes the route slug, so `building-devmate.md` becomes `/blogs/building-devmate`.
+The filename becomes the route slug, so `building-an-app.md` becomes `/blogs/building-an-app`.
 Files beginning with `_` or `.` are ignored by the blog engine.
 
 While `npm run dev` is running, saving/adding/removing a post automatically rebuilds the article index and routes; no Next.js restart is required. Invalid content keeps the last valid generated output and prints the validation error.
@@ -10,11 +10,11 @@ Use this frontmatter shape:
 
 ```md
 ---
-title: "How I Built DevMate"
+title: "How I Built My App"}
 subtitle: "Optional secondary title"
 date: "2026-09-07"
 description: "A short summary used on the blog index and in SEO metadata."
-cover: "/portfolio/blogs/devmate/cover.webp"
+cover: "/portfolio/blogs/my-app/cover.webp"}
 tags:
   - Engineering
   - AI
@@ -26,7 +26,7 @@ draft: false
 Normal Markdown works here, including **bold text**, links, local images, lists, blockquotes,
 code fences, tables, task lists, and GitHub-flavored Markdown.
 
-![Architecture diagram](/portfolio/blogs/devmate/architecture.webp)
+![Architecture diagram](/portfolio/blogs/my-app/architecture.webp)
 ```
 
 Required frontmatter: `title`, `date`, `description`.

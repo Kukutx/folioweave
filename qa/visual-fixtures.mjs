@@ -53,7 +53,9 @@ let output = "";
 server.stdout.on("data", (chunk) => { output = (output + chunk).slice(-12000); });
 server.stderr.on("data", (chunk) => { output = (output + chunk).slice(-12000); });
 let browser;
+const keepScreenshots = process.env.KEEP_QA_SCREENSHOTS === "1";
 const report = [];
+let passed = false;
 try {
   const base = `http://127.0.0.1:${port}`;
   let ready = false;
@@ -80,8 +82,8 @@ try {
     }
     report.push({ profile: "minimal-home", optionalFeatures: "all disabled", greetings: 1, portraits: 1 });
   } else {
-  // agent-browser cannot launch Chrome on this host; use the project's working
-  // Playwright launcher for the same load, overlay, console and screenshot checks.
+  // Use the project's pinned Playwright launcher so fixture checks share the
+  // same browser contract as the rest of QA.
   browser = await chromium.launch({ executablePath: resolveChromePath(), headless: true, args: ["--disable-gpu", "--no-sandbox"] });
   for (const width of [390, 820, 1440]) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
@@ -91,6 +93,11 @@ try {
     page.on("pageerror", (error) => errors.push(error.message));
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     await page.goto(base, { waitUntil: "networkidle" });
+    assert.equal(
+      Math.round(await page.evaluate(() => scrollY)),
+      0,
+      "development StrictMode mount must not auto-scroll to About",
+    );
     assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0, "development error overlay");
     const carousel = page.locator("#fixture-carousel");
     await carousel.scrollIntoViewIfNeeded();
@@ -154,6 +161,7 @@ try {
     await context.close();
   }
   }
+  passed = true;
 } catch (error) {
   console.error(output);
   throw error;
@@ -167,5 +175,9 @@ try {
   await fs.rm(temporary, { recursive: true, force: true });
   const remainingSandboxes = await fs.readdir(sandboxRoot).catch(() => []);
   if (!remainingSandboxes.length) await fs.rmdir(sandboxRoot).catch(() => {});
+  if (passed && !minimalHome && !keepScreenshots) {
+    await fs.rm(screens, { recursive: true, force: true });
+    await fs.rmdir(path.join(root, "qa/screens")).catch(() => {});
+  }
   console.log("Fixture sandbox cleaned up inside .generated/.");
 }
