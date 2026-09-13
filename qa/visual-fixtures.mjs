@@ -91,6 +91,11 @@ try {
     page.on("pageerror", (error) => errors.push(error.message));
     page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
     await page.goto(base, { waitUntil: "networkidle" });
+    assert.equal(
+      Math.round(await page.evaluate(() => scrollY)),
+      0,
+      "development StrictMode mount must not auto-scroll to About",
+    );
     assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0, "development error overlay");
     const carousel = page.locator("#fixture-carousel");
     await carousel.scrollIntoViewIfNeeded();
