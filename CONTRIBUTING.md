@@ -39,6 +39,8 @@ npm run qa:maintainer
 
 `qa:maintainer` includes runtime budgets, interaction/quality/media checks, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit coverage.
 
+The protected `main` branch requires both the `validate` and `visual-regression` GitHub checks before merge.
+
 ## Visual compatibility
 
 An approved visual is a compatibility contract.

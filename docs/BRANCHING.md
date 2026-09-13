@@ -27,6 +27,9 @@ profile-specific paths in the report and regenerate outputs from the destination
 profile. Never treat merging a whole `personal` branch into `main` as a content
 export mechanism.
 
+`main` is protected by both `validate` and `visual-regression`; shared changes are
+not complete until both checks pass.
+
 All content producers use `npm run content:build`. Publication re-checks the
 branch/profile boundary immediately before generated outputs are replaced, so the
 canonical Demo cannot be published over `personal` even if `portfolio.json` is

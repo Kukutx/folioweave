@@ -11,6 +11,7 @@ const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const updateRegression = process.argv.includes("--update-regression");
 const regression = updateRegression || process.argv.includes("--regression");
 const classicScrollbars = process.argv.includes("--classic-scrollbars");
+const keepScreenshots = process.env.KEEP_QA_SCREENSHOTS === "1";
 const label = `after${classicScrollbars ? "-classic" : ""}`;
 const directory = regression
   ? `qa/screens/regression-${process.pid}`
@@ -268,7 +269,8 @@ try {
     JSON.stringify(report, null, 2),
   );
 }
-{
+let passed = false;
+try {
   for (const { width, geometry, lightbox, errors } of report) {
     assert.deepEqual(errors, [], `${width}: browser errors`);
     assert.equal(geometry.overflow, false, `${width}: horizontal overflow`);
@@ -318,18 +320,18 @@ try {
         );
     }
   }
-}
-if (regression) {
-  let passed = false;
-  try {
+  if (regression) {
     await verifyVisualBaseline({
       report,
       directory,
       browserVersion: browser.version(),
       update: updateRegression,
     });
-    passed = true;
-  } finally {
-    if (passed) await fs.rm(directory, { recursive: true, force: true });
+  }
+  passed = true;
+} finally {
+  if (passed && !keepScreenshots) {
+    await fs.rm(directory, { recursive: true, force: true });
+    await fs.rmdir("qa/screens").catch(() => {});
   }
 }
