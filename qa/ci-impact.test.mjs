@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   isDocumentationOnlyPath,
   requiresFullValidation,
+  vercelIgnoreExitCode,
 } from "../scripts/ci-impact.mjs";
 
 test("documentation-only CI paths stay on the lightweight required-check path", () => {
@@ -44,4 +45,14 @@ test("CI impact classification fails closed for runtime, author content and work
 
   assert.equal(requiresFullValidation([], "pull_request"), true);
   assert.equal(requiresFullValidation(["docs/README.md"], "push"), true);
+});
+
+test("Vercel ignore semantics skip documentation only and fail closed otherwise", () => {
+  assert.equal(vercelIgnoreExitCode(["docs/VISUAL-QA.md"]), 0);
+  assert.equal(
+    vercelIgnoreExitCode(["README.md", "content/blogs/_README.md"]),
+    0,
+  );
+  assert.equal(vercelIgnoreExitCode(["src/app/page.tsx"]), 1);
+  assert.equal(vercelIgnoreExitCode([]), 1);
 });

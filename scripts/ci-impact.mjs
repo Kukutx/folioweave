@@ -23,22 +23,49 @@ export function requiresFullValidation(files, eventName = "pull_request") {
   return files.some((file) => !isDocumentationOnlyPath(file));
 }
 
-export function changedFiles(baseRef, root = process.cwd()) {
-  if (!baseRef)
-    throw new Error("GITHUB_BASE_REF is required for pull requests");
-  return execFileSync(
-    "git",
-    ["diff", "--name-only", `origin/${baseRef}`, "HEAD", "--"],
-    {
-      cwd: root,
-      encoding: "utf8",
-    },
-  )
+export function changedFilesBetween(base, head = "HEAD", root = process.cwd()) {
+  return execFileSync("git", ["diff", "--name-only", base, head, "--"], {
+    cwd: root,
+    encoding: "utf8",
+  })
     .split(/\r?\n/)
     .filter(Boolean);
 }
 
+export function changedFiles(baseRef, root = process.cwd()) {
+  if (!baseRef)
+    throw new Error("GITHUB_BASE_REF is required for pull requests");
+  return changedFilesBetween(`origin/${baseRef}`, "HEAD", root);
+}
+
+export function vercelIgnoreExitCode(files) {
+  return requiresFullValidation(files, "pull_request") ? 1 : 0;
+}
+
 function main() {
+  if (process.argv.includes("--vercel-ignore")) {
+    let files;
+    try {
+      files = changedFilesBetween("HEAD^", "HEAD");
+    } catch {
+      console.log(
+        "Previous commit unavailable; proceeding with the Vercel build.",
+      );
+      process.exitCode = 1;
+      return;
+    }
+
+    const exitCode = vercelIgnoreExitCode(files);
+    console.log(`Changed paths: ${files.length ? files.join(", ") : "(none)"}`);
+    console.log(
+      exitCode === 0
+        ? "Documentation-only commit; skipping the Vercel build."
+        : "Deployable change detected; proceeding with the Vercel build.",
+    );
+    process.exitCode = exitCode;
+    return;
+  }
+
   const eventName = process.env.GITHUB_EVENT_NAME || "local";
   const baseRef = process.env.GITHUB_BASE_REF || "";
   const files = eventName === "pull_request" ? changedFiles(baseRef) : [];
