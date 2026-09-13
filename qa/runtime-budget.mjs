@@ -5,6 +5,9 @@ import { chromium } from "playwright-core";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
 // Synthetic regression budgets, NOT field CWV / INP or a device benchmark.
+// CLS/LCP/interaction work gate everywhere. Long-task and RAF-frame budgets are
+// host-sensitive, so they gate only in the explicit reference mode used by CI;
+// local runs still report overruns and can opt into the reference gate.
 const profiles = [
   {
     name: "native",
@@ -47,6 +50,14 @@ const summaries = [];
 const warnings = [];
 const trace = process.argv.includes("--trace");
 const diagnostic = trace || process.argv.includes("--diagnostic");
+const referenceBudget =
+  process.env.QA_RUNTIME_REFERENCE === "1" ||
+  process.argv.includes("--reference");
+const budgetMode = diagnostic
+  ? "diagnostic"
+  : referenceBudget
+    ? "reference"
+    : "local";
 const motionOption = process.argv.find((arg) => arg.startsWith("--motion="));
 assert.ok(
   !motionOption || diagnostic,
@@ -94,7 +105,9 @@ async function afterPaint(page) {
 }
 async function viewerReady(page, dialog, { neighbors = false } = {}) {
   await dialog.locator("img").evaluateAll(async (images) => {
-    const visible = images.find((image) => getComputedStyle(image).opacity === "1");
+    const visible = images.find(
+      (image) => getComputedStyle(image).opacity === "1",
+    );
     if (!visible) throw new Error("Lightbox has no visible image");
     await visible.decode();
   });
@@ -124,6 +137,8 @@ const environment = {
   browser: browserVersion,
   logicalCpus: os.cpus().length,
   totalMemoryBytes: os.totalmem(),
+  budgetMode,
+  referenceBudget,
 };
 try {
   for (const conditions of diagnostic
@@ -436,9 +451,11 @@ try {
             profile: conditions.name,
             width,
             reducedMotion,
-            eventP95Ms: summary.eventP95Ms,
+            metric: "eventP95",
+            value: summary.eventP95Ms,
+            budget: conditions.eventTargetMs,
             message:
-              "Above the 200ms synthetic Event Timing target; CI gates deterministic interaction work plus frame/LCP/long-task budgets because headless presentation scheduling is host-sensitive.",
+              "Synthetic Event Timing exceeded its target. Presentation delay is reported as a warning because headless compositor scheduling is host-sensitive; deterministic interaction work is budgeted separately.",
           });
         const checks = {
           cls: summary.cls <= budgets.cls,
@@ -448,14 +465,45 @@ try {
             summary.interactionWorkP95Ms <= budgets.interactionWorkP95Ms,
           frameP95: summary.frameP95Ms <= budgets.frameP95Ms,
         };
-        for (const [metric, passed] of Object.entries(checks))
-          if (!passed)
-            failures.push({
+        const values = {
+          cls: summary.cls,
+          lcp: summary.lcp,
+          longestTask: summary.longestTaskMs,
+          interactionWorkP95: summary.interactionWorkP95Ms,
+          frameP95: summary.frameP95Ms,
+        };
+        const limits = {
+          cls: budgets.cls,
+          lcp: budgets.lcpMs,
+          longestTask: budgets.longestTaskMs,
+          interactionWorkP95: budgets.interactionWorkP95Ms,
+          frameP95: budgets.frameP95Ms,
+        };
+        for (const [metric, passed] of Object.entries(checks)) {
+          if (passed) continue;
+          const hostSensitive =
+            metric === "longestTask" || metric === "frameP95";
+          if (diagnostic || (hostSensitive && !referenceBudget)) {
+            warnings.push({
               profile: conditions.name,
               width,
               reducedMotion,
               metric,
+              value: values[metric],
+              budget: limits[metric],
+              message: diagnostic
+                ? "Diagnostic runtime run exceeded a budget; diagnostics report overruns without failing."
+                : "Local runtime run exceeded a host-sensitive budget. GitHub reference CI remains the authoritative gate; rerun with --reference to enforce the same gate locally.",
             });
+            continue;
+          }
+          failures.push({
+            profile: conditions.name,
+            width,
+            reducedMotion,
+            metric,
+          });
+        }
       }
   }
 } finally {
