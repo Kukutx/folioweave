@@ -11,8 +11,22 @@ updates:
         patterns:
           - "*"
         exclude-patterns:
+          - next
+          - eslint-config-next
           - framer-motion
+          - lucide-react
           - playwright-core
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
+          - minor
+          - patch
+      next-minor-patch:
+        patterns:
+          - next
+          - eslint-config-next
         update-types:
           - minor
           - patch
@@ -21,6 +35,19 @@ updates:
           - framer-motion
         update-types:
           - minor
+          - patch
+      lucide-patch:
+        patterns:
+          - lucide-react
+        update-types:
+          - patch
+      react-patch:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
           - patch
       playwright-patch:
         patterns:
@@ -31,6 +58,23 @@ updates:
       - dependency-name: "*"
         update-types:
           - version-update:semver-major
+      # React minor releases can change runtime/bundle behavior; keep them manual.
+      - dependency-name: react
+        update-types:
+          - version-update:semver-minor
+      - dependency-name: react-dom
+        update-types:
+          - version-update:semver-minor
+      - dependency-name: "@types/react"
+        update-types:
+          - version-update:semver-minor
+      - dependency-name: "@types/react-dom"
+        update-types:
+          - version-update:semver-minor
+      # Lucide minors can change icon geometry and route bundle composition.
+      - dependency-name: lucide-react
+        update-types:
+          - version-update:semver-minor
       # Browser minor releases intentionally require a reviewed baseline migration.
       - dependency-name: playwright-core
         update-types:

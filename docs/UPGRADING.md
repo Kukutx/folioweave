@@ -51,6 +51,18 @@ git merge upstream/main
 Resolve shared-code conflicts while preserving your author inputs, regenerate the
 publication outputs, and run the release validation suite.
 
+## Dependency upgrades
+
+Keep framework-sensitive upgrades isolated so a failed check identifies one cause:
+
+- update `next` and `eslint-config-next` together;
+- keep Framer Motion free of transitive `motion-dom`/`motion-utils` overrides so its declared compatible versions can resolve normally;
+- review Lucide minor releases separately because icon/package changes can alter both pixels and route bundle composition;
+- treat React/React DOM minor releases as reviewed migrations when they change bundle/runtime behavior rather than folding them into unrelated dependency updates;
+- treat Playwright minor releases as visual-environment migrations because they can change the pinned browser version recorded by visual baselines.
+
+Patch-level React and Playwright updates can still be automated when the existing contracts pass.
+
 ## Validate the result
 
 Run:
