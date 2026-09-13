@@ -14,8 +14,9 @@ const eslintConfig = defineConfig([
   },
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
+    // Default ignores of eslint-config-next plus project-local generated QA/build state.
     ".next/**",
+    ".generated/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
