@@ -28,7 +28,10 @@ profile. Never treat merging a whole `personal` branch into `main` as a content
 export mechanism.
 
 `main` is protected by both `validate` and `visual-regression`; shared changes are
-not complete until both checks pass.
+not complete until both checks pass. Pull requests that change only the explicitly
+maintained documentation paths keep those required contexts but use the CI
+lightweight path; every unknown or executable/content/configuration path fails
+closed to the full suites. Direct `personal` pushes always run the full suites.
 
 All content producers use `npm run content:build`. Publication re-checks the
 branch/profile boundary immediately before generated outputs are replaced, so the
