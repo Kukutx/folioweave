@@ -18,4 +18,4 @@ When reporting, include:
 
 ## Security baseline
 
-The project intentionally keeps a restrictive CSP, disables framing, scopes camera access to self, avoids runtime CDN script dependencies, sanitizes JSON-LD script payloads, and runs dependency audits as part of release checks.
+The project intentionally keeps a restrictive CSP, disables framing, scopes camera access to self, avoids runtime CDN script dependencies, sanitizes JSON-LD script payloads, and runs dependency audits as part of release checks. GitHub Actions used by the repository are GitHub-owned and pinned to immutable commit SHAs; Dependabot remains responsible for reviewed action updates.
