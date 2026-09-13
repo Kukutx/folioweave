@@ -307,14 +307,11 @@ export function AboutSection() {
   const [view, setView] = useState<AboutView>("normal");
   const mobile = useMediaQuery(mobileViewportQuery, { debounceMs: 150 });
   const sectionRef = useRef<HTMLElement>(null);
-  const initializedView = useRef(false);
-
+  const previousView = useRef(view);
 
   useEffect(() => {
-    if (!initializedView.current) {
-      initializedView.current = true;
-      return;
-    }
+    if (previousView.current === view) return;
+    previousView.current = view;
     const section = sectionRef.current;
     if (!section) return;
     scrollToElement(section, { offset: -100, duration: 1.2 });
