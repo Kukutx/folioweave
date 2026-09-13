@@ -12,6 +12,8 @@ const root = process.cwd();
 const minimalHome = process.argv.includes("--minimal-home");
 // Keep disposable QA state inside the one FolioWeave project directory.
 const sandboxRoot = path.join(root, ".generated", "qa-sandboxes");
+// Recover automatically from a previously interrupted local fixture run.
+await fs.rm(sandboxRoot, { recursive: true, force: true });
 await fs.mkdir(sandboxRoot, { recursive: true });
 const temporary = await fs.mkdtemp(path.join(sandboxRoot, "visual-"));
 const dependencyLink = path.join(temporary, "node_modules");
