@@ -15,6 +15,11 @@ const portfolio = JSON.parse(
 const boundary = evaluateProfileBoundary(root, portfolio);
 const { targetBranch: branch, core, personal } = boundary;
 const errors = [...boundary.errors];
+for (const file of policy.sharedExceptions) {
+  if (!fs.existsSync(path.join(root, file))) {
+    errors.push(`Branch policy shared exception does not exist: ${file}.`);
+  }
+}
 
 function git(...args) {
   return execFileSync("git", args, {

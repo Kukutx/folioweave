@@ -1,8 +1,5 @@
 {
-  "coreBranches": [
-    "main",
-    "develop"
-  ],
+  "coreBranches": ["main", "develop"],
   "personalBranch": "personal",
   "profileConfig": "portfolio.json",
   "profileSpecificFiles": [
@@ -21,7 +18,6 @@
   ],
   "sharedExceptions": [
     "content/blogs/_README.md",
-    "content/assets/portfolio/README.md",
-    "public/portfolio/README.md"
+    "content/assets/portfolio/README.md"
   ]
 }
