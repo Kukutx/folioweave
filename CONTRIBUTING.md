@@ -39,6 +39,8 @@ npm run qa:maintainer
 
 `qa:maintainer` includes runtime budgets, interaction/quality/media checks, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit coverage.
 
+Local runtime QA always gates CLS, LCP, and deterministic interaction work. Long-task and RAF-frame timing are also reported locally but are enforced only in the explicit reference mode because desktop/headless scheduling varies with host pressure. GitHub CI runs that reference mode. Use `npm run qa:runtime-reference` when you intentionally want the same strict host-sensitive gate on a suitable local machine.
+
 The protected `main` branch requires both the `validate` and `visual-regression` GitHub checks before merge.
 
 ## Visual compatibility

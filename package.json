@@ -51,6 +51,8 @@
     "qa:lifecycle": "node --test qa/scroll-lock.test.mjs && node qa/interaction-lifecycle.mjs && node qa/parallax-lifecycle.mjs",
     "qa:runtime": "node qa/run-with-server.mjs qa:runtime:direct",
     "qa:runtime:direct": "node qa/runtime-budget.mjs",
+    "qa:runtime-reference": "node qa/run-with-server.mjs qa:runtime-reference:direct",
+    "qa:runtime-reference:direct": "node qa/runtime-budget.mjs --reference",
     "qa:runtime-trace": "node qa/run-with-server.mjs qa:runtime-trace:direct",
     "qa:runtime-trace:direct": "node qa/runtime-budget.mjs --trace",
     "qa:runtime-trace-normal": "node qa/run-with-server.mjs qa:runtime-trace-normal:direct",
