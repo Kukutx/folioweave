@@ -129,8 +129,12 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "height": 512
   },
   "/portfolio/projects/devmate/devmate-main.png": {
-    "width": 2000,
-    "height": 1206
+    "width": 2538,
+    "height": 1367
+  },
+  "/portfolio/projects/devmate/devmate-obsidian.png": {
+    "width": 2555,
+    "height": 1376
   },
   "/portfolio/projects/devmate/icon.png": {
     "width": 128,

@@ -260,19 +260,25 @@ const portfolio = {
       "mobileTreatment": "featured",
       "name": "DevMate",
       "date": "Jun 2026 — Present",
-      "description": "I built DevMate because I wanted ChatGPT to work with the projects and tools on my machine instead of relying on pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI and remote Runners through MCP.",
+      "description": "I built DevMate so ChatGPT can work with the projects and tools on my machine instead of relying on pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI, and remote Runners through MCP.",
       "icon": "/portfolio/projects/devmate/icon.png",
       "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/devmate/devmate-main.png",
-          "alt": "DevMate 3.6.7 control panel"
-        }
+        "kind": "carousel",
+        "images": [
+          {
+            "src": "/portfolio/projects/devmate/devmate-main.png",
+            "alt": "DevMate VS Code control panel with project binding, MCP connection, diagnostics, permissions, and workspace state"
+          },
+          {
+            "src": "/portfolio/projects/devmate/devmate-obsidian.png",
+            "alt": "DevMate Obsidian host showing the vault graph alongside the shared runtime, workspace, active-note, and vault-index panel"
+          }
+        ]
       },
       "badge": {
-        "text": "DevMate 3.6.7 · Public release",
+        "text": "DevMate 3.8.8 · Public release",
         "tone": "blue",
-        "href": "https://github.com/Kukutx/DevMate/releases/tag/v3.6.7"
+        "href": "https://github.com/Kukutx/DevMate/releases/tag/3.8.8"
       },
       "actions": [
         {
