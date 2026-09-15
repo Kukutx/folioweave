@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { createRouteMetadata } from "@/config/seo";
-import { siteConfig } from "@/config/site";
 import { portfolioSeo } from "@/portfolio";
 import { products } from "./products";
-
-const { identity } = siteConfig;
 
 export const demoRouteMetadata = {
   brink: createRouteMetadata({
@@ -19,7 +16,7 @@ export const demoRouteMetadata = {
     path: products.brink.privacyRoute,
   }),
   caseStudies: createRouteMetadata({
-    title: `Case Studies | ${identity.name} - ${identity.role} in ${identity.country}`,
+    title: "Case Studies | FolioWeave Demo",
     description: portfolioSeo.caseStudiesDescription,
     path: "/case-studies",
   }),
@@ -40,9 +37,9 @@ export const demoRouteMetadata = {
     path: products.clipt.privacyRoute,
   }),
   district: createRouteMetadata({
-    title: `OG x District | ${identity.name} - ${identity.role} in ${identity.country}`,
+    title: "District by Zomato | Example Case Study",
     description:
-      `District by Zomato case study by ${identity.name}, product designer in ${identity.country}. Designing for the Movies vertical facilitating over 75 million ticket sales. Award-winning design work for ${products.district.award}.`,
+      "Example District by Zomato case-study route bundled with FolioWeave to demonstrate long-form product storytelling and project presentation.",
     path: products.district.route,
   }),
   flipfactPrivacy: createRouteMetadata({
@@ -65,12 +62,10 @@ export const demoRouteMetadata = {
   }),
 } satisfies Record<string, Metadata>;
 
-
 export const districtJsonLd = {
   "@context": "https://schema.org",
   "@type": "CreativeWork",
-  name: "District by Zomato - Case Study",
-  creator: { "@type": "Person", name: identity.name },
+  name: "District by Zomato - Example Case Study",
   about: {
     "@type": "SoftwareApplication",
     name: "District by Zomato",
@@ -79,5 +74,5 @@ export const districtJsonLd = {
   },
   award: products.district.award,
   description:
-    "Product design case study for District by Zomato Movies vertical, facilitating over 75 million ticket sales.",
+    "Example case-study route bundled with FolioWeave to demonstrate product storytelling and project presentation.",
 };

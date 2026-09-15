@@ -20,7 +20,7 @@ export const products = {
     },
     press:
       "https://9to5mac.com/2026/06/20/indie-app-spotlight-brink-brings-a-feature-rich-experience-to-iphone-podcast-listening/",
-    supportEmail: "hello@gowtham.com",
+    supportEmail: "support@example.com",
   },
   clipt: {
     name: "Clipt",
@@ -30,14 +30,14 @@ export const products = {
     icon: "/media/5c0589_4015772c87e6491eb8881e3764409267~mv2.webp",
     appStore:
       "https://apps.apple.com/in/app/clipt-clipboard-history/id6758057628",
-    supportEmail: "gowtham@notchshelf.app",
+    supportEmail: "support@example.com",
   },
   habee: {
     name: "Habee",
     privacyRoute: "/habee-privacypolicy",
     appStore:
       "https://apps.apple.com/in/app/habee-habit-tracker/id6757213438",
-    supportEmail: "gowtham@habee.app",
+    supportEmail: "support@example.com",
   },
   ogWalls: {
     name: "OG Walls",
@@ -54,7 +54,7 @@ export const products = {
       product:
         "https://apps.apple.com/in/app/notchshelf-utility-notch/id6757535797?mt=12",
     },
-    supportEmail: "gowtham@notchshelf.app",
+    supportEmail: "support@example.com",
   },
 } as const satisfies Record<string, ProductDefinition>;
 

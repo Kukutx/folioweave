@@ -6,44 +6,44 @@ const portfolio = {
   "$schema": "./portfolio.schema.json",
   "site": {
     "identity": {
-      "name": "Gowtham Oleti",
-      "firstName": "Gowtham",
-      "initials": "OG",
+      "name": "Your Name",
+      "firstName": "You",
+      "initials": "YN",
       "role": "Product Designer",
-      "company": "CRED",
-      "locale": "en-IN"
+      "company": "Example Studio",
+      "locale": "en-US"
     },
-    "origin": "https://gowthamoleti.com",
+    "origin": "https://example.com",
     "themeColor": "#ffffff",
     "copyrightYear": 2026,
     "contact": {
-      "email": "oletigowtham8803@gmail.com",
-      "helloSubject": "Hello Gowtham!",
-      "hiSubject": "Hi Gowtham"
+      "email": "hello@example.com",
+      "helloSubject": "Hello!",
+      "hiSubject": "Hi"
     },
     "socialLinks": [
       {
         "label": "Twitter",
         "icon": "twitter",
-        "href": "https://x.com/gow88_",
+        "href": "https://example.com/#twitter",
         "brand": "#000000"
       },
       {
         "label": "LinkedIn",
         "icon": "linkedin",
-        "href": "https://www.linkedin.com/in/gowthamoleti/",
+        "href": "https://example.com/#linkedin",
         "brand": "#0A66C2"
       },
       {
         "label": "Instagram",
         "icon": "instagram",
-        "href": "https://www.instagram.com/gowthamoleti",
+        "href": "https://example.com/#instagram",
         "brand": "#E1306C"
       },
       {
         "label": "Email",
         "icon": "email",
-        "href": "mailto:oletigowtham8803@gmail.com",
+        "href": "mailto:hello@example.com",
         "brand": "#EA4335"
       }
     ],
@@ -72,17 +72,17 @@ const portfolio = {
       }
     ],
     "location": {
-      "city": "Bengaluru",
-      "country": "India",
-      "timeZone": "Asia/Kolkata",
-      "timeZoneLabel": "IST",
-      "latitude": 12.9716,
-      "longitude": 77.5946
+      "city": "San Francisco",
+      "country": "United States",
+      "timeZone": "America/Los_Angeles",
+      "timeZoneLabel": "PT",
+      "latitude": 37.7749,
+      "longitude": -122.4194
     },
     "resume": {
-      "image": "/gowtham-oleti-resume.jpg",
-      "pdf": "/gowtham-oleti-resume.pdf",
-      "downloadName": "Gowtham-Oleti-Resume.pdf"
+      "image": "/assets/demo/example-resume.svg",
+      "pdf": "/assets/demo/example-resume.pdf",
+      "downloadName": "Example-Resume.pdf"
     },
     "assets": {
       "socialPreview": "/ogportfolio-logo.webp",
@@ -112,10 +112,10 @@ const portfolio = {
       "Konnichiwa"
     ],
     "portraits": [
-      "/media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp",
-      "/media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
-      "/media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
-      "/media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp"
+      "/assets/demo/photo-01.svg",
+      "/assets/demo/photo-02.svg",
+      "/assets/demo/photo-03.svg",
+      "/assets/demo/photo-04.svg"
     ],
     "roleLine": [
       {
@@ -123,14 +123,14 @@ const portfolio = {
       },
       {
         "brand": {
-          "name": "CRED",
-          "icon": "/assets/cred-icon-6de258e2.png"
+          "name": "Example Studio",
+          "icon": "/assets/demo/logo-placeholder.svg"
         }
       }
     ],
     "summary": [
       {
-        "text": "Based in India, designing thoughtful digital experiences. Previously at "
+        "text": "Example portfolio based in San Francisco, demonstrating product storytelling with "
       },
       {
         "brand": {
@@ -139,7 +139,7 @@ const portfolio = {
         }
       },
       {
-        "text": ", where I worked on how millions discover and book movies. On the side, I'm building "
+        "text": " and side projects such as "
       },
       {
         "brand": {
@@ -155,27 +155,27 @@ const portfolio = {
   "about": {
     "timeline": [
       {
-        "year": "2011",
-        "title": "First smartphone",
-        "desc": "My dad brought home a Galaxy S2. I started noticing how apps looked, moved, and felt.",
-        "current": false
-      },
-      {
         "year": "2020",
         "title": "Started design",
-        "desc": "Connected my interests in interfaces, photography, cars, and product craft.",
+        "desc": "Example milestone — replace this with the moment your own story begins.",
         "current": false
       },
       {
-        "year": "2025",
-        "title": "District by Zomato",
-        "desc": "Worked on movie-going experiences across discovery and ticketing.",
+        "year": "2022",
+        "title": "Built first product",
+        "desc": "Example milestone for a project, role, or turning point in your work.",
+        "current": false
+      },
+      {
+        "year": "2024",
+        "title": "Expanded the craft",
+        "desc": "Example milestone showing how your skills or responsibilities evolved.",
         "current": false
       },
       {
         "year": "2026",
-        "title": "CRED",
-        "desc": "Joined CRED as a Product Designer.",
+        "title": "Current chapter",
+        "desc": "Replace this with what you are focused on today.",
         "current": true
       }
     ],
@@ -183,19 +183,19 @@ const portfolio = {
       [
         {
           "tone": "muted",
-          "text": "It all started in 2011 when my dad brought home a Samsung Galaxy S2. "
+          "text": "This is example copy for the reusable FolioWeave template. "
         },
         {
           "tone": "strong",
-          "text": "I was just a curious kid, spending hours exploring the Play Store, "
+          "text": "Use this opening paragraph to explain what first drew you toward design and making things. "
         },
         {
           "tone": "muted",
-          "text": "downloading random apps just to see how they looked and felt. I didn't know the words for it back then, but "
+          "text": "Keep the story simple and specific rather than dramatic. "
         },
         {
           "tone": "strong",
-          "text": "I was falling in love with "
+          "text": "Call out the idea that eventually became your focus over time: "
         },
         {
           "tone": "highlight",
@@ -209,40 +209,40 @@ const portfolio = {
       [
         {
           "tone": "muted",
-          "text": "Before screens took over, I was obsessed with cars and photography. For a very long time, I actually wanted to be an automobile designer. I loved how a car looked fast even when standing still, or how a photo could freeze a feeling forever. "
+          "text": "Before the work itself, talk about the interests that shaped your eye for detail. Maybe that was photography, hardware, illustration, music, or something completely different. "
         },
         {
           "tone": "strong",
-          "text": "That love for aesthetics and mechanics never really left; it just shifted from engines to interfaces."
+          "text": "The point is not to manufacture an origin story; it is to show the thread between what you notice, what you enjoy making, and how that perspective shows up in your work."
         }
       ],
       [
         {
           "tone": "muted",
-          "text": "During the lockdown, I finally connected the dots. "
+          "text": "Use the final paragraph to connect those interests to the way you work now. "
         },
         {
           "tone": "strong",
-          "text": "I realized that building digital products combined everything I loved: how things work, how they look, and how they make people feel. I get to do exactly that every day."
+          "text": "Explain what you like solving, how you balance craft with constraints, and what kind of products or experiences you want to keep building."
         }
       ]
     ],
     "galleryImages": [
       {
-        "src": "/media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
-        "alt": "Personal gallery image 1"
+        "src": "/assets/demo/photo-02.svg",
+        "alt": "Photo placeholder 1"
       },
       {
-        "src": "/media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
-        "alt": "Personal gallery image 2"
+        "src": "/assets/demo/photo-01.svg",
+        "alt": "Photo placeholder 2"
       },
       {
-        "src": "/media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp",
-        "alt": "Personal gallery image 3"
+        "src": "/assets/demo/photo-03.svg",
+        "alt": "Photo placeholder 3"
       },
       {
-        "src": "/media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp",
-        "alt": "Personal gallery image 4"
+        "src": "/assets/demo/photo-wide.svg",
+        "alt": "Photo placeholder 4"
       }
     ]
   },
@@ -267,9 +267,9 @@ const portfolio = {
       ],
       "story": {
         "title": "Story time",
-        "image": "/media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
-        "imageAlt": "Deepinder Goyal's reply",
-        "body": "I mailed Deepinder Goyal, founder of Zomato, and he replied! This conversation led to my internship at District by Zomato, which later converted to a full-time role. Sometimes, reaching out directly to the people you admire can open doors you never expected."
+        "image": "/assets/demo/project-placeholder.svg",
+        "imageAlt": "Project image placeholder",
+        "body": "A designer shared a project note with a product leader, and they replied! That conversation became an unexpected opportunity to keep working on the product, which later turned into a longer collaboration. Sometimes, reaching out with a thoughtful message can open doors you never expected."
       },
       "mobileTreatment": "standard",
       "media": {
@@ -521,83 +521,33 @@ const portfolio = {
     "author": "Phil Dunphy"
   },
   "seo": {
-    "description": "Gowtham Oleti - Product Designer in India. Product Designer at CRED, creating simple, user-centric digital experiences across fintech and consumer products. Designer portfolio showcasing UX/UI design work and case studies.",
+    "description": "FolioWeave example portfolio template demonstrating product design work, case studies, photography, writing, and interactive portfolio components.",
     "keywords": [
-      "Gowtham Oleti",
-      "Gowtham",
-      "best product designer in india",
-      "best designer",
-      "best designer in india",
-      "product designer india",
-      "UX designer india",
-      "UI designer india",
-      "best UX designer",
-      "best UI designer",
-      "top product designer",
-      "award winning designer",
-      "CRED",
-      "CRED designer",
-      "fintech designer",
+      "portfolio template",
       "product design portfolio",
       "UX design portfolio",
       "UI design portfolio",
-      "digital product designer",
-      "user experience designer",
-      "interface designer",
-      "mobile app designer",
-      "web designer india",
-      "design portfolio",
-      "product designer portfolio",
-      "best design portfolio",
-      "designer portfolio india",
-      "creative designer",
-      "design expert",
-      "product design expert",
-      "UX expert",
-      "UI expert",
-      "design consultant",
-      "product design consultant",
-      "user centered design",
-      "human centered design",
-      "design thinking",
+      "developer portfolio",
+      "case study portfolio",
       "design systems",
-      "design strategy",
       "interaction design",
-      "visual design",
-      "information architecture",
-      "usability",
-      "accessibility design",
       "responsive design",
-      "mobile design",
-      "web design",
-      "app design",
-      "digital design",
-      "design innovation",
-      "design leadership",
-      "design awards",
-      "Google Play Best App",
-      "product design case study",
-      "UX case study",
-      "design process",
-      "design methodology"
+      "Next.js portfolio"
     ],
     "knowsAbout": [
       "Product Design",
       "User Experience Design",
       "User Interface Design",
       "Digital Product Design",
-      "Mobile App Design",
-      "Web Design",
       "Design Systems",
-      "User Research",
-      "Design Strategy"
+      "Interaction Design",
+      "Web Design"
     ],
-    "award": "Best App of 2025 - Google Play",
-    "caseStudiesDescription": "Product design case studies by Gowtham Oleti, product designer in India. Explore UX/UI design projects including District by Zomato, facilitating over 75 million ticket sales. Award-winning design portfolio."
+    "caseStudiesDescription": "Example product-design case studies demonstrating long-form project storytelling, responsive media, metrics, and portfolio navigation."
   },
   "blog": {
     "title": "Blogs",
-    "heading": "OG Blogs",
+    "heading": "Blogs",
     "description": "Thoughts on design, code, and building products.",
     "intro": [
       {
