@@ -114,7 +114,7 @@ const portfolio = {
     ],
     "summary": [
       {
-        "text": "Based in Milan. I spend most of my time building web and mobile products, usually all the way from the first screen to the backend behind it."
+        "text": "Based in Milan, I build web and mobile products, usually end to end: from the first screen to the backend behind it."
       }
     ]
   },
@@ -122,26 +122,26 @@ const portfolio = {
     "timeline": [
       {
         "year": "2023",
-        "title": "Reti S.p.A",
-        "desc": "My first professional role: building Angular pages, components and API integrations, and learning what frontend work looks like on real client projects.",
+        "title": "Reti S.p.A.",
+        "desc": "My first professional role: building Angular pages, components and API integrations, and learning how frontend work gets done in a real team.",
         "current": false
       },
       {
         "year": "2024",
         "title": "Gruppo Maggioli + Hinge 16",
-        "desc": "Moved across a much wider stack — Drupal/PHP, WordPress, Vue and .NET/Blazor MAUI — through client work, e-commerce and maintenance.",
+        "desc": "Broadened my stack — Drupal/PHP, WordPress, Vue and .NET/Blazor MAUI — through client work, e-commerce and maintenance.",
         "current": false
       },
       {
         "year": "2025",
         "title": "Started building Crew",
-        "desc": "Crew started as an independent project and became the place where I began owning the whole product: app, backend, web, design and cloud.",
+        "desc": "Started Crew as an independent project, and with it began owning a whole product end to end: design, app, backend, web and cloud.",
         "current": false
       },
       {
         "year": "2026",
         "title": "Crew released + DevMate",
-        "desc": "Shipped Crew to Google Play and kept building DevMate, an open-source bridge between ChatGPT and local development tools.",
+        "desc": "Released Crew on Google Play and started DevMate, an open-source bridge between ChatGPT and local development tools.",
         "current": true
       }
     ],
@@ -153,7 +153,7 @@ const portfolio = {
         },
         {
           "tone": "muted",
-          "text": "I started professionally on the frontend, then kept getting curious about everything that happened beyond the screen."
+          "text": "I started professionally on the frontend, then grew curious about everything that happens beyond the screen."
         }
       ],
       [
@@ -163,11 +163,11 @@ const portfolio = {
         },
         {
           "tone": "strong",
-          "text": ".NET backends, React / Next.js, Flutter and PostgreSQL"
+          "text": ".NET backends, React/Next.js, Flutter and PostgreSQL"
         },
         {
           "tone": "muted",
-          "text": ". I enjoy being able to follow a product across those boundaries instead of stopping at one layer."
+          "text": ". I like following a product across those boundaries instead of stopping at a single layer."
         }
       ],
       [
@@ -225,7 +225,7 @@ const portfolio = {
       "mobileTreatment": "standard",
       "name": "Crew",
       "date": "Dec 2025 — Present",
-      "description": "Crew is a social events app for discovering what to do, creating Spot and Route events, chatting, buying tickets and giving organizers tools to run them. I work on the whole thing myself, from the app and backend to payments, cloud and releases.",
+      "description": "Crew is a social events app: discover what's on, create Spot and Route events, chat, buy tickets, and give organizers the tools to run them. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
       "icon": "/portfolio/projects/crew/icon.png",
       "media": {
         "kind": "image",
@@ -260,7 +260,7 @@ const portfolio = {
       "mobileTreatment": "featured",
       "name": "DevMate",
       "date": "Jun 2026 — Present",
-      "description": "I built DevMate so ChatGPT can work with the projects and tools on my machine instead of relying on pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI, and remote Runners through MCP.",
+      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI and remote Runners.",
       "icon": "/portfolio/projects/devmate/icon.png",
       "media": {
         "kind": "carousel",
@@ -376,7 +376,7 @@ const portfolio = {
     "author": "Romain Rolland"
   },
   "seo": {
-    "description": "Liu Zhong Li - Full-Stack Software Developer based in Milan, Italy, building reliable web and mobile products with .NET, React/Next.js, Flutter and PostgreSQL.",
+    "description": "Liu Zhong Li — Full-Stack Software Developer based in Milan, Italy, building reliable web and mobile products with .NET, React/Next.js, Flutter and PostgreSQL.",
     "keywords": [
       "Liu Zhong Li",
       "Kukutx",
@@ -432,7 +432,7 @@ const portfolio = {
     "description": "The best decisions rarely come from staring harder at the screen. They come from stepping back — seeing how one small choice ripples through a whole system, and remembering the person on the other end of it.",
     "returnTitle": "Then I bring it back down.",
     "handwrittenTitle": "And keep it simple.",
-    "returnDescription": "Good solutions don't ask for attention. They just work—quietly and effectively.",
+    "returnDescription": "Good solutions don't ask for attention. They just work — quietly and effectively.",
     "image": "/media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp"
   }
 } satisfies PortfolioConfig;
