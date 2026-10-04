@@ -4,54 +4,54 @@
   "platform": "win32",
   "profileName": "personal",
   "files": {
-    "1440-about.png": "123a89c52011b1fb33e77dc3ff716314587ed4dd5aaa7aa0ca09be87ce0aa2c4",
+    "1440-about.png": "fdeeddb4684f4495496944c8e47815242073f7c029895d66e5b8e1180d92e5ae",
     "1440-contact.png": "1961da2b64c8137c0bc8c6ff8b3eafb1630bbb6a17f8d931bcf578c20e16d26f",
-    "1440-hero.png": "33b53107948ab4e88983ab8ba7b550d6039f031b92c5dc67a6b3b6678088afdc",
+    "1440-hero.png": "f9859af23a9ca9919eb0900fa318ee864883af530a3ed4a243c47794d2f223ba",
     "1440-lightbox-next.png": "b3cf543c55e39ab9d6817b1c2364dd5cc2660bdfdc0a67b88f63e2307a9c7bb6",
     "1440-lightbox-portrait.png": "a69e84502b708cc55d34c5ce455efb20dd4878fe17920d4f9c1c0b14e4986416",
     "1440-lightbox.png": "05175fe970b534c3192f14fecd4967b5b66218baf73de1767cd077e6f3aabaab",
     "1440-photography.png": "20fb863400da295101091aa0ed05bab477f575058e69b40cc824dd4c954a0963",
-    "1440-work.png": "aaadd0afcbe26fc125505bd8c0c003ac74f13aa4d5f15ce5d40e2ed650b5bd43",
-    "360-about.png": "c1d2c82f72faa4e12ce73af6f41d66d3592302bbc79042bbe9ab21b1ed367c55",
+    "1440-work.png": "a3e596526e5fda86d9935b030a15879a922d6944bd6f058d192d08992e02d783",
+    "360-about.png": "9ff934eeef3fd0dd4eba46de304daf4e727a7a33375002868e1940ee16d70f12",
     "360-contact.png": "7b3cb1724f56341ef57985555f1af60c1b59322230715a086dfe5d0502aaed96",
-    "360-hero.png": "e6cc0e0de29c34d73a147ef331851aef4acf243baf6fadff4296e4fc9d82a2e4",
+    "360-hero.png": "66a2f8ed7822165cf2ff2e6406ccf4e1f4364d2f3a432709ed0ffa74c40edb8a",
     "360-lightbox-next.png": "384acab0c4007ded0854d31bc0e1872ebbe34b307b50c15133949b151f9274ea",
     "360-lightbox-portrait.png": "161cd927558e1ce6cfa7a17813dad90834de1a7bad88900a0da41fc5ad121862",
     "360-lightbox.png": "876551bf317310943057989ff984df7a8b7573dd3a86f46e139d62798f8dabca",
     "360-photography.png": "dd9d17a21145e3098e97c19769ab428739cc00fa51ec87aafa22c97ec012879f",
-    "360-work.png": "81e25421c79ecfca27abca4353ab0d5e2627e51bfb226a7c179cad1d697c7774",
-    "390-about.png": "e8c19a021e8f2492508c1148ce2b2f4ecfc3b996fb0a4fc3ce73871e80af28c4",
+    "360-work.png": "53959e12253b18f266f2d8b38a55d8d72d98109da8e25dfc07d9e96b7d2cd22f",
+    "390-about.png": "75ec73e7ac6e983fdd5cef59d6eaa80e0d5baaf15c994d0061874f6139da4432",
     "390-contact.png": "6a8e6553109b83215213ecdc6859910eadacfedcc6019174a8bf702b39b54c2b",
-    "390-hero.png": "71aae9e0edf8163ce6e12be6d1bf205d0b20d48b3c50c32f32a3d16da44c1434",
+    "390-hero.png": "28e3957c30bcb738c06b2d98422c7b20669ddf55f79407f6d0e3611b83d7ace8",
     "390-lightbox-next.png": "d19c2c3c462dcca4f1df1953d7596c40ca0c6f51bfbb11f4f1ea586c50f78266",
     "390-lightbox-portrait.png": "82ecab76310b0ffc90c25f3d21a6fa3c3af1ebcec6f922affd745a9eda8af540",
     "390-lightbox.png": "ec1026b2a12e2081be8772e8b5e3a8460289d928df2bf0dfe172ce9dc6edd9d1",
     "390-photography.png": "441feba9ad47e46f799c107e4129e8e97d00fc726e43476b731269d650764f34",
-    "390-work.png": "7143b2405ad0291fa095b27de62fcb92fdc960e8f2d5d904899a907e98f566a7",
-    "767-about.png": "857a46ccc481876464e01be086258cfad816ee57cf585010d6fc320e0c7fe710",
+    "390-work.png": "2a590336fec92e50ca0c81cf2ae4b42f888b3424dd2b36d634408f09e5b62ba0",
+    "767-about.png": "21f29bcf5a1782a20cae376b6a35ed84772ac363befafef65d59719310e6dca4",
     "767-contact.png": "4508a8a1741f03eb690cd76f72aeac62ae389715d7aecba982b630ce84491bdd",
-    "767-hero.png": "848f80b0b53b740043e58e0c2b2c7bdd27cb5e46c1f09c42824006d24a6bf84a",
+    "767-hero.png": "d765d3924362effe2ba3e637218e54cf950624b87bcafc0f14defb0f57c4c441",
     "767-lightbox-next.png": "1fed6febdb00e9dc19a51a29c6e8daa566e8d1de4406b02a786dd9efcc7f9feb",
     "767-lightbox-portrait.png": "6ace39c352419f80cce1fe939a5871d5b15b347dabce9e29417cb46c6d3ec8cf",
     "767-lightbox.png": "6aacb3eee8843d46553edc416ba889bdb71b61dcdce58706c5074a47e658a5e7",
     "767-photography.png": "ccf7225f2dd5ff7c2f3dc5322e745bc555672c7f16f1b9e8eb999b064ee17bc6",
     "767-work.png": "e8b7157e0f3fa9ff041a95b63c873f3a9548d67e3d2e4e89b2a018ea5d8382fd",
-    "768-about.png": "cf38e0d627b9eb4ff942148a4eb4c584fdfb15e0e355b1c7f6f9449aea009e82",
+    "768-about.png": "e0c3c81c6bcc32c6fbef0c48ca0cff718b15dfc4fca73797204ff3488a1825a6",
     "768-contact.png": "958d046e643c70e912073f9b7cc2fa70c03383933d8565b5ae7fdb99159362f1",
-    "768-hero.png": "9df8aad7e0409fed9ea6982ed1b679f702dcab9cd90fd1ab1355331604900c34",
+    "768-hero.png": "ad185e883021451bed4f706d4c887f465b6b02d752f64a8073cb12b689fdc3d1",
     "768-lightbox-next.png": "b00b3390c9e9c1e5c0ce77655cadad9ed1cf0860a5db7331afe8532f108933eb",
     "768-lightbox-portrait.png": "8d4ff1ec210bcf0fe8b80e4ab77182fdd22ce701779babd2d6dfa600be46db47",
     "768-lightbox.png": "74207303e6d2b2a5121a87cc48396f926d606df160148d8b13f185a4d3a18227",
     "768-photography.png": "3473c2e3f4e3e254c5e0e32f545fc70d07882842374427f24373a86348b35765",
-    "768-work.png": "7da7b7b87eb51739550c19819045b4e56e865ddbc56cb0f3a88e6c4039b7757f",
-    "820-about.png": "9fcb7b457421cb4fe0f13df8869880b85415f45bf1b24472d094d245a8494549",
+    "768-work.png": "6358ac554465e1760635fd91ee7e3aa056a482e47bd9c440504bfd670607c018",
+    "820-about.png": "6cbbee07f6ab4fd9f9ab50bde5e06e8400bc5e1b95ae314a65aaf263fd40d88c",
     "820-contact.png": "d5b374d7ae9b60abb7363c3facb963ce0698b88d68d614f176af8edbaff2af86",
-    "820-hero.png": "dd6b3b7820bb4141b09135f9406ccf03b3b3c6cd9e2c754993b64f2a0cac393f",
+    "820-hero.png": "a1a3ae050b2b9a5dca75f873bffab90a39e86222159bf83e27477631cdfc44af",
     "820-lightbox-next.png": "88439ef7fb2918ae1ef7186a447fa9504f5948f1344276562a421df2c7d4ce69",
     "820-lightbox-portrait.png": "505e7e8ae47342178e84828f0e10161d420f0500a059e56b2fb75470c72a9c89",
     "820-lightbox.png": "026ef18c86278ef6ff489a23885ecd0e796091052d38ee38ea2c5f91b98c82e6",
     "820-photography.png": "ef34ccedcf91d2c1619957da9e448f29d7019ed54b64c50782d26bae1007e11f",
-    "820-work.png": "ecab538f02e71e9d9f70b205f0d0de473db2e1486bffd190df3e343874a23d14"
+    "820-work.png": "34e4a7a7619dde6a8a95198f9ee01b2475e9d968de5cd0a2801bdb0c5457669d"
   },
   "geometry": [
     {
@@ -271,17 +271,17 @@
             "x": 20,
             "y": 4687.171875,
             "width": 350,
-            "height": 2278.703125
+            "height": 2253.171875
           },
           "photography": {
             "x": 20,
-            "y": 6965.875,
+            "y": 6940.34375,
             "width": 350,
             "height": 12140.75
           },
           "contact": {
             "x": 20,
-            "y": 19106.625,
+            "y": 19081.09375,
             "width": 350,
             "height": 694.09375
           }
@@ -295,7 +295,7 @@
           },
           {
             "x": 20,
-            "y": 6178.234375,
+            "y": 6152.703125,
             "width": 350,
             "height": 305.1875
           }
@@ -303,109 +303,109 @@
         "photos": [
           {
             "x": 20,
-            "y": 7266.6875,
+            "y": 7241.15625,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 7920.90625,
+            "y": 7895.375,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 8575.125,
+            "y": 8549.59375,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 9229.34375,
+            "y": 9203.8125,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 9883.5625,
+            "y": 9858.03125,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 10537.78125,
+            "y": 10512.25,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 11192,
+            "y": 11166.46875,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 11846.21875,
+            "y": 11820.6875,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 12500.4375,
+            "y": 12474.90625,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 13154.65625,
+            "y": 13129.125,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 13808.875,
+            "y": 13783.34375,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 14463.09375,
+            "y": 14437.5625,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 15117.3125,
+            "y": 15091.78125,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 15771.53125,
+            "y": 15746,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 16425.75,
+            "y": 16400.21875,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 17079.96875,
+            "y": 17054.4375,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 17734.1875,
+            "y": 17708.65625,
             "width": 350,
             "height": 622.21875
           },
           {
             "x": 20,
-            "y": 18388.40625,
+            "y": 18362.875,
             "width": 350,
             "height": 622.21875
           }
@@ -868,9 +868,9 @@
           },
           {
             "x": 24,
-            "y": 5384.625,
+            "y": 5384.65625,
             "width": 494.078125,
-            "height": 297.984375
+            "height": 297.921875
           }
         ],
         "photos": [
@@ -1035,17 +1035,17 @@
             "x": 144,
             "y": 4608.84375,
             "width": 1152,
-            "height": 1792.4375
+            "height": 1792.59375
           },
           "photography": {
             "x": 144,
-            "y": 6401.28125,
+            "y": 6401.4375,
             "width": 1152,
             "height": 4395.40625
           },
           "contact": {
             "x": 144,
-            "y": 10796.6875,
+            "y": 10796.84375,
             "width": 1152,
             "height": 902.546875
           }
@@ -1061,115 +1061,115 @@
             "x": 144,
             "y": 5764.875,
             "width": 737.265625,
-            "height": 444.40625
+            "height": 444.5625
           }
         ],
         "photos": [
           {
             "x": 144,
-            "y": 6672.1875,
+            "y": 6672.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 6672.1875,
+            "y": 6672.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 6672.1875,
+            "y": 6672.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 144,
-            "y": 7348.9375,
+            "y": 7349.09375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 7348.9375,
+            "y": 7349.09375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 7348.9375,
+            "y": 7349.09375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 144,
-            "y": 8025.6875,
+            "y": 8025.84375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 8025.6875,
+            "y": 8025.84375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 8025.6875,
+            "y": 8025.84375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 144,
-            "y": 8702.4375,
+            "y": 8702.59375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 8702.4375,
+            "y": 8702.59375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 8702.4375,
+            "y": 8702.59375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 144,
-            "y": 9379.1875,
+            "y": 9379.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 9379.1875,
+            "y": 9379.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 9379.1875,
+            "y": 9379.34375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 144,
-            "y": 10055.9375,
+            "y": 10056.09375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 538.671875,
-            "y": 10055.9375,
+            "y": 10056.09375,
             "width": 362.671875,
             "height": 644.75
           },
           {
             "x": 933.34375,
-            "y": 10055.9375,
+            "y": 10056.09375,
             "width": 362.671875,
             "height": 644.75
           }
