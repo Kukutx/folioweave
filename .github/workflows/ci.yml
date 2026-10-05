@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  # Shared changes are validated once through their pull request. The personal
-  # branch is maintained directly, so it keeps push validation.
+  # Every change is validated through its pull request. The personal branch is
+  # production, so the revision that a merge deploys is validated again in full.
   push:
     branches: [personal]
   pull_request:
@@ -16,14 +16,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Heavy steps run unless the classifier explicitly reported a documentation-only
+# change, so a missing classification can never turn into a skipped suite.
 jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # The personal tree is always compared with main, even in a pull request
+      # whose base is personal; the base itself is needed for the patch checks.
       - name: Fetch boundary base
-        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref || 'main' }}:refs/remotes/origin/${{ github.base_ref || 'main' }}
+        run: git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+      - name: Fetch pull-request base
+        if: github.base_ref && github.base_ref != 'main'
+        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
@@ -35,29 +42,30 @@ jobs:
         if: github.event_name == 'pull_request'
         run: git diff --check origin/${{ github.base_ref }} HEAD --
       - name: Documentation-only fast path
-        if: steps.impact.outputs.full != 'true'
+        if: steps.impact.outputs.full == 'false'
         run: echo "Documentation-only change; skipping dependency, build, browser, and runtime work."
       - run: npm ci
-        if: steps.impact.outputs.full == 'true'
-      - run: node node_modules/playwright-core/cli.js install --with-deps chromium firefox webkit
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: npm run check
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: npm run audit:prod
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
+      # Browsers are only needed once lint, build and audit have passed.
+      - run: node node_modules/playwright-core/cli.js install --with-deps chromium firefox webkit
+        if: steps.impact.outputs.full != 'false'
       - name: Run reference runtime and QA suite
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
         run: npm run qa:all
         env:
           QA_RUNTIME_REFERENCE: "1"
       - run: npm run qa:visual-fixtures
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: npm run qa:profiles
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: node qa/run-with-server.mjs qa:browsers
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure() && steps.impact.outputs.full == 'true'
+        if: failure() && steps.impact.outputs.full != 'false'
         with:
           name: verification-failure
           path: |
@@ -72,7 +80,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Fetch boundary base
-        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref || 'main' }}:refs/remotes/origin/${{ github.base_ref || 'main' }}
+        run: git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+      - name: Fetch pull-request base
+        if: github.base_ref && github.base_ref != 'main'
+        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
@@ -81,18 +92,18 @@ jobs:
         id: impact
         run: node scripts/ci-impact.mjs
       - name: Documentation-only visual fast path
-        if: steps.impact.outputs.full != 'true'
+        if: steps.impact.outputs.full == 'false'
         run: echo "Documentation-only change; no production pixels can change."
       - run: npm ci
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: node node_modules/playwright-core/cli.js install chromium
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: npm run build
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - run: npm run qa:visual-compare
-        if: steps.impact.outputs.full == 'true'
+        if: steps.impact.outputs.full != 'false'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure() && steps.impact.outputs.full == 'true'
+        if: failure() && steps.impact.outputs.full != 'false'
         with:
           name: visual-review
           retention-days: 7

@@ -36,6 +36,11 @@ for (const route of routes) {
     (entry) =>
       entry.name.includes("/_next/static/chunks/") && entry.name.endsWith(".css"),
   );
+  // A route with no matched chunks would otherwise weigh nothing and pass.
+  if (!scripts.length || !styles.length)
+    throw new Error(
+      `${route}: found ${scripts.length} script and ${styles.length} style chunks; the budget cannot be measured.`,
+    );
   const sum = (items) =>
     items.reduce((total, entry) => total + entry.encodedBodySize, 0);
   const item = {

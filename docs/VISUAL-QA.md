@@ -37,8 +37,16 @@ The canonical screenshot CI uses Windows 2025 and Playwright's pinned Chromium;
 the Linux job tests behavior separately. Baselines are not portable between OSes.
 
 Only for an intentional reviewed visual/content change, run
-`npm run qa:visual-baseline` on the canonical platform. This explicitly replaces
-baseline candidates; inspect their images and Git diff before staging/accepting.
+`npm run qa:visual-baseline` on the canonical platform. It replaces every region
+whose new capture differs from the reviewed image by more than half the pixel
+budget and keeps the reviewed image for the rest, so the Git diff contains the
+redesign and not sub-threshold host drift, and a kept region still has headroom
+in CI. Geometry is always recorded from the new capture, and images of regions
+that are no longer captured are removed. The command lists what it replaced,
+what it kept despite a small difference and by how much: inspect the replaced
+images and the diff before staging/accepting. To recapture one kept region,
+delete its image first. A changed browser version replaces the whole set, and
+`QA_BASELINE_REPLACE_ALL=1` forces that for a deliberate full recapture.
 CI refuses this update command and never auto-accepts changes. Both commands own
 their local production server. The manifest records browser version, geometry,
 coverage and image hashes. Personal screenshots are profile-owned material and
@@ -126,7 +134,7 @@ aligned with the current scripts and protected CI semantics.
   gutter to overlay-scrollbar devices. Focus and scroll position are restored.
 - Image elements must respect their natural aspect ratio unless the card
   explicitly owns a crop. Blog cover height is automatic; gallery thumbnails
-  use `fill` inside fixed-ratio cards.
+  carry their intrinsic dimensions inside fixed-ratio cards.
 - Project art direction uses `<picture>` and Next's `getImageProps`, not a
   post-hydration `src` swap. Carousel images remain inside a stable frame.
 - About photo transforms repeat safely. Desktop galleries use safe centering

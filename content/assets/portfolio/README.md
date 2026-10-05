@@ -17,8 +17,12 @@ portfolio/
 │     ├─ desktop.webp
 │     └─ mobile.webp
 └─ resume/
-   └─ resume.pdf
+   ├─ resume.pdf
+   └─ resume.png
 ```
+
+The two resume files can be generated from `content/resume/resume.json` with
+`npm run resume:build` instead of being exported by hand.
 
 Reference files from `portfolio.json` using root-relative paths such as:
 

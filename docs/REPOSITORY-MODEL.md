@@ -37,6 +37,7 @@ The personal branch owns the author-specific surface:
 portfolio.json
 content/assets/portfolio/
 content/blogs/
+content/resume/
 qa/baselines/personal/
 ```
 
@@ -53,8 +54,8 @@ For reusable code, documentation, schema, QA, or design-system changes:
 1. make the shared change on `develop` or a feature branch based on it;
 2. run the relevant validation;
 3. merge to `main` through the normal protected-branch flow;
-4. bring the updated `main` back into `personal`;
-5. regenerate and validate the personal profile before pushing it.
+4. bring the updated `main` back into `personal` on a branch and open a pull request;
+5. regenerate and validate the personal profile, then merge once both checks pass.
 
 Do not merge the entire `personal` branch into `main`; that would make the author
 profile the starter default.
@@ -62,13 +63,22 @@ profile the starter default.
 ## Personal content workflow
 
 Personal content is intentionally publishable in this repository. Edit the
-normal authoring surface on `personal`, then run:
+normal authoring surface on a branch based on `personal`, then run:
 
 ```bash
 npm run content:build
 npm run content:check
 npm run check
 ```
+
+After editing `content/resume/resume.json`, run `npm run resume:build` as well and
+commit the regenerated PDF, preview and lock with it.
+
+Open a pull request into `personal`. It is the production branch and requires the
+`validate` and `visual-regression` checks, so a change deploys only after both
+pass. Copy that is visible on the homepage changes pixels: capture the affected
+regions with `npm run qa:visual-baseline` on the canonical platform, review them,
+and commit them in the same pull request.
 
 Use `npm run qa:maintainer` before a release or after a visual/runtime change.
 Personal visual baselines belong on `personal` and must be reviewed like the demo
@@ -86,8 +96,9 @@ That is optional and is not part of the current FolioWeave topology.
 
 ## Forks and downstream portfolios
 
-Other users can fork or clone `main`, run `npm run personalize`, and keep their
-own author content in whichever branch/repository model suits them. Pulling
+Other users can fork or clone `main`, create a `personal` branch, and run
+`npm run personalize` there. The core branches accept only the canonical demo
+profile. Pulling
 upstream changes remains a normal Git integration task; preserve author-owned
 inputs when resolving schema/content conflicts and regenerate outputs afterward.
 

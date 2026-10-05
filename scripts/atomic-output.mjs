@@ -1,13 +1,55 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+/**
+ * A surviving lock blocks every later build on purpose; say who holds it and
+ * what is safe to do, instead of surfacing a bare EEXIST.
+ */
+async function describeHeldLock(lockPath) {
+  const owner = await fs
+    .readFile(lockPath, "utf8")
+    .then(JSON.parse)
+    .catch(() => null);
+  let running = false;
+  // A lock this process holds itself was kept on purpose after a failed
+  // rollback; waiting would never release it.
+  if (Number.isInteger(owner?.pid) && owner.pid !== process.pid)
+    try {
+      process.kill(owner.pid, 0);
+      running = true;
+    } catch (error) {
+      // EPERM means the process exists but belongs to someone else.
+      running = error.code === "EPERM";
+    }
+  if (running)
+    return `A content build is already running (pid ${owner.pid}, started ${owner.startedAt}). Wait for it to finish.`;
+  const journal =
+    owner?.transaction &&
+    (await fs.access(path.join(owner.transaction, "journal.json")).then(
+      () => true,
+      () => false,
+    ));
+  return [
+    `A previous content build left ${lockPath}${owner?.pid ? ` (pid ${owner.pid}, started ${owner.startedAt})` : ""}.`,
+    journal
+      ? `It stopped while replacing outputs: recover from ${owner.transaction} as described in docs/ARCHITECTURE.md, then remove the lock.`
+      : "It stopped before any output was replaced: remove the lock and build again.",
+  ].join(" ");
+}
+
 /** Commit a prepared set with rollback. Never use this for author-owned files. */
 export async function commitGeneratedOutputs(root, outputs) {
   root = path.resolve(root);
   const generated = path.join(root, ".generated");
   await fs.mkdir(generated, { recursive: true });
   const lockPath = path.join(generated, "content.lock");
-  const lock = await fs.open(lockPath, "wx");
+  const lock = await fs.open(lockPath, "wx").catch(async (error) => {
+    if (error.code !== "EEXIST") throw error;
+    throw Object.assign(
+      new Error(await describeHeldLock(lockPath), { cause: error }),
+      { code: "EEXIST" },
+    );
+  });
   let transaction;
   const journal = [];
   let recoverable = true;

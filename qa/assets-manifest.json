@@ -6,8 +6,14 @@
     {
       "referencePath": "apple-touch-icon.png",
       "publicPath": "apple-touch-icon.png",
-      "size": 58353,
-      "sha256": "ab6d78f9d1de3161835dc97596a867692b9a7bb6e89344296e0c5afd9620a6f6"
+      "size": 3619,
+      "sha256": "56b8fb561db5b6591f216e469d23870182482d4fe7e43b423eb5097ec0a684fc"
+    },
+    {
+      "referencePath": "external/s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg",
+      "publicPath": "assets/bird-cells-new.svg",
+      "size": 7969,
+      "sha256": "5c10a3a3bb1ee00f5f3e1588b4ac23988e4dd6b4ca81a7d46fab70dc153ece98"
     },
     {
       "referencePath": "assets/clipt_data_architecture-53b0ab3d.webp",
@@ -40,6 +46,60 @@
       "sha256": "6de258e20fbaf17f3375b3e1b0de9a5ad7d9e2acf7423f24ab829870b439455d"
     },
     {
+      "referencePath": "assets/demo/example-resume.pdf",
+      "publicPath": "assets/demo/example-resume.pdf",
+      "size": 925,
+      "sha256": "dcd1bbf33281b89aa737fb620e05caa6ce4c5d7b9c83dc15d1a61248a77e009d"
+    },
+    {
+      "referencePath": "assets/demo/example-resume.svg",
+      "publicPath": "assets/demo/example-resume.svg",
+      "size": 2210,
+      "sha256": "1eeb290f04270acfd1a59797cf16b6eac36b71d237944b787ac8b3f9fef32472"
+    },
+    {
+      "referencePath": "assets/demo/logo-placeholder.svg",
+      "publicPath": "assets/demo/logo-placeholder.svg",
+      "size": 262,
+      "sha256": "353fbbc64a1b448f49032187991a0af5d7a8f66f618b3384e51965dc1bf86e35"
+    },
+    {
+      "referencePath": "assets/demo/photo-01.svg",
+      "publicPath": "assets/demo/photo-01.svg",
+      "size": 439,
+      "sha256": "fd023e593efbd420f2eafb518e40e021eb95ed8e52da0d9d84e961a615f43373"
+    },
+    {
+      "referencePath": "assets/demo/photo-02.svg",
+      "publicPath": "assets/demo/photo-02.svg",
+      "size": 448,
+      "sha256": "2579c528d9062e46209701f316b8bf486ff923c2dd2148c2494bbde3356e5cc3"
+    },
+    {
+      "referencePath": "assets/demo/photo-03.svg",
+      "publicPath": "assets/demo/photo-03.svg",
+      "size": 439,
+      "sha256": "659d0b92c2cee6000942ab57c0998fd0f22896cf855cfea4a2fdba8a5759adc7"
+    },
+    {
+      "referencePath": "assets/demo/photo-04.svg",
+      "publicPath": "assets/demo/photo-04.svg",
+      "size": 448,
+      "sha256": "bc9ace249716db2e2474585720720ed7e14a3b2fc27ecaf5f3d3a79785ff004e"
+    },
+    {
+      "referencePath": "assets/demo/photo-wide.svg",
+      "publicPath": "assets/demo/photo-wide.svg",
+      "size": 446,
+      "sha256": "d0e3bee3c47025801a26641a0bac8b46eae2f1a32b09815745405d644afc76d9"
+    },
+    {
+      "referencePath": "assets/demo/project-placeholder.svg",
+      "publicPath": "assets/demo/project-placeholder.svg",
+      "size": 447,
+      "sha256": "afec86f32c1b98f81e3f3ebbdf2c8239efae44859e3b7768550e3e360005570f"
+    },
+    {
       "referencePath": "assets/district-icon-fad26ad7.png",
       "publicPath": "assets/district-icon-fad26ad7.png",
       "size": 498475,
@@ -52,28 +112,22 @@
       "sha256": "44f4636144e1097ab8c45eb2c0c57b8814d96420a2205e5258e0fa4fd0d02dfc"
     },
     {
-      "referencePath": "external/s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg",
-      "publicPath": "assets/bird-cells-new.svg",
-      "size": 7969,
-      "sha256": "5c10a3a3bb1ee00f5f3e1588b4ac23988e4dd6b4ca81a7d46fab70dc153ece98"
-    },
-    {
       "referencePath": "favicon-16x16.png",
       "publicPath": "favicon-16x16.png",
-      "size": 857,
-      "sha256": "8f76867741f96e90c402106c90f7f821ac409b150985f5602c96e39f20898fe0"
+      "size": 332,
+      "sha256": "05bae7d3bbc76eb8aa0b52525fbce1c0581825961fdce10376ce0c9650eefd31"
     },
     {
       "referencePath": "favicon-32x32.png",
       "publicPath": "favicon-32x32.png",
-      "size": 2640,
-      "sha256": "9060adb30243f5f413902b5d8b2187787415c0786633f1c294f1379e9c6eaced"
+      "size": 618,
+      "sha256": "e5fac082d8bf08f0a54da236474d329aec04cf8be45b573a4a88883e45e454b3"
     },
     {
       "referencePath": "favicon.ico",
       "publicPath": "favicon.ico",
-      "size": 165467,
-      "sha256": "a1ec0dcd2855ed4bcd428e4a98a4d89f960695fea29b7ed0249e6976f7e8d10c"
+      "size": 640,
+      "sha256": "c62d3cb9bc21e455c978cc10cc46e64a0f6e14bd919fd671763e508969f3e995"
     },
     {
       "referencePath": "fonts/caveat-latin-400.woff2",
@@ -262,18 +316,6 @@
       "sha256": "62981321d9a3cc7a61a73792729043703fd6112da86e8ec848bb57f088578757"
     },
     {
-      "referencePath": "gowtham-oleti-resume.jpg",
-      "publicPath": "gowtham-oleti-resume.jpg",
-      "size": 335298,
-      "sha256": "bd1717c47660a769c31d93f8c9f21af0915f6bfae7e5c417ff26511fe6ce1053"
-    },
-    {
-      "referencePath": "gowtham-oleti-resume.pdf",
-      "publicPath": "gowtham-oleti-resume.pdf",
-      "size": 19156,
-      "sha256": "8e44ba7e14033f8fcb83755dd44ee62ade5baeb0ca176b4b9b4c6770f45e532f"
-    },
-    {
       "referencePath": "media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp",
       "publicPath": "media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp",
       "size": 226918,
@@ -298,22 +340,10 @@
       "sha256": "73cebc14a6fd450f8b20903e5f896d936ddce2625910ac433a0257a6facf79b9"
     },
     {
-      "referencePath": "media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp",
-      "publicPath": "media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp",
-      "size": 97756,
-      "sha256": "ad0670a63b2f2ae880b2edb3f8502d280b3f29c2d0b568ac8e896b23706bdbdb"
-    },
-    {
       "referencePath": "media/5c0589_28405806566a41858265a0abb273e381~mv2.webp",
       "publicPath": "media/5c0589_28405806566a41858265a0abb273e381~mv2.webp",
       "size": 56280,
       "sha256": "567802aee44c512c7ed9aee3ef1753aec0ada3058c9ce8ee0f41b8906c817e64"
-    },
-    {
-      "referencePath": "media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
-      "publicPath": "media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp",
-      "size": 47398,
-      "sha256": "f340b3659227d686d044b339245936a62bdb7d229b774757f7288207f3409363"
     },
     {
       "referencePath": "media/5c0589_34bde73293b34a3e820a380e8566259c~mv2.webp",
@@ -376,12 +406,6 @@
       "sha256": "317844a90a89e272db3d56b1c09f9f4fd952eb6297cc2ba8def0c2e830ec393e"
     },
     {
-      "referencePath": "media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
-      "publicPath": "media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp",
-      "size": 207478,
-      "sha256": "a9a2ed8ec5d4ed4d1666e9aba6951e52f63ab5aa906c4d7afae27439d70cb34a"
-    },
-    {
       "referencePath": "media/5c0589_53e686a3ba004bec88d510dc56cbcdda~mv2.webp",
       "publicPath": "media/5c0589_53e686a3ba004bec88d510dc56cbcdda~mv2.webp",
       "size": 123882,
@@ -430,12 +454,6 @@
       "sha256": "c448f4859a8ff8da27ecd5665d97990b23dcf8108f6bda09d98e7a4b0a61f12e"
     },
     {
-      "referencePath": "media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp",
-      "publicPath": "media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp",
-      "size": 140892,
-      "sha256": "4dc188986ab37b02a3400c3d55e6f88ac7d1ec89dac547d304b823d5c0894d8e"
-    },
-    {
       "referencePath": "media/5c0589_7a19e7707f9f47aba23847f56ab6e61a~mv2.webp",
       "publicPath": "media/5c0589_7a19e7707f9f47aba23847f56ab6e61a~mv2.webp",
       "size": 171232,
@@ -458,12 +476,6 @@
       "publicPath": "media/5c0589_8035037444ae49d2bb661f3a5c001786~mv2.webp",
       "size": 68440,
       "sha256": "bee6db05833dba64b43073f84cb465ab1f26e60d392cd01f75976b9282485cdf"
-    },
-    {
-      "referencePath": "media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
-      "publicPath": "media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp",
-      "size": 209564,
-      "sha256": "cb782dd479c699f171ebfbe2bfc043400bb383f8e3ab2fc073d47497f6f416a5"
     },
     {
       "referencePath": "media/5c0589_85c7ce872fc04e6197af87a91819444e~mv2.webp",
@@ -550,12 +562,6 @@
       "sha256": "d42a4de34017c35bd44ff1126993784f7ca72e3c9e26482142cba8edfa9264c4"
     },
     {
-      "referencePath": "media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp",
-      "publicPath": "media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp",
-      "size": 201164,
-      "sha256": "521a6352cd8463ad06260958cfcd0ca1517e348a91738d7534f3ab2328776c8f"
-    },
-    {
       "referencePath": "media/5c0589_e510a0a265744c628a6f5be98d165764~mv2.webp",
       "publicPath": "media/5c0589_e510a0a265744c628a6f5be98d165764~mv2.webp",
       "size": 63514,
@@ -592,12 +598,6 @@
       "sha256": "434732250cac80180f8e91d49030e92f8378d18d680140ce2d04c5797f1cf5a7"
     },
     {
-      "referencePath": "media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp",
-      "publicPath": "media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp",
-      "size": 343294,
-      "sha256": "9b830eb48046eadbb54c49227ef0f4b07e744e3549de592fb18a27eebf673824"
-    },
-    {
       "referencePath": "media/brink-work-desktop.jpg",
       "publicPath": "media/brink-work-desktop.jpg",
       "size": 680426,
@@ -618,8 +618,8 @@
     {
       "referencePath": "ogportfolio-logo.webp",
       "publicPath": "ogportfolio-logo.webp",
-      "size": 5033,
-      "sha256": "47bafe1541b2160cfb74c1f2610f6ce529fb700912554d136d3ddb8767dcf98f"
+      "size": 6670,
+      "sha256": "6b86f390bd17a13fe125d339b5edfa7b4af13776f403bade2452c80d3207de2e"
     }
   ],
   "templateExtras": [

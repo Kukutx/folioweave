@@ -4,9 +4,37 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 180,
     "height": 180
   },
-  "/assets/cred-icon-6de258e2.png": {
-    "width": 512,
-    "height": 512
+  "/assets/demo/example-resume.svg": {
+    "width": 1240,
+    "height": 1754
+  },
+  "/assets/demo/logo-placeholder.svg": {
+    "width": 128,
+    "height": 128
+  },
+  "/assets/demo/photo-01.svg": {
+    "width": 1500,
+    "height": 2000
+  },
+  "/assets/demo/photo-02.svg": {
+    "width": 1220,
+    "height": 1626
+  },
+  "/assets/demo/photo-03.svg": {
+    "width": 1500,
+    "height": 2000
+  },
+  "/assets/demo/photo-04.svg": {
+    "width": 1104,
+    "height": 1626
+  },
+  "/assets/demo/photo-wide.svg": {
+    "width": 2000,
+    "height": 1125
+  },
+  "/assets/demo/project-placeholder.svg": {
+    "width": 2000,
+    "height": 547
   },
   "/assets/district-icon-fad26ad7.png": {
     "width": 1014,
@@ -16,10 +44,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1024,
     "height": 1024
   },
-  "/gowtham-oleti-resume.jpg": {
-    "width": 1489,
-    "height": 2105
-  },
   "/media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp": {
     "width": 2000,
     "height": 1744
@@ -27,14 +51,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
   "/media/5c0589_2114ae1b4c2a4844a205efd5c32caf39~mv2.webp": {
     "width": 914,
     "height": 1626
-  },
-  "/media/5c0589_276c5292e97441c89ba57bded4b74fea~mv2.webp": {
-    "width": 2000,
-    "height": 1125
-  },
-  "/media/5c0589_2b7dce66597e49978dc260479073bd5d~mv2.webp": {
-    "width": 2000,
-    "height": 547
   },
   "/media/5c0589_34bde73293b34a3e820a380e8566259c~mv2.webp": {
     "width": 1125,
@@ -72,10 +88,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 964,
     "height": 1714
   },
-  "/media/5c0589_50f17c427f3d47a890204bec7d6b5b2a~mv2.webp": {
-    "width": 1500,
-    "height": 2000
-  },
   "/media/5c0589_543c0982737648b7ba00cf8f05a23000~mv2.webp": {
     "width": 2000,
     "height": 1250
@@ -96,10 +108,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1264,
     "height": 2000
   },
-  "/media/5c0589_77fafd7e8f0545bca52b40171db03280~mv2.webp": {
-    "width": 1104,
-    "height": 1626
-  },
   "/media/5c0589_7a30aeef55604850b2cb9994e87dd196~mv2.webp": {
     "width": 2000,
     "height": 1206
@@ -111,10 +119,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
   "/media/5c0589_8035037444ae49d2bb661f3a5c001786~mv2.webp": {
     "width": 2000,
     "height": 1206
-  },
-  "/media/5c0589_8181afcd1a6041a2bd8abbca5dea28c2~mv2.webp": {
-    "width": 1220,
-    "height": 1626
   },
   "/media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp": {
     "width": 1920,
@@ -156,10 +160,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1008,
     "height": 1714
   },
-  "/media/5c0589_e35aa4884b1a47d388a577b03cb7b4ef~mv2.webp": {
-    "width": 1500,
-    "height": 2000
-  },
   "/media/5c0589_e510a0a265744c628a6f5be98d165764~mv2.webp": {
     "width": 2000,
     "height": 1744
@@ -184,10 +184,6 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1078,
     "height": 1916
   },
-  "/media/5c0589_ffd5758e00f9438abc3f9fe91512d589~mv2.webp": {
-    "width": 1498,
-    "height": 2000
-  },
   "/media/brink-work-desktop.jpg": {
     "width": 2400,
     "height": 1447
@@ -201,7 +197,7 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "height": 1024
   },
   "/ogportfolio-logo.webp": {
-    "width": 77,
-    "height": 85
+    "width": 1200,
+    "height": 630
   }
 };

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image, { getImageProps } from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Award, MessageSquareText } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "../motion-text";
 import { MediaCarousel } from "../media/media-carousel";
@@ -346,7 +346,9 @@ function ProjectMedia({ project }: { project: PortfolioProject }) {
   return <WorkImage image={project.media.image} projectName={project.name} />;
 }
 
-function ProjectCard({
+// The hover preview lives in WorkSection state and follows the pointer; without
+// memo every card, carousel included, would re-render on each mousemove.
+const ProjectCard = memo(function ProjectCard({
   project,
   mobile,
   setPreview,
@@ -468,7 +470,7 @@ function ProjectCard({
       </div>
     </motion.div>
   );
-}
+});
 
 export function WorkSection() {
   const mobile = useMobileViewport();

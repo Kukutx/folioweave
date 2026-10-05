@@ -34,7 +34,7 @@ Create a project from the repository and use the standard Next.js preset. No Fol
 
 Recommended settings:
 
-- Production branch: `personal` for the maintained personal site in this repository; use `main` only when deploying the reusable starter/demo profile.
+- Production branch: `personal` for the maintained personal site in this repository; use `main` only when deploying the reusable starter/demo profile. Protect the production branch with the `validate` and `visual-regression` required checks: Vercel deploys every deployable push to it, so the checks must gate the merge rather than report afterwards.
 - Build command: the normal Next.js build (`npm run build`).
 - Install command: `npm ci`.
 - Node.js: the version declared in `package.json`.

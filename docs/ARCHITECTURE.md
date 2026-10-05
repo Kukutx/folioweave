@@ -5,8 +5,9 @@ owned author content. It does not maintain legacy runtime configuration formats.
 
 ## One authoring and build workflow
 
-Edit `portfolio.json`, Markdown in `content/blogs/`, and original files in
-`content/assets/portfolio/`. URLs remain `/portfolio/...`; source filesystem paths
+Edit `portfolio.json`, Markdown in `content/blogs/`, original files in
+`content/assets/portfolio/`, and optionally the resume source in
+`content/resume/`. URLs remain `/portfolio/...`; source filesystem paths
 are not browser URLs. `public/portfolio/` is ignored, generated output, never an
 authoring directory.
 
@@ -41,6 +42,29 @@ inputs and runs this same atomic publication pipeline without restarting Next.js
 Invalid edits keep the last valid generated output and report the validation error.
 The publication lock remains authoritative, so do not run competing manual writers
 against an active content rebuild.
+
+### Resume source
+
+The resume is the one author asset that is derived rather than supplied.
+`content/resume/resume.json` is validated against `resume.schema.json` and
+rendered by a pure function to a self-contained HTML document;
+`npm run resume:build` prints that document with the pinned Chromium into the
+PDF and preview that `site.resume` references. Rendering needs a browser, which
+deployment builds do not have, so the outputs are committed and
+`content/resume/resume.lock.json` records the fingerprint of the rendered HTML
+and render settings together with the output hashes. `content:check` recomputes
+the fingerprint without a browser and fails closed when the source, the
+template, the configured targets, or the committed bytes disagree, and when a
+lock or a misnamed source is present without `resume.json`. The build writes
+only canonical `/portfolio/` targets, replaces only files recorded in the lock
+unless told to adopt them, and renders only when the output is stale.
+
+The template uses no positioned or transformed boxes: those paint after normal
+flow, and a PDF text layer follows paint order. Keeping every box in flow is what
+keeps the extracted text in reading order. Text is laid out by glyph advance
+width alone, and the build refuses to render without Arial-compatible font
+metrics, when content exceeds one A4 page, or when it runs past the right
+margin: each of those would change the document without changing its source.
 
 If a process is killed during output replacement, inspect
 `.generated/content-transaction-*` before rebuilding. Its `previous-*` entries
@@ -130,8 +154,9 @@ including the previous inline priority. Its original backdrop blur is preserved
 on an independent `::before` layer, not on the moving image subtree.
 The open modal retains its opacity layer for the fade lifecycle. Do not promote
 individual images permanently: fractional rasterization changes their pixels.
-Before image decode, source dimensions reserve the fitted box; after decode,
-intrinsic sizing retains the original optimized-image rounding and appearance.
+The lightbox image box follows the authored dimensions and aspect ratio from the
+media manifest before and after decode, never the raster width the optimizer
+happened to select.
 
 ## Visual ownership and verification
 
