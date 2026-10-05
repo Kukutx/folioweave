@@ -2,6 +2,7 @@ import "server-only";
 import { siteConfig } from "@/config/site";
 import { resolvePublishedRoutes } from "@/portfolio/publication-policy.mjs";
 import { markdownPosts } from "./posts.generated";
+import { buildTagIndex } from "./taxonomy.mjs";
 import { customBlogPosts } from "./custom-posts.generated";
 import type { BlogPostSummary, CustomBlogPost, MarkdownBlogPost } from "./types";
 
@@ -38,5 +39,19 @@ export function getBlogIndexPosts(): BlogPostSummary[] {
   );
 }
 
+/** Tags of the published posts, each with its posts, newest first. */
+export function getBlogTags() {
+  return buildTagIndex(getBlogIndexPosts());
+}
+
+export function getBlogTag(slug: string) {
+  return getBlogTags().find((tag) => tag.slug === slug);
+}
+
 export { formatBlogDate } from "./format";
-export type { BlogPostSummary, CustomBlogPost, MarkdownBlogPost } from "./types";
+export type {
+  BlogHeading,
+  BlogPostSummary,
+  CustomBlogPost,
+  MarkdownBlogPost,
+} from "./types";

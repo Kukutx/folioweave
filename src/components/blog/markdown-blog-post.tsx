@@ -3,11 +3,17 @@ import Image from "next/image";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft } from "lucide-react";
-import { formatBlogDate, type MarkdownBlogPost } from "@/blog";
+import { formatBlogDate, type BlogHeading, type MarkdownBlogPost } from "@/blog";
 import { siteConfig, siteCopyright } from "@/config/site";
 import { PortfolioCalendarIcon, PortfolioClockIcon } from "@/components/portfolio-icons";
 import { BlogPostingJsonLd } from "./blog-json-ld";
+import { BlogTags } from "./blog-tags";
+import { CopyCodeButton } from "./copy-code-button";
+import { rehypeHeadingIds } from "./heading-ids";
 import { mediaDimensions } from "@/portfolio/media";
+
+// An outline only helps once there is enough article to get lost in.
+const OUTLINE_MIN_HEADINGS = 3;
 
 const markdownComponents: Components = {
   a({ href, children, ...props }) {
@@ -36,7 +42,33 @@ const markdownComponents: Components = {
       />
     );
   },
+  pre({ children }) {
+    return (
+      <div className="code-block">
+        <pre>{children}</pre>
+        <CopyCodeButton />
+      </div>
+    );
+  },
 };
+
+function ArticleOutline({ headings }: { headings: readonly BlogHeading[] }) {
+  if (headings.length < OUTLINE_MIN_HEADINGS) return null;
+  return (
+    <nav className="blog-outline" aria-labelledby="blog-outline-title">
+      <p className="blog-outline-title" id="blog-outline-title">
+        On this page
+      </p>
+      <ol>
+        {headings.map((item) => (
+          <li className={item.depth === 3 ? "blog-outline-sub" : undefined} key={item.id}>
+            <a href={`#${item.id}`}>{item.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
 
 export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
   return (
@@ -68,15 +100,7 @@ export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
             ) : null}
           </h1>
           <p className="writing-subtitle">{post.description}</p>
-          {post.tags.length ? (
-            <div className="blog-tags blog-post-tags" aria-label="Article tags">
-              {post.tags.map((tag) => (
-                <span className="blog-tag" key={tag}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          ) : null}
+          <BlogTags tags={post.tags} className="blog-post-tags" label="Article tags" />
         </header>
         {post.cover ? (
           <Image
@@ -88,8 +112,13 @@ export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
             priority
           />
         ) : null}
+        <ArticleOutline headings={post.headings} />
         <div className="blog-post-content markdown-blog-content">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[[rehypeHeadingIds, post.headings]]}
+            components={markdownComponents}
+          >
             {post.content}
           </ReactMarkdown>
         </div>

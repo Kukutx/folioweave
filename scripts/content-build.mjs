@@ -17,6 +17,7 @@ import {
   publishedCustomBlogPosts,
 } from "../src/blog/content-core.mjs";
 import { resolvePublishedRoutes } from "../src/portfolio/publication-policy.mjs";
+import { taxonomyRoutes } from "../src/blog/taxonomy.mjs";
 
 import { prepareContract } from "./generate-portfolio-contract.mjs";
 import { commitGeneratedOutputs } from "./atomic-output.mjs";
@@ -51,7 +52,12 @@ export async function prepareContent(root = projectRoot, candidate) {
     custom,
     config.features.demoRoutes,
   );
-  const blogRoutes = [...livePosts, ...liveCustom].map((post) => post.href);
+  // Tag pages exist because posts carry tags; deriving them here also rejects
+  // two tags that would collapse into one page.
+  const blogRoutes = [
+    ...[...livePosts, ...liveCustom].map((post) => post.href),
+    ...taxonomyRoutes([...livePosts, ...liveCustom]),
+  ];
   validatePublicationLinks(config, blogRoutes);
   const routes = resolvePublishedRoutes({
     demoRoutesEnabled: config.features.demoRoutes,

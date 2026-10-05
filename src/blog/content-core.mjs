@@ -1,5 +1,6 @@
 import { resolvePublishedRoutes } from "../portfolio/publication-policy.mjs";
 import { requireImagePath } from "../portfolio/content-policy.mjs";
+import { assignHeadingIds } from "./taxonomy.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
@@ -117,6 +118,31 @@ function nodeText(node) {
   return text.trim();
 }
 
+/** A heading as the reader sees it, inline code included. */
+function headingText(node) {
+  let text = "";
+  walk(node, (current) => {
+    if (
+      (current.type === "text" || current.type === "inlineCode") &&
+      typeof current.value === "string"
+    )
+      text += current.value;
+  });
+  return text.replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Sections and subsections in reading order: the levels a table of contents
+ * lists. Footnotes render after the article, outside its outline.
+ */
+function collectHeadings(node, headings = []) {
+  if (node.type === "footnoteDefinition") return headings;
+  if (node.type === "heading" && (node.depth === 2 || node.depth === 3))
+    headings.push({ depth: node.depth, text: headingText(node) });
+  for (const child of node.children ?? []) collectHeadings(child, headings);
+  return headings;
+}
+
 function analyzeMarkdown(content, label, issues, warnings) {
   const tree = parseMarkdown(content);
   const definitions = new Map();
@@ -175,7 +201,12 @@ function analyzeMarkdown(content, label, issues, warnings) {
       node.type === "link" ? node.url : definitions.get(node.identifier),
     )
     .filter(Boolean);
-  return { images, links, readingMinutes };
+  return {
+    images,
+    links,
+    readingMinutes,
+    headings: assignHeadingIds(collectHeadings(tree)),
+  };
 }
 
 /**
@@ -268,7 +299,7 @@ export function loadMarkdownBlogPosts({ blogsDir, reservedSlugs = [] }) {
     if (!parsed.content.trim())
       issues.push(`${fileName}: blog body must not be empty.`);
 
-    let analysis = { images: [], links: [], readingMinutes: 1 };
+    let analysis = { images: [], links: [], readingMinutes: 1, headings: [] };
     try {
       analysis = analyzeMarkdown(parsed.content, label, issues, warnings);
     } catch (error) {
@@ -289,6 +320,7 @@ export function loadMarkdownBlogPosts({ blogsDir, reservedSlugs = [] }) {
       readingMinutes: analysis.readingMinutes,
       kind: "markdown",
       content: parsed.content.trim(),
+      headings: analysis.headings,
       draft: draft === true,
       bodyImages: analysis.images,
       bodyLinks: analysis.links,
