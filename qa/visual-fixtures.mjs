@@ -86,7 +86,7 @@ try {
   // same browser contract as the rest of QA.
   browser = await chromium.launch({ executablePath: resolveChromePath(), headless: true, args: ["--disable-gpu", "--no-sandbox"] });
   for (const width of [390, 820, 1440]) {
-    const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
+    const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "reduce", permissions: ["clipboard-read", "clipboard-write"] });
     await installServiceFixtures(context, config, base);
     const page = await context.newPage();
     const errors = [];
@@ -153,6 +153,46 @@ try {
     const markdownImage = page.locator(".markdown-blog-image");
     await markdownImage.scrollIntoViewIfNeeded();
     await markdownImage.evaluate((img) => img.decode());
+    // Reading aids: the outline reaches every section, tags lead to their
+    // pages, and a code block can be copied.
+    const outline = page.locator(".blog-outline a");
+    assert.deepEqual(
+      await outline.evaluateAll((links) => links.map((link) => {
+        const target = document.getElementById(link.hash.slice(1));
+        return [link.textContent, target?.tagName, target?.firstChild?.textContent];
+      })),
+      [["Responsive content", "H2", "Responsive content"], ["Wide tables", "H3", "Wide tables"], ["Long code lines", "H2", "Long code lines"]],
+      "article outline must reach every section",
+    );
+    assert.deepEqual(
+      await page.locator(".heading-anchor").evaluateAll((anchors) => anchors.map((anchor) => [anchor.getAttribute("href"), anchor.parentElement.id])),
+      [["#responsive-content", "responsive-content"], ["#wide-tables", "wide-tables"], ["#long-code-lines", "long-code-lines"]],
+      "every section must carry its own anchor",
+    );
+    await outline.first().click();
+    await page.waitForFunction(() => {
+      const top = document.getElementById("responsive-content")?.getBoundingClientRect().top;
+      return location.hash === "#responsive-content" && top >= 0 && top < innerHeight / 2;
+    });
+    assert.deepEqual(
+      await page.locator(".blog-post-tags a.blog-tag").evaluateAll((tags) => tags.map((tag) => tag.getAttribute("href"))),
+      ["/blogs/tag/visual", "/blogs/tag/fixture"],
+      "article tags must link to their tag pages",
+    );
+    const codeBlock = page.locator(".code-block");
+    await codeBlock.scrollIntoViewIfNeeded();
+    await codeBlock.hover();
+    await codeBlock.locator(".code-copy-button").click();
+    await page.waitForFunction(() => document.querySelector(".code-copy-button")?.textContent === "Copied");
+    assert.equal(
+      await page.evaluate(() => navigator.clipboard.readText()),
+      (await codeBlock.locator("pre").textContent()).trimEnd(),
+      "copied code must match the code block, without its closing line break",
+    );
+    await page.screenshot({ path: path.join(screens, `${width}-blog-code.png`) });
+    await outline.first().scrollIntoViewIfNeeded();
+    await page.locator("#responsive-content").hover();
+    await page.screenshot({ path: path.join(screens, `${width}-blog-outline.png`) });
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
     assert.equal(overflow, false, "fixture page horizontal overflow");
     assert.deepEqual(errors, []);

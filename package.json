@@ -71,7 +71,7 @@
     "audit:prod": "npm audit --omit=dev",
     "qa:visual-compare": "node qa/run-with-server.mjs qa:regression-check",
     "personalize": "node scripts/personalize.mjs",
-    "content:test": "node --test qa/content-core.test.mjs qa/publication-policy.test.mjs qa/content-pipeline.test.mjs qa/route-contract.test.mjs qa/weather.test.mjs qa/visual-contract.test.mjs qa/resume-core.test.mjs",
+    "content:test": "node --test qa/content-core.test.mjs qa/taxonomy.test.mjs qa/publication-policy.test.mjs qa/content-pipeline.test.mjs qa/route-contract.test.mjs qa/weather.test.mjs qa/visual-contract.test.mjs qa/resume-core.test.mjs",
     "content:check": "npm run content:test && node scripts/portfolio-check.mjs",
     "content:build": "node scripts/content-build.mjs",
     "resume:build": "node scripts/resume-build.mjs",

@@ -49,7 +49,8 @@ While `npm run dev` is running, valid changes to profile content, assets, Markdo
 - Responsive portfolio for desktop, tablet, and mobile
 - Data-driven projects, photography, About content, resume, links, and feature switches
 - One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order
-- Markdown Blog with automatic routes, index, reading time, metadata, sitemap, and drafts
+- Markdown Blog with automatic routes, index, tag pages, reading time, metadata, sitemap, and drafts
+- Article outline, linkable section headings, and copyable code blocks
 - Motion-rich Hero, Work, Photography, Contact, Designer Cursors, camera, gallery/lightbox, and resume printer
 - Server-first composition with focused client interaction islands
 - Accessibility-minded keyboard/focus behavior and live reduced-motion support

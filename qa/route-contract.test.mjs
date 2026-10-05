@@ -56,7 +56,8 @@ test("bidirectional contract rejects missing registration, guard, page, and cust
     await fs.mkdir(path.dirname(file), { recursive: true });
     await fs.writeFile(file, text);
   };
-  for (const route of ["", "blogs", "blogs/[slug]"]) await write(route);
+  for (const route of ["", "blogs", "blogs/[slug]", "blogs/tag/[tag]"])
+    await write(route);
   await validateRouteContract(root, [], []);
   await assert.rejects(
     validateRouteContract(root, [], [{ slug: "forgotten" }]),

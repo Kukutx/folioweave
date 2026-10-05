@@ -10,11 +10,11 @@ Use this frontmatter shape:
 
 ```md
 ---
-title: "How I Built My App"}
+title: "How I Built My App"
 subtitle: "Optional secondary title"
 date: "2026-09-07"
 description: "A short summary used on the blog index and in SEO metadata."
-cover: "/portfolio/blogs/my-app/cover.webp"}
+cover: "/portfolio/blogs/my-app/cover.webp"
 tags:
   - Engineering
   - AI
@@ -31,6 +31,9 @@ code fences, tables, task lists, and GitHub-flavored Markdown.
 
 Required frontmatter: `title`, `date`, `description`.
 Optional frontmatter: `subtitle`, `cover`, `tags`, `draft`.
+
+Every tag gets a page of its own listing the posts that share it: `For Designers` becomes `/blogs/tag/for-designers`, and the tags on cards and articles link there. Spell a tag the same way everywhere; `Design` and `design` would need the same page, so the build rejects the pair.
+`##` and `###` headings get an anchor readers can link to, and an article with three or more of them opens with an "On this page" outline. Code fences get a copy button.
 
 The frontmatter `title` is the article's one and only H1. Start body sections at `##`; a Markdown `# Heading` in the body is rejected.
 `cover` and every Markdown image must use a canonical local image path without query parameters, fragments, or percent-encoded aliases. Put author files under `content/assets/portfolio/` and reference them as `/portfolio/...`; other shared assets live under `public/`. Remote and protocol-relative images are rejected.

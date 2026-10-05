@@ -12,6 +12,7 @@ import {
   resolveDisabledDemoRoutes,
   resolvePublishedRoutes,
 } from "../src/portfolio/publication-policy.mjs";
+import { taxonomyRoutes } from "../src/blog/taxonomy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const blogsDir = path.join(root, "content", "blogs");
@@ -38,6 +39,7 @@ function loadBlogRoutes() {
   return {
     markdown: markdown.map((post) => post.href).sort(),
     custom: custom.map((post) => post.href).sort(),
+    derived: taxonomyRoutes([...markdown, ...custom]),
   };
 }
 
@@ -46,8 +48,8 @@ export async function markdownBlogRoutes() {
 }
 
 export async function publishedBlogRoutes() {
-  const { markdown, custom } = loadBlogRoutes();
-  return [...new Set([...markdown, ...custom])].sort();
+  const { markdown, custom, derived } = loadBlogRoutes();
+  return [...new Set([...markdown, ...custom, ...derived])].sort();
 }
 
 export async function publicationRoutes() {
