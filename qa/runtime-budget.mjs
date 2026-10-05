@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import { chromium } from "playwright-core";
+import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
 // Synthetic regression budgets, NOT field CWV / INP or a device benchmark.
@@ -320,12 +321,9 @@ try {
                 requestAnimationFrame(step);
               }),
           );
-          const photo = page.getByRole("button", {
-            name: "Open photograph 1 of",
-            exact: false,
-          });
+          const photo = await firstPhotograph(page);
           await page.evaluate(() => performance.mark("qa:gallery"));
-          if (await photo.count())
+          if (photo)
             for (let i = 0; i < 3; i++) {
               await photo.scrollIntoViewIfNeeded();
               // Interact with the loaded photograph, not a still-loading lazy-image

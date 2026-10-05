@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { chromium, firefox, webkit } from "playwright-core";
+import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
 const screenshots = "qa/screens/browsers";
@@ -42,11 +43,8 @@ try {
           await page.keyboard.press("Escape");
           assert.equal(await menu.getAttribute("aria-expanded"), "false");
         }
-        const photo = page.getByRole("button", {
-          name: "Open photograph 1 of",
-          exact: false,
-        });
-        if (await photo.count()) {
+        const photo = await firstPhotograph(page);
+        if (photo) {
           await photo.scrollIntoViewIfNeeded();
           await photo.focus();
           await page.evaluate(() =>
