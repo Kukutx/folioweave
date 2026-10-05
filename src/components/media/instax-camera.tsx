@@ -4,7 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Camera as CameraIcon, Download } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { siteConfig } from "@/config/site";
 import { useManagedTimeouts } from "@/hooks/use-managed-timeouts";
+
+// Saved photos are named after the site owner, not after the starter's demo.
+const downloadPrefix = `clickedby${siteConfig.identity.initials.toLowerCase().replace(/[^a-z0-9]/g, "") || "me"}`;
 
 export function InstaxCamera({ onPrint }: { onPrint?: () => void }) {
   const video = useRef<HTMLVideoElement>(null),
@@ -112,7 +116,7 @@ export function InstaxCamera({ onPrint }: { onPrint?: () => void }) {
         });
       g.fillText(`${date} • ${time}`, w / 2, h - 50);
       const a = document.createElement("a");
-      a.download = `clickedbyog-${Date.now()}.webp`;
+      a.download = `${downloadPrefix}-${Date.now()}.webp`;
       a.href = out.toDataURL("image/webp");
       a.click();
     };
