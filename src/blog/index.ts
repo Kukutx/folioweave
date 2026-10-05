@@ -26,7 +26,9 @@ export function getPublishedCustomBlogPosts(): CustomBlogPost[] {
       demoRoutesEnabled: siteConfig.features.demoRoutes,
     }),
   );
-  return customBlogPosts.filter((post) => routes.has(post.href));
+  // Typed here because a profile without custom posts generates an empty list.
+  const posts: CustomBlogPost[] = customBlogPosts;
+  return posts.filter((post) => routes.has(post.href));
 }
 
 export function getCustomBlogPost(slug: string): CustomBlogPost | undefined {
