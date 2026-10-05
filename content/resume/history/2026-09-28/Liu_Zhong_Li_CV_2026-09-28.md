@@ -2,7 +2,7 @@
 
 Full-Stack Software Developer
 
-+39 347 629 6739 · Calusco d'Adda (BG), Italia  
++39 347 629 6739 · Calusco d'Adda (BG), Italia\
 [Email](mailto:liuzhongli.ascii@gmail.com) · [LinkedIn](https://www.linkedin.com/in/zhongliliu) · [GitHub](https://github.com/Kukutx)
 
 ## Profilo
