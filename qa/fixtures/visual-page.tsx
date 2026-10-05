@@ -43,7 +43,12 @@ export default function VisualFixtures() {
           cover: portrait,
           tags: ["visual", "fixture"],
           readingMinutes: 1,
-          content: `## Responsive content\n\n![Portrait test artwork](${portrait})\n\n| Column | Value |\n| --- | --- |\n| Image | Portrait |\n\n\`\`\`ts\nconst example = 'A deliberately long line to exercise code block horizontal scrolling without overflowing the page';\n\`\`\``,
+          headings: [
+            { depth: 2, text: "Responsive content", id: "responsive-content" },
+            { depth: 3, text: "Wide tables", id: "wide-tables" },
+            { depth: 2, text: "Long code lines", id: "long-code-lines" },
+          ],
+          content: `## Responsive content\n\n![Portrait test artwork](${portrait})\n\n### Wide tables\n\n| Column | Value |\n| --- | --- |\n| Image | Portrait |\n\n## Long code lines\n\n\`\`\`ts\nconst example = 'A deliberately long line to exercise code block horizontal scrolling without overflowing the page';\n\`\`\``,
         }}
       />
     </main>

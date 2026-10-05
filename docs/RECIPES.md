@@ -73,7 +73,7 @@ draft: false
 Write normal Markdown here.
 ```
 
-With `npm run dev` already running, saving the file automatically rebuilds the article index and route. It becomes `/blogs/building-my-app`; `/blogs` appears automatically as soon as at least one post is published.
+With `npm run dev` already running, saving the file automatically rebuilds the article index and route. It becomes `/blogs/building-my-app`; `/blogs` appears automatically as soon as at least one post is published. Each tag also gets its own page, here `/blogs/tag/engineering` and `/blogs/tag/product`.
 
 Put article media under a portfolio asset folder, for example:
 

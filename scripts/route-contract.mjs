@@ -2,8 +2,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
 
-// These routes own their publication rules (home, blog index, generated posts).
-const contentRoutes = new Set(["/", "/blogs", "/blogs/[slug]"]);
+// These routes own their publication rules (home, blog index, generated
+// posts, and the tag pages derived from them).
+const contentRoutes = new Set([
+  "/",
+  "/blogs",
+  "/blogs/[slug]",
+  "/blogs/tag/[tag]",
+]);
 
 export function pageRoute(filename) {
   const segments = filename.replaceAll("\\", "/").split("/").slice(0, -1);

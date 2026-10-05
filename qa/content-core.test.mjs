@@ -47,6 +47,24 @@ test("Markdown posts are normalized, filtered, and sorted", async () => {
   );
 });
 
+test("Markdown posts carry the outline of their sections", async () => {
+  await withBlogs(
+    {
+      "outline.md": `---\ntitle: Outline\ndate: 2026-01-01\ndescription: Outline post\n---\n\n## Using \`fetch\` *well*\n\nText.[^1]\n\n### Details\n\n#### Too deep\n\n> ## Details\n\n[^1]: Note.\n\n    ## Inside a footnote`,
+    },
+    (blogsDir) => {
+      const [published] = publishedMarkdownBlogPosts(
+        loadMarkdownBlogPosts({ blogsDir }).posts,
+      );
+      assert.deepEqual(published.headings, [
+        { depth: 2, text: "Using fetch well", id: "using-fetch-well" },
+        { depth: 3, text: "Details", id: "details" },
+        { depth: 2, text: "Details", id: "details-2" },
+      ]);
+    },
+  );
+});
+
 test("Markdown validation rejects ambiguous routes and unsafe content", async () => {
   await withBlogs(
     {
