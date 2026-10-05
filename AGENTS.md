@@ -18,3 +18,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Temporary QA state must stay under ignored project-local paths such as `.generated/` or `qa/screens/` and must be removed by the task that creates it after successful verification.
 - `public/portfolio/` is generated, ignored publication output, not an authoring/source boundary.
 - `npm run content:build` enforces the branch/profile publication boundary. Do not bypass that guard to make a check pass.
+- `personal` is the protected production branch. Change it through a pull request and merge only when `validate` and `visual-regression` pass; never push around a failing check.
+- When `content/resume/resume.json` exists it is the only source of the resume. After editing it run `npm run resume:build` and commit the source, lock, PDF and preview together; never hand-edit the generated PDF or preview.

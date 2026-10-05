@@ -12,6 +12,7 @@ author paths:
 portfolio.json
 content/assets/portfolio/
 content/blogs/
+content/resume/
 qa/baselines/personal/
 ```
 
@@ -23,9 +24,12 @@ Before an upgrade:
 ```bash
 git status
 git fetch origin
-git switch personal
+git switch -c sync/main personal
 git merge origin/main
 ```
+
+`personal` is protected, so the sync lands through a pull request once
+`validate` and `visual-regression` pass.
 
 Keep a normal backup branch before a large integration. Preserve the intent of
 the author-owned files when conflicts occur. If `portfolio.schema.json` changed,
@@ -36,6 +40,10 @@ to the new schema deliberately, then regenerate:
 npm run content:build
 npm run content:check
 ```
+
+If `content:check` reports a stale resume, the shared resume template changed:
+run `npm run resume:build`, review the regenerated PDF and preview, and commit
+them with the sync.
 
 ## Fork or downstream repository
 

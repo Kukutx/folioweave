@@ -9,6 +9,7 @@ privacy boundaries.
 | App, schema, scripts, QA, docs             | reusable implementation        | shared improvements       |
 | portfolio.json                             | governance/demo-portfolio.json | personal profile          |
 | content/assets/portfolio/, content/blogs/  | shared README files only       | author media and posts    |
+| content/resume/                            | README and example source only | resume source and lock    |
 | Generated profile, media and article files | regenerated from demo          | regenerated from personal |
 | public/portfolio/                          | generated, ignored             | generated, ignored        |
 
@@ -31,7 +32,13 @@ export mechanism.
 not complete until both checks pass. Pull requests that change only the explicitly
 maintained documentation paths keep those required contexts but use the CI
 lightweight path; every unknown or executable/content/configuration path fails
-closed to the full suites. Direct `personal` pushes always run the full suites.
+closed to the full suites.
+
+`personal` is the production branch, so it carries the same two required checks.
+Author changes and `main` syncs reach it through a pull request and deploy when
+that pull request merges; a push that has not passed `validate` and
+`visual-regression` is rejected instead of going live. The run triggered by the
+merge itself re-validates the deployed revision with the full suites.
 
 All content producers use `npm run content:build`. Publication re-checks the
 branch/profile boundary immediately before generated outputs are replaced, so the
