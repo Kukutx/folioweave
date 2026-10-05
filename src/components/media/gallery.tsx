@@ -86,6 +86,8 @@ export function PhotoCard({
   const ref = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
+  // Fade the photo in once decoded instead of flashing the frame colour.
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (hoverEnabled || !tiltRef.current) return;
     tiltRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
@@ -111,10 +113,14 @@ export function PhotoCard({
           ? "(max-width: 767px) 70vw, 25vw"
           : "(max-width: 767px) 100vw, 33vw"
       }
+      onLoad={() => setLoaded(true)}
       initial={false}
-      animate={{ opacity: 1, scale: hoverEnabled && hover ? 1.1 : 1 }}
+      animate={{
+        opacity: loaded ? 1 : 0,
+        scale: hoverEnabled && hover ? 1.1 : 1,
+      }}
       transition={{
-        opacity: { duration: 0.3 },
+        opacity: { duration: reducedMotion ? 0 : 0.3 },
         scale: { duration: reducedMotion ? 0 : 0.4, ease: "easeOut" },
       }}
       style={{
@@ -204,7 +210,7 @@ export function PhotoCard({
             width: "100%",
             height: "100%",
             borderRadius: isPolaroid ? 0 : "inherit",
-            backgroundColor: "#000",
+            backgroundColor: "var(--ui-bg-secondary)",
             position: "relative",
             overflow: "hidden",
           }}
