@@ -5,6 +5,7 @@ import { resolveChromePath } from "./chrome.mjs";
 import { PNG } from "pngjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 import { verifyVisualBaseline } from "./visual-contract.mjs";
+import { firstPhotograph } from "./profile.mjs";
 
 // Capture real content, including lazy images. No images or sections are masked.
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
@@ -118,12 +119,9 @@ try {
       await page.waitForTimeout(1200);
       await page.screenshot({ path: `${directory}/${width}-${id}.png` });
     }
-    const photo = page.getByRole("button", {
-      name: "Open photograph 1 of",
-      exact: false,
-    });
+    const photo = await firstPhotograph(page);
     let lightbox = null;
-    if (await photo.count()) {
+    if (photo) {
       await photo.scrollIntoViewIfNeeded();
       await photo.focus();
       await page.waitForTimeout(300);
@@ -326,6 +324,7 @@ try {
       directory,
       browserVersion: browser.version(),
       update: updateRegression,
+      replaceAll: process.env.QA_BASELINE_REPLACE_ALL === "1",
     });
   }
   passed = true;

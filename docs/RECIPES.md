@@ -73,7 +73,7 @@ draft: false
 Write normal Markdown here.
 ```
 
-With `npm run dev` already running, saving the file automatically rebuilds the article index and route. It becomes `/blogs/building-my-app`; `/blogs` appears automatically as soon as at least one post is published.
+With `npm run dev` already running, saving the file automatically rebuilds the article index and route. It becomes `/blogs/building-my-app`; `/blogs` appears automatically as soon as at least one post is published. Each tag also gets its own page, here `/blogs/tag/engineering` and `/blogs/tag/product`.
 
 Put article media under a portfolio asset folder, for example:
 
@@ -115,7 +115,7 @@ For an editorial heading with highlights:
 
 ## Replace the resume
 
-Put the preview and PDF under `content/assets/portfolio/resume/`, then set:
+Point `portfolio.json` at the two resume files and keep `features.resume: true`:
 
 ```json
 {
@@ -129,7 +129,20 @@ Put the preview and PDF under `content/assets/portfolio/resume/`, then set:
 }
 ```
 
-Keep `features.resume: true`.
+Then choose how those files are produced.
+
+**Generate them from one source (recommended).** Write the resume once and let FolioWeave render both the PDF and the printer preview:
+
+```bash
+cp content/resume/resume.example.json content/resume/resume.json
+npm run resume:build
+```
+
+Edit `content/resume/resume.json`, run `npm run resume:build`, and commit the source, `resume.lock.json`, the PDF and the preview together. With `npm run dev` running, saving the source rebuilds them for you. A build whose resume files no longer match the source fails `content:check`, so the site cannot publish an outdated resume.
+
+The build never overwrites a file it did not produce. If `site.resume` already points at a hand-made PDF or preview, run `npm run resume:build -- --adopt` once to hand those two paths over. See [content/resume/README.md](../content/resume/README.md) for the format.
+
+**Bring your own files.** Put a preview image and PDF under `content/assets/portfolio/resume/` and leave `content/resume/resume.json` out. Keeping the two in sync is then up to you.
 
 ## Disable a section without deleting its author content
 

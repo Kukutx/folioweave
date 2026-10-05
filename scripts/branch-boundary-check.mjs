@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   evaluateProfileBoundary,
   loadBranchPolicy,
+  sharedBaseCandidates,
 } from "./profile-boundary.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -43,19 +44,9 @@ function gitRefExists(ref) {
 
 function resolveDiffBase() {
   if (!hasGitMetadata) return null;
-  const candidates = [];
-  if (process.env.BOUNDARY_SHARED_BASE)
-    candidates.push(process.env.BOUNDARY_SHARED_BASE);
-  if (process.env.GITHUB_BASE_REF) {
-    candidates.push(
-      `origin/${process.env.GITHUB_BASE_REF}`,
-      process.env.GITHUB_BASE_REF,
-    );
-  }
-  if (personal) candidates.push("origin/main", "main");
-  else if (core && branch) candidates.push(`origin/${branch}`, branch);
-  else candidates.push("develop", "origin/develop", "main", "origin/main");
-  return [...new Set(candidates)].find(gitRefExists) ?? null;
+  return (
+    sharedBaseCandidates({ personal, core, branch }).find(gitRefExists) ?? null
+  );
 }
 
 const projectName = path.basename(root);
@@ -116,6 +107,7 @@ function isPersonalOnly(file) {
 if (core) {
   const leaked = [
     ...walk(path.join(root, "content", "blogs")),
+    ...walk(path.join(root, "content", "resume")),
     ...walk(path.join(root, "content", "assets", "portfolio")),
     ...walk(path.join(root, "qa", "baselines", "personal")),
   ]
@@ -150,14 +142,19 @@ if (hasGitMetadata) {
 
 const sharedChanges = changedFiles.filter((file) => !isPersonalOnly(file));
 const profileChanges = changedFiles.filter((file) => isPersonalOnly(file));
-if (personal && !sharedBase) {
+// Vercel clones only the branch it deploys and modifies files while it
+// installs, so its checkout cannot be compared with main. The profile guard
+// still applies to that build; convergence with main is enforced by the
+// required GitHub checks before anything reaches the branch.
+const convergenceLeftToCi = personal && Boolean(process.env.VERCEL);
+if (personal && !sharedBase && !convergenceLeftToCi) {
   errors.push(
     "Cannot verify personal/shared convergence because no main reference is available. Fetch origin/main before running the boundary check.",
   );
 }
-if (personal && sharedChanges.length) {
+if (personal && sharedChanges.length && !convergenceLeftToCi) {
   errors.push(
-    `Reusable changes exist only on ${policy.personalBranch}: ${sharedChanges.join(", ")}. Promote them through develop -> main before updating personal.`,
+    `${policy.personalBranch} differs from ${sharedBase} outside the profile-owned paths: ${sharedChanges.join(", ")}. Merge main into the branch if it is behind; promote changes that exist only here through develop -> main first.`,
   );
 }
 
@@ -182,6 +179,7 @@ if (errors.length) {
   console.log(
     `Branch boundary OK — ${branch || "detached"} uses the ${report.policy} policy; ` +
       `${report.sharedChanges.length} shared and ${report.profileChanges.length} profile-specific changed paths classified` +
-      `${sharedBase ? ` against ${sharedBase}` : ""}.`,
+      `${sharedBase ? ` against ${sharedBase}` : ""}.` +
+      `${convergenceLeftToCi ? " Convergence with main is not verifiable in this checkout and is left to the required GitHub checks." : ""}`,
   );
 }

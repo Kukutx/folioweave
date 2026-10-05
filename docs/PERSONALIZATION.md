@@ -3,7 +3,8 @@
 ## Authoring workflow
 
 Edit `portfolio.json`, add original assets under `content/assets/portfolio/`,
-and write articles under `content/blogs/`. Browser URLs remain `/portfolio/...`.
+write articles under `content/blogs/`, and optionally keep the resume source in
+`content/resume/`. Browser URLs remain `/portfolio/...`.
 
 ```bash
 npm ci
@@ -85,6 +86,21 @@ With `npm run dev` running, adding, editing or removing a Markdown file rebuilds
 For interactive React articles, add metadata to `src/blog/custom-posts.json`,
 register the page in `src/portfolio/routes.json` and use its route guard.
 Only the route registry owns the custom page's `demoOnly` flag. Bundled interactive examples keep their metadata in `src/demo/custom-posts.json`; the content build combines both registries and generates only the currently published custom-post runtime index.
+
+## Resume
+
+`content/resume/resume.json` is an optional single source for the resume. `npm run resume:build` renders it to the PDF and the preview image named by
+`site.resume`, and records a fingerprint in `content/resume/resume.lock.json`.
+`content:check` compares that fingerprint with the current source and template,
+so an edited resume that was not rebuilt fails the build instead of shipping a
+PDF that disagrees with the page. `npm run dev` rebuilds it when the source is
+saved.
+
+The document is one A4 page in a fixed, print-oriented design; overflowing
+content is an error. The build replaces only files it produced, so adopting the
+generator on a profile with hand-made resume files takes one explicit
+`npm run resume:build -- --adopt`. Profiles that prefer a hand-made PDF simply
+omit the source file. See [content/resume/README.md](../content/resume/README.md).
 
 ## Assets and validation
 

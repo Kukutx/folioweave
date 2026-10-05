@@ -13,26 +13,16 @@ import { storyGalleryImages } from "@/content/media";
 import { mobileViewportQuery, useMediaQuery } from "@/hooks/use-media-query";
 import { scrollToElement } from "@/lib/scroll";
 import { CharReveal } from "./motion-text";
-import { InstaxCamera, PhotoCard } from "./media-interactions";
+import {
+  sectionChildVariants as childVariant,
+  sectionRevealVariants as sectionVariants,
+} from "./home/motion-presets";
+import { PhotoCard } from "./media/gallery";
+import { InstaxCamera } from "./media/instax-camera";
 
 type AboutView = "normal" | "bullets" | "timeline";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
-const sectionVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-  },
-};
-const childVariant = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.9, ease: easeOut },
-  },
-};
 
 function AlignLeftIcon({ size = 18 }: { size?: number }) {
   return (

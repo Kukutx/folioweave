@@ -4,6 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { prepareContent, publishContent } from "./content-build.mjs";
+import { RESUME_SOURCE } from "./resume-core.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const nextBin = path.join(root, "node_modules", "next", "dist", "bin", "next");
@@ -72,6 +73,44 @@ function schedule(relativePath) {
 
 await rebuild("initial build");
 
+// The resume renders in a browser, so it is rebuilt on demand rather than with
+// every content change. Its new PDF/preview then flow through the asset watcher.
+let resumeTimer = null;
+let resumeBuilding = false;
+let resumeQueued = false;
+async function rebuildResume() {
+  if (stopped) return;
+  if (resumeBuilding) {
+    resumeQueued = true;
+    return;
+  }
+  resumeBuilding = true;
+  try {
+    const { buildResume } = await import("./resume-build.mjs");
+    const { status, targets } = await buildResume(root);
+    if (status === "built")
+      console.log(`[resume] rebuilt ${targets.pdf.asset} and its preview`);
+  } catch (error) {
+    console.error("[resume] build failed; keeping the last generated files.");
+    console.error(error instanceof Error ? error.message : error);
+  } finally {
+    resumeBuilding = false;
+    if (resumeQueued && !stopped) {
+      resumeQueued = false;
+      await rebuildResume();
+    }
+  }
+}
+const resumeDirectory = path.join(root, path.dirname(RESUME_SOURCE));
+const resumeWatcher = fs.existsSync(resumeDirectory)
+  ? fs.watch(resumeDirectory, (_eventType, fileName) => {
+      if (fileName?.toString() !== path.basename(RESUME_SOURCE)) return;
+      if (!fs.existsSync(path.join(root, RESUME_SOURCE))) return;
+      if (resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => void rebuildResume(), 300);
+    })
+  : null;
+
 const watchers = watchedInputs.map(({ relativePath, recursive, accepts }) => {
   const target = path.join(root, relativePath);
   return fs.watch(target, { recursive }, (_eventType, fileName) => {
@@ -97,6 +136,8 @@ function shutdown(signal) {
   if (stopped) return;
   stopped = true;
   if (debounceTimer) clearTimeout(debounceTimer);
+  if (resumeTimer) clearTimeout(resumeTimer);
+  resumeWatcher?.close();
   for (const watcher of watchers) watcher.close();
   if (child.exitCode === null) child.kill(signal);
 }

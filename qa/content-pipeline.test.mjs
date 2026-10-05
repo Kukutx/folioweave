@@ -87,7 +87,10 @@ test("published asset bytes are the validated snapshot, not deferred source read
     );
     assert.ok(entry, "snapshot fixture must be published");
     const [name, bytes] = entry;
-    assert.ok(Buffer.isBuffer(bytes), `${name} must be a validated byte snapshot`);
+    assert.ok(
+      Buffer.isBuffer(bytes),
+      `${name} must be a validated byte snapshot`,
+    );
     assert.equal(bytes.length, plan.media[snapshotPath].bytes);
     assert.equal(
       createHash("sha256").update(bytes).digest("hex"),
@@ -143,7 +146,10 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
       downloadPath.slice(1),
     );
     await fs.mkdir(path.dirname(downloadSource), { recursive: true });
-    await fs.writeFile(downloadSource, "%PDF-1.4\n% FolioWeave test download\n");
+    await fs.writeFile(
+      downloadSource,
+      "%PDF-1.4\n% FolioWeave test download\n",
+    );
     const article = (draft) =>
       `---\ntitle: Download\ndate: 2026-01-01\ndescription: Test\ndraft: ${draft}\n---\n\n[Download](${downloadPath}#page=2)`;
     const filename = path.join(temporary, "content/blogs/download.md");
@@ -225,8 +231,12 @@ test("an incomplete rollback retains the journal and blocks further writers", as
       await fs.readFile(path.join(journal[0].backup, "old.txt"), "utf8"),
       "recover me",
     );
+    // The lock was kept by this process after the failed rollback. Waiting
+    // would never release it, so the error has to point at the recovery.
     await assert.rejects(commitGeneratedOutputs(temporary, []), {
       code: "EEXIST",
+      message:
+        /stopped while replacing outputs: recover from .*content-transaction-/,
     });
   } finally {
     t.mock.restoreAll();
@@ -306,11 +316,63 @@ test("unsafe paths and unpublished links fail before writing", async () => {
   await assert.rejects(prepareContent(root, config), /Invalid portfolio/);
 });
 
+test("the site origin and contact email are canonical before they are published", () => {
+  // The sitemap and canonical URLs append paths to the origin.
+  for (const origin of [
+    "https://example.com/",
+    "https://example.com/portfolio",
+    "https://Example.com",
+    "https://example.com:443",
+    "example.com",
+    "ftp://example.com",
+  ]) {
+    const config = structuredClone(personal);
+    config.site.origin = origin;
+    assert.throws(
+      () => validatePublicationLinks(config),
+      /site\.origin must be a canonical origin/,
+      origin,
+    );
+  }
+  // The message names the form to use whenever one can be derived.
+  const messy = structuredClone(personal);
+  messy.site.origin = "https://Example.com:443/me";
+  assert.throws(
+    () => validatePublicationLinks(messy),
+    /such as https:\/\/example\.com; received https:\/\/Example\.com:443\/me/,
+  );
+  const config = structuredClone(personal);
+  config.site.contact.email = "me at example";
+  assert.throws(
+    () => validatePublicationLinks(config),
+    /site\.contact\.email is not an email address/,
+  );
+});
+
+test("a missing referenced asset names the file and how it is produced", async () => {
+  const config = structuredClone(personal);
+  config.site.resume.pdf = "/portfolio/resume/not-built-yet.pdf";
+  await assert.rejects(prepareContent(root, config), {
+    code: "ENOENT",
+    message:
+      /Referenced asset \/portfolio\/resume\/not-built-yet\.pdf does not exist at content\/assets\/portfolio\/resume\/not-built-yet\.pdf\. If the resume is generated, run npm run resume:build first\./,
+  });
+});
+
 test("profile image fields reject non-images and ambiguous path aliases", async () => {
-  for (const image of ["/portfolio/resume/document.pdf", "/portfolio//photo.png", "/portfolio/photo.png?v=1", "/portfolio/%70hoto.png"]) {
+  for (const image of [
+    "/portfolio/resume/document.pdf",
+    "/portfolio//photo.png",
+    "/portfolio/photo.png?v=1",
+    "/portfolio/%70hoto.png",
+  ]) {
     const config = structuredClone(personal);
     config.hero.portraits = [image];
-    await assert.rejects(prepareContent(root, config), /Invalid portfolio/, image);
+    await assert.rejects(
+      prepareContent(root, config),
+      /Invalid portfolio/,
+      image,
+    );
   }
 });
 

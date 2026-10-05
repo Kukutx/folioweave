@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { useMotionActivity } from "@/hooks/use-motion-activity";
 import { portfolio } from "@/portfolio";
+import { mediaDimensions } from "@/portfolio/media";
 import { WordReveal } from "../motion-text";
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 import { useMobileViewport } from "@/hooks/use-media-query";
@@ -198,8 +199,7 @@ export function InterludeSection() {
               className="mountain-image"
               src={portfolio.interlude.image}
               alt=""
-              width={1920}
-              height={765}
+              {...mediaDimensions(portfolio.interlude.image)}
               decoding="async"
               fetchPriority="low"
               style={{

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
+import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 
 const browser = await chromium.launch({ headless: true });
@@ -15,11 +16,8 @@ try {
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:4181", {
     waitUntil: "networkidle",
   });
-  const card = page.getByRole("button", {
-    name: "Open photograph 1 of",
-    exact: false,
-  });
-  if (await card.count()) {
+  const card = await firstPhotograph(page);
+  if (card) {
     const image = card.locator("img");
     assert.equal(await image.evaluate((img) => img.style.transform), "none");
     assert.equal(await image.evaluate((img) => img.style.willChange), "auto");

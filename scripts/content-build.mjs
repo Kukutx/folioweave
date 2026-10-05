@@ -17,6 +17,7 @@ import {
   publishedCustomBlogPosts,
 } from "../src/blog/content-core.mjs";
 import { resolvePublishedRoutes } from "../src/portfolio/publication-policy.mjs";
+import { taxonomyRoutes } from "../src/blog/taxonomy.mjs";
 
 import { prepareContract } from "./generate-portfolio-contract.mjs";
 import { commitGeneratedOutputs } from "./atomic-output.mjs";
@@ -51,7 +52,12 @@ export async function prepareContent(root = projectRoot, candidate) {
     custom,
     config.features.demoRoutes,
   );
-  const blogRoutes = [...livePosts, ...liveCustom].map((post) => post.href);
+  // Tag pages exist because posts carry tags; deriving them here also rejects
+  // two tags that would collapse into one page.
+  const blogRoutes = [
+    ...[...livePosts, ...liveCustom].map((post) => post.href),
+    ...taxonomyRoutes([...livePosts, ...liveCustom]),
+  ];
   validatePublicationLinks(config, blogRoutes);
   const routes = resolvePublishedRoutes({
     demoRoutesEnabled: config.features.demoRoutes,
@@ -85,7 +91,16 @@ export async function prepareContent(root = projectRoot, candidate) {
       asset.startsWith("/portfolio/") ? "content/assets" : "public",
       asset.slice(1),
     );
-    const bytes = await fs.readFile(source);
+    const bytes = await fs.readFile(source).catch((error) => {
+      if (error.code !== "ENOENT") throw error;
+      throw Object.assign(
+        new Error(
+          `Referenced asset ${asset} does not exist at ${path.relative(root, source).replaceAll("\\", "/")}.${asset === config.site.resume.pdf || asset === config.site.resume.image ? " If the resume is generated, run npm run resume:build first." : ""}`,
+          { cause: error },
+        ),
+        { code: "ENOENT" },
+      );
+    });
     const entry = {
       bytes: bytes.length,
       sha256: createHash("sha256").update(bytes).digest("hex"),
