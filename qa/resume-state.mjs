@@ -56,7 +56,7 @@ await page.waitForTimeout(2500);
 await page.evaluate(async () => {
   const source =
     document.querySelector(".resume-paper img")?.getAttribute("src") ||
-    "/gowtham-oleti-resume.jpg";
+    "/assets/demo/example-resume.svg";
   const image = new Image();
   image.src = source;
   if (!image.complete || image.naturalWidth === 0) {

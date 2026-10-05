@@ -542,7 +542,7 @@ async function runCasePages() {
           return { enabled: false, status: response?.status() };
         }
         assert(
-          (await page.locator(".writing-title").innerText()).trim() === "OG Blogs",
+          (await page.locator(".writing-title").innerText()).trim() === "Blogs",
           "demo blog title drifted from the reference presentation",
         );
         const highlights = await page
@@ -561,7 +561,7 @@ async function runCasePages() {
           (await page.locator(".blog-date").first().innerText()).includes("Jan 26, 2026"),
           "demo blog date drifted from Jan 26, 2026",
         );
-        return { title: "OG Blogs", highlights: highlights.length, date: "Jan 26, 2026" };
+        return { title: "Blogs", highlights: highlights.length, date: "Jan 26, 2026" };
       } finally {
         await context.close();
       }

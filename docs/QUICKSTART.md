@@ -12,18 +12,22 @@ npm ci
 
 ## 2. Create your profile
 
-Run the guided first pass:
+`main` and `develop` keep the canonical demo profile, and the content build refuses to publish anything else there. Your profile lives on its own branch:
 
 ```bash
+git switch -c personal
 npm run personalize
 ```
 
-Then edit the three authoring surfaces directly:
+The branch names come from `governance/branch-policy.json`. A copy of the project without Git history can be personalized in place.
+
+Then edit the authoring surfaces directly:
 
 ```text
 portfolio.json
 content/assets/portfolio/
 content/blogs/
+content/resume/            optional, see RECIPES.md
 ```
 
 Do not edit `public/portfolio/` or `src/portfolio/*.generated.ts`. They are generated publication output.

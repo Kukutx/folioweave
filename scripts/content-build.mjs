@@ -85,7 +85,16 @@ export async function prepareContent(root = projectRoot, candidate) {
       asset.startsWith("/portfolio/") ? "content/assets" : "public",
       asset.slice(1),
     );
-    const bytes = await fs.readFile(source);
+    const bytes = await fs.readFile(source).catch((error) => {
+      if (error.code !== "ENOENT") throw error;
+      throw Object.assign(
+        new Error(
+          `Referenced asset ${asset} does not exist at ${path.relative(root, source).replaceAll("\\", "/")}.${asset === config.site.resume.pdf || asset === config.site.resume.image ? " If the resume is generated, run npm run resume:build first." : ""}`,
+          { cause: error },
+        ),
+        { code: "ENOENT" },
+      );
+    });
     const entry = {
       bytes: bytes.length,
       sha256: createHash("sha256").update(bytes).digest("hex"),

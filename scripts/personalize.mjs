@@ -5,11 +5,24 @@ import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { prepareContent } from "./content-build.mjs";
+import { loadBranchPolicy, resolveBoundaryTarget } from "./profile-boundary.mjs";
+import { canonicalOrigin, isEmailAddress } from "../src/portfolio/content-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configPath = path.join(root, "portfolio.json");
 const portfolio = JSON.parse(fs.readFileSync(configPath, "utf8"));
 const useDefaults = process.argv.includes("--defaults");
+
+// The canonical demo lives on the core branches and the content build refuses
+// to publish any other profile there. Say so before asking a single question.
+const policy = loadBranchPolicy(root);
+const branch = resolveBoundaryTarget(root);
+if (policy.coreBranches.includes(branch)) {
+  console.error(
+    `\nFolioWeave keeps its demo profile on ${branch}. Create your profile branch first:\n\n  git switch -c ${policy.personalBranch}\n\nthen run npm run personalize again.\n`,
+  );
+  process.exit(1);
+}
 const rl = useDefaults ? null : createInterface({ input, output });
 
 const yes = async (label, current = true) => {
@@ -28,6 +41,18 @@ const askRequired = async (label, current = "", fallback = "") => {
     const resolved = value || current || fallback;
     if (resolved) return resolved;
     console.log("  A value is required.");
+  }
+};
+
+// Re-asks until the answer normalizes, so a value the content build would
+// reject is caught at the prompt and not after every other question.
+const askValid = async (label, current, fallback, normalize, hint) => {
+  for (;;) {
+    const answer = await askRequired(label, current, fallback);
+    const value = normalize(answer);
+    if (value) return value;
+    if (useDefaults) throw new Error(`${label} is not valid: ${answer}. ${hint}`);
+    console.log(`  ${hint}`);
   }
 };
 
@@ -148,8 +173,20 @@ const role = await askRequired("Role", cleanStart ? "" : defaults.role, defaults
 const company = await askOptional("Company or studio", cleanStart ? "" : defaults.company);
 const city = await askRequired("City", cleanStart ? "" : defaults.city, defaults.city);
 const country = await askRequired("Country", cleanStart ? "" : defaults.country, defaults.country);
-const email = await askRequired("Contact email", cleanStart ? "" : defaults.email, defaults.email);
-const origin = await askRequired("Production URL", cleanStart ? "" : defaults.origin, defaults.origin);
+const email = await askValid(
+  "Contact email",
+  cleanStart ? "" : defaults.email,
+  defaults.email,
+  (value) => (isEmailAddress(value) ? value : null),
+  "Enter an address such as hello@example.com.",
+);
+const origin = await askValid(
+  "Production URL",
+  cleanStart ? "" : defaults.origin,
+  defaults.origin,
+  canonicalOrigin,
+  "Enter the site's address, starting with https://, for example https://example.com.",
+);
 const locale = await askRequired("Locale", cleanStart ? "" : defaults.locale, defaults.locale);
 const intro = await askRequired(
   "Short intro",
@@ -182,7 +219,7 @@ portfolio.site.identity = {
   company,
   locale,
 };
-portfolio.site.origin = origin.replace(/\/$/, "");
+portfolio.site.origin = origin;
 portfolio.site.contact = {
   email,
   helloSubject: `Hello ${firstName}!`,
@@ -274,5 +311,6 @@ console.log("✓ content/assets/portfolio/{profile,photography,projects,resume} 
 console.log("\nNext:");
 console.log("  1. Put source files under content/assets/portfolio/ (never edit generated public/portfolio/)");
 console.log("  2. Edit portfolio.json to add projects/photos and enable sections");
-console.log("  3. Run npm run content:build && npm run content:check");
-console.log("  4. Run npm run dev\n");
+console.log("  3. Optional: generate the resume from one source (see content/resume/README.md)");
+console.log("  4. Run npm run content:build && npm run content:check");
+console.log("  5. Run npm run dev\n");

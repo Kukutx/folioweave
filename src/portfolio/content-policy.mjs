@@ -75,6 +75,16 @@ export function validateContentLinks(links, publishedRoutes) {
   }
 }
 
+/** The scheme and host a profile should use for a URL, or null if it has none. */
+export function canonicalOrigin(value) {
+  if (typeof value !== "string" || !URL.canParse(value)) return null;
+  const url = new URL(value);
+  return ["https:", "http:"].includes(url.protocol) ? url.origin : null;
+}
+
+export const isEmailAddress = (value) =>
+  typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
 /** Source content is retained; only this view is eligible for publication. */
 export function publishedPortfolio(config) {
   return {
@@ -107,6 +117,18 @@ export function validatePublicationLinks(config, blogRoutes = []) {
   } catch {
     throw new Error("Profile locale or time zone is invalid.");
   }
+  // Canonical URLs, the sitemap and JSON-LD append paths to the origin, so a
+  // trailing slash or path would publish addresses such as `//blogs`.
+  const { origin } = config.site;
+  const canonical = canonicalOrigin(origin);
+  if (canonical !== origin)
+    throw new Error(
+      `site.origin must be a canonical origin without a path or trailing slash${canonical ? `, such as ${canonical}` : " such as https://example.com"}; received ${origin}`,
+    );
+  if (!isEmailAddress(config.site.contact.email))
+    throw new Error(
+      `site.contact.email is not an email address: ${config.site.contact.email}`,
+    );
   const ids = config.projects.map((project) => project.id);
   if (new Set(ids).size !== ids.length)
     throw new Error("Project ids must be unique.");

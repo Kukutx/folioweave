@@ -1,0 +1,15 @@
+{
+  "fingerprint": "2af0d042a1fdba64b3153abf62746b775d3c5dde00fb1910141aa2ce1524f792",
+  "outputs": {
+    "/portfolio/resume/liu-zhong-li-cv.pdf": {
+      "sha256": "6eff120224e5d8609806419f868f948dd0b289085447511f345362864bac30d1"
+    },
+    "/portfolio/resume/liu-zhong-li-cv.png": {
+      "sha256": "e57f67fc1a55ab34c92fd9c5e927e05142482b57bf6fbec25c62d0aefb7a6de2"
+    }
+  },
+  "generator": {
+    "browser": "chromium 151.0.7922.34",
+    "platform": "win32"
+  }
+}

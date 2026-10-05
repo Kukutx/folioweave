@@ -15,6 +15,7 @@ Normal author content lives in:
 portfolio.json
 content/assets/portfolio/
 content/blogs/
+content/resume/
 ```
 
 Do not hand-edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`; the content pipeline owns them.

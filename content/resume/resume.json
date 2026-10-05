@@ -1,0 +1,128 @@
+{
+  "$schema": "../../resume.schema.json",
+  "lang": "it",
+  "name": "Liu Zhong Li",
+  "headline": "Full-Stack Software Developer",
+  "contact": ["+39 347 629 6739", "Calusco d'Adda (BG), Italia"],
+  "links": [
+    { "label": "Email", "href": "mailto:liuzhongli.ascii@gmail.com" },
+    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/zhongliliu" },
+    { "label": "GitHub", "href": "https://github.com/Kukutx" }
+  ],
+  "sections": [
+    {
+      "type": "text",
+      "title": "Profilo",
+      "paragraphs": [
+        "Sviluppatore full-stack con esperienza professionale nello sviluppo di applicazioni web e mobile, principalmente con .NET, React/Next.js, Flutter e PostgreSQL. Da dicembre 2025 sviluppo in autonomia Crew, seguendone ogni fase: dalla UX/UI al backend e all'infrastruttura cloud, fino alla pubblicazione su Google Play e App Store."
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Esperienza professionale",
+      "entries": [
+        {
+          "title": "Crew",
+          "subtitle": "Full-Stack Software Developer (progetto indipendente)",
+          "date": "dic 2025 — presente",
+          "meta": "[crew-app.com](https://www.crew-app.com) • in produzione da giu 2026",
+          "bullets": [
+            "Progettazione e sviluppo end-to-end della piattaforma: UX/UI, architettura, backend, app Flutter, sito web Next.js, database PostgreSQL/PostGIS e infrastruttura cloud.",
+            "Funzionalità principali: eventi Spot e Route, chat, notifiche push, autenticazione, pagamenti e rimborsi con Stripe, gestione di utenti e contenuti.",
+            "Configurazione degli ambienti dev/prod su Google Cloud, Firebase e Vercel, con pipeline CI/CD, test automatici e generazione automatica dei client API.",
+            "Pubblicazione su **Google Play** e **App Store**, con i primi utenti reali e flussi di pagamento validati in produzione."
+          ]
+        },
+        {
+          "title": "Hinge 16 S.r.l.",
+          "subtitle": "Junior Software Developer",
+          "date": "lug 2024 — set 2025",
+          "bullets": [
+            "Sviluppo e manutenzione in autonomia di siti WordPress/Elementor e piccoli e-commerce WooCommerce/Stripe, dalla correzione dei bug ai controlli prima della consegna interna.",
+            "Interventi su progetti Vue, .NET/Blazor MAUI, Odoo e Azure AI Services, comprese attività di test, manutenzione e documentazione."
+          ]
+        },
+        {
+          "title": "Gruppo Maggioli",
+          "subtitle": "Junior PHP / Drupal Developer",
+          "date": "gen 2024 — mag 2024",
+          "bullets": [
+            "Sviluppo e manutenzione dello Sportello Telematico Polifunzionale con Drupal 10, PHP e JavaScript, utilizzando Git, Docker, PHPStan/PHPCS e automazioni; prime esperienze con Kubernetes."
+          ]
+        },
+        {
+          "title": "Reti S.p.A.",
+          "subtitle": "Junior Angular Developer",
+          "date": "mag 2023 — set 2023",
+          "bullets": [
+            "Sviluppo frontend di RetiSkills con Angular, Angular Material e Bootstrap: componenti e servizi, integrazione con ASP.NET Web API, UI/UX in Figma e bug fixing in team."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Progetti selezionati",
+      "entries": [
+        {
+          "title": "DevMate — Gateway MCP local-first",
+          "href": "https://github.com/Kukutx/DevMate",
+          "badge": "Open source · MIT",
+          "date": "giu 2026 — presente",
+          "bullets": [
+            "Collega ChatGPT a workspace controllati; distribuito come estensione VS Code, host Obsidian e CLI standalone.",
+            "OAuth/RBAC, job persistenti, Runner esterni, audit e workflow di automazione."
+          ]
+        },
+        {
+          "title": "TradePilot 212 — App MCP self-hosted",
+          "href": "https://github.com/Kukutx/TradePilot212",
+          "badge": "Open source · MIT",
+          "date": "set 2026 — presente",
+          "bullets": [
+            "Collega ChatGPT a Trading 212 con UI del portafoglio, preparazione degli ordini e integrazione con le API Demo/Live.",
+            "OAuth/PKCE, Cloudflare Workers/Durable Objects e conferma esplicita degli ordini; nessun retry automatico se l'esito è ambiguo."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Formazione",
+      "entries": [
+        {
+          "title": "ITS Incom",
+          "subtitle": "Tecnico Superiore (EQF 5), Cloud Developer",
+          "date": "2022 — 2024",
+          "bullets": [
+            "Percorso biennale orientato allo sviluppo software e alle tecnologie cloud."
+          ]
+        },
+        {
+          "title": "ISIS Facchinetti",
+          "subtitle": "Diploma in Manutenzione e Assistenza Tecnica",
+          "date": "2022"
+        }
+      ]
+    },
+    {
+      "type": "facts",
+      "title": "Competenze",
+      "items": [
+        { "label": "Backend & Data", "value": "C#, .NET, ASP.NET Core, Entity Framework Core, REST API, PostgreSQL, PostGIS, SQL" },
+        { "label": "Frontend & Mobile", "value": "React, Next.js, TypeScript, Flutter, Dart" },
+        { "label": "Cloud & Engineering", "value": "Google Cloud, Cloudflare Workers, Firebase, Vercel, Docker, Stripe, MCP, OAuth/PKCE, Git/GitHub, CI/CD, test automatici" },
+        { "label": "Esperienza aggiuntiva", "value": "Angular, Vue, WordPress, PHP/Drupal, Odoo, Azure" }
+      ]
+    },
+    {
+      "type": "facts",
+      "title": "Lingue",
+      "items": [
+        { "label": "Cinese", "value": "Madrelingua" },
+        { "label": "Italiano", "value": "Fluente" },
+        { "label": "Inglese", "value": "A2 / base" }
+      ]
+    }
+  ]
+}

@@ -122,9 +122,13 @@ export function TimeWeatherWidget() {
     let timer = 0;
     const refresh = () => {
       if (document.hidden) return;
-      fetch("/api/weather", {
-        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(6000)]),
-      })
+      // AbortSignal.any is missing before Safari 17.4. Calling it there would
+      // throw before the refresh interval below is ever registered.
+      const signal =
+        typeof AbortSignal.any === "function"
+          ? AbortSignal.any([controller.signal, AbortSignal.timeout(6000)])
+          : controller.signal;
+      fetch("/api/weather", { signal })
         .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((data) => {
           if (data.status !== "fresh" || !Number.isFinite(data.temperature))
