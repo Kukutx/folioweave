@@ -12,12 +12,15 @@
   "demoProfile": "governance/demo-portfolio.json",
   "personalOnlyPrefixes": [
     "content/blogs/",
+    "content/resume/",
     "content/assets/portfolio/",
     "public/portfolio/",
     "qa/baselines/personal/"
   ],
   "sharedExceptions": [
     "content/blogs/_README.md",
+    "content/resume/README.md",
+    "content/resume/resume.example.json",
     "content/assets/portfolio/README.md"
   ]
 }

@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FolioWeave resume source",
+  "description": "Single source for the generated resume PDF and printer preview. Run `npm run resume:build` after editing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lang", "name", "sections"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{1,8})*$",
+      "description": "BCP 47 language of the resume text. It may differ from the portfolio locale."
+    },
+    "name": {
+      "$ref": "#/$defs/plainText"
+    },
+    "headline": {
+      "$ref": "#/$defs/plainText",
+      "description": "Role or one-line positioning shown under the name."
+    },
+    "documentTitle": {
+      "$ref": "#/$defs/plainText",
+      "description": "PDF document title. Defaults to the name."
+    },
+    "accentColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$",
+      "description": "Link color. Defaults to #0066cc."
+    },
+    "contact": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/inlineText"
+      },
+      "description": "Plain contact facts such as phone and location. Everything here is public once committed."
+    },
+    "links": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/link"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/textSection"
+          },
+          {
+            "$ref": "#/$defs/entriesSection"
+          },
+          {
+            "$ref": "#/$defs/factsSection"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "plainText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "inlineText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Text with an optional inline subset: **bold**, [label](https://example.com) and \\* for a literal asterisk. Other Markdown is not interpreted."
+    },
+    "href": {
+      "type": "string",
+      "pattern": "^(https?://|mailto:|tel:)\\S+$"
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "href"],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/plainText"
+        },
+        "href": {
+          "$ref": "#/$defs/href"
+        }
+      }
+    },
+    "textSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "paragraphs"],
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "title": {
+          "$ref": "#/$defs/plainText"
+        },
+        "paragraphs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/inlineText"
+          }
+        }
+      }
+    },
+    "entriesSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "entries"],
+      "properties": {
+        "type": {
+          "const": "entries"
+        },
+        "title": {
+          "$ref": "#/$defs/plainText"
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entry"
+          }
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/plainText",
+          "description": "Emphasized part of the heading, such as the employer or project name."
+        },
+        "href": {
+          "$ref": "#/$defs/href",
+          "description": "Optional link target for the title."
+        },
+        "subtitle": {
+          "$ref": "#/$defs/plainText",
+          "description": "Muted continuation of the heading, such as the role."
+        },
+        "badge": {
+          "$ref": "#/$defs/plainText",
+          "description": "Short label rendered as a chip beside the heading."
+        },
+        "date": {
+          "$ref": "#/$defs/plainText",
+          "description": "Period shown at the end of the heading row."
+        },
+        "meta": {
+          "$ref": "#/$defs/inlineText",
+          "description": "Secondary line under the heading."
+        },
+        "bullets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineText"
+          }
+        }
+      }
+    },
+    "factsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "items"],
+      "properties": {
+        "type": {
+          "const": "facts"
+        },
+        "title": {
+          "$ref": "#/$defs/plainText"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "value"],
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/plainText"
+              },
+              "value": {
+                "$ref": "#/$defs/inlineText"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

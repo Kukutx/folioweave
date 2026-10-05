@@ -10,9 +10,12 @@ Requirements: Node.js 24 and npm.
 
 ```bash
 npm ci
+git switch -c personal
 npm run personalize
 npm run dev
 ```
+
+`main` and `develop` keep the canonical demo, so your own profile lives on the `personal` branch.
 
 Open `http://localhost:3000`.
 
@@ -20,12 +23,13 @@ For the guided five-minute path, read [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ## What you edit
 
-Normal personalization uses three places:
+Normal personalization uses three places, plus an optional resume source:
 
 ```text
 portfolio.json
 content/assets/portfolio/
 content/blogs/
+content/resume/            optional
 ```
 
 `portfolio.json` owns identity, location, links, Hero/About copy, projects, photography order, resume, Blog presentation, SEO, and feature switches.
@@ -33,6 +37,8 @@ content/blogs/
 `content/assets/portfolio/` owns original author media. Browser URLs remain `/portfolio/...`.
 
 `content/blogs/` owns Markdown posts.
+
+`content/resume/resume.json`, when present, is the single source for the resume PDF and the printer preview; `npm run resume:build` renders both.
 
 Do **not** edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`. They are validated publication output and are replaced by the content pipeline.
 
@@ -42,6 +48,7 @@ While `npm run dev` is running, valid changes to profile content, assets, Markdo
 
 - Responsive portfolio for desktop, tablet, and mobile
 - Data-driven projects, photography, About content, resume, links, and feature switches
+- One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order
 - Markdown Blog with automatic routes, index, reading time, metadata, sitemap, and drafts
 - Motion-rich Hero, Work, Photography, Contact, Designer Cursors, camera, gallery/lightbox, and resume printer
 - Server-first composition with focused client interaction islands
@@ -88,6 +95,16 @@ Normal Markdown.
 
 It becomes `/blogs/my-post`. The Blog index appears automatically when at least one post is published. With local development already running, adding/removing the file updates the route without restarting Next.
 
+### Resume
+
+Point `portfolio.json > site.resume` at two files under `/portfolio/resume/`, copy `content/resume/resume.example.json` to `content/resume/resume.json`, edit it, and run:
+
+```bash
+npm run resume:build
+```
+
+That writes the PDF and preview `site.resume` references. The build fails if they ever fall behind the source, so the published resume is always the current one. [content/resume/README.md](content/resume/README.md) has the details.
+
 See [docs/RECIPES.md](docs/RECIPES.md) for copyable examples.
 
 ## Architecture
@@ -112,6 +129,7 @@ Author inputs
   portfolio.json
   content/assets/portfolio/
   content/blogs/
+  content/resume/
 
 Generated publication
   public/portfolio/

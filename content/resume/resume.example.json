@@ -1,0 +1,96 @@
+{
+  "$schema": "../../resume.schema.json",
+  "lang": "en",
+  "name": "Your Name",
+  "headline": "Product Designer",
+  "contact": ["+1 555 010 0199", "San Francisco, CA"],
+  "links": [
+    { "label": "Email", "href": "mailto:hello@example.com" },
+    { "label": "LinkedIn", "href": "https://www.linkedin.com/in/example" },
+    { "label": "Portfolio", "href": "https://example.com" }
+  ],
+  "sections": [
+    {
+      "type": "text",
+      "title": "Profile",
+      "paragraphs": [
+        "Two or three sentences about what you do, the kind of problems you like, and the outcome you are known for. Keep it specific; this paragraph is the first thing a reader scans."
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Experience",
+      "entries": [
+        {
+          "title": "Example Studio",
+          "subtitle": "Senior Product Designer",
+          "date": "2024 — Present",
+          "meta": "[example.com](https://example.com) • Remote",
+          "bullets": [
+            "Lead with the result, then the work that produced it. One or two lines per point reads best.",
+            "Use **bold** sparingly for the product or platform a recruiter should notice.",
+            "Name the scope you owned: research, interaction design, design system, delivery."
+          ]
+        },
+        {
+          "title": "Previous Company",
+          "subtitle": "Product Designer",
+          "date": "2021 — 2024",
+          "bullets": [
+            "Describe one shipped project and what changed for its users.",
+            "Mention the people and disciplines you worked with."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Selected projects",
+      "entries": [
+        {
+          "title": "Side Project — What it is in a few words",
+          "href": "https://example.com/project",
+          "badge": "Open source",
+          "date": "2025 — Present",
+          "bullets": [
+            "Why it exists and who uses it.",
+            "What you built yourself."
+          ]
+        }
+      ]
+    },
+    {
+      "type": "entries",
+      "title": "Education",
+      "entries": [
+        {
+          "title": "Example University",
+          "subtitle": "B.A. Interaction Design",
+          "date": "2017 — 2021"
+        }
+      ]
+    },
+    {
+      "type": "facts",
+      "title": "Skills",
+      "items": [
+        {
+          "label": "Design",
+          "value": "Interaction design, prototyping, design systems"
+        },
+        {
+          "label": "Tools",
+          "value": "Figma, HTML, CSS, a little TypeScript"
+        }
+      ]
+    },
+    {
+      "type": "facts",
+      "title": "Languages",
+      "items": [
+        { "label": "English", "value": "Native" },
+        { "label": "Spanish", "value": "Conversational" }
+      ]
+    }
+  ]
+}

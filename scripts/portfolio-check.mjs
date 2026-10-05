@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { prepareContent, checkGeneratedContent } from "./content-build.mjs";
+import { checkResume } from "./resume-core.mjs";
 import { validateRouteContract } from "./route-contract.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -22,6 +23,7 @@ const routes = JSON.parse(
   await fs.readFile(path.join(root, "src/portfolio/routes.json"), "utf8"),
 );
 await validateRouteContract(root, routes, custom);
+const resume = await checkResume(root, prepared.config);
 console.log(
-  `Content contract OK — personal/demo profiles, generated files, ${prepared.routes.length} routes and ${Object.keys(prepared.media).length} published assets verified.`,
+  `Content contract OK — personal/demo profiles, generated files, ${prepared.routes.length} routes and ${Object.keys(prepared.media).length} published assets verified${resume.status === "current" ? "; resume matches its source" : ""}.`,
 );
