@@ -12,6 +12,8 @@ FolioWeave brings three portfolio designs into one application: Classic, Refract
 | Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms | [Open demo](https://folioweave-refract-light.vercel.app) |
 | Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette    | [Open demo](https://folioweave-refract-dark.vercel.app)  |
 
+**In production:** [kukutx.vercel.app](https://kukutx.vercel.app) is the author's own portfolio, built with Classic from this repository's `personal` branch. The demos above use placeholder content; that site shows the template carrying real work.
+
 Refract Light and Refract Dark are separate build-time choices. The published site has no style switcher. They share scene geometry and interaction code so fixes apply consistently to both designs. Read the [Refract guide](docs/REFRACT.md) for content mapping, settings, and asset credits.
 
 |                                                                     Refract Light                                                                      |                                                                       Refract Dark                                                                        |
