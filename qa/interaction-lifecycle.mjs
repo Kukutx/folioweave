@@ -81,6 +81,9 @@ try {
         `${id} outside main`,
       );
   }
+  // The return to the hero is a timed smooth scroll that owns the position
+  // until it ends; scrolling elsewhere before then is pulled back to the top.
+  await page.waitForFunction(() => !window.__lenis?.isScrolling);
   await page.locator("#interlude").scrollIntoViewIfNeeded();
   await page.waitForFunction(() =>
     document
