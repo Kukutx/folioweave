@@ -89,16 +89,66 @@ export async function checkMusicEngines(base, cover, fixtureFile) {
       await page.locator(musicSelector).getByRole("status").waitFor();
       await fs.rename(fixtureFile + ".unavailable", fixtureFile);
       unavailable = false;
+      // Record what the element reports, so a failure names the engine's
+      // behaviour instead of only timing out.
+      await page.evaluate(() => {
+        const audio = document.querySelector("audio");
+        window.musicEvents = [];
+        for (const name of [
+          "loadstart",
+          "emptied",
+          "abort",
+          "error",
+          "stalled",
+          "suspend",
+          "waiting",
+          "canplay",
+          "play",
+          "playing",
+          "pause",
+          "ended",
+        ])
+          audio.addEventListener(name, () =>
+            window.musicEvents.push(
+              `${name}@${audio.currentTime.toFixed(2)}${audio.error ? `!${audio.error.code}` : ""}`,
+            ),
+          );
+      });
       await button(page, "播放").click();
       // One condition, not a wait followed by a read: a brief stall between
       // the two would report a player that is in fact playing.
-      await page.waitForFunction(
-        (selector) =>
-          document.querySelector("audio").currentTime > 0.1 &&
-          document.querySelector(selector).getAttribute("data-playing") ===
-            "true",
-        musicSelector,
-      );
+      await page
+        .waitForFunction(
+          (selector) =>
+            document.querySelector("audio").currentTime > 0.1 &&
+            document.querySelector(selector).getAttribute("data-playing") ===
+              "true",
+          musicSelector,
+        )
+        .catch(async (error) => {
+          const state = await page.evaluate((selector) => {
+            const audio = document.querySelector("audio");
+            const player = document.querySelector(selector);
+            return {
+              events: window.musicEvents,
+              currentTime: audio.currentTime,
+              paused: audio.paused,
+              ended: audio.ended,
+              readyState: audio.readyState,
+              networkState: audio.networkState,
+              error: audio.error && {
+                code: audio.error.code,
+                message: audio.error.message,
+              },
+              playing: player.getAttribute("data-playing"),
+              status: player.querySelector('[role="status"]')?.textContent,
+            };
+          }, musicSelector);
+          throw new Error(
+            `${engine.name()} did not reach a playing state: ${JSON.stringify(state)}`,
+            { cause: error },
+          );
+        });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.waitForFunction(
         () =>
