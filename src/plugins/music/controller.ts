@@ -136,8 +136,18 @@ export function createMusicController(
       entries.push([event, listener]);
       element.addEventListener(event, listener);
     };
-    const updateProgress = () =>
+    const updateProgress = () => {
       publishProgress(element.currentTime, element.duration);
+      // Engines differ on whether "playing" follows every stall. Advancing
+      // time is the fact; never leave the control saying it is still loading.
+      if (
+        snapshot.status === "loading" &&
+        snapshot.intent &&
+        !element.paused &&
+        element.currentTime > 0
+      )
+        publish({ status: "playing", error: "" });
+    };
     on("play", () => {
       if (!element.paused) publish({ intent: true });
     });

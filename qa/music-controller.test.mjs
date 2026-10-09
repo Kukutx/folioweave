@@ -153,3 +153,33 @@ test("unmount invalidates delayed promises and repeated attachment does not leak
   again();
   assert.equal(audio.attached.size, 0);
 });
+
+test("advancing time ends a stall even when the engine never reports playing again", () => {
+  const player = createMusicController(tracks),
+    audio = new AudioFixture();
+  const detach = player.attach(audio);
+  void player.play();
+  audio.playing();
+  assert.equal(player.getSnapshot().status, "playing");
+  audio.dispatchEvent(new Event("waiting"));
+  assert.equal(player.getSnapshot().status, "loading");
+  audio.currentTime = 0;
+  audio.dispatchEvent(new Event("timeupdate"));
+  assert.equal(
+    player.getSnapshot().status,
+    "loading",
+    "No time has passed yet",
+  );
+  audio.currentTime = 1.5;
+  audio.dispatchEvent(new Event("timeupdate"));
+  assert.equal(player.getSnapshot().status, "playing");
+  player.pause();
+  audio.currentTime = 2;
+  audio.dispatchEvent(new Event("timeupdate"));
+  assert.equal(
+    player.getSnapshot().status,
+    "paused",
+    "A paused track was reported as playing",
+  );
+  detach();
+});

@@ -90,12 +90,14 @@ export async function checkMusicEngines(base, cover, fixtureFile) {
       await fs.rename(fixtureFile + ".unavailable", fixtureFile);
       unavailable = false;
       await button(page, "播放").click();
+      // One condition, not a wait followed by a read: a brief stall between
+      // the two would report a player that is in fact playing.
       await page.waitForFunction(
-        () => document.querySelector("audio").currentTime > 0.1,
-      );
-      assert.equal(
-        await page.locator(musicSelector).getAttribute("data-playing"),
-        "true",
+        (selector) =>
+          document.querySelector("audio").currentTime > 0.1 &&
+          document.querySelector(selector).getAttribute("data-playing") ===
+            "true",
+        musicSelector,
       );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.waitForFunction(
