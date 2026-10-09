@@ -67,13 +67,35 @@ test("bidirectional contract rejects missing registration, guard, page, and cust
     validateRouteContract(root, [{ path: "/missing", demoOnly: true }], []),
     /page missing/,
   );
-  await write("(site)/demo");
+  await write("(demo)/demo");
   await assert.rejects(validateRouteContract(root, [], []), /Unclassified/);
   const routes = [{ path: "/demo", demoOnly: true }];
   await assert.rejects(validateRouteContract(root, routes, []), /must begin/);
   await write(
-    "(site)/demo",
+    "(demo)/demo",
     source('requirePublishedRoute("/demo"); return null;'),
   );
   await validateRouteContract(root, routes, []);
+  // Examples live in their group and nothing else does.
+  await assert.rejects(
+    validateRouteContract(root, [{ path: "/demo", demoOnly: false }], []),
+    /not an example route/,
+  );
+  await write(
+    "(site)/stray",
+    source('requirePublishedRoute("/stray"); return null;'),
+  );
+  await assert.rejects(
+    validateRouteContract(
+      root,
+      [...routes, { path: "/stray", demoOnly: true }],
+      [],
+    ),
+    /must live under src\/app\/\(demo\)/,
+  );
+  await validateRouteContract(
+    root,
+    [...routes, { path: "/stray", demoOnly: false }],
+    [],
+  );
 });

@@ -126,9 +126,21 @@ export function publishedPortfolio(config, sections = HOME_SECTIONS) {
     projects: config.features.work
       ? config.projects.filter((project) => project.enabled)
       : [],
-    photography: config.features.photography
-      ? config.photography
-      : { intro: "", images: [] },
+    photography:
+      config.features.photography && config.photography
+        ? config.photography
+        : { intro: "", images: [] },
+    // Blocks only some templates render. A template that needs one requires it
+    // of the author; the rest read these inert values and never show them.
+    footerBook: config.footerBook ?? { title: "", quote: "", author: "" },
+    interlude: config.interlude ?? {
+      title: "",
+      description: "",
+      returnTitle: "",
+      handwrittenTitle: "",
+      returnDescription: "",
+      image: "",
+    },
   };
 }
 

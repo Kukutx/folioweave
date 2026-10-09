@@ -55,14 +55,6 @@
 html[data-template^="refract-"] body {
   margin: 0;
 }
-@font-face {
-  font-family: RefractDIN;
-  src: url("/templates/refract/fonts/dinish.woff2") format("woff2");
-  font-weight: 100 900;
-  font-style: oblique 0deg 12deg;
-  font-stretch: 50% 125%;
-  font-display: swap;
-}
 .refract-site {
   --gutter: 4rem;
   --header-height: 4.5rem;

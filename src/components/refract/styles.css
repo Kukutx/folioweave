@@ -1,5 +1,6 @@
 /* Refract's cascade, in order. Each layer refines the ones before it, so the
    order below is part of the design: later files win ties. */
+@import "./styles/typeface.css"; /* The typeface, one file per script (generated) */
 @import "./styles/base.css"; /* Reset, typeface, root surface, links and focus */
 @import "./styles/scene.css"; /* Stage, chapters, scene copy, figures and profile sections */
 @import "./styles/responsive.css"; /* First responsive pass and reduced motion */

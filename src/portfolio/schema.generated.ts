@@ -213,7 +213,7 @@ export interface PortfolioConfig {
    * Ordered project list. Add, remove, reorder, or disable projects without editing React components.
    */
   projects: Project[];
-  photography: {
+  photography?: {
     intro: string;
     images: MediaAsset[];
   };
@@ -235,7 +235,7 @@ export interface PortfolioConfig {
       tone?: "highlight";
     }[];
   };
-  footerBook: {
+  footerBook?: {
     title: string;
     quote: string;
     author: string;
@@ -262,7 +262,7 @@ export interface PortfolioConfig {
     award?: string;
     caseStudiesDescription: string;
   };
-  interlude: {
+  interlude?: {
     title: string;
     description: string;
     returnTitle: string;

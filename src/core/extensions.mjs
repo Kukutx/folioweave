@@ -5,6 +5,13 @@ import points from "./extension-points.json" with { type: "json" };
 
 export const API_VERSION = 1;
 export const SLOTS = Object.keys(points.slots);
+/** Profile blocks the shared schema leaves optional; a template that renders
+ * one names it under "requires" and publication insists on it for that template. */
+export const OPTIONAL_BLOCKS = Object.freeze([
+  "photography",
+  "footerBook",
+  "interlude",
+]);
 export const implementationRoot = path.resolve(import.meta.dirname, "../..");
 const idPattern = /^[a-z][a-z0-9-]*$/;
 const entryPattern = /^[a-z][a-z0-9-]*\.tsx$/;
@@ -104,6 +111,25 @@ export function loadCatalog(root = implementationRoot) {
       .map((item) => {
         const filename = path.join(directory, item.name, "manifest.json");
         const manifest = JSON.parse(fs.readFileSync(filename, "utf8"));
+        // Variants of one design share a schema file kept in an underscored
+        // directory of the same catalog, which is never itself an extension.
+        if (typeof manifest.optionsSchema === "string") {
+          const shared = path.resolve(
+            directory,
+            item.name,
+            manifest.optionsSchema,
+          );
+          if (
+            !/^_[a-z][a-z0-9-]*$/.test(
+              path.relative(directory, path.dirname(shared)),
+            ) ||
+            !shared.endsWith(".schema.json")
+          )
+            throw new Error(
+              `${item.name}: a shared optionsSchema must be a .schema.json file in an underscored directory of src/${kind}`,
+            );
+          manifest.optionsSchema = JSON.parse(fs.readFileSync(shared, "utf8"));
+        }
         if (!idPattern.test(manifest.id) || manifest.id !== item.name)
           throw new Error(`Invalid ${kind} id in ${filename}`);
         if (manifest.apiVersion !== API_VERSION)
@@ -145,6 +171,15 @@ export function loadCatalog(root = implementationRoot) {
             manifest.sections.some((section) => !idPattern.test(section)))
         )
           throw new Error(`${manifest.id}: invalid section ids`);
+        if (
+          manifest.requires !== undefined &&
+          (kind !== "templates" ||
+            !Array.isArray(manifest.requires) ||
+            manifest.requires.some((block) => !OPTIONAL_BLOCKS.includes(block)))
+        )
+          throw new Error(
+            `${manifest.id}: requires may only list ${OPTIONAL_BLOCKS.join(", ")}`,
+          );
         if (!manifest.optionsSchema || manifest.optionsSchema.type !== "object")
           throw new Error(
             `${manifest.id}: optionsSchema must describe an object`,
@@ -209,6 +244,13 @@ export function resolveExtensions(config, catalog = loadCatalog()) {
   const id = config.template?.id ?? "classic";
   const template = catalog.templates.find((item) => item.id === id);
   if (!template) throw new Error(`Unknown template: ${id}`);
+  const missing = (template.requires ?? []).filter(
+    (block) => config[block] === undefined,
+  );
+  if (missing.length)
+    throw new Error(
+      `${id} needs ${missing.map((block) => `"${block}"`).join(", ")} in portfolio.json. Add ${missing.length > 1 ? "those blocks" : "that block"}, or select a template that does not use ${missing.length > 1 ? "them" : "it"}.`,
+    );
   const options = config.template?.settings?.[id] ?? {};
   validateExtensionOptions(template, options);
   networkFromOptions(template, options);

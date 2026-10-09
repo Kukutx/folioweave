@@ -85,7 +85,12 @@ the root layout: that also pulls page-specific client code into other routes.
 `context` supplies published site identity, introduction, biography, projects,
 photography, writing settings, feature switches and this template's options.
 It does not expose another template's options. The first API retains the existing
-author schema; existing `footerBook` and `interlude` data remain available to
+author schema, with one exception: `photography`, `footerBook` and `interlude`
+are optional in a profile. A template that renders one lists it under
+`"requires"` in its manifest, and selecting that template for a profile without
+the block fails with the block's name. Classic requires all three; Refract none.
+Publication fills an omitted block with an inert value, so every template reads
+one complete shape. Existing `footerBook` and `interlude` data remain available to
 Classic without forcing another template to render those objects.
 
 The core retains filesystem routes, metadata, static article parameters, sitemap,

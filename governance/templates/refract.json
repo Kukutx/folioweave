@@ -203,15 +203,6 @@
       ]
     }
   ],
-  "photography": {
-    "intro": "",
-    "images": []
-  },
-  "footerBook": {
-    "title": "Studio notes",
-    "quote": "Start with what matters.",
-    "author": "Example text"
-  },
   "seo": {
     "description": "Refract, a cinematic portfolio template for FolioWeave. Explore an illustrative creative practice, selected projects and writing.",
     "keywords": [
@@ -232,19 +223,11 @@
     "heading": "Notes & observations.",
     "description": "Ideas from the space between design, technology and the world around us."
   },
-  "interlude": {
-    "title": "Looking closer",
-    "description": "A study in perspective.",
-    "returnTitle": "Back to the work",
-    "handwrittenTitle": "Keep exploring",
-    "returnDescription": "Continue through the portfolio.",
-    "image": "/portfolio/demo/material-studies.svg"
-  },
   "plugins": {},
   "template": {
-    "id": "refract-dark",
+    "id": "refract",
     "settings": {
-      "refract-dark": {
+      "refract": {
         "tagline": "Exploring visual systems",
         "rotatingTopics": [
           "visual systems",

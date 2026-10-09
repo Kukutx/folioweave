@@ -58,7 +58,9 @@ module copied from the original project.
 | `content/blogs/`                            | Blog index, articles and tags through the shared publication pipeline               |
 
 The homepage adapts those fields to Refract's scene and editorial sections.
-Classic-only objects are not required to appear in Refract. The same core owns
+Classic-only objects are not required to appear in Refract, and a Refract
+profile may leave `photography`, `footerBook` and `interlude` out of
+`portfolio.json` altogether. The same core owns
 `/blogs`, article routes and tag routes for every template, and Refract supplies
 matching blog views. Metadata, sitemap generation, Markdown rendering and stable
 article identity continue to use the common publication pipeline.
@@ -112,7 +114,7 @@ supplying an empty string. These settings are public and must not contain secret
 | `news`                           | Entries with `id`, `date`, `description`, and optional `url`                                                                                |
 | `publications`                   | Entries with `id`, `title`, `authors`, `year`, `journal`, `citation`, optional `url` and optional `highlight`                               |
 | `researchFigures`                | Figure overrides keyed by project id; each has `source`, `width`, `height`, optional `animatedSource` and optional `caption`                |
-| `fracturedGlass`                 | Fragmented globe effect during the drawing stage; enabled by default                                                                        |
+| `fracturedGlass`                 | Glass shards in the tools stage; enabled by default                                                                                         |
 | `continentalDrift`               | Each project chapter turns its own hemisphere into view and separates its continents; `"first"` limits it to the first, `false` disables it |
 | `labels`                         | Replacements for individual interface labels, keyed as in `src/components/refract/copy.ts`                                                  |
 
@@ -134,8 +136,8 @@ To enable topic rotation, supply at least two topics and end `tagline` with the
 first one. In the example above, `Designing interfaces` becomes `Designing visual
 systems` and then `Designing open tools`. A nonmatching tagline stays static.
 
-The complete field limits and accepted values are defined in each template's
-`manifest.json`. Invalid options fail validation before publication. The effect
+The complete field limits and accepted values are defined once for both styles in
+`src/templates/_refract/options.schema.json`, which each manifest references. Invalid options fail validation before publication. The effect
 options control presentation only: the geographic and layered animations remain
 illustrations, not a claim about the author's work or scientific measurements.
 
@@ -266,8 +268,9 @@ defaults. The example author and project history are explicitly identified as
 fictional demonstration content. Replace them with your own work before publishing
 a personal site.
 
-The demo profiles live in `governance/templates/refract-light.json` and
-`governance/templates/refract-dark.json`; original demo artwork lives in
+Both styles demonstrate one profile, `governance/templates/refract.json`; the
+template id, address and theme colour are set per style when a demo is
+assembled. Original demo artwork lives in
 `governance/templates/assets/`. Verification prepares those inputs in a disposable
 project-local fixture. Do not copy a demo profile over an existing author profile.
 

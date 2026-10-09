@@ -1,0 +1,30 @@
+{
+  "title": "RefractDIN (DINish) per-script subsets",
+  "source": "https://github.com/playbeing/dinish",
+  "license": "SIL Open Font License 1.1",
+  "licenseFile": "public/templates/refract/fonts/DINish-OFL.txt",
+  "sourceFile": "src/components/refract/font/DINish-variable.woff2",
+  "sourceSha256": "89ccc932d2b4efda7ff5f6644195d7eb2660bba6aae50782b084428f075c1d98",
+  "method": "fontTools: width axis limited to 100-125, then subset by unicode-range; all layout features, names and the slnt and wght axes kept.",
+  "generator": "scripts/refract-font-subset.py",
+  "outputs": [
+    {
+      "file": "public/templates/refract/fonts/dinish-cyrillic.woff2",
+      "codepoints": 102,
+      "bytes": 45204,
+      "sha256": "920cf9a37172739d19abdb50b0b44215ba08b5a8f708ecdeb08c3272f2463f10"
+    },
+    {
+      "file": "public/templates/refract/fonts/dinish-latin-ext.woff2",
+      "codepoints": 224,
+      "bytes": 41548,
+      "sha256": "4a32077079def529e876071f258855ff1a4221a2c3c2e943d4870880044d9c55"
+    },
+    {
+      "file": "public/templates/refract/fonts/dinish-latin.woff2",
+      "codepoints": 222,
+      "bytes": 72488,
+      "sha256": "faabbe6fa0e5c7be2f9ad38231d2149ff92b9f1646bdae37f9d58d8763192f3c"
+    }
+  ]
+}

@@ -9,14 +9,13 @@ import {
   extensionOutputs,
 } from "../src/core/extensions.mjs";
 import { createProjectContext } from "../scripts/project-context.mjs";
+import { refractDemoProfile } from "./refract-fixture.mjs";
 import {
   collectAssets,
   publishedPortfolio,
 } from "../src/portfolio/content-policy.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
-const read = (file) =>
-  fs.readFile(path.join(root, file), "utf8").then(JSON.parse);
 /** The real dictionary module, importable beside a transpiled consumer. */
 async function copyModule() {
   const source = await fs.readFile(
@@ -52,7 +51,7 @@ test("Refract adapter handles empty options, disabled sections and variable proj
   const { createRefractData } = await import(
     `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`
   );
-  const config = await read("governance/templates/refract-light.json");
+  const config = await refractDemoProfile("light");
   const contextFor = (input) => {
     const config = publishedPortfolio(input);
     return {
@@ -108,7 +107,7 @@ test("Refract styles are independent CLI templates with identical configuration 
     "article.after",
   ]);
   for (const style of ["light", "dark"]) {
-    const config = await read(`governance/templates/refract-${style}.json`);
+    const config = await refractDemoProfile(style);
     const selected = resolveExtensions(config, catalog);
     assert.equal(selected.template.id, `refract-${style}`);
     assert.deepEqual(selected.plugins, []);
@@ -129,8 +128,8 @@ test("Refract styles are independent CLI templates with identical configuration 
 test("public Refract examples use neutral identity and original local demo artwork", async () => {
   const { validate } = await createProjectContext(root);
   const profiles = await Promise.all([
-    read("governance/templates/refract-light.json"),
-    read("governance/templates/refract-dark.json"),
+    refractDemoProfile("light"),
+    refractDemoProfile("dark"),
   ]);
   for (const config of profiles) {
     assert.ok(validate(config), JSON.stringify(validate.errors));
@@ -180,11 +179,7 @@ test("Refract wording follows the profile language and accepts per-label overrid
   );
   for (const key of refractCopyKeys) {
     assert.ok(chinese[key], `Chinese wording is missing ${key}`);
-    assert.notEqual(
-      chinese[key],
-      english[key],
-      `${key} was left untranslated`,
-    );
+    assert.notEqual(chinese[key], english[key], `${key} was left untranslated`);
   }
   assert.equal(refractCopy("zh-CN", { contact: "聊聊" }).contact, "聊聊");
   const catalog = loadCatalog(root);
@@ -195,7 +190,7 @@ test("Refract wording follows the profile language and accepts per-label overrid
       refractCopyKeys,
       `${id} accepts a different set of labels than the dictionary defines`,
     );
-    const config = await read(`governance/templates/${id}.json`);
+    const config = await refractDemoProfile(id.slice("refract-".length));
     config.template.settings[id].labels = { contact: "Say hello" };
     assert.equal(
       resolveExtensions(config, catalog).options.labels.contact,
@@ -204,4 +199,39 @@ test("Refract wording follows the profile language and accepts per-label overrid
     config.template.settings[id].labels = { contcat: "typo" };
     assert.throws(() => resolveExtensions(config, catalog));
   }
+});
+
+test("a profile may omit the blocks only Classic renders, and Classic insists on them", async () => {
+  const catalog = loadCatalog(root);
+  const classic = catalog.templates.find((item) => item.id === "classic");
+  assert.deepEqual(classic.requires, [
+    "photography",
+    "footerBook",
+    "interlude",
+  ]);
+  const lean = await refractDemoProfile("dark");
+  for (const block of classic.requires)
+    assert.equal(
+      block in lean,
+      false,
+      `The Refract demo still carries ${block}`,
+    );
+  const selected = resolveExtensions(lean, catalog);
+  const published = publishedPortfolio(lean, selected.template.sections);
+  assert.deepEqual(published.photography, { intro: "", images: [] });
+  assert.deepEqual(published.footerBook, { title: "", quote: "", author: "" });
+  assert.equal(published.interlude.image, "");
+  assert.deepEqual([...collectAssets(published.interlude)], []);
+  const switched = structuredClone(lean);
+  switched.template = { id: "classic", settings: {} };
+  assert.throws(
+    () => resolveExtensions(switched, catalog),
+    /classic needs "photography", "footerBook", "interlude" in portfolio\.json/,
+  );
+  switched.photography = { intro: "", images: [] };
+  switched.footerBook = { title: "Notes", quote: "Hello.", author: "A" };
+  assert.throws(
+    () => resolveExtensions(switched, catalog),
+    /classic needs "interlude" in portfolio\.json\. Add that block/,
+  );
 });

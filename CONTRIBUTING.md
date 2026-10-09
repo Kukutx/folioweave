@@ -20,7 +20,7 @@ content/resume/
 
 Do not hand-edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`; the content pipeline owns them.
 
-Reusable implementation belongs in the normal `src/` modules. Branded/example implementation belongs under `src/demo/`; thin filesystem route entry points remain under `src/app/`.
+Reusable implementation belongs in the normal `src/` modules. Branded/example implementation belongs under `src/demo/`; their thin filesystem route entry points live in the `src/app/(demo)/` route group.
 
 ## Required checks
 

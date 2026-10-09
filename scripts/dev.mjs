@@ -12,7 +12,8 @@ const watchedInputs = [
   {
     relativePath: "src/templates",
     recursive: true,
-    accepts: (name) => name.endsWith("manifest.json"),
+    accepts: (name) =>
+      name.endsWith("manifest.json") || name.endsWith(".schema.json"),
   },
   {
     relativePath: "src/plugins",

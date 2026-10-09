@@ -119,8 +119,10 @@ navigation and become visible when their feature is enabled.
 
 Bundled branded examples are implementation examples, not reusable configuration.
 Their product data, metadata, components, and route-specific styles live under
-`src/demo/`. App Router entry files stay under `src/app/` as thin filesystem route
-shims and may import that demo layer. Reusable modules under `src/config/`,
+`src/demo/`. Their App Router entry files are thin filesystem route shims in the
+`src/app/(demo)/` route group, which may import that demo layer; the group does
+not appear in URLs, and the route contract rejects an example page outside it or
+any other page inside it. Reusable modules under `src/config/`,
 `src/components/`, `src/content/`, `src/hooks/`, and `src/lib/` must not depend on
 `src/demo/`. `qa/demo-boundary.test.mjs` enforces that dependency direction and
 keeps known demo-brand copy out of the generic config/component layers.

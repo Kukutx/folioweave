@@ -6,6 +6,30 @@ import { collectAssets } from "../src/portfolio/content-policy.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const temporaryRoot = path.join(root, ".generated");
+const styles = {
+  light: { themeColor: "#faf9f6" },
+  dark: { themeColor: "#252423" },
+};
+
+/** Both styles demonstrate one profile; only the template id, the address and
+ * the browser theme colour follow the style. */
+export async function refractDemoProfile(style) {
+  if (!Object.hasOwn(styles, style)) throw new Error("Choose light or dark.");
+  const profile = JSON.parse(
+    await fs.readFile(
+      path.join(root, "governance/templates/refract.json"),
+      "utf8",
+    ),
+  );
+  const id = `refract-${style}`;
+  profile.template = {
+    id,
+    settings: { [id]: profile.template.settings.refract },
+  };
+  profile.site.origin = `https://folioweave-${id}.vercel.app`;
+  profile.site.themeColor = styles[style].themeColor;
+  return profile;
+}
 
 /** A public demo snapshot owns its profile and assets; it never copies author inputs. */
 export async function prepareRefractFixture({
@@ -122,12 +146,7 @@ export async function prepareRefractFixture({
       path.join(directory, "src/blog/custom-posts.json"),
       "[]\n",
     );
-    const profile = JSON.parse(
-      await fs.readFile(
-        path.join(root, `governance/templates/refract-${style}.json`),
-        "utf8",
-      ),
-    );
+    const profile = await refractDemoProfile(style);
     if (origin) profile.site.origin = origin;
     profile.$schema = "./portfolio.schema.json";
     await fs.writeFile(

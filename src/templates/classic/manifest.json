@@ -13,5 +13,6 @@
   },
   "slots": ["site.floating", "site.footer", "article.after"],
   "sections": ["home", "about", "interlude", "work", "photography", "contact"],
+  "requires": ["photography", "footerBook", "interlude"],
   "optionsSchema": { "type": "object", "additionalProperties": false }
 }

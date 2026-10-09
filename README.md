@@ -148,7 +148,7 @@ Reusable core
 
 Demo / examples
   src/demo/
-  thin filesystem route entries under src/app/
+  thin filesystem route entries under src/app/(demo)/
 
 Author inputs
   portfolio.json
