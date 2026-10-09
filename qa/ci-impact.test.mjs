@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   changedFilesBetween,
+  demoBranchIgnored,
   isDocumentationOnlyPath,
   requiresFullValidation,
   vercelChanges,
@@ -59,6 +60,29 @@ test("CI impact classification fails closed for runtime, author content and work
 
   assert.equal(requiresFullValidation([], "pull_request"), true);
   assert.equal(requiresFullValidation(["docs/README.md"], "push"), true);
+});
+
+test("demo projects build only the branches the public demos follow", () => {
+  const ignored = (env) => demoBranchIgnored(env);
+  assert.equal(
+    ignored({ FOLIO_DEMO: "light", VERCEL_GIT_COMMIT_REF: "main" }),
+    false,
+  );
+  assert.equal(
+    ignored({ FOLIO_DEMO: "light", VERCEL_GIT_COMMIT_REF: "develop" }),
+    false,
+  );
+  assert.equal(
+    ignored({ FOLIO_DEMO: "light", VERCEL_GIT_COMMIT_REF: "feature/x" }),
+    true,
+  );
+  assert.equal(
+    ignored({ FOLIO_DEMO: "light", VERCEL_GIT_COMMIT_REF: "personal" }),
+    true,
+  );
+  // An upload from the CLI has no branch; an ordinary site names no demo.
+  assert.equal(ignored({ FOLIO_DEMO: "light" }), false);
+  assert.equal(ignored({ VERCEL_GIT_COMMIT_REF: "feature/x" }), false);
 });
 
 test("Vercel ignore semantics skip documentation only and fail closed otherwise", () => {

@@ -31,6 +31,45 @@ export async function refractDemoProfile(style) {
   return profile;
 }
 
+/** Write the Refract demo's own inputs into a project tree: its profile, artwork
+ * and sample writing. The tree may be a disposable copy or a demo host's checkout;
+ * it must never be an author's working tree. */
+export async function stageRefractDemo(directory, { style, origin } = {}) {
+  await fs.mkdir(path.join(directory, "content/blogs"), { recursive: true });
+  const demoAssets = path.join(directory, "content/assets/portfolio/demo");
+  await fs.cp(path.join(root, "governance/templates/assets"), demoAssets, {
+    recursive: true,
+  });
+  await sharp(path.join(demoAssets, "social.svg"))
+    .png()
+    .toFile(path.join(demoAssets, "social.png"));
+  await sharp(path.join(demoAssets, "icon.svg"))
+    .resize(180, 180)
+    .png()
+    .toFile(path.join(demoAssets, "icon.png"));
+  // Keep only source inputs known to belong to this public demonstration.
+  await fs.writeFile(
+    path.join(directory, "src/blog/custom-posts.json"),
+    "[]\n",
+  );
+  const profile = await refractDemoProfile(style);
+  if (origin) profile.site.origin = origin;
+  profile.$schema = "./portfolio.schema.json";
+  await fs.writeFile(
+    path.join(directory, "portfolio.json"),
+    JSON.stringify(profile, null, 2) + "\n",
+  );
+  await fs.writeFile(
+    path.join(directory, "content/blogs/designing-with-constraints.md"),
+    `---\nid: refract-designing-with-constraints\ntitle: Designing with constraints\ndate: 2026-10-01\ndescription: A short example about making space for the ideas that matter.\ntags:\n  - Design\n  - Process\n---\n\n## Start with the question\n\nA useful constraint brings a project into focus. Before adding a feature, ask what it helps someone understand or accomplish.\n\nThis is sample writing for the Refract portfolio template. Replace it with your own notes.\n\n## Leave room to explore\n\nKeep the core readable, then use motion to give it context. A still page should tell the same story.\n\n| Principle | Practice |\n| --- | --- |\n| Clarity | Make the next step visible |\n| Care | Respect reduced motion |\n\n## Build in the open\n\nThe template shares its content and plugins with [FolioWeave](https://github.com/Kukutx/folioweave).\n\n\`\`\`css\n.example { color: inherit; }\n\`\`\`\n`,
+  );
+  await fs.writeFile(
+    path.join(directory, "content/blogs/observing-patterns.md"),
+    `---\nid: refract-observing-patterns\ntitle: Observing patterns\ndate: 2026-09-15\ndescription: Finding a visual rhythm in the ordinary.\ntags:\n  - Design\n---\n\n## Pay attention\n\nA notebook, a walk and a little time can be enough to find a new direction.\n\n## Make a study\n\nTurn an observation into a small experiment. The four projects in this demo are illustrative studies, not commissioned work.\n`,
+  );
+  return profile;
+}
+
 /** A public demo snapshot owns its profile and assets; it never copies author inputs. */
 export async function prepareRefractFixture({
   style,
@@ -130,37 +169,7 @@ export async function prepareRefractFixture({
       path.join(directory, "public/templates/refract"),
       { recursive: true },
     );
-    const demoAssets = path.join(directory, "content/assets/portfolio/demo");
-    await fs.cp(path.join(root, "governance/templates/assets"), demoAssets, {
-      recursive: true,
-    });
-    await sharp(path.join(demoAssets, "social.svg"))
-      .png()
-      .toFile(path.join(demoAssets, "social.png"));
-    await sharp(path.join(demoAssets, "icon.svg"))
-      .resize(180, 180)
-      .png()
-      .toFile(path.join(demoAssets, "icon.png"));
-    // Keep only source inputs known to belong to this public demonstration.
-    await fs.writeFile(
-      path.join(directory, "src/blog/custom-posts.json"),
-      "[]\n",
-    );
-    const profile = await refractDemoProfile(style);
-    if (origin) profile.site.origin = origin;
-    profile.$schema = "./portfolio.schema.json";
-    await fs.writeFile(
-      path.join(directory, "portfolio.json"),
-      JSON.stringify(profile, null, 2) + "\n",
-    );
-    await fs.writeFile(
-      path.join(directory, "content/blogs/designing-with-constraints.md"),
-      `---\nid: refract-designing-with-constraints\ntitle: Designing with constraints\ndate: 2026-10-01\ndescription: A short example about making space for the ideas that matter.\ntags:\n  - Design\n  - Process\n---\n\n## Start with the question\n\nA useful constraint brings a project into focus. Before adding a feature, ask what it helps someone understand or accomplish.\n\nThis is sample writing for the Refract portfolio template. Replace it with your own notes.\n\n## Leave room to explore\n\nKeep the core readable, then use motion to give it context. A still page should tell the same story.\n\n| Principle | Practice |\n| --- | --- |\n| Clarity | Make the next step visible |\n| Care | Respect reduced motion |\n\n## Build in the open\n\nThe template shares its content and plugins with [FolioWeave](https://github.com/Kukutx/folioweave).\n\n\`\`\`css\n.example { color: inherit; }\n\`\`\`\n`,
-    );
-    await fs.writeFile(
-      path.join(directory, "content/blogs/observing-patterns.md"),
-      `---\nid: refract-observing-patterns\ntitle: Observing patterns\ndate: 2026-09-15\ndescription: Finding a visual rhythm in the ordinary.\ntags:\n  - Design\n---\n\n## Pay attention\n\nA notebook, a walk and a little time can be enough to find a new direction.\n\n## Make a study\n\nTurn an observation into a small experiment. The four projects in this demo are illustrative studies, not commissioned work.\n`,
-    );
+    const profile = await stageRefractDemo(directory, { style, origin });
     if (linkDependencies)
       await fs.symlink(
         path.join(root, "node_modules"),

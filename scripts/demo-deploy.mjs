@@ -5,16 +5,13 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { prepareRefractFixture } from "../qa/refract-fixture.mjs";
 import { prepareContent, publishContent } from "./content-build.mjs";
 import { loadBranchPolicy, profileOwnedFiles } from "./profile-boundary.mjs";
+import { demoOrigin, demoProjects } from "./demo-targets.mjs";
 
 // The public demos are built from the repository's demo profiles, never from an
 // author profile. Each is an isolated snapshot uploaded to its own Vercel
 // project, so redeploying one cannot touch portfolio.json or a personal site.
 const root = path.resolve(import.meta.dirname, "..");
-const demos = {
-  classic: "folioweave-classic",
-  light: "folioweave-refract-light",
-  dark: "folioweave-refract-dark",
-};
+const demos = demoProjects;
 const args = process.argv.slice(2);
 const name = args.find((arg) => !arg.startsWith("--"));
 const preview = args.includes("--preview");
@@ -28,7 +25,7 @@ if (
   process.exit(1);
 }
 const project = demos[name];
-const origin = `https://${project}.vercel.app`;
+const origin = demoOrigin(name);
 
 /** The shared tree at its demo profile: no author content, media or generated profile output. */
 async function prepareClassicSnapshot() {

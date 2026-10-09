@@ -71,10 +71,15 @@ Add `--preview` to upload without promoting to production. The command never
 reads or writes `portfolio.json` or author media, works from any branch, and
 removes its snapshot when it finishes.
 
-The `Demos` workflow runs the same command for all three after every push to
-`main`. It stays off until the repository has a `VERCEL_TOKEN` secret and the
-variable `DEMO_DEPLOY` set to `true`; set `VERCEL_SCOPE` as a variable when the
-projects belong to a team other than the token's default.
+The three projects are also connected to this repository, so they redeploy
+themselves: a push to `main` updates all three with no command and no token. Each
+project carries two environment variables, `FOLIO_DEMO` (`classic`, `light` or
+`dark`) and `BOUNDARY_TARGET=snapshot`. `vercel.json` runs
+`scripts/demo-stage.mjs` before the build; in a project that names a demo it
+writes that demo's profile, artwork and sample writing into the host's checkout,
+and in every other project it does nothing. It refuses to run outside a Vercel
+build, because it replaces `portfolio.json`. Demo projects build `main` and
+`develop` only; other branches and pull requests are skipped.
 
 ## Other Next.js hosts
 
