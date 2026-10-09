@@ -239,18 +239,23 @@ export function validateExtensionOptions(manifest, options) {
   }
 }
 
-/** One resolver is used by publication, the CLI, security headers and QA. */
-export function resolveExtensions(config, catalog = loadCatalog()) {
-  const id = config.template?.id ?? "classic";
-  const template = catalog.templates.find((item) => item.id === id);
-  if (!template) throw new Error(`Unknown template: ${id}`);
+/** Publication insists on the optional profile blocks the selected template
+ * renders. Resolving extensions alone does not: it also serves partial configs. */
+export function requireProfileBlocks(config, template) {
   const missing = (template.requires ?? []).filter(
     (block) => config[block] === undefined,
   );
   if (missing.length)
     throw new Error(
-      `${id} needs ${missing.map((block) => `"${block}"`).join(", ")} in portfolio.json. Add ${missing.length > 1 ? "those blocks" : "that block"}, or select a template that does not use ${missing.length > 1 ? "them" : "it"}.`,
+      `${template.id} needs ${missing.map((block) => `"${block}"`).join(", ")} in portfolio.json. Add ${missing.length > 1 ? "those blocks" : "that block"}, or select a template that does not use ${missing.length > 1 ? "them" : "it"}.`,
     );
+}
+
+/** One resolver is used by publication, the CLI, security headers and QA. */
+export function resolveExtensions(config, catalog = loadCatalog()) {
+  const id = config.template?.id ?? "classic";
+  const template = catalog.templates.find((item) => item.id === id);
+  if (!template) throw new Error(`Unknown template: ${id}`);
   const options = config.template?.settings?.[id] ?? {};
   validateExtensionOptions(template, options);
   networkFromOptions(template, options);

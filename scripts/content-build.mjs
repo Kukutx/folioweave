@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import sharp from "sharp";
 import {
+  requireProfileBlocks,
   resolveExtensions,
   extensionOutputs,
 } from "../src/core/extensions.mjs";
@@ -51,6 +52,7 @@ export async function prepareContent(root = projectRoot, candidate) {
   if (!validate(config))
     throw new Error(`Invalid portfolio: ${JSON.stringify(validate.errors)}`);
   const extensions = resolveExtensions(config, context.catalog);
+  requireProfileBlocks(config, extensions.template);
   const custom = normalizeCustomBlogPosts([
     ...(await read("src/blog/custom-posts.json")),
     ...(await read("src/demo/custom-posts.json")),

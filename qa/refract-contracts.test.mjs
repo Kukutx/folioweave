@@ -5,6 +5,7 @@ import test from "node:test";
 import ts from "typescript";
 import {
   loadCatalog,
+  requireProfileBlocks,
   resolveExtensions,
   extensionOutputs,
 } from "../src/core/extensions.mjs";
@@ -224,14 +225,17 @@ test("a profile may omit the blocks only Classic renders, and Classic insists on
   assert.deepEqual([...collectAssets(published.interlude)], []);
   const switched = structuredClone(lean);
   switched.template = { id: "classic", settings: {} };
+  // Resolving alone accepts a partial profile; publication does not.
+  assert.equal(resolveExtensions(switched, catalog).template.id, "classic");
   assert.throws(
-    () => resolveExtensions(switched, catalog),
+    () => requireProfileBlocks(switched, classic),
     /classic needs "photography", "footerBook", "interlude" in portfolio\.json/,
   );
   switched.photography = { intro: "", images: [] };
   switched.footerBook = { title: "Notes", quote: "Hello.", author: "A" };
   assert.throws(
-    () => resolveExtensions(switched, catalog),
+    () => requireProfileBlocks(switched, classic),
     /classic needs "interlude" in portfolio\.json\. Add that block/,
   );
+  requireProfileBlocks(lean, selected.template);
 });
