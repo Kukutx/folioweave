@@ -68,9 +68,17 @@ Image dimensions are measured automatically. Use browser paths such as `/portfol
 ## 5. Validate before deployment
 
 ```bash
-npm run check
-npm run audit:prod
+npm run build
 ```
+
+The build publishes and validates your content, then compiles the site; if it
+passes, the site is deployable. `npm run folio -- doctor` checks the selected
+template and plugins without building. `npm run check` is the maintainers' gate
+for changes to shared code and is not needed for a personal site.
+
+On Vercel, set the project's production branch to `personal`
+(Settings → Environments → Production → Branch Tracking); a new project tracks
+`main`, which carries the bundled demo profile.
 
 For ordinary content editing, `npm run content:check` is a faster sanity check.
 For design verification, `npm run qa:refract` builds and checks both Refract styles

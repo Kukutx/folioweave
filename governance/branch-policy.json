@@ -10,10 +10,7 @@
     "src/portfolio/config.generated.ts",
     "src/portfolio/media.generated.ts",
     "src/blog/posts.generated.ts",
-    "src/blog/custom-posts.generated.ts",
-    "src/portfolio/template.generated.ts",
-    "src/portfolio/plugins.generated.tsx",
-    "src/portfolio/security.generated.json"
+    "src/blog/custom-posts.generated.ts"
   ],
   "demoProfile": "governance/demo-portfolio.json",
   "personalOnlyPrefixes": [

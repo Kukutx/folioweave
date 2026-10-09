@@ -191,10 +191,17 @@ export function loadCatalog(root = implementationRoot) {
 export function validateExtensionOptions(manifest, options) {
   const validate =
     optionValidators.get(manifest) ?? optionsValidator(manifest.optionsSchema);
-  if (!validate(options))
+  if (!validate(options)) {
+    const problems = validate.errors.map((error) => {
+      const where = error.instancePath.slice(1).replaceAll("/", ".");
+      const name =
+        error.params?.propertyName ?? error.params?.additionalProperty;
+      return `  - ${where || "options"}${name ? ` "${name}"` : ""}: ${error.message}`;
+    });
     throw new Error(
-      `${manifest.id} options: ${JSON.stringify(validate.errors)}`,
+      `${manifest.id} options are not valid:\n${[...new Set(problems)].join("\n")}\nSet them in portfolio.json or pass --options <file.json> to the CLI; ${manifest.id}'s manifest.json lists the accepted fields.`,
     );
+  }
 }
 
 /** One resolver is used by publication, the CLI, security headers and QA. */
@@ -248,6 +255,19 @@ function resolvedNetwork(resolved) {
   return network;
 }
 
+const viewTarget = (filename) =>
+  `src/portfolio/template-${filename}.generated.ts`;
+const slotTarget = (filename) =>
+  `src/portfolio/plugins-${filename}.generated.tsx`;
+/** Every file a template or plugin selection rewrites. The branch policy reads
+ * this list, so a new view or slot is profile-owned the moment it is declared. */
+export const SELECTION_OUTPUTS = Object.freeze([
+  "src/portfolio/security.generated.json",
+  "src/portfolio/template.generated.ts",
+  ...Object.values(points.views).map(viewTarget),
+  ...Object.values(points.slots).map(slotTarget),
+]);
+
 export function extensionOutputs(resolved) {
   const { template, options, plugins } = resolved;
   const entry = (kind, manifest, filename = manifest.entry) =>
@@ -262,13 +282,13 @@ export function extensionOutputs(resolved) {
       contents: `// Generated configuration only; never import view implementations here.\nimport 'server-only';\nexport const templateId = ${JSON.stringify(template.id)};\nexport const templateOptions = ${JSON.stringify(options)};\n`,
     },
     ...Object.entries(points.views).map(([view, filename]) => ({
-      target: `src/portfolio/template-${filename}.generated.ts`,
+      target: viewTarget(filename),
       contents: `// Generated route entry.\nimport 'server-only';\nimport View from ${JSON.stringify(entry("templates", template, template.entries[view]))};\nimport type { TemplateModule } from '@/core/contracts';\nconst ActiveView: TemplateModule[${JSON.stringify(view)}] = View;\nexport default ActiveView;\n`,
     })),
     ...Object.entries(points.slots).map(([slot, filename]) => {
       const selected = plugins.filter((plugin) => plugin.slot === slot);
       return {
-        target: `src/portfolio/plugins-${filename}.generated.tsx`,
+        target: slotTarget(filename),
         contents: `// Generated slot entry; imports only plugins for this slot.\nimport 'server-only';\nimport type { PluginContext } from '@/core/contracts';\n${selected.length ? "import { PluginBoundary } from '@/core/plugin-boundary';\n" : ""}${selected.map((plugin, i) => `import Plugin${i} from ${JSON.stringify(entry("plugins", plugin.manifest))};`).join("\n")}\nexport default function PluginSlot(${selected.length ? "{ context }" : "_props"}: { context: PluginContext }) {\n${selected.length ? "" : "  void _props;\n"}  return ${selected.length ? `<>${selected.map((plugin, i) => `<PluginBoundary key={${JSON.stringify(plugin.id)} + ":" + (context.article?.id ?? "site")} name={${JSON.stringify(plugin.manifest.name)}}><Plugin${i} options={${JSON.stringify(plugin.options)}} context={context} /></PluginBoundary>`).join("")}</>` : "null"};\n}\n`,
       };
     }),

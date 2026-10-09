@@ -226,8 +226,12 @@ are evidence for those states, not a guarantee about every browser or device.
 Reviewed, platform-specific visual baselines are tracked separately from ignored
 test artifacts. CI enforces geometry and pixel budgets; see [VISUAL-QA.md](VISUAL-QA.md)
 for explicit baseline approval, cross-engine checks and throttled motion budgets.
-`npm run check` runs lint then the production build, whose prebuild runs content
-generation/validation once and whose compiler performs TypeScript checking.
+`npm run build` publishes and validates the author's content, then compiles; the
+compiler performs TypeScript checking. It runs no repository test suites, so a
+site builds the same way on an author's machine and on a host. `npm run check`
+is the maintainer gate: lint, the branch boundary, the content test suites, then
+that build. The profile publication guard lives inside `content:build` and
+applies to both.
 Keep validated byte snapshots and atomic publication: optimize further asset
 scans only after measuring larger content sets, not by weakening integrity checks.
 

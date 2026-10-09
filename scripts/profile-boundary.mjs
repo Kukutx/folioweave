@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
+import { SELECTION_OUTPUTS } from "../src/core/extensions.mjs";
 
 function readJson(filename) {
   return JSON.parse(fs.readFileSync(filename, "utf8"));
@@ -9,6 +10,12 @@ function readJson(filename) {
 
 export function loadBranchPolicy(root) {
   return readJson(path.join(root, "governance", "branch-policy.json"));
+}
+
+/** Files that follow the author's profile: its content outputs from the policy
+ * plus whatever the selected template and plugins regenerate. */
+export function profileOwnedFiles(policy) {
+  return [...new Set([...policy.profileSpecificFiles, ...SELECTION_OUTPUTS])];
 }
 
 export function resolveBoundaryTarget(root, env = process.env) {

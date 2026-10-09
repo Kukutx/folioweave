@@ -29,8 +29,10 @@ Before opening a pull request:
 ```bash
 npm run check
 npm run audit:prod
-npm run qa:boundary
 ```
+
+`check` runs lint, the branch boundary (`qa:boundary`), the content test suites
+and the production build. A plain `npm run build` validates content only.
 
 For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite:
 
