@@ -8,7 +8,7 @@ FolioWeave brings three portfolio designs into one application: Classic, Refract
 
 | Template      | CLI id          | Design                                                                                         | Demo                                                     |
 | ------------- | --------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                     | —                                                        |
+| Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                     | [Open demo](https://folioweave-classic.vercel.app)       |
 | Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms | [Open demo](https://folioweave-refract-light.vercel.app) |
 | Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette    | [Open demo](https://folioweave-refract-dark.vercel.app)  |
 
@@ -184,7 +184,14 @@ Fast content validation:
 npm run content:check
 ```
 
-Code/build validation:
+Production build, which publishes and validates your content first:
+
+```bash
+npm run build
+```
+
+That is everything a personal site needs. Maintainers changing shared code run the
+full gate, which adds lint, the branch boundary and the content test suites:
 
 ```bash
 npm run check

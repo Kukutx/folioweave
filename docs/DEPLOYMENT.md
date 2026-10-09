@@ -53,22 +53,28 @@ skipped, while the latter must still build normally.
 
 After attaching a custom domain, update `site.origin`, rebuild, and redeploy so canonical URLs, sitemap, Open Graph metadata, and JSON-LD point at the real production origin.
 
-## The public Refract demos
+## The public demos
 
-The two Refract demos are not built from a branch: `main` always carries the
-Classic demo profile. Each is an isolated snapshot assembled from
-`governance/templates/` and uploaded to its own Vercel project
-(`folioweave-refract-light`, `folioweave-refract-dark`). After changing Refract or
-its demo profiles, a maintainer signed in to the Vercel CLI redeploys them with:
+Each template has a public demo in its own Vercel project: `folioweave-classic`,
+`folioweave-refract-light` and `folioweave-refract-dark`. None is built from a
+branch. A demo is an isolated snapshot of the shared code with a demo profile
+(`governance/demo-portfolio.json` for Classic, `governance/templates/` for
+Refract), uploaded with the Vercel CLI:
 
 ```bash
+npm run demo:deploy -- classic
 npm run demo:deploy -- light
 npm run demo:deploy -- dark
 ```
 
 Add `--preview` to upload without promoting to production. The command never
-reads or writes `portfolio.json` or author media, and removes its snapshot when it
-finishes.
+reads or writes `portfolio.json` or author media, works from any branch, and
+removes its snapshot when it finishes.
+
+The `Demos` workflow runs the same command for all three after every push to
+`main`. It stays off until the repository has a `VERCEL_TOKEN` secret and the
+variable `DEMO_DEPLOY` set to `true`; set `VERCEL_SCOPE` as a variable when the
+projects belong to a team other than the token's default.
 
 ## Other Next.js hosts
 

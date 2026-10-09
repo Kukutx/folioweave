@@ -191,10 +191,12 @@ test("only the fast-path notices are skipped by default; every other gated step 
 });
 
 test("workflow actions are GitHub-owned and pinned to immutable SHAs", () => {
-  const workflow = fs.readFileSync(
-    new URL("../.github/workflows/ci.yml", import.meta.url),
-    "utf8",
-  );
+  const directory = new URL("../.github/workflows/", import.meta.url);
+  const workflows = fs.readdirSync(directory);
+  assert.ok(workflows.includes("ci.yml"));
+  const workflow = workflows
+    .map((file) => fs.readFileSync(new URL(file, directory), "utf8"))
+    .join("\n");
   const actionUses = [
     ...workflow.matchAll(/^\s*- uses:\s*([^\s#]+)(?:\s+#.*)?$/gm),
   ].map(([, action]) => action);
