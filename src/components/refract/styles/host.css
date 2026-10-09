@@ -1,0 +1,39 @@
+/* Host integration tokens: plugin roots stay outside the template's reset. */
+html[data-template^="refract-"] {
+  --fw-font: "RefractDIN", system-ui, sans-serif;
+  --fw-surface: #252423;
+  --fw-text: #f6f4f2;
+  --fw-border: #ffffff26;
+  --fw-accent: #ff4b4b;
+  --fw-on-accent: #111;
+  --fw-radius: 12px;
+  --fw-floating-right: max(24px, calc((100vw - 1500px) / 2 + 24px));
+  --fw-floating-bottom-right: calc(4rem + 80px);
+  --fw-floating-bottom-center: calc(4rem + 64px);
+}
+html[data-template="refract-light"] {
+  --fw-surface: #fff;
+  --fw-text: #111;
+  --fw-border: #00000026;
+  --fw-accent: #c13737;
+  --fw-on-accent: #fff;
+}
+@media (max-width: 899px) {
+  html[data-template^="refract-"] {
+    --fw-floating-right: 16px;
+    --fw-floating-bottom-right: calc(
+      max(1rem, env(safe-area-inset-bottom)) + 96px
+    );
+    --fw-floating-bottom-center: calc(
+      max(1rem, env(safe-area-inset-bottom)) + 64px
+    );
+  }
+}
+@media (min-width: 1200px) {
+  :where(.refract-site) .modules-chapter .reference-text {
+    max-height: calc(100svh - 128px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    overscroll-behavior: contain;
+  }
+}

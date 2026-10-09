@@ -54,8 +54,30 @@ try {
               "important",
             ),
           );
+          // Bringing the photograph into view may still be easing. Compare
+          // positions at rest, or the easing itself reads as a shifted viewport.
+          const atRest = () =>
+            page.evaluate(
+              () =>
+                new Promise((resolve) => {
+                  let previous = scrollY,
+                    still = 0;
+                  const started = performance.now();
+                  const check = () => {
+                    still =
+                      scrollY === previous && !window.__lenis?.isScrolling
+                        ? still + 1
+                        : 0;
+                    previous = scrollY;
+                    if (still >= 4 || performance.now() - started > 3000)
+                      resolve(scrollY);
+                    else requestAnimationFrame(check);
+                  };
+                  requestAnimationFrame(check);
+                }),
+            );
           for (let cycle = 0; cycle < 3; cycle++) {
-            const scrollBefore = await page.evaluate(() => scrollY);
+            const scrollBefore = await atRest();
             await page.keyboard.press("Enter");
             const dialog = page.getByRole("dialog", {
               name: "Photography viewer",
@@ -75,14 +97,8 @@ try {
             await page.keyboard.press("ArrowRight");
             await page.keyboard.press("Escape");
             await dialog.waitFor({ state: "detached" });
-            await page.evaluate(
-              () =>
-                new Promise((resolve) =>
-                  requestAnimationFrame(() => requestAnimationFrame(resolve)),
-                ),
-            );
             assert.ok(
-              Math.abs((await page.evaluate(() => scrollY)) - scrollBefore) < 1,
+              Math.abs((await atRest()) - scrollBefore) < 1,
               "modal close shifts the viewport",
             );
             assert.deepEqual(

@@ -38,7 +38,11 @@ async function describeHeldLock(lockPath) {
 }
 
 /** Commit a prepared set with rollback. Never use this for author-owned files. */
-export async function commitGeneratedOutputs(root, outputs) {
+export async function commitGeneratedOutputs(
+  root,
+  outputs,
+  { beforeCommit } = {},
+) {
   root = path.resolve(root);
   const generated = path.join(root, ".generated");
   await fs.mkdir(generated, { recursive: true });
@@ -71,12 +75,21 @@ export async function commitGeneratedOutputs(root, outputs) {
       const allowed =
         relative === "public/portfolio" ||
         relative === ".generated/publication.json" ||
+        relative === "src/portfolio/security.generated.json" ||
         /^src\/blog\/[\w-]+\.generated\.ts$/.test(relative) ||
-        /^src\/portfolio\/(?:[\w-]+\.generated\.ts|portfolio-validator\.(?:cjs|d\.cts))$/.test(
+        /^src\/portfolio\/(?:[\w-]+\.generated\.tsx?|portfolio-validator\.(?:cjs|d\.cts))$/.test(
           relative,
         );
       if (!target.startsWith(`${root}${path.sep}`) || !allowed)
         throw new Error(`Unsafe generated target: ${target}`);
+      if (
+        !output.files &&
+        (await fs.readFile(target, "utf8").catch((error) => {
+          if (error.code === "ENOENT") return null;
+          throw error;
+        })) === output.contents
+      )
+        continue;
       const staged = path.join(transaction, `next-${index}`);
       const backup = path.join(transaction, `previous-${index}`);
       if (output.files) {
@@ -113,6 +126,7 @@ export async function commitGeneratedOutputs(root, outputs) {
         2,
       ),
     );
+    await beforeCommit?.();
     for (const item of journal) {
       await fs.mkdir(path.dirname(item.target), { recursive: true });
       try {

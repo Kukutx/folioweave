@@ -1,0 +1,11 @@
+{
+  "title": "Geographic mirror fragments",
+  "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_land.geojson",
+  "license": "Public domain",
+  "licenseUrl": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "sourceSha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+  "output": "src/components/refract/lib/continent-mesh.json",
+  "outputSha256": "f719ac47a200d76a24b93317c2acfbaa1d461327dc093c0db302f23be237c320",
+  "method": "Physical coastlines and geographic masks, deterministic irregular Voronoi fracture cells with 3-degree contour sampling. Shards retain geographic samples and return to the curved sphere; hidden hemispheres are clipped before projection.",
+  "generator": "scripts/refract-continental-mesh.py"
+}

@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import { RESUME_SOURCE } from "../scripts/resume-core.mjs";
 
@@ -33,7 +33,7 @@ export async function withResumeProject(
   profile = resumeProfile(),
 ) {
   const project = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-resume-test-"),
+    path.join(qaTempRoot, "folioweave-resume-test-"),
   );
   try {
     await fs.copyFile(

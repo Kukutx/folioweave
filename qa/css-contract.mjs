@@ -35,7 +35,9 @@ for (const file of await walk(root)) {
     const family = body.match(/font-family\s*:\s*([^;]+)/i)?.[1]?.trim().replace(/^['"]|['"]$/g, "") ?? "";
     const style = body.match(/font-style\s*:\s*([^;]+)/i)?.[1]?.trim() ?? "normal";
     const weight = body.match(/font-weight\s*:\s*([^;]+)/i)?.[1]?.trim() ?? "normal";
-    return family ? `${family}|${style}|${weight}` : "";
+    // One typeface split by script is several faces, told apart by their range.
+    const range = body.match(/unicode-range\s*:\s*([^;]+)/i)?.[1]?.replace(/\s+/g, " ").trim() ?? "";
+    return family ? `${family}|${style}|${weight}${range ? `|${range}` : ""}` : "";
   }).filter(Boolean);
   for (const name of keyframes) register(keyframeOwners, name, relative);
   for (const face of faces) register(faceOwners, face, relative);

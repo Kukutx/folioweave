@@ -105,8 +105,8 @@ inputs when resolving schema/content conflicts and regenerate outputs afterward.
 ## Demo code and licensing
 
 Branded/example route implementation is isolated under `src/demo/`. Thin Next.js
-route entries remain under `src/app/` because App Router routes are filesystem
-owned. `features.demoRoutes: false` removes demo routes from publication, sitemap,
+route entries sit together in the `src/app/(demo)/` route group because App
+Router routes are filesystem owned. `features.demoRoutes: false` removes demo routes from publication, sitemap,
 navigation, and browser targets while leaving example source available.
 
 The MIT license covers software and documentation, not automatically every

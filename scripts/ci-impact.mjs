@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import { pathToFileURL } from "node:url";
+import { demoBranches } from "./demo-targets.mjs";
 
 const documentationOnlyFiles = new Set([
   "README.md",
@@ -15,7 +16,11 @@ const documentationOnlyFiles = new Set([
 ]);
 
 export function isDocumentationOnlyPath(file) {
-  return file.startsWith("docs/") || documentationOnlyFiles.has(file);
+  return (
+    (file.startsWith("docs/") &&
+      !/\.(?:[cm]?[jt]sx?|css|html|json)$/i.test(file)) ||
+    documentationOnlyFiles.has(file)
+  );
 }
 
 /**
@@ -54,6 +59,17 @@ export function changedFiles(baseRef, root = process.cwd()) {
   return changedFilesBetween(`origin/${baseRef}`, "HEAD", root);
 }
 
+/** A demo project follows the branches the public demos are built from; every
+ * other branch and pull request would only queue builds nobody looks at. A
+ * deployment uploaded by the CLI has no branch and always proceeds. */
+export function demoBranchIgnored(env = process.env) {
+  return Boolean(
+    env.FOLIO_DEMO &&
+    env.VERCEL_GIT_COMMIT_REF &&
+    !demoBranches.includes(env.VERCEL_GIT_COMMIT_REF),
+  );
+}
+
 export function vercelIgnoreExitCode(changes) {
   return requiresFullValidation(changes, "pull_request") ? 1 : 0;
 }
@@ -79,6 +95,13 @@ const describe = (changes) =>
 
 function main() {
   if (process.argv.includes("--vercel-ignore")) {
+    if (demoBranchIgnored()) {
+      console.log(
+        `Demo projects follow ${demoBranches.join(" and ")}; skipping this branch.`,
+      );
+      process.exitCode = 0;
+      return;
+    }
     const changes = vercelChanges();
     if (!changes) {
       console.log(
