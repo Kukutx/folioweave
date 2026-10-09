@@ -177,6 +177,62 @@ async function checkScene(base, style, directory, { width, fallback }) {
         true,
       );
     }
+    if (width >= 1200) {
+      // The opening globe turns under a drag and gives itself back afterwards.
+      const turn = () =>
+        page
+          .locator(".portfolio-experience")
+          .evaluate((element) => element.dataset.globeTurn ?? null);
+      const offered = (state) =>
+        page.waitForFunction(
+          (expected) =>
+            (document.querySelector(".portfolio-experience").dataset
+              .globeTurn ?? null) === expected,
+          state,
+        );
+      const pause = page.locator(".motion-button");
+      const center = { x: width / 2, y: 450 };
+      await page.mouse.move(center.x, center.y);
+      await offered("ready");
+      await pause.evaluate((button) => button.click());
+      await offered(null);
+      await page.mouse.move(center.x + 4, center.y);
+      await page.waitForTimeout(100);
+      assert.equal(await turn(), null, "A paused scene offered to be turned");
+      await pause.evaluate((button) => button.click());
+      await page.mouse.move(center.x, center.y);
+      await offered("ready");
+      await page.mouse.down();
+      assert.equal(await turn(), "active");
+      for (let step = 1; step <= 8; step++) {
+        await page.mouse.move(center.x + step * 30, center.y);
+        await page.waitForTimeout(20);
+      }
+      assert.equal(await turn(), "active", "The drag let go before release");
+      await page.mouse.up();
+      await offered(null);
+      await page.mouse.move(center.x + 239, center.y);
+      await offered("ready");
+      await page.mouse.move(40, 40);
+      await offered(null);
+      assert.equal(
+        new URL(page.url()).hash,
+        "",
+        "Turning the globe navigated the page",
+      );
+      await page.mouse.move(center.x, center.y);
+      await offered("ready");
+      await page.evaluate(() =>
+        document
+          .getElementById("overview")
+          .scrollIntoView({ behavior: "instant" }),
+      );
+      await offered(null);
+      await page.evaluate(() =>
+        window.scrollTo({ top: 0, behavior: "instant" }),
+      );
+      await page.waitForTimeout(250);
+    }
     if (retain && !fallback) {
       const screenshots = path.join(directory, "screens");
       await fs.mkdir(screenshots, { recursive: true });

@@ -414,8 +414,12 @@ export function usePortfolioScene(stylePreset: StylePreset) {
         );
         earth.current?.setMobileLayout(null);
       }
-      // Scrolling on takes the globe back from the reader's hand.
-      if (turn.pointer !== null && p > heroSpinLimit) releaseTurn();
+      // Scrolling on takes the globe back from the reader's hand, and the
+      // grab cursor with it even if the pointer has not moved since.
+      if (p > heroSpinLimit && container.dataset.globeTurn) {
+        if (turn.pointer !== null) releaseTurn();
+        else delete container.dataset.globeTurn;
+      }
       earth.current?.setProgress(p);
       const light = sceneLight(p, stylePreset);
       const color = sceneBackground(light, stylePreset, intro.progress);
@@ -744,6 +748,9 @@ export function usePortfolioScene(stylePreset: StylePreset) {
   useEffect(() => {
     pausedRef.current = paused;
     earth.current?.setPaused(paused);
+    // A paused scene is not turnable; withdraw the grab cursor at once.
+    if (paused && root.current?.dataset.globeTurn === "ready")
+      delete root.current.dataset.globeTurn;
   }, [paused]);
 
   useEffect(() => {
