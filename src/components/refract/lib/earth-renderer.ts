@@ -28,7 +28,10 @@ import {
 } from "./scene-theme";
 import {
   assemblyGlint,
+  continentalChapter,
   continentalPhase,
+  continentalYaw,
+  heroSpin,
   createContinentalPlayback,
   researchBlend,
   sceneExit,
@@ -83,6 +86,8 @@ export type EarthRenderer = {
   setMobileLayout(layout: { centerY: number; radius: number } | null): void;
   setToolsBounds(bounds: ReadingBounds | null): void;
   setProgress(progress: number): void;
+  /** Extra yaw from the reader turning the opening globe by hand, in radians. */
+  setSpin(yaw: number): void;
   setPaused(paused: boolean): void;
   /** Keep the latest pose without drawing while the parent hides the stage. */
   setSuspended(suspended: boolean): void;
@@ -138,6 +143,7 @@ const INERT_RENDERER: EarthRenderer = {
   setMobileLayout() {},
   setToolsBounds() {},
   setProgress() {},
+  setSpin() {},
   setPaused() {},
   setSuspended() {},
   setReducedMotion() {},
@@ -171,7 +177,8 @@ export function createEarthRenderer(
     dpr = 1,
     mobile = false;
   let progress = 0,
-    clock = 0;
+    clock = 0,
+    spin = 0;
   let snapshot = false;
   const continentalPlayback = createContinentalPlayback(
     options.continentalDrift,
@@ -258,13 +265,18 @@ export function createEarthRenderer(
     const continental = snapshot
       ? continentalPhase(p, options.continentalDrift, reducedMotion, clock)
       : continentalPlayback.sample(p, clock, reducedMotion);
-    const local = options.continentalDrift
-      ? (p - options.continentalDrift.range[0]) /
-        (options.continentalDrift.range[1] - options.continentalDrift.range[0])
-      : 1;
+    const chapter = continentalChapter(p, options.continentalDrift);
+    const range = options.continentalDrift
+      ? options.continentalDrift.ranges[chapter]
+      : undefined;
+    const local = range ? (p - range[0]) / (range[1] - range[0]) : 1;
     const continentalVisibility = 1 - smooth(0.75, 1, local);
     const assemblyScale = 1 - stack * (1 - stackScale);
-    const globeYaw = initialLongitude + (reducedMotion ? 0 : clock * 0.12);
+    // A hand-turned globe belongs to the opening only: the offset is gone
+    // before the first transformation, so every later pose stays repeatable.
+    const globeYaw =
+      initialLongitude +
+      (reducedMotion ? 0 : clock * 0.12 + spin * heroSpin(p));
     // Turn the land-rich hemisphere into view during playback, then return to
     // the same uninterrupted globe rotation. Derive the turn from entry time
     // so crossing +/- PI cannot flip the chosen direction between frames.
@@ -272,9 +284,10 @@ export function createEarthRenderer(
       Math.max(0, continental) *
       (options.continentalDrift ? (options.continentalDrift.duration ?? 8) : 8);
     const entryYaw = globeYaw - elapsed * 0.12;
+    const focus = continentalYaw(chapter);
     const landTurn = Math.atan2(
-      Math.sin(-0.38 - entryYaw),
-      Math.cos(-0.38 - entryYaw),
+      Math.sin(focus - entryYaw),
+      Math.cos(focus - entryYaw),
     );
     const landFocus =
       continental < 0
@@ -1546,6 +1559,12 @@ export function createEarthRenderer(
       progress = next;
       continentalPlayback.sample(progress, clock, reducedMotion);
       if (!autoStart) draw();
+      else wake();
+    },
+    setSpin(value) {
+      if (destroyed || !Number.isFinite(value) || spin === value) return;
+      spin = value;
+      if (!autoStart || paused || reducedMotion) draw();
       else wake();
     },
     setMobileLayout(layout) {

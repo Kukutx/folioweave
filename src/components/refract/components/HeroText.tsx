@@ -16,7 +16,7 @@ export function HeroText({
   reduced: boolean;
   entrance: "waiting" | "animate" | "static";
 }) {
-  const { profile, siteConfig } = useRefractData();
+  const { copy, profile, siteConfig } = useRefractData();
   const root = useRef<HTMLDivElement>(null);
   const topics = siteConfig.hero.rotatingTopics;
   const canRotate = topics.length > 1 && profile.tagline.endsWith(topics[0]);
@@ -187,7 +187,9 @@ export function HeroText({
           .filter(Boolean)
           .join(", ")}
       </p>
-      <span className="sr-only">Based in {profile.location}</span>
+      <span className="sr-only">
+        {copy.basedIn} {profile.location}
+      </span>
     </div>
   );
 }

@@ -18,7 +18,7 @@ const navigationPaths: Record<string, string> = {
 };
 
 export function SiteHeader() {
-  const { profile, sections } = useRefractData();
+  const { copy, profile, sections } = useRefractData();
   const [open, setOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -205,7 +205,7 @@ export function SiteHeader() {
         className="menu-backdrop"
         inert={!open}
         tabIndex={-1}
-        aria-label="Close navigation"
+        aria-label={copy.closeNavigation}
         onClick={() => setOpen(false)}
       />
       <button
@@ -214,7 +214,7 @@ export function SiteHeader() {
         type="button"
         aria-expanded={open}
         aria-controls="main-navigation"
-        aria-label={open ? "Close navigation" : "Open navigation"}
+        aria-label={open ? copy.closeNavigation : copy.openNavigation}
         onClick={() => setOpen(!open)}
       >
         <svg
@@ -231,7 +231,7 @@ export function SiteHeader() {
       <nav
         ref={menu}
         id="main-navigation"
-        aria-label="Main navigation"
+        aria-label={copy.mainNavigation}
         onBlur={(event) => {
           if (
             !event.currentTarget.contains(event.relatedTarget) &&

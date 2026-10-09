@@ -4,9 +4,16 @@ import type { BlogPostSummary } from "@/blog/types";
 import type { TemplateModule, TemplateContext } from "@/core/contracts";
 import { ArticleBody } from "@/components/blog/article-body";
 import { tagHref } from "@/blog/taxonomy.mjs";
+import { refractCopy, type RefractCopy } from "@/components/refract/copy";
 import styles from "./writing.module.css";
 
 type Style = "light" | "dark";
+
+const copyFor = (context: TemplateContext) =>
+  refractCopy(
+    context.site.identity.locale,
+    (context.options as { labels?: Partial<RefractCopy> }).labels,
+  );
 
 function WritingShell({
   context,
@@ -17,18 +24,19 @@ function WritingShell({
   style: Style;
   children: ReactNode;
 }) {
+  const copy = copyFor(context);
   return (
     <div className={styles.shell} data-style={style}>
       <a className={styles.skip} href="#writing-main">
-        Skip to content
+        {copy.skipToContent}
       </a>
       <header className={styles.header}>
         <Link className={styles.wordmark} href="/">
           {context.site.identity.name}
         </Link>
-        <nav aria-label="Main navigation">
-          <Link href="/">Home</Link>
-          <Link href="/blogs">Writing</Link>
+        <nav aria-label={copy.mainNavigation}>
+          <Link href="/">{copy.home}</Link>
+          <Link href="/blogs">{copy.writing}</Link>
         </nav>
       </header>
       {children}
@@ -36,7 +44,7 @@ function WritingShell({
         <span>
           © {context.site.copyrightYear} {context.site.identity.name}
         </span>
-        <a href={`mailto:${context.site.contact.email}`}>Get in touch ↗</a>
+        <a href={`mailto:${context.site.contact.email}`}>{copy.getInTouch} ↗</a>
       </footer>
     </div>
   );
@@ -54,15 +62,17 @@ function dateLabel(date: string, locale: string) {
 function Tags({
   labels,
   active,
+  copy,
 }: {
   labels: readonly string[];
   active?: string;
+  copy: RefractCopy;
 }) {
   if (!labels.length) return null;
   return (
-    <nav className={styles.tags} aria-label="Article topics">
+    <nav className={styles.tags} aria-label={copy.articleTopics}>
       <Link href="/blogs" aria-current={!active ? "page" : undefined}>
-        All
+        {copy.allTopics}
       </Link>
       {labels.map((label) => (
         <Link
@@ -80,11 +90,13 @@ function Tags({
 function PostList({
   posts,
   locale,
+  copy,
 }: {
   posts: readonly BlogPostSummary[];
   locale: string;
+  copy: RefractCopy;
 }) {
-  if (!posts.length) return <p className={styles.empty}>No articles yet.</p>;
+  if (!posts.length) return <p className={styles.empty}>{copy.noArticles}</p>;
   return (
     <ol className={styles.list}>
       {posts.map((post) => (
@@ -92,7 +104,9 @@ function PostList({
           <Link className={styles.postLink} href={post.href}>
             <div className={styles.meta}>
               <time dateTime={post.date}>{dateLabel(post.date, locale)}</time>
-              <span>{post.readingMinutes} min read</span>
+              <span>
+                {post.readingMinutes} {copy.minRead}
+              </span>
             </div>
             <div>
               <h2>{post.title}</h2>
@@ -118,6 +132,7 @@ export function RefractBlogIndex({
   context,
   style,
 }: ComponentProps<TemplateModule["BlogIndex"]> & { style: Style }) {
+  const copy = copyFor(context);
   const labels = [...new Set(posts.flatMap((post) => [...post.tags]))].sort(
     (a, b) => a.localeCompare(b, context.site.identity.locale),
   );
@@ -125,12 +140,16 @@ export function RefractBlogIndex({
     <WritingShell context={context} style={style}>
       <main id="writing-main" className={styles.index}>
         <div className={styles.intro}>
-          <p className={styles.eyebrow}>Notes & perspectives</p>
+          <p className={styles.eyebrow}>{copy.writingEyebrow}</p>
           <h1>{context.writing.heading ?? context.writing.title}</h1>
           <p>{context.writing.description}</p>
         </div>
-        <Tags labels={labels} />
-        <PostList posts={posts} locale={context.site.identity.locale} />
+        <Tags labels={labels} copy={copy} />
+        <PostList
+          posts={posts}
+          locale={context.site.identity.locale}
+          copy={copy}
+        />
       </main>
     </WritingShell>
   );
@@ -141,6 +160,7 @@ export function RefractBlogTag({
   context,
   style,
 }: ComponentProps<TemplateModule["BlogTag"]> & { style: Style }) {
+  const copy = copyFor(context);
   return (
     <WritingShell context={context} style={style}>
       <main id="writing-main" className={styles.index}>
@@ -148,8 +168,12 @@ export function RefractBlogTag({
           <p className={styles.eyebrow}>{context.writing.title}</p>
           <h1>{tag.label}</h1>
         </div>
-        <Tags labels={tag.labels} active={tag.label} />
-        <PostList posts={tag.posts} locale={context.site.identity.locale} />
+        <Tags labels={tag.labels} active={tag.label} copy={copy} />
+        <PostList
+          posts={tag.posts}
+          locale={context.site.identity.locale}
+          copy={copy}
+        />
       </main>
     </WritingShell>
   );
@@ -161,11 +185,12 @@ export function RefractBlogPost({
   context,
   style,
 }: ComponentProps<TemplateModule["BlogPost"]> & { style: Style }) {
+  const copy = copyFor(context);
   return (
     <WritingShell context={context} style={style}>
       <main id="writing-main" className={styles.article}>
         <Link className={styles.back} href="/blogs">
-          ← All writing
+          ← {copy.allWriting}
         </Link>
         <article>
           <header className={styles.articleHeader}>
@@ -173,7 +198,9 @@ export function RefractBlogPost({
               <time dateTime={post.date}>
                 {dateLabel(post.date, context.site.identity.locale)}
               </time>
-              <span>{post.readingMinutes} min read</span>
+              <span>
+                {post.readingMinutes} {copy.minRead}
+              </span>
             </div>
             <h1>{post.title}</h1>
             {post.subtitle && <p>{post.subtitle}</p>}
@@ -190,8 +217,8 @@ export function RefractBlogPost({
           </header>
           {post.headings.length > 1 && (
             <details className={styles.outline}>
-              <summary>On this page</summary>
-              <nav aria-label="Article outline">
+              <summary>{copy.onThisPage}</summary>
+              <nav aria-label={copy.articleOutline}>
                 <ol>
                   {post.headings.map((heading) => (
                     <li key={heading.id} data-depth={heading.depth}>
@@ -207,9 +234,9 @@ export function RefractBlogPost({
           </div>
         </article>
         <div className={styles.after}>{afterArticle}</div>
-        <nav className={styles.articleEnd} aria-label="Article navigation">
-          <Link href="/blogs">← All writing</Link>
-          <a href="#writing-main">Back to top ↑</a>
+        <nav className={styles.articleEnd} aria-label={copy.articleNavigation}>
+          <Link href="/blogs">← {copy.allWriting}</Link>
+          <a href="#writing-main">{copy.backToTop} ↑</a>
         </nav>
       </main>
     </WritingShell>

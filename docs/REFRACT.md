@@ -101,19 +101,26 @@ npm run folio -- template use refract-light --options refract-options.json
 want to retain. Omitted options use their defaults; omit optional text instead of
 supplying an empty string. These settings are public and must not contain secrets.
 
-| Option                           | Purpose and default                                                                                                          |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `tagline`                        | Intro text override; defaults to the shared hero role line                                                                   |
-| `rotatingTopics`                 | Optional rotating endings for the tagline; defaults to an empty list                                                         |
-| `projectHeading`, `toolsHeading` | Section labels; default to `Projects` and `Tools`                                                                            |
-| `focus`, `group`                 | Optional About details; omitted by default                                                                                   |
-| `layerLabels`                    | Up to four captions for the drawing stage's sheets on desktop; defaults to the first four `focus` entries, otherwise none    |
-| `tools`                          | Tool entries with `id`, `name`, `description`, optional `url`, and optional `links` containing `label`/`url`                 |
-| `news`                           | Entries with `id`, `date`, `description`, and optional `url`                                                                 |
-| `publications`                   | Entries with `id`, `title`, `authors`, `year`, `journal`, `citation`, optional `url` and optional `highlight`                |
-| `researchFigures`                | Figure overrides keyed by project id; each has `source`, `width`, `height`, optional `animatedSource` and optional `caption` |
-| `fracturedGlass`                 | Fragmented globe effect during the drawing stage; enabled by default                                                         |
-| `continentalDrift`               | Geographic fragment effect in the first project chapter; enabled by default                                                  |
+| Option                           | Purpose and default                                                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tagline`                        | Intro text override; defaults to the shared hero role line                                                                                  |
+| `rotatingTopics`                 | Optional rotating endings for the tagline; defaults to an empty list                                                                        |
+| `projectHeading`, `toolsHeading` | Section labels; default to `Projects` and `Tools`                                                                                           |
+| `focus`, `group`                 | Optional About details; omitted by default                                                                                                  |
+| `layerLabels`                    | Up to four captions for the drawing stage's sheets on desktop; defaults to the first four `focus` entries, otherwise none                   |
+| `tools`                          | Tool entries with `id`, `name`, `description`, optional `url`, and optional `links` containing `label`/`url`                                |
+| `news`                           | Entries with `id`, `date`, `description`, and optional `url`                                                                                |
+| `publications`                   | Entries with `id`, `title`, `authors`, `year`, `journal`, `citation`, optional `url` and optional `highlight`                               |
+| `researchFigures`                | Figure overrides keyed by project id; each has `source`, `width`, `height`, optional `animatedSource` and optional `caption`                |
+| `fracturedGlass`                 | Fragmented globe effect during the drawing stage; enabled by default                                                                        |
+| `continentalDrift`               | Each project chapter turns its own hemisphere into view and separates its continents; `"first"` limits it to the first, `false` disables it |
+| `labels`                         | Replacements for individual interface labels, keyed as in `src/components/refract/copy.ts`                                                  |
+
+Interface wording follows `site.identity.locale`: English by default and Chinese
+for `zh-*` profiles. `labels` overrides single entries in any language, for
+example `{ "contact": "Say hello", "cv": "Experience" }`; an unknown key fails
+validation. Section headings you set yourself (`projectHeading`, `toolsHeading`)
+are never translated.
 
 Tools, news and publications default to empty lists. They do not contain sample
 academic claims. With no tools, the scene retains a shorter geometric transition
@@ -151,9 +158,17 @@ importing scene code; explicit plugin placement options still take precedence.
 
 ## Implementation boundary
 
+On the opening screen the globe can be turned by hand: drag it sideways and it
+carries the momentum to the nearest whole turn, settling on the pose it would
+have shown untouched. Vertical gestures still scroll, the offset never reaches a
+later chapter, and reduced motion or a paused scene disables it.
+
 The manifests and five view entries live in `src/templates/refract-light/` and
 `src/templates/refract-dark/`. Shared home views, profile adaptation, CSS and scene
-code live under `src/components/refract/`; shared blog views and their CSS Module
+code live under `src/components/refract/`. Its stylesheet is a stack of ordered
+layers in `styles/`, imported by `styles.css`; a later layer refines the earlier
+ones, so add a rule to the layer that owns the component's current behaviour
+instead of appending a new override at the end. Shared blog views and their CSS Module
 live in `src/components/refract-blog/`. Neither template imports the other.
 
 The globe is a Canvas2D scene with reusable geometry. Its progressive transitions,
@@ -194,6 +209,9 @@ decision first.
   position, both endpoints included, with no lagging proxy; every pose is
   reversible. Time drives only ambient loops, which stop when paused, hidden or
   under reduced motion.
+- Every project chapter faces a different hemisphere and separates the continents
+  seen there, so no two chapters show the same globe. The sequence plays in time
+  inside its chapter and never adds scroll distance.
 - The overview unfolds into a layered rectangular terrain, mesh and data field,
   then folds back into the globe. Leaders run from the label through a horizontal
   segment and a 45-degree bend. Ring arcs fill continuously with scroll.

@@ -9,6 +9,7 @@ import {
   sceneLayout,
 } from "@/components/refract/lib/scene-progress";
 import { NorthEastIcon } from "./Icons";
+import { useRefractData } from "../data-context";
 
 /** Reference showCard / hideCard: 120% travel, 350 / 250ms, inOut(3). */
 export function ResearchFigure({
@@ -22,6 +23,7 @@ export function ResearchFigure({
   active: boolean;
   playing: boolean;
 }) {
+  const { copy } = useRefractData();
   const { source, animatedSource, width, height, caption } = definition;
   const figure = useRef<HTMLElement>(null);
   const motion = useRef<ReturnType<typeof animate> | null>(null);
@@ -94,7 +96,7 @@ export function ResearchFigure({
           href={source}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`View full figure: ${project.title}`}
+          aria-label={`${copy.viewFigure}: ${project.title}`}
         >
           <img
             src={
@@ -117,7 +119,7 @@ export function ResearchFigure({
           target="_blank"
           rel="noopener noreferrer"
         >
-          View full figure
+          {copy.viewFigure}
           <NorthEastIcon />
         </a>
       </figure>

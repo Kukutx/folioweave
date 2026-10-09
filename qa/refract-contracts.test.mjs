@@ -17,6 +17,20 @@ import {
 const root = path.resolve(import.meta.dirname, "..");
 const read = (file) =>
   fs.readFile(path.join(root, file), "utf8").then(JSON.parse);
+/** The real dictionary module, importable beside a transpiled consumer. */
+async function copyModule() {
+  const source = await fs.readFile(
+    path.join(root, "src/components/refract/copy.ts"),
+    "utf8",
+  );
+  const code = ts.transpileModule(source, {
+    compilerOptions: {
+      target: ts.ScriptTarget.ES2022,
+      module: ts.ModuleKind.ESNext,
+    },
+  }).outputText;
+  return `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`;
+}
 
 test("Refract adapter handles empty options, disabled sections and variable project counts", async () => {
   const source = await fs.readFile(
@@ -33,7 +47,8 @@ test("Refract adapter handles empty options, disabled sections and variable proj
     .outputText.replace(
       /import\s*\{\s*mediaDimensions\s*\}\s*from\s*["']@\/portfolio\/media["'];?/,
       "const mediaDimensions = () => ({ width: 1200, height: 800 });",
-    );
+    )
+    .replace(/from\s*["']\.\/copy["']/, `from "${await copyModule()}"`);
   const { createRefractData } = await import(
     `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`
   );
@@ -150,4 +165,43 @@ test("public Refract examples use neutral identity and original local demo artwo
     return copy;
   });
   assert.deepEqual(a, b, "Two styles share one content example");
+});
+
+test("Refract wording follows the profile language and accepts per-label overrides", async () => {
+  const { refractCopy, refractCopyKeys } = await import(await copyModule());
+  const english = refractCopy("en-US");
+  const chinese = refractCopy("zh-CN");
+  assert.equal(english.contact, "Contact");
+  assert.equal(chinese.contact, "联系");
+  assert.deepEqual(
+    refractCopy("fr-FR"),
+    english,
+    "An unknown language must fall back to English",
+  );
+  for (const key of refractCopyKeys) {
+    assert.ok(chinese[key], `Chinese wording is missing ${key}`);
+    assert.notEqual(
+      chinese[key],
+      english[key],
+      `${key} was left untranslated`,
+    );
+  }
+  assert.equal(refractCopy("zh-CN", { contact: "聊聊" }).contact, "聊聊");
+  const catalog = loadCatalog(root);
+  for (const id of ["refract-light", "refract-dark"]) {
+    const manifest = catalog.templates.find((item) => item.id === id);
+    assert.deepEqual(
+      manifest.optionsSchema.properties.labels.propertyNames.enum,
+      refractCopyKeys,
+      `${id} accepts a different set of labels than the dictionary defines`,
+    );
+    const config = await read(`governance/templates/${id}.json`);
+    config.template.settings[id].labels = { contact: "Say hello" };
+    assert.equal(
+      resolveExtensions(config, catalog).options.labels.contact,
+      "Say hello",
+    );
+    config.template.settings[id].labels = { contcat: "typo" };
+    assert.throws(() => resolveExtensions(config, catalog));
+  }
 });

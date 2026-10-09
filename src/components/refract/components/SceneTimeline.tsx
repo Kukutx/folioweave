@@ -19,11 +19,13 @@ export const SceneTimeline = forwardRef<
   SceneTimelineHandle,
   {
     labels: readonly string[];
+    /** Accessible name of the chapter slider. */
+    name: string;
     chapter: number;
     onSeek(position: number): void;
     onRelease(): void;
   }
->(function SceneTimeline({ labels, chapter, onSeek, onRelease }, ref) {
+>(function SceneTimeline({ labels, name, chapter, onSeek, onRelease }, ref) {
   const track = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const grabbed = useRef(false);
@@ -115,7 +117,7 @@ export const SceneTimeline = forwardRef<
         max="1"
         step="0.0001"
         defaultValue="0"
-        aria-label="Page chapters"
+        aria-label={name}
         aria-valuetext={labels[chapter]}
         onChange={(event) => seek(event.currentTarget.valueAsNumber)}
         onKeyDown={(event) => {

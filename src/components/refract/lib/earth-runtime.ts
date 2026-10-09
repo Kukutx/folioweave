@@ -7,6 +7,7 @@ export type SceneState = {
   height: number;
   pixelRatio: number;
   progress: number;
+  spin: number;
   intro: number;
   paused: boolean;
   suspended: boolean;
@@ -51,6 +52,7 @@ export async function createEarthRuntime(
     height: 1,
     pixelRatio: 1,
     progress: 0,
+    spin: 0,
     intro: options.introProgress ?? 1,
     paused: false,
     suspended: false,
@@ -79,6 +81,7 @@ export async function createEarthRuntime(
       fallback.setMobileLayout(state.layout);
       fallback.setToolsBounds(state.toolsBounds);
       fallback.setProgress(state.progress);
+      fallback.setSpin(state.spin);
       fallback.setPaused(state.paused);
       fallback.setSuspended(state.suspended);
       if (state.exactTime !== undefined)
@@ -192,6 +195,12 @@ export async function createEarthRuntime(
     setProgress(value) {
       if (Number.isFinite(value) && state.progress !== value) {
         state.progress = value;
+        schedule();
+      }
+    },
+    setSpin(value) {
+      if (Number.isFinite(value) && state.spin !== value) {
+        state.spin = value;
         schedule();
       }
     },

@@ -56,6 +56,7 @@ function paint(time: number) {
     renderer.setMobileLayout(state.layout);
     renderer.setToolsBounds(state.toolsBounds);
   }
+  renderer.setSpin(state.spin);
   // Apply while suspended, then draw once with the correct playback mode.
   renderer.drawAtProgress(
     state.progress,

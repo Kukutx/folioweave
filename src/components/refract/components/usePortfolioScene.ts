@@ -3,7 +3,7 @@
 import { useRefractData } from "../data-context";
 
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { animate } from "animejs";
+import { animate, createSpring } from "animejs";
 import type { EarthRenderer } from "@/components/refract/lib/earth-renderer";
 import type { ReadingBounds } from "@/components/refract/lib/scene-camera";
 import { clamp, smooth } from "@/components/refract/lib/motion";
@@ -17,6 +17,7 @@ import type { SceneTimelineHandle } from "./SceneTimeline";
 import {
   chapterRanges,
   chapterScrollPosition,
+  heroSpinLimit,
   locateChapter,
   readingPanel,
   sceneLayout,
@@ -29,21 +30,21 @@ import {
  * Keep measurements outside scroll updates; content and layout live in the view.
  */
 export function usePortfolioScene(stylePreset: StylePreset) {
-  const { profile, researchProjects, siteConfig, tools } = useRefractData();
+  const { copy, profile, researchProjects, siteConfig, tools } =
+    useRefractData();
   const { chapterLabels, figures, bounds, toolsIndex, continentalDrift } =
     useMemo(() => {
       const bounds = chapterRanges(researchProjects.length);
-      const continentalProject = researchProjects.findIndex(
-        (project) =>
-          project.id === siteConfig.effects.continentalDrift.projectId,
-      );
+      const { enabled, chapters, ...drift } =
+        siteConfig.effects.continentalDrift;
+      const projectRanges = bounds.slice(2, 2 + researchProjects.length);
       return {
         chapterLabels: [
-          "Home",
+          copy.home,
           siteConfig.projectHeading,
           ...researchProjects.map((project) => project.title),
-          tools.length ? siteConfig.toolsHeading : "Transition",
-          "Contact",
+          tools.length ? siteConfig.toolsHeading : copy.transition,
+          copy.contact,
         ],
         figures: researchProjects.map(
           (project) => siteConfig.researchFigures[project.id],
@@ -51,14 +52,17 @@ export function usePortfolioScene(stylePreset: StylePreset) {
         bounds,
         toolsIndex: researchProjects.length + 2,
         continentalDrift:
-          siteConfig.effects.continentalDrift.enabled && continentalProject >= 0
+          enabled && projectRanges.length
             ? {
-                ...siteConfig.effects.continentalDrift,
-                range: bounds[continentalProject + 2],
+                ...drift,
+                ranges:
+                  chapters === "first"
+                    ? projectRanges.slice(0, 1)
+                    : projectRanges,
               }
             : (false as const),
       };
-    }, [researchProjects, siteConfig, tools.length]);
+    }, [copy, researchProjects, siteConfig, tools.length]);
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const earth = useRef<EarthRenderer | null>(null);
@@ -205,6 +209,109 @@ export function usePortfolioScene(stylePreset: StylePreset) {
     };
     measure();
 
+    // The opening globe can be turned by hand: a horizontal drag adds yaw, and
+    // letting go carries its momentum to the nearest whole turn, which is the
+    // same pose the scene would have shown untouched.
+    const globe = { centerY: viewportHeight * 0.5, radius: 0 };
+    const turn = {
+      pointer: null as number | null,
+      yaw: 0,
+      startX: 0,
+      startYaw: 0,
+      samples: [] as { x: number; time: number }[],
+      settle: null as ReturnType<typeof animate> | null,
+    };
+    const turnable = () =>
+      introFinished &&
+      !preference.matches &&
+      !pausedRef.current &&
+      currentProgress.current <= heroSpinLimit;
+    const overGlobe = (event: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      return (
+        Math.hypot(
+          event.clientX - rect.left - rect.width / 2,
+          event.clientY - rect.top - globe.centerY,
+        ) <=
+        globe.radius * 1.12
+      );
+    };
+    const applyTurn = () => earth.current?.setSpin(turn.yaw);
+    const releaseTurn = () => {
+      if (turn.pointer === null) return;
+      if (container.hasPointerCapture(turn.pointer))
+        container.releasePointerCapture(turn.pointer);
+      turn.pointer = null;
+      delete container.dataset.globeTurn;
+      const [first, last] = [turn.samples[0], turn.samples.at(-1)];
+      const elapsed = first && last ? last.time - first.time : 0;
+      const velocity =
+        elapsed > 16
+          ? ((last!.x - first!.x) / Math.max(1, globe.radius) / elapsed) * 1000
+          : 0;
+      const target =
+        Math.round((turn.yaw + clamp(velocity, -9, 9) * 0.3) / (Math.PI * 2)) *
+        Math.PI *
+        2;
+      turn.settle = animate(turn, {
+        yaw: target,
+        ease: createSpring({ stiffness: 46, damping: 10 }),
+        onUpdate: applyTurn,
+        onComplete: () => {
+          turn.yaw = 0;
+          applyTurn();
+        },
+      });
+    };
+    const startTurn = (event: PointerEvent) => {
+      if (
+        turn.pointer !== null ||
+        event.button !== 0 ||
+        !turnable() ||
+        (event.target as Element).closest("a, button, nav, input") ||
+        !overGlobe(event)
+      )
+        return;
+      turn.settle?.pause();
+      turn.pointer = event.pointerId;
+      turn.startX = event.clientX;
+      turn.startYaw = turn.yaw;
+      turn.samples = [{ x: event.clientX, time: event.timeStamp }];
+      container.setPointerCapture(event.pointerId);
+      container.dataset.globeTurn = "active";
+      // Keep the drag from selecting the page's text.
+      if (event.pointerType === "mouse") event.preventDefault();
+    };
+    const moveTurn = (event: PointerEvent) => {
+      if (turn.pointer !== event.pointerId) {
+        if (turn.pointer === null && event.pointerType === "mouse") {
+          const ready = turnable() && overGlobe(event);
+          if ((container.dataset.globeTurn === "ready") !== ready) {
+            if (ready) container.dataset.globeTurn = "ready";
+            else delete container.dataset.globeTurn;
+          }
+        }
+        return;
+      }
+      turn.yaw =
+        turn.startYaw +
+        (event.clientX - turn.startX) / Math.max(1, globe.radius);
+      turn.samples.push({ x: event.clientX, time: event.timeStamp });
+      while (
+        turn.samples.length > 2 &&
+        event.timeStamp - turn.samples[0].time > 90
+      )
+        turn.samples.shift();
+      applyTurn();
+    };
+    const endTurn = (event: PointerEvent) => {
+      if (turn.pointer === event.pointerId) releaseTurn();
+    };
+    container.addEventListener("pointerdown", startTurn);
+    container.addEventListener("pointermove", moveTurn);
+    container.addEventListener("pointerup", endTurn);
+    container.addEventListener("pointercancel", endTurn);
+
     const update = (raw: number) => {
       const readingPhases = viewportWidth < sceneLayout.desktop;
       const y = clamp(raw) * distance + 0.5;
@@ -287,15 +394,28 @@ export function usePortfolioScene(stylePreset: StylePreset) {
         );
         const centered = index === 0 ? smooth(0, 0.16, local) : 1;
         const landscape = viewportWidth >= 600 && viewportHeight < 600;
-        earth.current?.setMobileLayout({
+        const layout = {
           centerY: landscape
             ? viewportHeight * 0.5
             : heroCenter + (viewportHeight * 0.5 - heroCenter) * centered,
           radius: landscape
             ? Math.min(viewportWidth * 0.17, radius)
             : heroRadius + (radius - heroRadius) * centered,
-        });
-      } else earth.current?.setMobileLayout(null);
+        };
+        globe.centerY = layout.centerY;
+        globe.radius = layout.radius;
+        earth.current?.setMobileLayout(layout);
+      } else {
+        globe.centerY = viewportHeight * 0.5;
+        globe.radius = Math.min(
+          viewportWidth * 0.28,
+          viewportHeight * 0.31,
+          306,
+        );
+        earth.current?.setMobileLayout(null);
+      }
+      // Scrolling on takes the globe back from the reader's hand.
+      if (turn.pointer !== null && p > heroSpinLimit) releaseTurn();
       earth.current?.setProgress(p);
       const light = sceneLight(p, stylePreset);
       const color = sceneBackground(light, stylePreset, intro.progress);
@@ -576,7 +696,14 @@ export function usePortfolioScene(stylePreset: StylePreset) {
       earth.current?.setReducedMotion(preference.matches);
       earth.current?.setPaused(preference.matches);
       navigationMotion.current?.pause();
-      if (preference.matches) finishIntro();
+      if (preference.matches) {
+        finishIntro();
+        turn.settle?.pause();
+        turn.pointer = null;
+        turn.yaw = 0;
+        applyTurn();
+        delete container.dataset.globeTurn;
+      }
       resize(true);
     };
     window.addEventListener("resize", viewportResize, { passive: true });
@@ -596,6 +723,12 @@ export function usePortfolioScene(stylePreset: StylePreset) {
       window.removeEventListener("scroll", skipOnScroll);
       window.removeEventListener("resize", viewportResize);
       preference.removeEventListener("change", changePreference);
+      turn.settle?.pause();
+      container.removeEventListener("pointerdown", startTurn);
+      container.removeEventListener("pointermove", moveTurn);
+      container.removeEventListener("pointerup", endTurn);
+      container.removeEventListener("pointercancel", endTurn);
+      delete container.dataset.globeTurn;
     };
   }, [
     stylePreset,

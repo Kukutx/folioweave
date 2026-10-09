@@ -1,0 +1,133 @@
+/* The reference track enters from below and provides a second, hover-only cursor. */
+:where(.refract-site) .reference-navigation {
+  overflow: hidden;
+  transform: translateY(0);
+  transition:
+    opacity 0.25s,
+    transform 0.25s,
+    visibility 0.25s;
+}
+:where(.refract-site)
+  .portfolio-experience[data-nav-visible="false"]
+  .reference-navigation {
+  transform: translateY(100%);
+}
+/* Seeking to Home keeps the grabbed track alive, with the hero row hidden.
+   Restore the row only after the track's 250ms exit has completed. */
+:where(.refract-site) .intro-footer {
+  transition: visibility 0s 0.25s;
+}
+:where(.refract-site)
+  .portfolio-experience[data-nav-visible="true"]
+  .intro-footer {
+  visibility: hidden !important;
+  transition-delay: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.refract-site) .intro-footer {
+    transition-delay: 0s;
+  }
+}
+:where(.refract-site) .chapter-navigation {
+  touch-action: none;
+  cursor: grab;
+  transform: translateY(-0.17px);
+}
+:where(.refract-site) .chapter-navigation::before {
+  content: "";
+  position: absolute;
+  inset: -14px -16px;
+}
+:where(.refract-site) .chapter-navigation[data-dragging="true"] {
+  cursor: grabbing;
+}
+:where(.refract-site) .chapter-slider {
+  pointer-events: none;
+}
+:where(.refract-site) .chapter-cursor {
+  left: calc(var(--scene-progress, 0) * (100% - 3px));
+  transform: scale(1);
+  transition: transform 0.15s;
+  opacity: 1;
+}
+:where(.refract-site)
+  .chapter-navigation[data-dragging="true"]
+  .chapter-cursor:not(.chapter-cursor-ghost) {
+  transform: scale(1.25);
+  transition-duration: 0.25s;
+}
+:where(.refract-site)
+  .chapter-navigation[data-cursor-hover="true"]
+  .chapter-cursor:not(.chapter-cursor-ghost) {
+  transform: scale(1.25);
+  transition-duration: 0.25s;
+}
+:where(.refract-site) .chapter-cursor-ghost {
+  left: calc(var(--preview-progress, 0) * (100% - 3px));
+  background: var(--cursor-preview);
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity 0.15s,
+    transform 0.25s,
+    left 0.15s;
+  pointer-events: none;
+}
+:where(.refract-site)
+  .chapter-navigation[data-preview="true"]
+  .chapter-cursor-ghost {
+  opacity: 1;
+  transform: scale(1);
+}
+:where(.refract-site) .chapter-ticks > span {
+  opacity: 0.5;
+  border-color: #fff;
+  transition: opacity 0.25s;
+  transition-delay: calc(var(--tick-index, 0) * 20ms);
+}
+:where(.refract-site)
+  .portfolio-experience[data-nav-visible="false"]
+  .chapter-ticks
+  > span {
+  opacity: 0;
+}
+:where(.refract-site)
+  .portfolio-experience[data-nav-visible="true"]
+  .chapter-cursor:not(.chapter-cursor-ghost) {
+  animation: refract-cursor-appear 0.25s 0.25s both;
+}
+@keyframes refract-cursor-appear {
+  0% {
+    opacity: 0;
+    scale: 0;
+  }
+  70% {
+    opacity: 1;
+    scale: 1.2;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+@media (max-width: 899px) {
+  :where(.refract-site) .intro-links {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+    gap: 8px;
+  }
+  :where(.refract-site) .reference-stage {
+    height: 100dvh;
+    margin-bottom: -100dvh;
+  }
+  :where(.refract-site) .intro-links a {
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 8px;
+    height: 48px;
+  }
+  :where(.refract-site) .intro-links a > svg {
+    flex-shrink: 0;
+  }
+}

@@ -1,5 +1,6 @@
 import type { TemplateContext } from "@/core/contracts";
 import { mediaDimensions } from "@/portfolio/media";
+import { refractCopy, type RefractCopy } from "./copy";
 
 export type ResearchFigureConfig = {
   source: string;
@@ -33,9 +34,10 @@ export type RefractOptions = {
   toolsHeading?: string;
   focus?: string[];
   layerLabels?: string[];
+  labels?: Partial<RefractCopy>;
   group?: string;
   fracturedGlass?: boolean;
-  continentalDrift?: boolean;
+  continentalDrift?: boolean | "first";
   tools?: {
     id: string;
     name: string;
@@ -61,6 +63,7 @@ export type RefractOptions = {
 export function createRefractData(context: TemplateContext) {
   const options = context.options as RefractOptions;
   const identity = context.site.identity;
+  const copy = refractCopy(identity.locale, options.labels);
   const plain = (parts: TemplateContext["introduction"]["summary"]) =>
     parts
       .map((part) => ("text" in part ? part.text : part.brand.name))
@@ -87,7 +90,7 @@ export function createRefractData(context: TemplateContext) {
       imageAlt: artwork.alt,
       imageCaption: null,
       url: action?.href ?? null,
-      linkLabel: action?.label ?? "View project",
+      linkLabel: action?.label ?? copy.viewProject,
     };
   });
   const email = context.site.contact.email;
@@ -132,28 +135,29 @@ export function createRefractData(context: TemplateContext) {
     role: item.title,
     description: item.desc,
   }));
-  const projectHeading = options.projectHeading ?? "Projects";
-  const toolsHeading = options.toolsHeading ?? "Tools";
+  const projectHeading = options.projectHeading ?? copy.projects;
+  const toolsHeading = options.toolsHeading ?? copy.tools;
   const sections = [
     ...(context.features.about
-      ? [{ label: "About", href: "#about", icon: "About" }]
+      ? [{ label: copy.about, href: "#about", icon: "About" }]
       : []),
     ...(projects.length
       ? [{ label: projectHeading, href: "#work", icon: "Research" }]
       : []),
-    ...(news.length ? [{ label: "News", href: "#news", icon: "News" }] : []),
+    ...(news.length ? [{ label: copy.news, href: "#news", icon: "News" }] : []),
     ...(tools.length
       ? [{ label: toolsHeading, href: "#tools", icon: "Tools" }]
       : []),
     ...(experience.length || publications.length
-      ? [{ label: "CV", href: "#cv", icon: "CV" }]
+      ? [{ label: copy.cv, href: "#cv", icon: "CV" }]
       : []),
     ...(context.capabilities.writing
-      ? [{ label: "Writing", href: "/blogs", icon: "News" }]
+      ? [{ label: copy.writing, href: "/blogs", icon: "News" }]
       : []),
-    { label: "Contact", href: "#contact", icon: "Contact" },
+    { label: copy.contact, href: "#contact", icon: "Contact" },
   ];
   return {
+    copy,
     profile,
     researchProjects,
     tools,
@@ -180,8 +184,11 @@ export function createRefractData(context: TemplateContext) {
       effects: {
         fracturedGlass: options.fracturedGlass ?? true,
         continentalDrift: {
-          enabled: options.continentalDrift ?? true,
-          projectId: researchProjects[0]?.id ?? "",
+          enabled: options.continentalDrift !== false,
+          chapters:
+            options.continentalDrift === "first"
+              ? ("first" as const)
+              : ("all" as const),
           amplitude: 1,
           spread: 1.18,
           duration: 8,
@@ -191,9 +198,9 @@ export function createRefractData(context: TemplateContext) {
       },
       researchFigures,
       hero: {
-        contactLabel: "Get in touch",
+        contactLabel: copy.getInTouch,
         contactHref: `mailto:${email}`,
-        learnLabel: "Learn more",
+        learnLabel: copy.learnMore,
         learnHref: "#overview",
         featuredLink: github
           ? ({

@@ -5,7 +5,7 @@ import { sceneLayout } from "@/components/refract/lib/scene-progress";
 import { useEffect, useRef } from "react";
 import { ArrowIcon } from "./Icons";
 
-export function BackToHome() {
+export function BackToHome({ label, home }: { label: string; home: string }) {
   const link = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -45,8 +45,8 @@ export function BackToHome() {
       data-visible="false"
       className="back-to-home"
       href="#home"
-      aria-label="Back to Home"
-      title="Back to Home"
+      aria-label={label}
+      title={label}
       onClick={(event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
           return;
@@ -67,7 +67,7 @@ export function BackToHome() {
       }}
     >
       <ArrowIcon />
-      <span>Home</span>
+      <span>{home}</span>
     </a>
   );
 }

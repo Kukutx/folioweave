@@ -16,11 +16,12 @@ export function RefractHome({
   style: StylePreset;
 }) {
   const data = createRefractData(context);
-  const { profile, news, publications, experience, links, socialLinks } = data;
+  const { copy, profile, news, publications, experience, links, socialLinks } =
+    data;
   return (
     <RefractProvider data={data}>
       <a className="skip-link" href="#overview">
-        Skip to content
+        {copy.skipToContent}
       </a>
       <main className="refract-home">
         <PortfolioExperience stylePreset={style} />
@@ -32,7 +33,7 @@ export function RefractHome({
               aria-labelledby="about-title"
             >
               <h2 id="about-title" data-refract-reveal>
-                About
+                {copy.about}
               </h2>
               <div
                 className="about-layout"
@@ -57,7 +58,7 @@ export function RefractHome({
                   ))}
                   <dl>
                     <div>
-                      <dt>Position</dt>
+                      <dt>{copy.position}</dt>
                       <dd>
                         {[profile.role, profile.affiliation]
                           .filter(Boolean)
@@ -66,13 +67,13 @@ export function RefractHome({
                     </div>
                     {profile.group && (
                       <div>
-                        <dt>Group</dt>
+                        <dt>{copy.group}</dt>
                         <dd>{profile.group}</dd>
                       </div>
                     )}
                     {profile.focus.length > 0 && (
                       <div>
-                        <dt>Focus</dt>
+                        <dt>{copy.focus}</dt>
                         <dd>{profile.focus.join(", ")}</dd>
                       </div>
                     )}
@@ -88,7 +89,7 @@ export function RefractHome({
               aria-labelledby="news-title"
             >
               <h2 id="news-title" data-refract-reveal>
-                News
+                {copy.news}
               </h2>
               <div className="news-list">
                 {news.map((item) => (
@@ -120,7 +121,7 @@ export function RefractHome({
               aria-labelledby="cv-title"
             >
               <h2 id="cv-title" data-refract-reveal>
-                CV
+                {copy.cv}
               </h2>
               <div className="experience-list">
                 {experience.map((item) => (
@@ -140,7 +141,7 @@ export function RefractHome({
                     id="publications"
                     data-refract-reveal
                   >
-                    Selected publications
+                    {copy.publications}
                   </h3>
                   <ol className="publication-list">
                     {publications.map((paper) => (
@@ -182,7 +183,7 @@ export function RefractHome({
             aria-labelledby="contact-title"
           >
             <h2 id="contact-title" data-refract-reveal>
-              Contact
+              {copy.contact}
             </h2>
             <a className="contact-email" href={links.email}>
               {profile.email}
@@ -208,7 +209,7 @@ export function RefractHome({
           </section>
         </div>
       </main>
-      <BackToHome />
+      <BackToHome label={copy.backToHome} home={copy.home} />
       <Reveal />
     </RefractProvider>
   );

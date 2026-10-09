@@ -374,7 +374,7 @@ test("reading clearance uses actual triangles and text lines, not their empty bo
 });
 
 test("featured continental playback repeats after an intact rest and works at the anchor lead-in", () => {
-  const options = { ...siteConfig.effects.continentalDrift, range: [.42, .52] };
+  const options = { ...siteConfig.effects.continentalDrift, ranges: [[.42, .52]] };
   const player = progress.createContinentalPlayback(options);
   const p = .412;
   assert.equal(player.sample(p, 0), 0);
@@ -605,7 +605,7 @@ test("open mirrors continue turning at fixed scroll and stop deforming at both e
 });
 
 test("continental sequence is project-local, deterministic, and skipped for reduced motion",()=>{
-  const drift={range:[.42,.52],amplitude:1};
+  const drift={ranges:[[.42,.52]],amplitude:1};
   const point=[[-122,37],[18,0],[80,30]];
   for(const style of ['dark','light']) for(const reducedMotion of [false,true]) {
     const on=recordingCanvas(),off=recordingCanvas();
@@ -620,13 +620,13 @@ test("continental sequence is project-local, deterministic, and skipped for redu
   }
   for(const count of [1,3,5]) {
     const range=progress.chapterRanges(count)[2];
-    assert.ok(progress.continentalPhase((range[0]+range[1])/2,{...drift,range},false,4)>0);
-    assert.equal(progress.continentalPhase(range[1],{...drift,range}),-1);
+    assert.ok(progress.continentalPhase((range[0]+range[1])/2,{...drift,ranges:[range]},false,4)>0);
+    assert.equal(progress.continentalPhase(range[1],{...drift,ranges:[range]}),-1);
   }
 });
 
 test("continental playback completes at fixed scroll, pauses with its clock, and replays after leaving",()=>{
-  const options={range:[.42,.52],amplitude:1,duration:8};
+  const options={ranges:[[.42,.52]],amplitude:1,duration:8};
   const playback=progress.createContinentalPlayback(options);
   assert.equal(playback.sample(.42,20),0);
   let phase=0;
@@ -648,7 +648,7 @@ test("continental playback completes at fixed scroll, pauses with its clock, and
 
 test("worker live frames and deterministic snapshots share the same continental pose",()=>{
   const live=recordingCanvas(),exact=recordingCanvas();
-  const options={autoStart:false,continentalDrift:{range:[.42,.52],amplitude:1,duration:8}};
+  const options={autoStart:false,continentalDrift:{ranges:[[.42,.52]],amplitude:1,duration:8}};
   const a=createEarthRenderer(live.canvas,options),b=createEarthRenderer(exact.canvas,options);
   a.setSuspended(true);a.drawAtProgress(.46,0,'live');a.setSuspended(false);
   for(let i=1;i<=180;i++) {
@@ -662,7 +662,7 @@ test("worker live frames and deterministic snapshots share the same continental 
 
 test("continental caches survive reverse seeking, resizing, reduced motion and destruction",()=>{
   const target=recordingCanvas();
-  const options={autoStart:false,continentalDrift:{range:[.42,.52],amplitude:1},landPoints:[[18,0],[-60,-20],[90,40]]};
+  const options={autoStart:false,continentalDrift:{ranges:[[.42,.52]],amplitude:1},landPoints:[[18,0],[-60,-20],[90,40]]};
   const renderer=createEarthRenderer(target.canvas,options);
   for(const width of [1440,390,1280]) for(const reducedMotion of [false,true,false]) {
     target.canvas.width=width;renderer.resize();renderer.setReducedMotion(reducedMotion);
@@ -918,4 +918,46 @@ test("drawing-stage captions come from the author's options, never from the rend
   assert.deepEqual(captions(undefined), [], "An unlabeled profile still drew captions");
   assert.deepEqual(captions(["Design", "Code"]), ["Design", "Code"]);
   assert.deepEqual(captions(["a", "b", "c", "d", "e"]), ["a", "b", "c", "d"], "More than four sheets were captioned");
+});
+
+test("each project chapter separates its own hemisphere and starts its own sequence", () => {
+  const options = { ranges: [[.42, .52], [.52, .62], [.62, .72]], amplitude: 1, duration: 8, leadIn: .012 };
+  assert.deepEqual([.41, .47, .515, .57, .67, .73].map(p => progress.continentalChapter(p, options)), [0, 0, 0, 1, 2, -1]);
+  assert.equal(progress.continentalChapter(.47, { ...options, ranges: [] }), -1);
+  const playback = progress.createContinentalPlayback(options);
+  playback.sample(.47, 10);
+  assert.ok(playback.sample(.47, 10.05) > 0);
+  for (let i = 2; i <= 120; i++) playback.sample(.47, 10 + i * .05);
+  assert.equal(playback.sample(.57, 16.05), 0, "The next chapter inherited the previous chapter's playback time");
+  assert.equal(playback.sample(.80, 16.1), -1);
+  const yaws = [0, 1, 2, 3].map(progress.continentalYaw);
+  assert.equal(new Set(yaws).size, 4, "Two chapters face the same hemisphere");
+  assert.equal(progress.continentalYaw(4), yaws[0], "Later chapters must reuse the defined faces");
+  const digests = [.47, .57, .67].map(p => {
+    const target = recordingCanvas();
+    const renderer = createEarthRenderer(target.canvas, { autoStart: false, continentalDrift: options, landPoints: [[18, 0], [-60, -20], [90, 40]] });
+    const digest = target.capture(renderer, p, 2);
+    renderer.destroy(false);
+    return digest;
+  });
+  assert.equal(new Set(digests).size, 3, "Project chapters drew the same scene");
+});
+
+test("a hand-turned globe changes only the opening and returns the same frame after a whole turn", () => {
+  const target = recordingCanvas();
+  const renderer = createEarthRenderer(target.canvas, { autoStart: false, landPoints: [[18, 0], [-60, -20], [90, 40]] });
+  const at = (p, yaw) => { renderer.setSpin(yaw); return target.capture(renderer, p); };
+  const rest = at(0, 0);
+  assert.notEqual(at(0, .6), rest, "Turning the opening globe drew nothing new");
+  assert.equal(at(0, 0), rest);
+  assert.equal(progress.heroSpin(0), 1);
+  for (const p of [.1, .2, .47, .7, .88, .97]) {
+    assert.equal(progress.heroSpin(p), 0);
+    const untouched = at(p, 0);
+    assert.equal(at(p, 2.4), untouched, `A hand-turned yaw reached the scene at ${p}`);
+  }
+  renderer.setReducedMotion(true);
+  const still = at(0, 0);
+  assert.equal(at(0, 1.2), still, "Reduced motion still turned the globe");
+  renderer.destroy(false);
 });

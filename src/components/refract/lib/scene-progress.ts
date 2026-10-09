@@ -36,6 +36,10 @@ export const assemblyGlint = (p: number) =>
   smooth(0.375, 0.414, p) * (1 - smooth(0.42, 0.47, p)) +
   smooth(0.903, toolsMotion.assembled, p) * (1 - smooth(0.95, 0.972, p));
 export const sceneExit = (p: number) => smooth(toolsMotion.exit, 1, p);
+/** How much of a hand-turned yaw remains; none once the opening is left. */
+export const heroSpin = (p: number) => 1 - smooth(0.02, 0.1, p);
+/** The opening globe can be turned only while it is the whole composition. */
+export const heroSpinLimit = 0.02;
 /** The scene's readable gutter and the Tools copy enter/leave together. */
 export const toolsCopyOpacity = (p: number) =>
   smooth(0.82, 0.845, p) * (1 - smooth(0.922, 0.94, p));
@@ -48,7 +52,8 @@ export function researchBlend(amount: number) {
 }
 export type ChapterRange = readonly [number, number];
 export type ContinentalDriftOptions = {
-  range: ChapterRange;
+  /** One scroll interval per project chapter that separates the continents. */
+  ranges: readonly ChapterRange[];
   amplitude: number;
   spread?: number;
   duration?: number;
@@ -57,6 +62,26 @@ export type ContinentalDriftOptions = {
 };
 export type ChapterSize = { start: number; end: number };
 
+/** Each chapter turns a different face of the globe towards the reader. The
+ * yaws follow the globe's own convention; chapters past the fourth repeat them. */
+const continentalFocus = [-0.38, 1.58, -1.57, -2.25] as const;
+export const continentalYaw = (chapter: number) =>
+  continentalFocus[Math.max(0, chapter) % continentalFocus.length];
+
+/** The chapter whose continents separate at this position, or -1. */
+export function continentalChapter(
+  progress: number,
+  options?: ContinentalDriftOptions | false,
+) {
+  if (!options) return -1;
+  return options.ranges.findIndex(
+    ([start, end]) =>
+      end > start &&
+      progress >= start - (options.leadIn ?? 0) &&
+      progress < end,
+  );
+}
+
 /** Playback time never adds scroll distance or prevents leaving a chapter. */
 export function continentalPhase(
   progress: number,
@@ -64,11 +89,7 @@ export function continentalPhase(
   reduced = false,
   elapsed = 0,
 ) {
-  if (!options || reduced || options.range[1] <= options.range[0]) return -1;
-  if (
-    progress < options.range[0] - (options.leadIn ?? 0) ||
-    progress >= options.range[1]
-  )
+  if (!options || reduced || continentalChapter(progress, options) < 0)
     return -1;
   const duration =
     options.duration &&
@@ -88,15 +109,17 @@ export function continentalPhase(
 export function createContinentalPlayback(
   options?: ContinentalDriftOptions | false,
 ) {
-  let active = false,
+  let active = -1,
     elapsed = 0,
     previousClock = 0;
   return {
     sample(progress: number, clock: number, reduced = false) {
-      const eligible = continentalPhase(progress, options, reduced) >= 0;
-      if (!eligible || !active) elapsed = 0;
+      const chapter = reduced ? -1 : continentalChapter(progress, options);
+      const eligible = chapter >= 0;
+      // Scrolling straight into the next chapter starts its own sequence.
+      if (!eligible || chapter !== active) elapsed = 0;
       else elapsed += clamp(clock - previousClock, 0, 0.05);
-      active = eligible;
+      active = chapter;
       previousClock = clock;
       return eligible
         ? continentalPhase(progress, options, reduced, elapsed)

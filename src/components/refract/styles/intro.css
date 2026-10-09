@@ -1,0 +1,52 @@
+/* One refresh clock owns the surface, globe, copy and controls. */
+:where(.refract-site) .portfolio-experience {
+  --intro-ui-opacity: 0;
+  --intro-surface: #080808;
+}
+.refract-site[data-style="light"] .portfolio-experience {
+  --intro-surface: #fff;
+}
+:where(.refract-site) .portfolio-experience[data-intro="pending"] {
+  --scene-background: var(--intro-surface);
+}
+:where(.refract-site) .portfolio-experience .site-header,
+:where(.refract-site) .intro-footer > .intro-links,
+:where(.refract-site) .intro-footer > .featured-link {
+  opacity: var(--intro-ui-opacity);
+}
+:where(.refract-site) .intro-text[data-entrance="waiting"] {
+  visibility: hidden;
+  opacity: 0;
+}
+:where(.refract-site) .loading-dots {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 8px;
+  transform: translate(-50%, -50%);
+  color: var(--accent);
+  opacity: 0.35;
+}
+:where(.refract-site) .loading-dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+:where(.refract-site) .loading-dots i:nth-child(2n) {
+  opacity: 0.45;
+}
+:where(.refract-site) .loading-dots i:nth-child(3n) {
+  opacity: 0.2;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.refract-site) .portfolio-experience {
+    --intro-ui-opacity: 1 !important;
+  }
+  :where(.refract-site) .intro-text[data-entrance="waiting"] {
+    visibility: visible;
+    opacity: 1;
+  }
+}

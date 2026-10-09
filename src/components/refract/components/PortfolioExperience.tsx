@@ -17,11 +17,18 @@ export function PortfolioExperience({
 }: {
   stylePreset?: StylePreset;
 }) {
-  const { profile, researchProjects, links, tools, siteConfig, sceneContact } =
-    useRefractData();
+  const {
+    copy,
+    profile,
+    researchProjects,
+    links,
+    tools,
+    siteConfig,
+    sceneContact,
+  } = useRefractData();
   const projectHeading = researchProjects.length
     ? siteConfig.projectHeading
-    : "Overview";
+    : copy.overview;
   const count = String(researchProjects.length).padStart(2, "0");
   const {
     root,
@@ -225,14 +232,14 @@ export function PortfolioExperience({
       <section
         className="exit-chapter"
         data-scene-chapter="exit"
-        aria-label="Contact"
+        aria-label={copy.contact}
       >
         {sceneContact && (
           <div
             className="fixed-copy centered-copy page-width"
             data-fixed-copy="exit"
           >
-            <h2>Contact</h2>
+            <h2>{copy.contact}</h2>
             <a href={links.email}>
               {profile.email}
               <NorthEastIcon />
@@ -245,16 +252,17 @@ export function PortfolioExperience({
         className="motion-button"
         type="button"
         onClick={() => setPaused(!paused)}
-        aria-label={paused ? "Resume animation" : "Pause animation"}
+        aria-label={paused ? copy.resumeAnimation : copy.pauseAnimation}
         aria-pressed={paused}
       >
         <PlaybackIcon paused={paused} />
-        <span>{paused ? "Resume animation" : "Pause animation"}</span>
+        <span>{paused ? copy.resumeAnimation : copy.pauseAnimation}</span>
       </button>
       <div className="reference-navigation">
         <SceneTimeline
           ref={timeline}
           labels={chapterLabels}
+          name={copy.pageChapters}
           chapter={chapter}
           onSeek={seekPosition}
           onRelease={() => refreshScene.current()}

@@ -1,0 +1,115 @@
+/* Repairs stay within the original full-screen stage and scroll narrative. */
+:where(.refract-site) .intro-page,
+:where(.refract-site) .fixed-copy {
+  max-width: 1500px;
+  padding-inline: var(--gutter);
+}
+:where(.refract-site) .intro-text,
+:where(.refract-site) .fixed-copy .reference-text {
+  max-width: var(--research-rail);
+}
+:where(.refract-site) .feature-chapter {
+  height: auto;
+  min-height: 100lvh;
+}
+:where(.refract-site) .feature-content {
+  height: auto;
+  min-height: 100lvh;
+  padding-block: clamp(2rem, 6vh, 4rem);
+}
+:where(.refract-site) .feature-content .reference-text {
+  position: relative;
+  inset: auto;
+  padding-top: 0;
+}
+:where(.refract-site) .feature-content .reference-text h2 {
+  font-size: clamp(2rem, 3vw, 3.25rem);
+  line-height: 0.95;
+}
+:where(.refract-site) .feature-content .reference-text p {
+  max-width: 21rem;
+}
+:where(.refract-site) .research-figure {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: var(--research-rail);
+  max-width: 18.75rem;
+  margin-top: 1.25rem;
+}
+@media (max-width: 899px) {
+  :where(.refract-site) .intro-page,
+  :where(.refract-site) .fixed-copy {
+    padding-inline: 1rem;
+  }
+  :where(.refract-site) .intro-text,
+  :where(.refract-site) .fixed-copy .reference-text {
+    max-width: 100%;
+  }
+  :where(.refract-site) .modules-chapter .fixed-copy {
+    position: absolute;
+    top: 35%;
+    left: 0;
+    transform: none;
+    height: auto;
+    max-height: none;
+  }
+  :where(.refract-site) .feature-chapter {
+    height: auto;
+    min-height: 100lvh;
+  }
+  :where(.refract-site) .feature-content {
+    padding: 2rem 1rem 5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  :where(.refract-site) .feature-content .reference-text {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: 100%;
+    opacity: 1;
+    visibility: visible;
+  }
+  :where(.refract-site) .feature-content .reference-text h2 {
+    max-width: 30rem;
+  }
+  :where(.refract-site) .feature-content .reference-text p {
+    font-size: 0.875rem;
+    max-width: 34rem;
+    line-height: 1.4;
+  }
+  :where(.refract-site) .feature-gallery,
+  :where(.refract-site) .feature-chapter {
+    pointer-events: auto;
+  }
+  :where(.refract-site) .research-figure {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    align-self: center;
+  }
+  :where(.refract-site) .research-figure figcaption {
+    font-size: 0.75rem;
+  }
+  :where(.refract-site) .about-layout figure {
+    justify-self: start;
+  }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  :where(.refract-site) .about-layout {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 2rem;
+  }
+  :where(.refract-site) .about-layout figure {
+    width: 100%;
+    justify-self: end;
+  }
+}
+@media (min-width: 600px) and (max-width: 899px) and (max-height: 599px) {
+  :where(.refract-site) .intro-text,
+  :where(.refract-site) [data-fixed-copy="anatomy"] .reference-text {
+    max-width: 45%;
+  }
+}

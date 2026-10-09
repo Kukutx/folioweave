@@ -68,6 +68,55 @@
         },
         "maxItems": 4
       },
+      "labels": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "about",
+            "news",
+            "cv",
+            "contact",
+            "writing",
+            "home",
+            "overview",
+            "projects",
+            "tools",
+            "transition",
+            "getInTouch",
+            "learnMore",
+            "viewProject",
+            "viewFigure",
+            "position",
+            "group",
+            "focus",
+            "publications",
+            "basedIn",
+            "skipToContent",
+            "pauseAnimation",
+            "resumeAnimation",
+            "backToHome",
+            "openNavigation",
+            "closeNavigation",
+            "mainNavigation",
+            "pageChapters",
+            "writingEyebrow",
+            "allWriting",
+            "allTopics",
+            "articleTopics",
+            "noArticles",
+            "minRead",
+            "onThisPage",
+            "articleOutline",
+            "articleNavigation",
+            "backToTop"
+          ]
+        },
+        "additionalProperties": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
       "group": {
         "type": "string",
         "minLength": 1,
@@ -77,7 +126,7 @@
         "type": "boolean"
       },
       "continentalDrift": {
-        "type": "boolean"
+        "enum": [true, false, "first"]
       },
       "tools": {
         "type": "array",
