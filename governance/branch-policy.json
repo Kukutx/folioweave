@@ -1,5 +1,8 @@
 {
-  "coreBranches": ["main", "develop"],
+  "coreBranches": [
+    "main",
+    "develop"
+  ],
   "personalBranch": "personal",
   "profileConfig": "portfolio.json",
   "profileSpecificFiles": [
@@ -7,7 +10,10 @@
     "src/portfolio/config.generated.ts",
     "src/portfolio/media.generated.ts",
     "src/blog/posts.generated.ts",
-    "src/blog/custom-posts.generated.ts"
+    "src/blog/custom-posts.generated.ts",
+    "src/portfolio/template.generated.ts",
+    "src/portfolio/plugins.generated.tsx",
+    "src/portfolio/security.generated.json"
   ],
   "demoProfile": "governance/demo-portfolio.json",
   "personalOnlyPrefixes": [

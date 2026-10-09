@@ -270,6 +270,23 @@ export interface PortfolioConfig {
     returnDescription: string;
     image: LocalImage;
   };
+  template?: {
+    id: string;
+    settings?: {
+      [k: string]: {
+        [k: string]: unknown;
+      };
+    };
+  };
+  plugins?: {
+    [k: string]: {
+      enabled: boolean;
+      slot?: "site.floating" | "site.footer" | "article.after";
+      options?: {
+        [k: string]: unknown;
+      };
+    };
+  };
 }
 /**
  * This interface was referenced by `PortfolioConfig`'s JSON-Schema

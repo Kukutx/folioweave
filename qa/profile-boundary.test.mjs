@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { qaTempRoot } from "./temp-directory.mjs";
 import { assertProjectPublicationAllowed } from "../scripts/content-build.mjs";
 import {
   assertProfilePublicationAllowed,
@@ -17,6 +18,23 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const demo = JSON.parse(
   fs.readFileSync(path.join(root, "governance", "demo-portfolio.json"), "utf8"),
 );
+
+test("Git-free canonical snapshots cannot override an explicit personal deployment", () => {
+  const snapshot = fs.mkdtempSync(path.join(qaTempRoot, "profile-policy-"));
+  try {
+    fs.cpSync(path.join(root, "governance"), path.join(snapshot, "governance"), { recursive: true });
+    assert.equal(fs.existsSync(path.join(snapshot, ".git")), false);
+    const standalone = evaluateProfileBoundary(snapshot, demo, { targetBranch: "snapshot" });
+    assert.equal(standalone.core, true);
+    assert.deepEqual(standalone.errors, []);
+    const deployed = evaluateProfileBoundary(snapshot, demo, { targetBranch: "personal" });
+    assert.equal(deployed.core, false);
+    assert.equal(deployed.personal, true);
+    assert.throws(() => assertProfilePublicationAllowed(snapshot, demo, { targetBranch: "personal" }), /Profile publication blocked for personal/);
+  } finally {
+    fs.rmSync(snapshot, { recursive: true, force: true });
+  }
+});
 
 test("profile boundary keeps core and personal publication roles distinct", () => {
   assert.deepEqual(

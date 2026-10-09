@@ -38,6 +38,8 @@ For shared UI, interaction, content-pipeline, responsive, or performance work, r
 npm run qa:maintainer
 ```
 
+`qa:maintainer` also builds a disposable independent template with music/comments and verifies CLI switching and plugin lifecycle. Existing visual and interaction baselines belong to Classic; new finished templates require their own reviewed coverage.
+
 `qa:maintainer` includes runtime budgets, interaction/quality/media checks, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit coverage.
 
 Local runtime QA always gates CLS, LCP, and deterministic interaction work. Long-task and RAF-frame timing are also reported locally but are enforced only in the explicit reference mode because desktop/headless scheduling varies with host pressure. GitHub CI runs that reference mode. Use `npm run qa:runtime-reference` when you intentionally want the same strict host-sensitive gate on a suitable local machine.
@@ -65,7 +67,7 @@ See `docs/DESIGN-SYSTEM.md` and `docs/VISUAL-QA.md`.
 
 - Keep authoring inputs separate from generated/publication outputs.
 - Reusable modules must not depend on `src/demo/`.
-- Prefer focused feature modules over a universal plugin/page-builder abstraction.
+- Keep template presentation in `src/templates/`, shared extension contracts in `src/core/`, and independent plugins in `src/plugins/`. Follow `docs/TEMPLATES.md` and `docs/PLUGINS.md`.
 - Keep server composition static where possible and interaction islands focused.
 - Preserve keyboard behavior, focus restoration, reduced motion, no-JavaScript readability, and the single document scroller.
 - Keep continuous animation work scoped to its useful viewport/document lifetime.

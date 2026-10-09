@@ -2,6 +2,10 @@
 
 Treat upgrades as code integration, not as replacement of author content.
 
+## Template and plugin API 1
+
+No author migration is required: a missing `template` selects Classic, and missing `plugins` enables none. Rebuild after integrating shared code to generate `template.generated.ts`, the per-view `template-*.generated.ts` and per-slot `plugins-*.generated.tsx` entries, and `security.generated.json` together with content. These files are profile-derived outputs, never hand-edited. CLI template switching retains each template's settings and all author content. Before renaming a commented Markdown file, pin its frontmatter `id` to its old slug.
+
 ## Same repository: update `personal` from `main`
 
 In the maintained FolioWeave repository, shared implementation lands on `main`

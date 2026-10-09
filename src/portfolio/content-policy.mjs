@@ -24,7 +24,7 @@ export function localAssetPath(value) {
   ) {
     throw new Error(`Unsafe asset path: ${value}`);
   }
-  return /\.(?:avif|gif|jpe?g|png|webp|svg|ico|pdf|mp4|webm|woff2?)$/i.test(
+  return /\.(?:avif|gif|jpe?g|png|webp|svg|ico|pdf|mp4|webm|mp3|m4a|ogg|wav|aac|flac|woff2?)$/i.test(
     clean,
   )
     ? clean
@@ -86,15 +86,39 @@ export const isEmailAddress = (value) =>
   typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 /** Source content is retained; only this view is eligible for publication. */
-export function publishedPortfolio(config) {
+export function publishedPortfolio(config, sections = HOME_SECTIONS) {
   return {
     ...config,
+    ...(config.template
+      ? {
+          template: {
+            id: config.template.id,
+            settings: {
+              [config.template.id]:
+                config.template.settings?.[config.template.id] ?? {},
+            },
+          },
+        }
+      : {}),
+    ...(config.plugins
+      ? {
+          plugins: Object.fromEntries(
+            Object.entries(config.plugins).filter(
+              ([, plugin]) => plugin.enabled,
+            ),
+          ),
+        }
+      : {}),
     site: {
       ...config.site,
       resume: config.features.resume
         ? config.site.resume
         : { image: "", pdf: "", downloadName: "" },
-      navigation: resolveNavigation(config.site.navigation, config.features),
+      navigation: resolveNavigation(
+        config.site.navigation,
+        config.features,
+        sections,
+      ),
     },
     about: config.features.about
       ? config.about
@@ -108,7 +132,12 @@ export function publishedPortfolio(config) {
   };
 }
 
-export function validatePublicationLinks(config, blogRoutes = []) {
+export function validatePublicationLinks(
+  config,
+  blogRoutes = [],
+  sections = HOME_SECTIONS,
+  definitions,
+) {
   try {
     new Intl.Locale(config.site.identity.locale);
     new Intl.DateTimeFormat(config.site.identity.locale, {
@@ -138,16 +167,17 @@ export function validatePublicationLinks(config, blogRoutes = []) {
     resolvePublishedRoutes({
       demoRoutesEnabled: config.features.demoRoutes,
       blogRoutes,
+      definitions,
     }),
   );
   for (const item of resolveNavigation(
     config.site.navigation,
     config.features,
+    sections,
   )) {
     if (
       item.sectionId &&
-      (!HOME_SECTIONS.includes(item.sectionId) ||
-        item.href !== `#${item.sectionId}`)
+      (!sections.includes(item.sectionId) || item.href !== `#${item.sectionId}`)
     ) {
       throw new Error(
         `Navigation ${item.label} must reference an existing matching section.`,
@@ -166,7 +196,7 @@ export function validatePublicationLinks(config, blogRoutes = []) {
       }
     } else if (typeof value.href === "string") {
       if (value.href.startsWith("#")) {
-        if (!HOME_SECTIONS.includes(value.href.slice(1)))
+        if (!sections.includes(value.href.slice(1)))
           throw new Error(`Unknown section: ${value.href}`);
       } else {
         const url = new URL(value.href);
@@ -176,5 +206,5 @@ export function validatePublicationLinks(config, blogRoutes = []) {
     }
     Object.values(value).forEach(inspect);
   };
-  inspect(publishedPortfolio(config));
+  inspect(publishedPortfolio(config, sections));
 }

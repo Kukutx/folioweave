@@ -1,0 +1,258 @@
+{
+  "id": "refract-dark",
+  "name": "Refract Dark",
+  "description": "A cinematic dark portfolio with a geometric globe, scroll chapters and editorial writing.",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx"
+  },
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": [
+    "home",
+    "overview",
+    "work",
+    "about",
+    "tools",
+    "news",
+    "cv",
+    "contact"
+  ],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "tagline": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1200
+      },
+      "rotatingTopics": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "maxItems": 12
+      },
+      "projectHeading": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "toolsHeading": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "focus": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "maxItems": 12
+      },
+      "layerLabels": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "maxItems": 4
+      },
+      "group": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "fracturedGlass": {
+        "type": "boolean"
+      },
+      "continentalDrift": {
+        "type": "boolean"
+      },
+      "tools": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "maxLength": 100
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+              "maxLength": 2048
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "url": {
+                    "type": "string",
+                    "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+                    "maxLength": 2048
+                  }
+                },
+                "required": ["label", "url"]
+              },
+              "maxItems": 8
+            }
+          },
+          "required": ["id", "name", "description"]
+        },
+        "maxItems": 12
+      },
+      "news": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "maxLength": 100
+            },
+            "date": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+              "maxLength": 2048
+            }
+          },
+          "required": ["id", "date", "description"]
+        },
+        "maxItems": 30
+      },
+      "publications": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$",
+              "maxLength": 100
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "authors": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "year": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2200
+            },
+            "journal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "citation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+              "maxLength": 2048
+            },
+            "highlight": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "required": ["id", "title", "authors", "year", "journal", "citation"]
+        },
+        "maxItems": 50
+      },
+      "researchFigures": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "maxLength": 100
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "type": "string",
+              "pattern": "^/(?!/)(?!.*(?:\\.\\.|[?%#\\\\\\s])).*\\.(?:avif|gif|jpe?g|png|webp|svg)$",
+              "maxLength": 512
+            },
+            "animatedSource": {
+              "type": "string",
+              "pattern": "^/(?!/)(?!.*(?:\\.\\.|[?%#\\\\\\s])).*\\.(?:avif|gif|jpe?g|png|webp|svg)$",
+              "maxLength": 512
+            },
+            "width": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "caption": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            }
+          },
+          "required": ["source", "width", "height"]
+        }
+      }
+    }
+  }
+}

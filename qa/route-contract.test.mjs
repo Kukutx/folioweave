@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import {
   hasPublicationGuard,
@@ -46,7 +46,7 @@ test("route groups normalize, private folders are excluded, unsupported public c
   );
 });
 test("bidirectional contract rejects missing registration, guard, page, and custom blog registration", async (t) => {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "folioweave-routes-"));
+  const root = await fs.mkdtemp(path.join(qaTempRoot, "folioweave-routes-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const write = async (
     name,

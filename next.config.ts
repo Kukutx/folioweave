@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import extensionNetwork from "./src/portfolio/security.generated.json";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -23,7 +24,15 @@ const contentSecurityPolicy = [
   `connect-src 'self'${isDevelopment ? " ws: wss:" : ""}`,
   "media-src 'self' blob:",
   "worker-src 'self' blob:",
-].join("; ");
+].map((directive) => {
+  const name = directive.split(" ")[0];
+  const sources = (extensionNetwork as Record<string, string[]>)[name] ?? [];
+  return sources.length ? `${directive} ${sources.join(" ")}` : directive;
+}).concat(
+  Object.entries(extensionNetwork as Record<string, string[]>)
+    .filter(([name]) => name === "frame-src")
+    .map(([name, sources]) => `${name} 'self' ${sources.join(" ")}`),
+).join("; ");
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: contentSecurityPolicy },

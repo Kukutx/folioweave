@@ -53,6 +53,23 @@ skipped, while the latter must still build normally.
 
 After attaching a custom domain, update `site.origin`, rebuild, and redeploy so canonical URLs, sitemap, Open Graph metadata, and JSON-LD point at the real production origin.
 
+## The public Refract demos
+
+The two Refract demos are not built from a branch: `main` always carries the
+Classic demo profile. Each is an isolated snapshot assembled from
+`governance/templates/` and uploaded to its own Vercel project
+(`folioweave-refract-light`, `folioweave-refract-dark`). After changing Refract or
+its demo profiles, a maintainer signed in to the Vercel CLI redeploys them with:
+
+```bash
+npm run demo:deploy -- light
+npm run demo:deploy -- dark
+```
+
+Add `--preview` to upload without promoting to production. The command never
+reads or writes `portfolio.json` or author media, and removes its snapshot when it
+finishes.
+
 ## Other Next.js hosts
 
 Use the provider's current Next.js integration. The application uses App Router routes and Route Handlers, so the host must support the project's Next.js runtime rather than only static HTML export.

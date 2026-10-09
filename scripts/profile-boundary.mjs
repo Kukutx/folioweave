@@ -61,7 +61,9 @@ export function evaluateProfileBoundary(
   const hasGitMetadata = fs.existsSync(path.join(root, ".git"));
   const canonicalSnapshot =
     !hasGitMetadata && isDeepStrictEqual(portfolio, demoPortfolio);
-  const core = policy.coreBranches.includes(targetBranch) || canonicalSnapshot;
+  const core =
+    policy.coreBranches.includes(targetBranch) ||
+    (targetBranch === "snapshot" && canonicalSnapshot);
   const personal = targetBranch === policy.personalBranch;
   const errors = [];
 

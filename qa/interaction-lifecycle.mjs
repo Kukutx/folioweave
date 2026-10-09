@@ -62,7 +62,7 @@ try {
   assert.equal(await floatingHome.isVisible(), true);
   await floatingHome.click();
   await page.waitForFunction(() => scrollY < 4);
-  await page.waitForTimeout(300);
+  await floatingHome.waitFor({ state: "detached", timeout: 5000 });
   assert.equal(
     await page.locator("[data-floating-home]").count(),
     0,
@@ -81,7 +81,37 @@ try {
         `${id} outside main`,
       );
   }
+  await page.locator("#interlude").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .some(
+        (animation) =>
+          animation.playState === "running" &&
+          animation.effect?.target?.matches?.(".star"),
+      ),
+  );
+  const textLayout = () =>
+    page.locator(".hero-main-text, .simple-text").evaluateAll((elements) =>
+      elements.map((element) => ({
+        text: element.textContent,
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+      })),
+    );
+  const animatedTextLayout = await textLayout();
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForTimeout(100);
+  const staticTextLayout = await textLayout();
+  assert.equal(staticTextLayout.length, animatedTextLayout.length);
+  staticTextLayout.forEach((item, index) => {
+    assert.equal(item.text, animatedTextLayout[index].text);
+    for (const dimension of ["width", "height"])
+      assert.ok(
+        Math.abs(item[dimension] - animatedTextLayout[index][dimension]) < 1,
+        `motion preference changed text ${dimension}`,
+      );
+  });
   await page.locator("#interlude").scrollIntoViewIfNeeded();
   await page.waitForTimeout(500);
   assert.equal(
@@ -189,6 +219,51 @@ try {
   await phone.screenshot({ path: "qa/screens/lifecycle/mobile-anchor.png" });
   report.push(
     "mobile: Escape, focus restoration, inert cleanup, hash navigation and reload",
+  );
+  for (const width of [820, 1440, 390]) {
+    await phone.setViewportSize({ width, height: 900 });
+    await phone.waitForTimeout(250);
+    const geometry = await phone.evaluate(() => {
+      const sections = [...document.querySelectorAll("[data-theme-scope]")];
+      const snapshot = () =>
+        sections.map((element) => {
+          const bounds = element.getBoundingClientRect();
+          return { top: bounds.top + scrollY, height: bounds.height };
+        });
+      const deferred = snapshot();
+      const styles = sections.map((element) => element.style.contentVisibility);
+      for (const element of sections)
+        element.style.contentVisibility = "visible";
+      const rendered = snapshot();
+      sections.forEach((element, index) => {
+        element.style.contentVisibility = styles[index];
+      });
+      return { deferred, rendered, styles };
+    });
+    assert.ok(
+      geometry.styles.every((value) => ["auto", "visible"].includes(value)),
+    );
+    geometry.rendered.forEach((section, index) => {
+      for (const key of ["top", "height"])
+        assert.ok(
+          Math.abs(section[key] - geometry.deferred[index][key]) < 1,
+          `deferred section ${index} changed ${key} after resizing to ${width}`,
+        );
+    });
+  }
+  await phone.emulateMedia({ media: "print" });
+  assert.ok(
+    await phone
+      .locator("[data-theme-scope]")
+      .evaluateAll((elements) =>
+        elements.every(
+          (element) =>
+            getComputedStyle(element).contentVisibility === "visible",
+        ),
+      ),
+  );
+  report.push(
+    "deferred sections: stable layout across viewport changes and complete print rendering",
   );
   await mobile.close();
 

@@ -1,6 +1,6 @@
 # FolioWeave design system
 
-FolioWeave is intentionally opinionated. It is not a generic page builder: its reusable value comes from preserving a coherent visual and interaction language while letting authors replace the content.
+Each FolioWeave template owns a coherent visual and interaction language. This document describes Classic. Other templates share content and plugin contracts while defining their own presentation.
 
 ## Visual compatibility contract
 
@@ -43,7 +43,7 @@ Component-specific illustrations may keep literal colors when the colors are par
 
 ## Styling boundaries
 
-`src/app/globals.css` is an ordered import manifest. Existing portfolio CSS under `src/styles/portfolio/` is cascade-sensitive and should not be reorganized merely for aesthetics.
+`src/templates/classic/styles.css` is an ordered import manifest. Existing portfolio CSS under `src/templates/classic/styles/` is cascade-sensitive and should not be reorganized merely for aesthetics.
 
 For new work:
 

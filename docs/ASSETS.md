@@ -37,6 +37,36 @@ npm run qa:assets
 
 after an intentional demo asset change.
 
+## Refract assets
+
+Refract Light and Refract Dark share their static design assets under
+`public/templates/refract/`. These files are served independently of the selected
+template, so they must be safe to redistribute on their own.
+
+- DINish is distributed under SIL Open Font License 1.1. Keep its original
+  copyright notice and [complete license](../public/templates/refract/fonts/DINish-OFL.txt)
+  beside the font.
+- The globe's land samples and continental geometry derive from Natural Earth
+  public-domain datasets. Their source versions, processing notes and checksums
+  remain recorded in the [land sample credits](../public/templates/refract/geography-credit.json)
+  and [continental geometry credits](../public/templates/refract/continental-geography-credit.json).
+- The land sample source also passed through World Atlas. Preserve its ISC
+  copyright and permission notice in the geography credit record.
+
+The original personal site's portrait, research illustrations, publications,
+personal links and institution-specific copy are not bundled as reusable demo
+content. Its reference Berkeley Mono font is not redistributed. Refract uses the
+licensed DINish font and system fallbacks instead. Public demonstrations use
+generic profile content. The SVG artwork under `governance/templates/assets/` was
+created for the FolioWeave demo and is covered by the repository's MIT license;
+it contains no original-site portraits, research images or embedded fonts.
+
+Refract's Canvas geography and layered surfaces are visual illustrations, not
+scientific measurements. Adding a research figure or portrait is an author-media
+operation: place the file under `content/assets/portfolio/` and reference its
+`/portfolio/` URL through the profile. The original source project is not an
+asset dependency of FolioWeave builds.
+
 ## License boundary
 
 The MIT license covers software source and documentation. It does **not** automatically grant redistribution rights for every bundled photograph, logo, trademark, font, resume, or product screenshot.

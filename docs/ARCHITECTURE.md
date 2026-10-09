@@ -1,7 +1,30 @@
 # Content, publication and interaction contracts
 
-FolioWeave is a single application with a reusable implementation and separately
-owned author content. It does not maintain legacy runtime configuration formats.
+FolioWeave is a single application with a shared publication core, selectable templates, local plugins and separately owned author content. Profiles without explicit extension settings select Classic with no plugins. The other built-in templates are Refract Light and Refract Dark. See [TEMPLATES.md](TEMPLATES.md), [REFRACT.md](REFRACT.md), and [PLUGINS.md](PLUGINS.md).
+
+## Template ownership
+
+The core owns routes, metadata, published content, article identity, validation,
+and plugin slots. A template implements five view entries: layout, home, blog
+index, blog article, and tag page. Only the selected template's entries are
+generated into the application. Templates consume `TemplateContext` rather than
+reading another template's configuration or importing another project's app root.
+
+Classic owns its editorial composition under `src/templates/classic/`. Refract
+Light and Refract Dark have separate manifest directories and share their scene,
+content adapter, and views under `src/components/refract/`. Their palette is fixed
+by the selected entry; it is not a stored visitor theme. Scene geometry and
+interaction fixes apply to both styles through the shared implementation.
+
+Both Refract templates read the same author profile as Classic. Template options
+provide presentation-specific details, while author identity, project content,
+articles, and contact links retain their existing sources. A template need not
+render every Classic section or object. It must honor its declared sections and
+slots, omit unavailable navigation destinations, and keep article ids stable.
+
+Home-only scene code stays outside the shared layout and article import graphs.
+Plugins receive the core's semantic context and styling tokens; they do not
+control a template's native navigation or Canvas lifecycle.
 
 ## One authoring and build workflow
 
@@ -104,6 +127,10 @@ keeps known demo-brand copy out of the generic config/component layers.
 
 ## Server and client ownership
 
+The following implementation details describe Classic's rendering and motion
+contract. Refract's scene ownership and lifecycle are documented in
+[REFRACT.md](REFRACT.md); those designs are verified independently.
+
 `HomePage` composes the page on the server. `HomeExperience` owns scrolling, theme
 transitions and chrome, accepting server-rendered children. Static contact markup
 does not belong to its client import graph. Stateful gallery, portrait, camera
@@ -166,8 +193,8 @@ visual is explicitly identified as incorrect. Never regenerate baselines merely 
 silence a failure; review the cause and accept only the intended regions. See
 [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
 
-`src/app/globals.css` is an ordered import manifest; readable implementation lives
-in `src/styles/portfolio/`. Keep this order when moving declarations: it preserves
+`src/templates/classic/styles.css` is an ordered import manifest; readable implementation lives
+in `src/templates/classic/styles/`. Keep this order when moving declarations: it preserves
 the existing cascade. New shell-local styles use a CSS Module. Tokens belong in
 `src/styles/theme.css`; global reduced-motion policy belongs in `motion.css`.
 Run `npm run format:styles` before the CSS contract check.
@@ -203,6 +230,33 @@ for explicit baseline approval, cross-engine checks and throttled motion budgets
 generation/validation once and whose compiler performs TypeScript checking.
 Keep validated byte snapshots and atomic publication: optimize further asset
 scans only after measuring larger content sets, not by weakening integrity checks.
+
+Profile commands and publication share `.generated/project.lock`. The CLI and
+personalization wizard use `updateProfile`; preparation binds the profile bytes
+and previous publication to the target project's catalog, schema and routes.
+Publication rechecks these versions after staging and rejects stale preparations.
+Unchanged generated text retains its timestamp. The development watcher reads a
+fresh project context on every rebuild, including changes to route definitions.
+
+An interrupted profile update keeps `.generated/profile-update.json`, containing
+the exact previous and next profile text. Stop the recorded writer before recovery.
+Recover any `.generated/content-transaction-*` journal first, as described above.
+Compare the author profile with both recorded versions; never overwrite later
+author edits. Reconcile the intended source, then remove the resolved profile
+journal and project lock and run the guarded content build. The generated-output
+transaction never writes author files. A live lock is not stale just because a
+second command wants to build.
+
+Personalization creates content-addressed placeholder assets without overwriting
+existing author files. The same project lock covers these additions and profile
+publication; failed validation removes only unchanged files created by that run.
+An unresolved profile recovery retains its new assets alongside the journal.
+
+Template metadata, each template view and each plugin slot have separate generated
+modules. `qa:route-loading` verifies the production document's module ownership;
+Next Link's later speculative prefetch is measured separately from that graph.
+The extension browser suite verifies the same Markdown/JSON-LD semantics with
+Classic and an independent template, in addition to plugin lifecycle behavior.
 
 ## Repository visibility and ownership
 
