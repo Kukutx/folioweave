@@ -1,8 +1,22 @@
 # FolioWeave
 
-A polished, opinionated **Next.js 16 portfolio starter** for developers, designers, and creative professionals.
+A **Next.js 16 portfolio framework** with selectable templates, shared plugins, and a content workflow for personal websites.
 
-FolioWeave combines editorial storytelling, tactile software-like interactions, photography, project case studies, Markdown writing, and production QA. Day-to-day personalization stays in a deliberately small authoring surface; layout and interaction code remain reusable.
+FolioWeave brings three portfolio designs into one application: Classic, Refract Light, and Refract Dark. Choose a template through the CLI, keep your profile and Markdown articles, and enable music or comments independently. Layout, motion, content publication, and extension contracts live in the reusable code; personal information and media stay in the authoring layer.
+
+## Templates
+
+| Template      | CLI id          | Design                                                                                         | Demo                                                     |
+| ------------- | --------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                     | [Open demo](https://folioweave-classic.vercel.app)       |
+| Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms | [Open demo](https://folioweave-refract-light.vercel.app) |
+| Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette    | [Open demo](https://folioweave-refract-dark.vercel.app)  |
+
+Refract Light and Refract Dark are separate build-time choices. The published site has no style switcher. They share scene geometry and interaction code so fixes apply consistently to both designs. Read the [Refract guide](docs/REFRACT.md) for content mapping, settings, and asset credits.
+
+|                                                                     Refract Light                                                                      |                                                                       Refract Dark                                                                        |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Refract Light desktop preview with a white canvas and geometric globe](docs/images/refract-light.png)](https://folioweave-refract-light.vercel.app) | [![Refract Dark desktop preview with a warm dark canvas and illuminated globe](docs/images/refract-dark.png)](https://folioweave-refract-dark.vercel.app) |
 
 ## Start here
 
@@ -12,10 +26,14 @@ Requirements: Node.js 24 and npm.
 npm ci
 git switch -c personal
 npm run personalize
+npm run folio -- templates
+npm run folio -- template use refract-light
 npm run dev
 ```
 
 `main` and `develop` keep the canonical demo, so your own profile lives on the `personal` branch.
+
+Use `classic` or `refract-dark` in the selection command to choose either of the other templates. Classic remains the default for profiles without a template selection.
 
 Open `http://localhost:3000`.
 
@@ -40,18 +58,21 @@ content/resume/            optional
 
 `content/resume/resume.json`, when present, is the single source for the resume PDF and the printer preview; `npm run resume:build` renders both.
 
-Do **not** edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`. They are validated publication output and are replaced by the content pipeline.
+Do **not** edit `public/portfolio/`, `src/portfolio/*.generated.*`, or `src/blog/posts.generated.ts`. They are validated publication output and are replaced by the content pipeline.
 
 While `npm run dev` is running, valid changes to profile content, assets, Markdown, schema, custom-blog metadata, and the route registry are rebuilt automatically. Invalid content leaves the last valid generated output in place and prints the validation error.
 
 ## Highlights
 
+- Three CLI-selectable templates sharing one profile schema and publication pipeline
+- Independent music and comments plugins, configured through the CLI and mounted through template slots
 - Responsive portfolio for desktop, tablet, and mobile
 - Data-driven projects, photography, About content, resume, links, and feature switches
 - One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order
 - Markdown Blog with automatic routes, index, tag pages, reading time, metadata, sitemap, and drafts
 - Article outline, linkable section headings, and copyable code blocks
-- Motion-rich Hero, Work, Photography, Contact, Designer Cursors, camera, gallery/lightbox, and resume printer
+- Classic's editorial sections, camera, gallery/lightbox, and resume printer
+- Refract's Canvas globe, scroll-driven scene changes, chapter timeline, and light/dark design variants
 - Server-first composition with focused client interaction islands
 - Accessibility-minded keyboard/focus behavior and live reduced-motion support
 - Atomic content publication with schema, route, asset, image, and link validation
@@ -114,6 +135,9 @@ FolioWeave separates four concerns:
 
 ```text
 Reusable core
+  src/core/
+  src/templates/
+  src/plugins/
   src/components/
   src/config/
   src/content/
@@ -124,7 +148,7 @@ Reusable core
 
 Demo / examples
   src/demo/
-  thin filesystem route entries under src/app/
+  thin filesystem route entries under src/app/(demo)/
 
 Author inputs
   portfolio.json
@@ -140,17 +164,13 @@ Generated publication
 
 Reusable modules are not allowed to depend on `src/demo/`; `npm run qa:boundary` enforces that rule.
 
-The homepage remains intentionally opinionated rather than becoming a universal page-builder/plugin framework. Common author content is data-driven; genuinely new interaction or section types can remain explicit code.
+FolioWeave shares one content and publication core across selectable templates. Each template implements the same layout, home, blog index, article, and tag-page contracts. Trusted local plugins add independent features through semantic slots. Use `npm run folio -- templates`, `npm run folio -- plugins`, and `npm run folio -- doctor`. See [Template integration](docs/TEMPLATES.md) and [Shared plugins](docs/PLUGINS.md).
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full contracts.
 
 ## Design philosophy
 
-FolioWeave combines:
-
-- editorial storytelling;
-- tactile software objects;
-- playful system metaphors.
+Each template owns its visual language. Classic uses editorial layouts and tactile software objects. Refract uses a continuous globe scene, layered geometry, and chapter-based scrolling. Shared content and extension contracts allow those designs to coexist without making their layouts identical.
 
 An approved visual is treated as a compatibility contract. Refactors and performance work must not silently redesign it. Visual baseline updates require an understood, intentional change rather than “making tests green.”
 
@@ -164,26 +184,36 @@ Fast content validation:
 npm run content:check
 ```
 
-Code/build validation:
+Production build, which publishes and validates your content first:
+
+```bash
+npm run build
+```
+
+That is everything a personal site needs. Maintainers changing shared code run the
+full gate, which adds lint, the branch boundary and the content test suites:
 
 ```bash
 npm run check
 npm run audit:prod
 ```
 
-Full release validation:
+Design-specific validation:
 
 ```bash
 npm run qa:maintainer
+npm run qa:refract
 ```
 
-The maintainer suite covers runtime budgets, interaction/accessibility, media health, bundle budgets, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit.
+`qa:maintainer` exercises Classic's runtime budgets, interaction/accessibility, media health, bundle budgets, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit. Run it against a Classic build. `qa:refract` builds both Refract styles in isolated demo fixtures and checks their scene contracts and browser behavior. It does not replace your author profile. Each design has its own visual contract; passing one suite does not validate all templates.
 
 ## Deployment
 
 FolioWeave uses standard Next.js deployment conventions. Vercel can use the normal Next.js preset; other platforms that support the current Next.js runtime can use their standard adapter.
 
 Set `site.origin` in `portfolio.json` to the canonical production URL before release, and validate the production build.
+
+On Vercel, import the repository and set **Settings → Environments → Production → Branch Tracking** to `personal`. A new project tracks `main` by default, which publishes the bundled demo profile instead of yours. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Public repository and personal profile
 
@@ -204,6 +234,9 @@ personal-content, and downstream/fork workflow.
 - [Design system](docs/DESIGN-SYSTEM.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Extending the template](docs/TEMPLATE.md)
+- [Selecting and integrating templates](docs/TEMPLATES.md)
+- [Refract Light and Refract Dark](docs/REFRACT.md)
+- [Music, comments and plugin development](docs/PLUGINS.md)
 - [Deployment](docs/DEPLOYMENT.md)
 - [Upgrading](docs/UPGRADING.md)
 - [Visual QA](docs/VISUAL-QA.md)

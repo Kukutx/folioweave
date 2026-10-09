@@ -1,7 +1,8 @@
-import { AboutSection } from "@/components/about-section";
+import { AboutSection } from "@/templates/classic/about-section";
 import { MediaCarousel } from "@/components/media/media-carousel";
 import { MarkdownBlogPostPage } from "@/components/blog/markdown-blog-post";
 import { portfolio } from "@/portfolio";
+import "@/templates/classic/styles.css";
 import "@/styles/blogs.css";
 import { CarouselStates } from "./carousel-states";
 

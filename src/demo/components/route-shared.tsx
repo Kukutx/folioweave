@@ -7,7 +7,7 @@ export function BackToPortfolio({
   className?: string;
 }) {
   return (
-    <Link href="/" className={className}>
+    <Link href="/" prefetch={false} className={className}>
       <ArrowLeft size={18} /> Back to Portfolio
     </Link>
   );

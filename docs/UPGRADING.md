@@ -2,6 +2,19 @@
 
 Treat upgrades as code integration, not as replacement of author content.
 
+## Template and plugin API 1
+
+No author migration is required: a missing `template` selects Classic, and missing `plugins` enables none. Rebuild after integrating shared code to generate `template.generated.ts`, the per-view `template-*.generated.ts` and per-slot `plugins-*.generated.tsx` entries, and `security.generated.json` together with content. These files are profile-derived outputs, never hand-edited. CLI template switching retains each template's settings and all author content. Before renaming a commented Markdown file, pin its frontmatter `id` to its old slug.
+
+Build commands changed with this API. `npm run build` publishes and validates
+content and compiles the site; it no longer runs the repository's test suites or
+the branch boundary. `npm run check` runs those before the build and is what CI
+uses. `npm run content:check` is the read-only content validation on its own.
+A deployment that called `npm run build` needs no change.
+
+Refract's `continentalDrift` option now applies to every project chapter when
+`true`; set `"first"` to keep the earlier single-chapter behaviour.
+
 ## Same repository: update `personal` from `main`
 
 In the maintained FolioWeave repository, shared implementation lands on `main`

@@ -1,0 +1,12 @@
+/* Classic owns this cascade. Only the selected template imports it. */
+@import "./styles/chrome.css";
+@import "./styles/foundation.css";
+@import "./styles/hero.css";
+@import "./styles/sections.css";
+@import "./styles/responsive.css";
+@import "./styles/camera.css";
+@import "./styles/reset.css";
+@import "../../styles/theme.css";
+@import "../../styles/interactive-effects.css";
+@import "../../styles/media.css";
+@import "../../styles/motion.css";

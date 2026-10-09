@@ -1,5 +1,7 @@
 export type BlogPostSummary = {
   slug: string;
+  /** Pin this in frontmatter before renaming an article with comments. */
+  id?: string;
   href: string;
   title: string;
   subtitle?: string;

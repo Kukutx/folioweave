@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FolioWeave · 音乐播放器样机</title>
+    <link rel="stylesheet" href="../../src/plugins/music/player.module.css" />
+    <link rel="stylesheet" href="./music-player-concept.css" />
+  </head>
+  <body>
+    <svg
+      aria-hidden="true"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    >
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="M8 4.5 20 12 8 19.5z" />
+      </symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24">
+        <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+      </symbol>
+      <symbol id="i-next" viewBox="0 0 24 24">
+        <path d="m6 5 10 7-10 7zM19 5v14" />
+      </symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24">
+        <path d="m18 5-10 7 10 7zM5 5v14" />
+      </symbol>
+      <symbol id="i-list" viewBox="0 0 24 24">
+        <path d="M8 6h12M8 12h12M8 18h7M3 6h.1M3 12h.1M3 18h.1" />
+      </symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24">
+        <path
+          d="M11 5 6 9H3v6h3l5 4zM15 8a6 6 0 0 1 0 8M18 5a10 10 0 0 1 0 14"
+        />
+      </symbol>
+      <symbol id="i-note" viewBox="0 0 24 24">
+        <path d="M10 17V5l10-2v12M10 9l10-2" />
+        <ellipse cx="7" cy="18" rx="3" ry="2" />
+        <ellipse cx="17" cy="16" rx="3" ry="2" />
+      </symbol>
+      <symbol id="i-note-single" viewBox="0 0 24 24">
+        <path d="M12 17V4c1 4 7 3 6 8" />
+        <ellipse cx="9" cy="18" rx="3" ry="2" />
+      </symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24">
+        <path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5" />
+      </symbol>
+      <symbol id="i-repeat" viewBox="0 0 24 24">
+        <path d="m16 3 4 4-4 4M4 11V7h16M8 21l-4-4 4-4m12 0v4H4" />
+      </symbol>
+    </svg>
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"></span>FolioWeave<span
+          class="edition"
+        >
+          / Music player</span
+        >
+      </div>
+      <div class="top-note">音乐插件 · 交互样机 · 与正式插件共用样式</div>
+    </header>
+    <main class="workspace">
+      <aside class="settings" aria-label="样机设置">
+        <header>
+          <div class="eyebrow">FolioWeave / Music</div>
+          <h1>音乐播放器</h1>
+          <p class="intro">
+            两种停靠模式，两种外观。<br />最左侧唱片／封面负责展开收起。
+          </p>
+        </header>
+        <fieldset>
+          <legend>01 / 外观形态</legend>
+          <div class="choice" data-setting="skin">
+            <button type="button" data-value="capsule" aria-pressed="true">
+              唱片胶囊</button
+            ><button type="button" data-value="square" aria-pressed="false">
+              经典方形
+            </button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>02 / 停靠模式</legend>
+          <div class="choice" data-setting="position">
+            <button type="button" data-value="right" aria-pressed="true">
+              右下角悬浮</button
+            ><button type="button" data-value="center" aria-pressed="false">
+              底部居中
+            </button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>03 / 材质配色</legend>
+          <div class="finishes" data-setting="finish">
+            <button
+              type="button"
+              class="finish"
+              data-value="graphite"
+              aria-label="石墨黑"
+              aria-pressed="true"
+              style="--swatch: #222225"
+            ></button
+            ><button
+              type="button"
+              class="finish"
+              data-value="porcelain"
+              aria-label="纯白"
+              aria-pressed="false"
+              style="--swatch: #ffffff"
+            ></button
+            ><button
+              type="button"
+              class="finish"
+              data-value="cobalt"
+              aria-label="深灰蓝"
+              aria-pressed="false"
+              style="--swatch: #272c35"
+            ></button>
+          </div>
+          <div class="finish-name" id="finish-name">石墨黑</div>
+        </fieldset>
+        <fieldset>
+          <legend>04 / 个性细节</legend>
+          <label class="setting-row" for="accent"
+            >强调色<input id="accent" type="color" value="#ececf0"
+          /></label>
+          <label class="setting-row notes-setting" for="notes-enabled">
+            彩色音符
+            <input
+              id="notes-enabled"
+              type="checkbox"
+              role="switch"
+              aria-describedby="notes-hint"
+            />
+          </label>
+          <div class="note-palette" id="note-palette" hidden>
+            <label
+              >音符颜色<input
+                type="color"
+                data-note-color="1"
+                value="#cf8750"
+                aria-label="音符颜色一"
+            /></label>
+            <input
+              type="color"
+              data-note-color="2"
+              value="#ac719b"
+              aria-label="音符颜色二"
+            />
+            <input
+              type="color"
+              data-note-color="3"
+              value="#528ba6"
+              aria-label="音符颜色三"
+            />
+          </div>
+          <p class="hint" id="notes-hint">
+            开启后，音符随播放轻轻上浮。尊重系统的减少动态效果设置。
+          </p>
+          <p class="hint">点击播放器最左侧的唱片／封面，展开或收起。</p>
+        </fieldset>
+        <div class="audio-settings">
+          <button type="button" class="import" id="import-audio">
+            <svg><use href="#i-upload" /></svg>导入本地音乐试听</button
+          ><input
+            type="file"
+            id="audio-files"
+            accept="audio/*"
+            multiple
+            hidden
+          />
+          <p class="hint" id="source-status" role="status">
+            当前为静音交互演示。导入后可真实播放；文件仅在本机读取，不上传。
+          </p>
+        </div>
+        <details class="advanced">
+          <summary>音频直链与专辑封面</summary>
+          <div class="advanced-content">
+            <label class="field-label" for="audio-url">HTTPS 音频直链</label>
+            <form class="url-row" id="url-form">
+              <input
+                type="url"
+                id="audio-url"
+                placeholder="https://…/track.mp3"
+                required
+              /><button type="submit">载入</button>
+            </form>
+            <p class="hint">
+              需为浏览器可播放的音频地址，平台分享页无法直接播放。
+            </p>
+            <button type="button" class="subtle-button" id="import-cover">
+              选择本地封面</button
+            ><input
+              type="file"
+              id="cover-file"
+              accept="image/*"
+              hidden
+            /><button type="button" class="subtle-button" id="reset-demo">
+              恢复静音演示
+            </button>
+          </div>
+        </details>
+      </aside>
+      <section class="studio" aria-label="播放器设计预览">
+        <div class="stage-heading">
+          <span class="live">播放器预览</span
+          ><span class="edition">One player. Your expression.</span>
+        </div>
+        <div class="stage" id="stage">
+          <div class="site-nav" aria-hidden="true">
+            <span class="site-wordmark">YOUR SPACE.</span
+            ><span>Selected work &nbsp; / &nbsp; About</span>
+          </div>
+          <div class="hero">
+            <div class="hero-label">PLAYER PREVIEW</div>
+            <h2 id="mode-title">右下角悬浮模式</h2>
+            <p>点击最左侧唱片／封面收起，<br />再次点击展开完整播放器。</p>
+          </div>
+          <div class="site-foot" aria-hidden="true">
+            MADE OF DETAILS. &nbsp; BUILT AROUND YOU.
+          </div>
+          <aside
+            class="music"
+            id="music"
+            data-skin="capsule"
+            data-position="right"
+            data-finish="graphite"
+            data-expanded="true"
+            data-playing="false"
+            data-notes="false"
+            data-motion="false"
+            aria-label="音乐播放器"
+          >
+            <div class="edge-glow" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <button
+              type="button"
+              id="reveal-control"
+              class="reveal-control"
+              aria-label="展开播放器"
+              aria-expanded="false"
+              aria-controls="shell"
+              aria-hidden="true"
+              tabindex="-1"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M3 10 12 4l9 6v3l-9-6-9 6zM3 18 12 12l9 6v3l-9-6-9 6z"
+                />
+              </svg>
+            </button>
+            <div class="music-notes" aria-hidden="true">
+              <svg class="music-note"><use href="#i-note" /></svg>
+              <svg class="music-note"><use href="#i-note-single" /></svg>
+              <svg class="music-note"><use href="#i-note" /></svg>
+              <svg class="music-note"><use href="#i-note-single" /></svg>
+            </div>
+            <div
+              class="popout"
+              id="queue-panel"
+              role="region"
+              aria-labelledby="queue-title"
+              hidden
+            >
+              <div class="popout-heading">
+                <span id="queue-title"
+                  >播放列表 · <span id="queue-count">3 首</span></span
+                >
+                <button
+                  type="button"
+                  class="icon"
+                  id="repeat"
+                  aria-label="单曲循环"
+                  aria-pressed="false"
+                  title="单曲循环"
+                >
+                  <svg aria-hidden="true"><use href="#i-repeat" /></svg>
+                </button>
+              </div>
+              <ol class="queue" id="queue"></ol>
+            </div>
+            <div
+              class="popout"
+              id="volume-panel"
+              role="region"
+              aria-labelledby="volume-title"
+              hidden
+            >
+              <div class="popout-heading">
+                <label for="volume" id="volume-title">音量</label>
+              </div>
+              <div class="volume-row">
+                <svg aria-hidden="true"><use href="#i-volume" /></svg
+                ><input
+                  type="range"
+                  class="slider"
+                  id="volume"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.7"
+                  style="--progress: 70%"
+                /><output for="volume" id="volume-value">70%</output>
+              </div>
+            </div>
+            <div class="shell-frame">
+              <div class="shell" id="shell">
+                <button
+                  type="button"
+                  class="record-control"
+                  id="record-control"
+                  aria-label="收起播放器"
+                  title="收起播放器"
+                  aria-expanded="true"
+                  aria-controls="metadata transport timeline"
+                >
+                  <span class="record" aria-hidden="true"></span
+                  ><span class="square-art" aria-hidden="true"></span
+                  ><span class="record-glint" aria-hidden="true"></span
+                  ><span class="record-tip" aria-hidden="true">收起</span>
+                </button>
+                <div class="metadata" id="metadata">
+                  <div class="now">
+                    <span class="status-dot" aria-hidden="true"></span
+                    ><span id="now-label">READY WHEN YOU ARE</span>
+                  </div>
+                  <div class="song-title" id="song-title">Soft focus</div>
+                  <div class="artist" id="artist">Folio Sessions</div>
+                </div>
+                <div class="transport" id="transport">
+                  <button
+                    type="button"
+                    class="icon skip"
+                    id="previous"
+                    aria-label="上一首"
+                  >
+                    <svg aria-hidden="true"><use href="#i-prev" /></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon play"
+                    data-play
+                    aria-label="演示播放"
+                    aria-pressed="false"
+                  >
+                    <svg aria-hidden="true"><use href="#i-play" /></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon skip"
+                    id="next"
+                    aria-label="下一首"
+                  >
+                    <svg aria-hidden="true"><use href="#i-next" /></svg>
+                  </button>
+                  <div class="timeline" id="timeline">
+                    <span class="elapsed" id="elapsed">1:07</span
+                    ><input
+                      type="range"
+                      class="slider"
+                      id="progress"
+                      min="0"
+                      max="214"
+                      step="0.1"
+                      value="67"
+                      aria-label="播放进度"
+                      aria-valuetext="1 分 7 秒，共 3 分 34 秒"
+                      style="--progress: 31.3%"
+                    /><span id="duration">3:34</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="icon"
+                    id="volume-toggle"
+                    aria-label="音量"
+                    aria-expanded="false"
+                    aria-controls="volume-panel"
+                  >
+                    <svg aria-hidden="true"><use href="#i-volume" /></svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon"
+                    id="queue-toggle"
+                    aria-label="播放列表"
+                    aria-expanded="false"
+                    aria-controls="queue-panel"
+                  >
+                    <svg aria-hidden="true"><use href="#i-list" /></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="player-message"
+              id="player-message"
+              role="status"
+              hidden
+            ></div>
+            <audio id="audio" preload="none" hidden></audio>
+          </aside>
+        </div>
+        <div class="caption">
+          <p id="interaction-caption">
+            右下角悬浮 · 唱片胶囊 · 点击最左侧唱片展开／收起。
+          </p>
+          <p>暂停保留唱片角度 / 换肤不断播 / 支持减少动态效果</p>
+        </div>
+      </section>
+    </main>
+    <script src="./music-player-defaults.js" defer></script>
+    <script src="./music-player-concept.js" defer></script>
+  </body>
+</html>

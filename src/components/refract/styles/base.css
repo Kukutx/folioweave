@@ -1,0 +1,151 @@
+/* Local baseline replaces the source project's Tailwind preflight. Plugins live outside this scope. */
+:where(.refract-site),
+:where(.refract-site) *,
+:where(.refract-site) *::before,
+:where(.refract-site) *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+.refract-site {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+:where(.refract-site) h1,
+:where(.refract-site) h2,
+:where(.refract-site) h3,
+:where(.refract-site) h4,
+:where(.refract-site) h5,
+:where(.refract-site) h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+:where(.refract-site) ol,
+:where(.refract-site) ul,
+:where(.refract-site) menu {
+  list-style: none;
+}
+:where(.refract-site) img,
+:where(.refract-site) svg,
+:where(.refract-site) video,
+:where(.refract-site) canvas {
+  display: block;
+  vertical-align: middle;
+}
+:where(.refract-site) img,
+:where(.refract-site) video {
+  max-width: 100%;
+  height: auto;
+}
+:where(.refract-site) button,
+:where(.refract-site) input,
+:where(.refract-site) select,
+:where(.refract-site) textarea {
+  font: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  border-radius: 0;
+  background: transparent;
+  opacity: 1;
+}
+html[data-template^="refract-"] body {
+  margin: 0;
+}
+.refract-site {
+  --gutter: 4rem;
+  --header-height: 4.5rem;
+  --font-body: "RefractDIN", "Helvetica Neue", Arial, sans-serif;
+}
+:where(.refract-site) * {
+  box-sizing: border-box;
+}
+html[data-template^="refract-"] {
+  background: #252423;
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+}
+.refract-site {
+  margin: 0;
+  font-family: var(--font-body);
+  font-variation-settings: "wdth" 125;
+  -webkit-font-smoothing: antialiased;
+}
+:where(.refract-site) button,
+:where(.refract-site) a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+:where(.refract-site) button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+:where(.refract-site) a {
+  color: inherit;
+  text-decoration: none;
+}
+:where(.refract-site) button:focus-visible,
+:where(.refract-site) a:focus-visible,
+:where(.refract-site) input:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 6px;
+}
+:where(.refract-site) button {
+  border: 0;
+  background: transparent;
+}
+:where(.refract-site) ::selection {
+  background: #555;
+  color: #fff;
+}
+:where(.refract-site) h1,
+:where(.refract-site) h2,
+:where(.refract-site) h3,
+:where(.refract-site) h4,
+:where(.refract-site) p,
+:where(.refract-site) figure {
+  margin: 0;
+}
+:where(.refract-site) svg {
+  flex-shrink: 0;
+}
+:where(.refract-site) .page-width {
+  width: 100%;
+  max-width: 1500px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+:where(.refract-site) .skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+  background: #fff;
+  color: #111;
+  padding: 1rem;
+  transform: translateY(-200%);
+}
+:where(.refract-site) .skip-link:focus {
+  transform: translateY(0);
+}
+:where(.refract-site) .portfolio-experience {
+  position: relative;
+  isolation: isolate;
+  color: var(--scene-foreground);
+  background: var(--scene-background);
+}
+:where(.refract-site) .reference-stage {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100lvh;
+  margin-bottom: -100lvh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: var(--scene-background);
+}

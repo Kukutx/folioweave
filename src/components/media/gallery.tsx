@@ -1,5 +1,7 @@
 "use client";
 
+import "./gallery.css";
+
 import Image from "next/image";
 import {
   AnimatePresence,
@@ -26,6 +28,7 @@ import { lockPageScroll } from "@/lib/scroll-lock";
 import { mediaDimensions } from "@/portfolio/media";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import photoStyles from "./photo-card.module.css";
 
 const MotionImage = motion.create(Image);
 
@@ -40,7 +43,9 @@ function ParallaxMotion({
     target,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  // The image is 120% tall: translating it by 10% of its own height would
+  // exceed the frame's 10% overscan. Keep a small covered edge at both ends.
+  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   return children(y);
 }
 
@@ -70,6 +75,7 @@ export function PhotoCard({
   onClick,
   disableHover = false,
   disableParallax = false,
+  revealOnScroll = false,
   ariaLabel,
 }: {
   image: PortfolioMediaAsset;
@@ -78,6 +84,7 @@ export function PhotoCard({
   onClick?: () => void;
   disableHover?: boolean;
   disableParallax?: boolean;
+  revealOnScroll?: boolean;
   ariaLabel?: string;
 }) {
   const { src, alt } = image;
@@ -88,6 +95,21 @@ export function PhotoCard({
   const [hover, setHover] = useState(false);
   // Fade the photo in once decoded instead of flashing the frame colour.
   const [loaded, setLoaded] = useState(false);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!revealOnScroll || reducedMotion || !element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setEntered(true);
+        observer.disconnect();
+      },
+      { rootMargin: "0px 0px -24px 0px", threshold: 0.05 },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [revealOnScroll, reducedMotion]);
   useEffect(() => {
     if (hoverEnabled || !tiltRef.current) return;
     tiltRef.current.style.transform = "rotateX(0deg) rotateY(0deg)";
@@ -114,9 +136,10 @@ export function PhotoCard({
           : "(max-width: 767px) 100vw, 33vw"
       }
       onLoad={() => setLoaded(true)}
+      onError={() => setLoaded(true)}
       initial={false}
       animate={{
-        opacity: loaded ? 1 : 0,
+        opacity: revealOnScroll || loaded ? 1 : 0,
         scale: hoverEnabled && hover ? 1.1 : 1,
       }}
       transition={{
@@ -132,7 +155,7 @@ export function PhotoCard({
         position: "absolute",
         top: isPolaroid ? 0 : "-10%",
         left: 0,
-        borderRadius: isPolaroid ? 0 : "inherit",
+        borderRadius: 0,
         willChange: isPolaroid || active ? "transform" : "auto",
         transform: isPolaroid ? "translateZ(0)" : undefined,
         backfaceVisibility:
@@ -144,17 +167,19 @@ export function PhotoCard({
   );
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={false}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: reducedMotion ? 0 : 0.5,
-        delay: reducedMotion ? 0 : (index % 4) * 0.1,
-      }}
-      viewport={{ once: true }}
+      className={photoStyles.card}
+      data-photo-reveal={
+        revealOnScroll
+          ? loaded && (entered || reducedMotion)
+            ? "visible"
+            : "pending"
+          : undefined
+      }
       style={{ perspective: 1000, aspectRatio: isPolaroid ? "1/1.2" : "9/16" }}
       onClick={onClick}
+      onFocus={revealOnScroll ? () => setEntered(true) : undefined}
       onKeyDown={interactive ? handleKeyDown : undefined}
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
@@ -176,7 +201,7 @@ export function PhotoCard({
               : "0 4px 15px rgba(0,0,0,.1)",
           position: "relative",
           zIndex: hoverEnabled && hover ? 10 : undefined,
-          background: isPolaroid ? "rgba(255,255,255,.9)" : "#fff",
+          background: isPolaroid ? "rgba(255,255,255,.9)" : "transparent",
           backdropFilter: isPolaroid ? "blur(4px)" : "none",
           WebkitBackdropFilter: isPolaroid ? "blur(4px)" : "none",
           padding: isPolaroid ? "12px 12px 40px 12px" : 0,
@@ -209,8 +234,9 @@ export function PhotoCard({
           style={{
             width: "100%",
             height: "100%",
-            borderRadius: isPolaroid ? 0 : "inherit",
-            backgroundColor: "var(--ui-bg-secondary)",
+            backgroundColor: isPolaroid
+              ? "var(--ui-bg-secondary)"
+              : "transparent",
             position: "relative",
             overflow: "hidden",
           }}
@@ -226,26 +252,44 @@ export function PhotoCard({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-export function GalleryLightbox({
-  images,
-  initialIndex,
-  onClose,
-}: {
+type GalleryLightboxProps = {
   images: readonly PortfolioMediaAsset[];
   initialIndex: number;
   onClose: () => void;
-}) {
+};
+
+function galleryIndex(index: number, length: number) {
+  return Number.isFinite(index)
+    ? Math.max(0, Math.min(Math.trunc(index), length - 1))
+    : 0;
+}
+
+export function GalleryLightbox(props: GalleryLightboxProps) {
+  // Empty data must release the modal, scroll lock and keyboard listeners.
+  return props.images.length ? <GalleryContent {...props} /> : null;
+}
+
+function GalleryContent({
+  images,
+  initialIndex,
+  onClose,
+}: GalleryLightboxProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const [index, setIndex] = useState(initialIndex),
+  const [selectedIndex, setIndex] = useState(() =>
+      galleryIndex(initialIndex, images.length),
+    ),
     [direction, setDirection] = useState(0),
     [keyboardClosing, setKeyboardClosing] = useState(false),
-    [warmImageIndices, setWarmImageIndices] = useState([initialIndex]);
+    [warmImageIndices, setWarmImageIndices] = useState(() => [
+      galleryIndex(initialIndex, images.length),
+    ]);
+  const index = galleryIndex(selectedIndex, images.length);
   const dimensions = mediaDimensions(images[index].src);
   const lightboxSizes =
     dimensions.width <= dimensions.height
@@ -269,12 +313,17 @@ export function GalleryLightbox({
   };
   const lightboxImageStyle = imageStyle(index);
   const staticImageIndices = [...warmImageIndices, index].filter(
-    (value, position, values) => values.indexOf(value) === position,
+    (value, position, values) =>
+      value < images.length && values.indexOf(value) === position,
   );
   const move = useCallback(
     (d: number, animate = true) => {
       setDirection(animate ? d : 0);
-      setIndex((current) => (current + d + images.length) % images.length);
+      setIndex(
+        (current) =>
+          (galleryIndex(current, images.length) + d + images.length) %
+          images.length,
+      );
     },
     [images.length],
   );
@@ -430,6 +479,7 @@ export function GalleryLightbox({
       onClick={onClose}
     >
       <button
+        type="button"
         ref={closeButtonRef}
         onClick={onClose}
         aria-label="Close gallery"
@@ -468,6 +518,7 @@ export function GalleryLightbox({
         {index + 1} / {images.length}
       </div>
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           move(-1);
@@ -494,6 +545,7 @@ export function GalleryLightbox({
         <ChevronLeft size={28} />
       </button>
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           move(1);
@@ -542,7 +594,7 @@ export function GalleryLightbox({
               const current = imageIndex === index;
               return (
                 <Image
-                  key={asset.src}
+                  key={imageIndex}
                   src={asset.src}
                   alt={current ? asset.alt : ""}
                   aria-hidden={!current}

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
+import path from "node:path";
 import { chromium } from "playwright-core";
 import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
@@ -50,6 +51,12 @@ const failures = [];
 const summaries = [];
 const warnings = [];
 const trace = process.argv.includes("--trace");
+const reportPrefix = process.env.QA_RUNTIME_REPORT_PREFIX || "qa/runtime";
+const reportDirectory = path.dirname(path.resolve(reportPrefix));
+assert.ok(
+  [path.resolve("qa"), path.resolve(".generated")].includes(reportDirectory),
+  "runtime reports must stay in project-local QA storage",
+);
 const diagnostic = trace || process.argv.includes("--diagnostic");
 const referenceBudget =
   process.env.QA_RUNTIME_REFERENCE === "1" ||
@@ -380,7 +387,7 @@ try {
           if (trace) {
             const { profile } = await cdp.send("Profiler.stop");
             await fs.writeFile(
-              `qa/runtime-${width}-${reducedMotion}-${sample}-cpu-report.json`,
+              `${reportPrefix}-${width}-${reducedMotion}-${sample}-cpu-report.json`,
               JSON.stringify(profile),
             );
             const ended = new Promise((resolve) =>
@@ -389,7 +396,7 @@ try {
             await cdp.send("Tracing.end");
             await ended;
             await fs.writeFile(
-              `qa/runtime-${width}-${reducedMotion}-${sample}-trace-report.json`,
+              `${reportPrefix}-${width}-${reducedMotion}-${sample}-trace-report.json`,
               JSON.stringify(traceEvents),
             );
           }
@@ -507,8 +514,8 @@ try {
 } finally {
   await fs.writeFile(
     diagnostic
-      ? "qa/runtime-diagnostic-report.json"
-      : "qa/runtime-budget-report.json",
+      ? `${reportPrefix}-diagnostic-report.json`
+      : `${reportPrefix}-budget-report.json`,
     JSON.stringify(
       { environment, profiles, summaries, report, warnings, failures },
       null,

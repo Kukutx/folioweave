@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import type { PortfolioMediaAsset } from "@/portfolio/schema";
+import "./media-carousel.css";
 
 const MotionImage = motion.create(Image);
 
@@ -85,6 +86,7 @@ function CarouselContent({
           />
         </AnimatePresence>
         <button
+          type="button"
           hidden={slides.length < 2}
           className="media-carousel-btn media-carousel-btn-prev"
           onClick={prev}
@@ -93,6 +95,7 @@ function CarouselContent({
           <ChevronLeft size={24} />
         </button>
         <button
+          type="button"
           hidden={slides.length < 2}
           className="media-carousel-btn media-carousel-btn-next"
           onClick={next}
@@ -103,6 +106,7 @@ function CarouselContent({
         <div className="media-carousel-dots">
           {slides.map((_, slideIndex) => (
             <button
+              type="button"
               key={slideIndex}
               className={`media-carousel-dot ${slideIndex === currentIndex ? "active" : ""}`}
               onClick={() => {

@@ -35,7 +35,9 @@ Development and production builds invoke this pipeline automatically. `npm run d
 - `hero`: greetings, portraits, and rich-text role/summary segments.
 - `about`: story paragraphs, gallery images and timeline items. Set
   `current: true` on at most one timeline item; the year is display content.
-- `interlude`: transition headings, descriptions and mountain artwork.
+- `interlude`: transition headings, descriptions and mountain artwork. Used by
+  Classic; like `photography` and `footerBook`, a profile for a template that
+  does not render it may leave it out.
 - `projects`: ordered project cards, actions and optional stories.
 - `photography`: intro and ordered image/alt pairs.
 - `blog`, `footerBook`, `seo`: editorial copy and metadata. `blog.heading` and `blog.intro` optionally provide an editorial visible heading/highlight treatment while `blog.title` remains the metadata title.

@@ -1,8 +1,5 @@
-/* Order is intentional: preserve the established visual cascade. */
-@import "../styles/portfolio/chrome.css";
-@import "../styles/portfolio/foundation.css";
-@import "../styles/portfolio/hero.css";
-@import "../styles/portfolio/sections.css";
-@import "../styles/portfolio/responsive.css";
-@import "../styles/portfolio/camera.css";
-@import "../styles/portfolio/reset.css";
+/* Global error pages must remain readable even if a template cannot render. */
+html,
+body {
+  margin: 0;
+}

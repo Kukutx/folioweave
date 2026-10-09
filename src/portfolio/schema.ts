@@ -1,6 +1,6 @@
 import type {
   MediaAsset,
-  PortfolioConfig,
+  PortfolioConfig as AuthorPortfolio,
   Project,
   ProjectAction,
   ProjectBadge,
@@ -25,4 +25,7 @@ export type PortfolioProjectImage = ProjectImage;
 export type PortfolioProjectMedia = ProjectMedia;
 export type PortfolioProjectStory = ProjectStory;
 
-export type { PortfolioConfig } from "./schema.generated";
+/** The published profile. An author may omit the blocks only some templates
+ * render; publication fills them, so every template reads one complete shape. */
+export type PortfolioConfig = AuthorPortfolio &
+  Required<Pick<AuthorPortfolio, "photography" | "footerBook" | "interlude">>;

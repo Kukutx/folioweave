@@ -26,8 +26,7 @@ Home navigation uses known section IDs from the publication policy and matching
 hashes. Optional sections are filtered by feature flags. Add a section to the
 server-side `HomePage` composition and policy together.
 
-Preserve the editorial value of truly custom pages. A single generic page builder,
-plugin framework or CMS is not necessary for reusable portfolio content. Thin App Router entry points for bundled examples remain under `src/app/`, but their components, metadata, product data and route CSS live under `src/demo/`.
+Template modules own their presentation and share core content through `TemplateModule`. Independent plugins use semantic slots. See [TEMPLATES.md](TEMPLATES.md) and [PLUGINS.md](PLUGINS.md) for the first extension API. Thin App Router entries still own routing; demo implementation stays under `src/demo/`.
 
 ## Rendering and motion
 
@@ -48,8 +47,8 @@ Thumbnail cropping remains owned by its fixed-ratio card.
 
 Approved visual output is a compatibility contract: refactors and performance work must not silently redesign it. See [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
 
-`src/app/globals.css` preserves the ordered portfolio stylesheet cascade.
-Readable source is divided by responsibility under `src/styles/portfolio/`.
+`src/templates/classic/styles.css` preserves the ordered portfolio stylesheet cascade.
+Readable source is divided by responsibility under `src/templates/classic/styles/`.
 Tokens belong in `src/styles/theme.css`; new component-local rules should use
 CSS Modules. Do not move declarations across cascade boundaries without geometry
 and screenshot checks.

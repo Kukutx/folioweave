@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import test from "node:test";
 import {
@@ -40,6 +40,10 @@ test("documentation-only CI paths stay on the lightweight required-check path", 
 test("CI impact classification fails closed for runtime, author content and workflow changes", () => {
   for (const file of [
     "src/app/page.tsx",
+    "docs/design/music-player-concept.html",
+    "docs/design/music-player-concept.js",
+    "docs/design/music-player-defaults.js",
+    "docs/design/music-player-concept.css",
     "portfolio.json",
     "content/blogs/post.md",
     "content/resume/resume.json",
@@ -114,7 +118,7 @@ test("an unreadable deployed commit proceeds with the build, not with a guess", 
 
 test("the classifier reads both sides of a rename from git", (t) => {
   const repository = fs.mkdtempSync(
-    path.join(os.tmpdir(), "folioweave-ci-impact-"),
+    path.join(qaTempRoot, "folioweave-ci-impact-"),
   );
   // This file runs in prebuild, where Git may be absent (a project copied
   // without its history) or configured to sign and hook every commit. An empty
@@ -187,10 +191,12 @@ test("only the fast-path notices are skipped by default; every other gated step 
 });
 
 test("workflow actions are GitHub-owned and pinned to immutable SHAs", () => {
-  const workflow = fs.readFileSync(
-    new URL("../.github/workflows/ci.yml", import.meta.url),
-    "utf8",
-  );
+  const directory = new URL("../.github/workflows/", import.meta.url);
+  const workflows = fs.readdirSync(directory);
+  assert.ok(workflows.includes("ci.yml"));
+  const workflow = workflows
+    .map((file) => fs.readFileSync(new URL(file, directory), "utf8"))
+    .join("\n");
   const actionUses = [
     ...workflow.matchAll(/^\s*- uses:\s*([^\s#]+)(?:\s+#.*)?$/gm),
   ].map(([, action]) => action);

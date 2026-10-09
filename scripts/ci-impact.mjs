@@ -15,7 +15,11 @@ const documentationOnlyFiles = new Set([
 ]);
 
 export function isDocumentationOnlyPath(file) {
-  return file.startsWith("docs/") || documentationOnlyFiles.has(file);
+  return (
+    (file.startsWith("docs/") &&
+      !/\.(?:[cm]?[jt]sx?|css|html|json)$/i.test(file)) ||
+    documentationOnlyFiles.has(file)
+  );
 }
 
 /**

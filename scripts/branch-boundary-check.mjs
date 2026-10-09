@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   evaluateProfileBoundary,
   loadBranchPolicy,
+  profileOwnedFiles,
   sharedBaseCandidates,
 } from "./profile-boundary.mjs";
 
@@ -98,9 +99,10 @@ function relative(file) {
   return path.relative(root, file).replaceAll("\\", "/");
 }
 
+const profileOwned = profileOwnedFiles(policy);
 function isPersonalOnly(file) {
   if (policy.sharedExceptions.includes(file)) return false;
-  if (policy.profileSpecificFiles.includes(file)) return true;
+  if (profileOwned.includes(file)) return true;
   return policy.personalOnlyPrefixes.some((prefix) => file.startsWith(prefix));
 }
 

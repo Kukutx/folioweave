@@ -3,7 +3,7 @@ import { requireImagePath } from "../portfolio/content-policy.mjs";
 import { assignHeadingIds } from "./taxonomy.mjs";
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.mjs";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -11,6 +11,7 @@ import remarkGfm from "remark-gfm";
 export const BLOG_FILENAME = /^[a-z0-9][a-z0-9-]*\.md$/;
 export const BLOG_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 export const BLOG_FRONTMATTER_FIELDS = new Set([
+  "id",
   "title",
   "subtitle",
   "date",
@@ -248,8 +249,8 @@ export function loadMarkdownBlogPosts({ blogsDir, reservedSlugs = [] }) {
     let parsed;
     let source;
     try {
-      source = fs.readFileSync(path.join(blogsDir, fileName), "utf8");
-      parsed = matter(source);
+      source = fs.readFileSync(path.join(blogsDir, fileName), "utf8").replace(/^\uFEFF/, "");
+      parsed = parseFrontmatter(source);
     } catch (error) {
       issues.push(
         `${fileName}: Markdown/frontmatter could not be parsed: ${error.message}`,
@@ -308,7 +309,10 @@ export function loadMarkdownBlogPosts({ blogsDir, reservedSlugs = [] }) {
       );
     }
 
+    const id = parsed.data.id == null ? undefined : requireText(parsed.data.id, "id", label, issues);
+    if (id && !/^[a-z0-9][a-z0-9-]*$/.test(id)) issues.push(`${label}.id must use lowercase letters, digits and hyphens.`);
     posts.push({
+      ...(id ? { id } : {}),
       slug,
       href: `/blogs/${slug}`,
       title,
@@ -328,6 +332,8 @@ export function loadMarkdownBlogPosts({ blogsDir, reservedSlugs = [] }) {
     });
   }
 
+  const ids = posts.map((post) => post.id ?? post.slug);
+  if (new Set(ids).size !== ids.length) issues.push("Article ids must be unique, including fallback slugs.");
   if (issues.length) throw new BlogContentError(issues);
   return { posts, warnings };
 }

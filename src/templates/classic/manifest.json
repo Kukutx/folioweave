@@ -1,0 +1,18 @@
+{
+  "id": "classic",
+  "name": "Classic",
+  "description": "The original editorial portfolio with playful objects and scroll motion.",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx"
+  },
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": ["home", "about", "interlude", "work", "photography", "contact"],
+  "requires": ["photography", "footerBook", "interlude"],
+  "optionsSchema": { "type": "object", "additionalProperties": false }
+}

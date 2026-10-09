@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import test from "node:test";
+import { parseFrontmatter } from "../src/blog/frontmatter.mjs";
 import {
   BlogContentError,
   loadMarkdownBlogPosts,
@@ -12,7 +13,7 @@ import {
 
 async function withBlogs(files, run) {
   const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-blogs-"),
+    path.join(qaTempRoot, "folioweave-blogs-"),
   );
   try {
     await Promise.all(
@@ -25,6 +26,19 @@ async function withBlogs(files, run) {
     await fs.rm(directory, { recursive: true, force: true });
   }
 }
+
+test("YAML frontmatter retains multiline text, CRLF, BOM and Markdown rules", () => {
+  const result = parseFrontmatter('\uFEFF---\r\ntitle: "A: title"\r\ndescription: |\r\n  First line\r\n  第二行\r\ntags: [One, Two]\r\ndraft: false\r\n---\r\nBody\r\n\r\n---\r\nMore');
+  assert.equal(result.data.title, "A: title");
+  assert.equal(result.data.description, "First line\n第二行\n");
+  assert.deepEqual(result.data.tags, ["One", "Two"]);
+  assert.equal(result.data.draft, false);
+  assert.equal(result.content, "Body\r\n\r\n---\r\nMore");
+  assert.throws(() => parseFrontmatter("---\ntitle: unclosed\n"), /closing/);
+  assert.throws(() => parseFrontmatter("---\n- array\n---\nBody"), /mapping/);
+  assert.throws(() => parseFrontmatter("---\ntitle: One\ntitle: Two\n---\nBody"), /duplicated/);
+  assert.throws(() => parseFrontmatter("---\ntitle: !!js/function function() {}\n---\nBody"), /unknown tag/);
+});
 
 test("Markdown posts are normalized, filtered, and sorted", async () => {
   await withBlogs(

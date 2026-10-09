@@ -1,0 +1,201 @@
+@media (min-height: 1024px) and (min-width: 900px) {
+  :where(.refract-site) .intro-page {
+    padding-top: calc((100lvh - 64rem) / 2 + 4rem);
+    max-height: none;
+    padding-bottom: calc((100lvh - 64rem) / 2 + 4rem);
+  }
+  :where(.refract-site) .fixed-copy {
+    top: calc((100lvh - 64rem) / 2);
+  }
+  :where(.refract-site) .reference-navigation {
+    bottom: calc((100lvh - 64rem) / 2 + 4rem);
+  }
+}
+@media (max-width: 1100px) and (min-width: 900px) {
+  :where(.refract-site) .reference-text {
+    max-width: 23rem;
+  }
+  :where(.refract-site) .reference-text h2 {
+    font-size: 2.75rem;
+  }
+  :where(.refract-site) .reference-text p {
+    max-width: 18rem;
+    font-size: 1rem;
+  }
+}
+@media (max-width: 899px) {
+  .refract-site {
+    --gutter: 1rem;
+  }
+  :where(.refract-site) .site-header {
+    gap: 0.75rem;
+    align-content: center;
+    padding-block: 0.65rem;
+  }
+  :where(.refract-site) .wordmark {
+    font-size: 1rem;
+  }
+  :where(.refract-site) .site-header nav {
+    flex-wrap: wrap;
+  }
+  :where(.refract-site) .intro-page {
+    padding-top: 1.75rem;
+    padding-bottom: 1rem;
+    max-height: none;
+  }
+  :where(.refract-site) .intro-text {
+    max-width: 25rem;
+  }
+  :where(.refract-site) .intro-text h1 {
+    font-size: 2.5rem;
+    line-height: 0.865;
+  }
+  :where(.refract-site) .intro-text h1 br {
+    display: none;
+  }
+  :where(.refract-site) .intro-text p {
+    font-size: 1rem;
+    line-height: 1.25;
+    max-width: 20rem;
+    margin-top: 0.8rem;
+  }
+  :where(.refract-site) .intro-text .intro-position {
+    font-size: 0.8125rem;
+    margin-top: 0.8rem;
+  }
+  :where(.refract-site) .intro-chapter {
+    height: 250lvh;
+  }
+  :where(.refract-site) .anatomy-chapter {
+    height: 300lvh;
+  }
+  :where(.refract-site) .fixed-copy {
+    padding-block: 1.5rem;
+    max-height: 100lvh;
+  }
+  :where(.refract-site) .reference-text {
+    max-width: 100%;
+  }
+  :where(.refract-site) .reference-text h2 {
+    font-size: 2rem;
+    max-width: 25rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  :where(.refract-site) .reference-text p {
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    max-width: 26rem;
+  }
+  :where(.refract-site) .feature-content {
+    padding-block: 1rem;
+  }
+  :where(.refract-site) .feature-content .reference-text {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    bottom: auto;
+    padding-top: 0;
+  }
+  :where(.refract-site) .feature-chapter.is-active .reference-text {
+    opacity: 1;
+    visibility: visible;
+  }
+  :where(.refract-site) .feature-links {
+    margin-top: 0.55rem;
+    padding-top: 0.55rem;
+  }
+  :where(.refract-site) .feature-links a {
+    font-size: 0.75rem;
+  }
+  :where(.refract-site) .modules-chapter {
+    height: 300lvh;
+  }
+  :where(.refract-site) .modules-chapter .reference-text {
+    max-width: 100%;
+  }
+  :where(.refract-site) .scene-tool {
+    margin-top: 1rem;
+    max-width: 100%;
+  }
+  :where(.refract-site) .scene-tool h3 {
+    font-size: 1rem;
+  }
+  :where(.refract-site) .scene-tool p {
+    font-size: 0.8125rem;
+    max-width: 28rem;
+  }
+  :where(.refract-site) .centered-copy {
+    padding-bottom: 5rem;
+  }
+  :where(.refract-site) .centered-copy h2 {
+    font-size: 2.5rem;
+  }
+  :where(.refract-site) .centered-copy > a {
+    font-size: 0.875rem;
+  }
+  :where(.refract-site) .reference-navigation {
+    right: 1rem;
+    bottom: 1rem;
+  }
+  :where(.refract-site) .content-section {
+    padding-block: 3rem;
+  }
+  :where(.refract-site) .content-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
+  :where(.refract-site) .content-section p {
+    font-size: 1rem;
+  }
+  :where(.refract-site) .about-layout figure {
+    width: 60%;
+    max-width: 260px;
+  }
+  :where(.refract-site) .about-layout p {
+    max-width: 100%;
+  }
+  :where(.refract-site) .news-list article,
+  :where(.refract-site) .experience-list article {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding-block: 1.35rem;
+  }
+  :where(.refract-site) .content-section h3 {
+    font-size: 1.3rem;
+  }
+  :where(.refract-site) .publication-list h4 {
+    font-size: 1.15rem;
+  }
+  :where(.refract-site) .publication-list p {
+    font-size: 0.85rem;
+  }
+  :where(.refract-site) .publication-list li {
+    padding-left: 2rem;
+  }
+  :where(.refract-site) .contact-links {
+    gap: 1rem;
+    font-size: 0.75rem;
+  }
+  :where(.refract-site) .contact-section footer {
+    margin-top: 4rem;
+    font-size: 0.6875rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-template^="refract-"] {
+    scroll-behavior: auto;
+  }
+  :where(.refract-site) *,
+  :where(.refract-site) *::before,
+  :where(.refract-site) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  :where(.refract-site) .intro-chapter,
+  :where(.refract-site) .anatomy-chapter,
+  :where(.refract-site) .modules-chapter {
+    height: 180lvh;
+  }
+}

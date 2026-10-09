@@ -1,47 +1,28 @@
 import Link from "next/link";
 import Image from "next/image";
-import ReactMarkdown, { type Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { type Components } from "react-markdown";
+import { ArticleBody } from "./article-body";
 import { ArrowLeft } from "lucide-react";
-import { formatBlogDate, type BlogHeading, type MarkdownBlogPost } from "@/blog";
+import {
+  formatBlogDate,
+  type BlogHeading,
+  type MarkdownBlogPost,
+} from "@/blog";
 import { siteConfig, siteCopyright } from "@/config/site";
-import { PortfolioCalendarIcon, PortfolioClockIcon } from "@/components/portfolio-icons";
-import { BlogPostingJsonLd } from "./blog-json-ld";
+import {
+  PortfolioCalendarIcon,
+  PortfolioClockIcon,
+} from "@/components/portfolio-icons";
 import { BlogTags } from "./blog-tags";
 import { CopyCodeButton } from "./copy-code-button";
-import { rehypeHeadingIds } from "./heading-ids";
 import { mediaDimensions } from "@/portfolio/media";
+import type { ReactNode } from "react";
+import "@/styles/blogs.css";
 
 // An outline only helps once there is enough article to get lost in.
 const OUTLINE_MIN_HEADINGS = 3;
 
-const markdownComponents: Components = {
-  a({ href, children, ...props }) {
-    const external = typeof href === "string" && /^https?:\/\//.test(href);
-    return (
-      <a
-        {...props}
-        href={href}
-        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      >
-        {children}
-      </a>
-    );
-  },
-  img({ src, alt, ...props }) {
-    if (typeof src !== "string") return null;
-    return (
-      <img
-        {...props}
-        src={src}
-        {...mediaDimensions(src)}
-        alt={alt ?? ""}
-        loading="lazy"
-        decoding="async"
-        className="markdown-blog-image"
-      />
-    );
-  },
+const markdownComponents: Pick<Components, "pre"> = {
   pre({ children }) {
     return (
       <div className="code-block">
@@ -61,7 +42,10 @@ function ArticleOutline({ headings }: { headings: readonly BlogHeading[] }) {
       </p>
       <ol>
         {headings.map((item) => (
-          <li className={item.depth === 3 ? "blog-outline-sub" : undefined} key={item.id}>
+          <li
+            className={item.depth === 3 ? "blog-outline-sub" : undefined}
+            key={item.id}
+          >
             <a href={`#${item.id}`}>{item.text}</a>
           </li>
         ))}
@@ -70,10 +54,15 @@ function ArticleOutline({ headings }: { headings: readonly BlogHeading[] }) {
   );
 }
 
-export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
+export function MarkdownBlogPostPage({
+  post,
+  afterArticle,
+}: {
+  post: MarkdownBlogPost;
+  afterArticle?: ReactNode;
+}) {
   return (
     <div className="writing-container blog-post-page markdown-blog-post-page">
-      <BlogPostingJsonLd post={post} />
       <div className="reading-progress-bar" aria-hidden />
       <nav className="writing-nav">
         <Link href="/blogs" className="back-link">
@@ -100,7 +89,11 @@ export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
             ) : null}
           </h1>
           <p className="writing-subtitle">{post.description}</p>
-          <BlogTags tags={post.tags} className="blog-post-tags" label="Article tags" />
+          <BlogTags
+            tags={post.tags}
+            className="blog-post-tags"
+            label="Article tags"
+          />
         </header>
         {post.cover ? (
           <Image
@@ -109,20 +102,15 @@ export function MarkdownBlogPostPage({ post }: { post: MarkdownBlogPost }) {
             className="blog-post-hero-image"
             {...mediaDimensions(post.cover)}
             sizes="(max-width: 900px) 100vw, 900px"
-            priority
+            preload
           />
         ) : null}
         <ArticleOutline headings={post.headings} />
         <div className="blog-post-content markdown-blog-content">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[[rehypeHeadingIds, post.headings]]}
-            components={markdownComponents}
-          >
-            {post.content}
-          </ReactMarkdown>
+          <ArticleBody post={post} components={markdownComponents} />
         </div>
       </article>
+      {afterArticle}
       <footer className="writing-footer">
         <p>{siteCopyright}</p>
       </footer>

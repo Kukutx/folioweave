@@ -10,9 +10,21 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const nextBin = path.join(root, "node_modules", "next", "dist", "bin", "next");
 const watchedInputs = [
   {
+    relativePath: "src/templates",
+    recursive: true,
+    accepts: (name) =>
+      name.endsWith("manifest.json") || name.endsWith(".schema.json"),
+  },
+  {
+    relativePath: "src/plugins",
+    recursive: true,
+    accepts: (name) => name.endsWith("manifest.json"),
+  },
+  {
     relativePath: ".",
     recursive: false,
-    accepts: (name) => ["portfolio.json", "portfolio.schema.json"].includes(name),
+    accepts: (name) =>
+      ["portfolio.json", "portfolio.schema.json"].includes(name),
   },
   { relativePath: "content/blogs", recursive: true },
   { relativePath: "content/assets/portfolio", recursive: true },
@@ -50,9 +62,11 @@ async function rebuild(reason) {
     console.log(
       `[content] ${reason}: ${prepared.routes.length} routes, ${Object.keys(prepared.media).length} published assets`,
     );
+    return true;
   } catch (error) {
     console.error(`[content] rebuild failed; keeping the last valid output.`);
     console.error(error instanceof Error ? error.message : error);
+    return false;
   } finally {
     rebuilding = false;
     if (rebuildQueued && !stopped) {
@@ -71,7 +85,7 @@ function schedule(relativePath) {
   }, 120);
 }
 
-await rebuild("initial build");
+if (!(await rebuild("initial build"))) process.exit(1);
 
 // The resume renders in a browser, so it is rebuilt on demand rather than with
 // every content change. Its new PDF/preview then flow through the asset watcher.
@@ -126,11 +140,15 @@ const watchers = watchedInputs.map(({ relativePath, recursive, accepts }) => {
   });
 });
 
-const child = spawn(process.execPath, [nextBin, "dev", ...process.argv.slice(2)], {
-  cwd: root,
-  env: process.env,
-  stdio: "inherit",
-});
+const child = spawn(
+  process.execPath,
+  [nextBin, "dev", ...process.argv.slice(2)],
+  {
+    cwd: root,
+    env: process.env,
+    stdio: "inherit",
+  },
+);
 
 function shutdown(signal) {
   if (stopped) return;

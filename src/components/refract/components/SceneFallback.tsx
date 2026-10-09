@@ -1,0 +1,12 @@
+/** Readable content when JavaScript is unavailable. Keep it out of animation state. */
+export function SceneFallback() {
+  return (
+    <noscript>
+      <style>{`:where(.refract-site) .portfolio-experience [data-mobile-panel]{position:relative!important;left:auto!important;top:auto!important;transform:none!important;opacity:1!important;visibility:visible!important;max-height:none!important;overflow:visible!important;will-change:auto!important}
+:where(.refract-site) .research-figure-slot{position:relative!important;inset:auto!important;width:100%!important;overflow:visible!important}:where(.refract-site) .research-figure[inert]{pointer-events:auto}
+:where(.refract-site) .feature-gallery{background:var(--profile-background);color:var(--profile-foreground)}:where(.refract-site) .feature-content{padding:3rem var(--gutter)!important;height:auto!important;max-height:none!important}:where(.refract-site) .research-figure-slot{max-width:32rem!important}:where(.refract-site) .feature-chapter .reference-text{container-type:normal}:where(.refract-site) .feature-chapter .reference-text h2{font-size:clamp(2rem,5vw,3.25rem)}
+:where(.refract-site) .portfolio-experience{--intro-ui-opacity:1!important}:where(.refract-site) .intro-text[data-entrance="waiting"]{visibility:visible!important;opacity:1!important}:where(.refract-site) .portfolio-experience[data-intro="pending"]{background:inherit}
+:where(.refract-site) .anatomy-chapter,:where(.refract-site) .modules-chapter,:where(.refract-site) .exit-chapter{height:auto!important}:where(.refract-site) .portfolio-experience .fixed-copy{position:relative;inset:auto;transform:none;height:auto;max-height:none;visibility:visible;opacity:1}:where(.refract-site) .intro-chapter{height:100vh}:where(.refract-site) .reference-stage{display:none}:where(.refract-site) .feature-gallery,:where(.refract-site) .feature-chapter{pointer-events:auto}:where(.refract-site) .feature-chapter{height:auto;min-height:70vh}:where(.refract-site) .feature-chapter .research-figure{position:relative;inset:auto;transform:none;margin-top:2rem;opacity:1;visibility:visible;pointer-events:auto}:where(.refract-site) .feature-chapter .reference-text{position:relative;inset:auto;width:100%;max-width:40rem;opacity:1;visibility:visible}:where(.refract-site) .intro-footer{position:absolute}:where(.refract-site) .feature-links,:where(.refract-site) .feature-links a{opacity:1}:where(.refract-site) .reference-navigation,:where(.refract-site) .motion-button{display:none}`}</style>
+    </noscript>
+  );
+}
