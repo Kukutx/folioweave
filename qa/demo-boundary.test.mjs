@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const reusableRoots = [
+  "src/core",
+  "src/templates",
+  "src/plugins",
   "src/blog",
   "src/components",
   "src/config",
@@ -21,7 +24,7 @@ function sourceFiles(relativeRoot) {
     fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
       const absolute = path.join(directory, entry.name);
       if (entry.isDirectory()) return visit(absolute);
-      if (entry.name.endsWith(".generated.ts")) return [];
+      if (/\.generated\.tsx?$/.test(entry.name)) return [];
       return /\.(?:[cm]?[jt]sx?|css|json)$/.test(entry.name) ? [absolute] : [];
     });
   return visit(start);

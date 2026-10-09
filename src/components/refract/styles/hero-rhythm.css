@@ -1,0 +1,162 @@
+/* Reference UI rhythm: fixed footer exits downward; the mobile pane is content-width. */
+:where(.refract-site) .intro-footer {
+  position: fixed;
+  left: 50%;
+  bottom: var(--control-bottom);
+  z-index: 3;
+  width: 100%;
+  max-width: 1500px;
+  padding-inline: 4rem;
+  transform: translate(-50%, var(--intro-exit-y, 0px));
+  will-change: transform, opacity;
+}
+:where(.refract-site) .site-header nav {
+  font-weight: 600;
+  font-variation-settings: normal;
+  letter-spacing: 0.01em;
+}
+:where(.refract-site) .menu-toggle rect {
+  transform-origin: 12px 12px;
+}
+:where(.refract-site) .menu-toggle rect:first-child {
+  transform: translateY(calc(-4px * (1 - var(--menu-progress, 0))))
+    rotate(calc(45deg * var(--menu-progress, 0)));
+}
+:where(.refract-site) .menu-toggle rect:last-child {
+  transform: translateY(calc(2px * (1 - var(--menu-progress, 0))))
+    rotate(calc(-45deg * var(--menu-progress, 0)));
+}
+@media (max-width: 1199px) {
+  :where(.refract-site) .site-header nav {
+    width: 176px;
+    padding: var(--header-height) 0 80px;
+    gap: 0;
+    transition: none;
+    overscroll-behavior: contain;
+    overflow-x: hidden;
+    transform: translateX(100%);
+  }
+  :where(.refract-site) .site-header nav a {
+    font-size: 20px;
+    line-height: 40px;
+    font-weight: 600;
+    padding: 0 16px;
+    gap: 8px;
+    min-height: 40px;
+  }
+  :where(.refract-site) .site-header nav a:last-child {
+    padding: 0 16px;
+  }
+  :where(.refract-site) .site-header nav svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  :where(.refract-site) .menu-backdrop {
+    opacity: calc(var(--menu-progress, 0) * 0.4);
+    background: #000;
+    pointer-events: none;
+    border-radius: 0;
+  }
+  :where(.refract-site) .site-header[data-menu-open="true"] .menu-backdrop {
+    pointer-events: auto;
+  }
+  :where(.refract-site) .site-header .wordmark {
+    position: relative;
+    z-index: 2;
+  }
+  :where(.refract-site) .site-header::after {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0;
+    height: 1px;
+    background: #ffffff20;
+    opacity: var(--menu-progress, 0);
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+@media (max-width: 899px) {
+  :where(.refract-site) .intro-footer {
+    padding-inline: 1rem;
+  }
+  :where(.refract-site) .intro-footer .featured-link {
+    display: none;
+  }
+  :where(.refract-site) .intro-links a {
+    font-size: 12px;
+    gap: 8px;
+  }
+  :where(.refract-site) .intro-links .learn-more-arrows {
+    width: 24px;
+  }
+  :where(.refract-site) .intro-links .learn-more-arrows svg {
+    width: 24px;
+  }
+}
+@media (max-width: 359px) {
+  :where(.refract-site) .intro-links a {
+    padding-inline: 10px;
+    font-size: 11px;
+  }
+}
+@media (min-width: 900px) and (max-width: 1199px) {
+  :where(.refract-site) [data-fixed-copy="anatomy"] .reference-text {
+    max-width: 15rem;
+  }
+  :where(.refract-site) [data-fixed-copy="anatomy"] p {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+}
+@media (min-width: 600px) and (max-width: 899px) and (max-height: 599px) {
+  :where(.refract-site) [data-fixed-copy="anatomy"] .reference-text {
+    max-width: calc(50vw - 2rem - min(21.5vw, 39.5vh));
+  }
+  :where(.refract-site) [data-fixed-copy="anatomy"] p {
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+}
+
+/* Only an empty featured tile carries the wire construction drawing. */
+:where(.refract-site) .featured-link-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+:where(.refract-site)
+  .featured-link[data-populated="true"]
+  .featured-link-tile {
+  border: 1px solid currentColor;
+}
+:where(.refract-site)
+  .featured-link[data-populated="true"]
+  .featured-link-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+:where(.refract-site) .featured-link[data-populated="true"] .builtin-logo {
+  width: 54px;
+  height: 54px;
+  max-width: none;
+}
+:where(.refract-site)
+  .featured-link[data-populated="true"]
+  .featured-link-monogram {
+  width: 38px;
+  height: 38px;
+  font-size: 34px;
+  line-height: 38px;
+}
+:where(.refract-site) .featured-link-tile:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}

@@ -6,3 +6,5 @@
 *.ico binary
 *.woff2 binary
 *.pdf binary
+# Third-party license texts stay verbatim, trailing spaces included.
+public/templates/refract/fonts/DINish-OFL.txt -whitespace

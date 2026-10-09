@@ -5,7 +5,7 @@ export function CaseStudiesPage() {
   return (
     <div className="case-studies-page">
       <div className="case-studies-container">
-        <Link href="/" className="case-studies-back-link">
+        <Link href="/" prefetch={false} className="case-studies-back-link">
           <ArrowLeft size={18} />
           <span>Back to Portfolio</span>
         </Link>

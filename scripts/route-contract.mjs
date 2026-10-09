@@ -79,6 +79,9 @@ export function hasPublicationGuard(source, route) {
   );
 }
 
+/** The route group that holds every bundled example page. */
+export const DEMO_GROUP = "(demo)";
+
 export async function validateRouteContract(root, routes, customPosts) {
   const app = path.join(root, "src/app");
   const files = await fs.readdir(app, { recursive: true, withFileTypes: true });
@@ -104,6 +107,17 @@ export async function validateRouteContract(root, routes, customPosts) {
     registered.set(item.path, item);
     if (!pages.has(item.path))
       throw new Error(`Registered page missing: ${item.path}`);
+    // Bundled examples stay together so they can be read, or removed, as one.
+    const grouped = path
+      .relative(app, pages.get(item.path))
+      .split(path.sep)
+      .includes(DEMO_GROUP);
+    if (grouped !== item.demoOnly)
+      throw new Error(
+        item.demoOnly
+          ? `Example route ${item.path} must live under src/app/${DEMO_GROUP}/`
+          : `${item.path} is not an example route; move it out of src/app/${DEMO_GROUP}/`,
+      );
   }
   for (const [route, filename] of pages) {
     if (contentRoutes.has(route)) continue;

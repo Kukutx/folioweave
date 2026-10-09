@@ -1,4 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "node scripts/ci-impact.mjs --vercel-ignore"
+  "framework": "nextjs",
+  "ignoreCommand": "node scripts/ci-impact.mjs --vercel-ignore",
+  "buildCommand": "node scripts/demo-stage.mjs && npm run build"
 }

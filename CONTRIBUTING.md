@@ -20,7 +20,7 @@ content/resume/
 
 Do not hand-edit `public/portfolio/`, `src/portfolio/*.generated.ts`, or `src/blog/posts.generated.ts`; the content pipeline owns them.
 
-Reusable implementation belongs in the normal `src/` modules. Branded/example implementation belongs under `src/demo/`; thin filesystem route entry points remain under `src/app/`.
+Reusable implementation belongs in the normal `src/` modules. Branded/example implementation belongs under `src/demo/`; their thin filesystem route entry points live in the `src/app/(demo)/` route group.
 
 ## Required checks
 
@@ -29,14 +29,18 @@ Before opening a pull request:
 ```bash
 npm run check
 npm run audit:prod
-npm run qa:boundary
 ```
+
+`check` runs lint, the branch boundary (`qa:boundary`), the content test suites
+and the production build. A plain `npm run build` validates content only.
 
 For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite:
 
 ```bash
 npm run qa:maintainer
 ```
+
+`qa:maintainer` also builds a disposable independent template with music/comments and verifies CLI switching and plugin lifecycle. Existing visual and interaction baselines belong to Classic; new finished templates require their own reviewed coverage.
 
 `qa:maintainer` includes runtime budgets, interaction/quality/media checks, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit coverage.
 
@@ -65,7 +69,7 @@ See `docs/DESIGN-SYSTEM.md` and `docs/VISUAL-QA.md`.
 
 - Keep authoring inputs separate from generated/publication outputs.
 - Reusable modules must not depend on `src/demo/`.
-- Prefer focused feature modules over a universal plugin/page-builder abstraction.
+- Keep template presentation in `src/templates/`, shared extension contracts in `src/core/`, and independent plugins in `src/plugins/`. Follow `docs/TEMPLATES.md` and `docs/PLUGINS.md`.
 - Keep server composition static where possible and interaction islands focused.
 - Preserve keyboard behavior, focus restoration, reduced motion, no-JavaScript readability, and the single document scroller.
 - Keep continuous animation work scoped to its useful viewport/document lifetime.

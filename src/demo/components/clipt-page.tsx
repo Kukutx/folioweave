@@ -108,6 +108,7 @@ export function CliptPage() {
       <nav style={{ position: "fixed", top: 24, left: 24, zIndex: 100 }}>
         <Link
           href="/"
+          prefetch={false}
           target="_blank"
           rel="noopener noreferrer"
           style={{

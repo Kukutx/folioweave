@@ -1,5 +1,7 @@
 .district-case-study-page {
   min-height: 100vh;
+  /* The entrance translation must not widen the document while loading. */
+  overflow-x: clip;
   background: #fff;
   color: #111;
 }

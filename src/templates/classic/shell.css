@@ -1,0 +1,54 @@
+@import "../../styles/theme.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  font-family: var(--font-main);
+  background:
+    radial-gradient(
+      circle at 12% 8%,
+      rgba(255, 94, 69, 0.13),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 88% 4%,
+      rgba(0, 113, 227, 0.12),
+      transparent 24rem
+    ),
+    linear-gradient(180deg, #fffdf8 0%, #f7f8f1 38%, #ffffff 68%);
+  background-color: var(--ui-bg-primary);
+  color: var(--ui-text-primary);
+}
+
+:root[data-template="classic"] {
+  --fw-font: var(--font-main);
+  --fw-surface: var(--ui-bg-primary);
+  --fw-text: var(--ui-text-primary);
+  --fw-border: var(--ui-border);
+  --fw-accent: var(--color-accent);
+  --fw-on-accent: #fff;
+  --fw-radius: 16px;
+  /* Match the existing Home control without changing its native layout. */
+  --fw-floating-right: clamp(1rem, 2.5vw, 2rem);
+  --fw-floating-bottom-right: calc(
+    max(1rem, env(safe-area-inset-bottom)) + 64px
+  );
+  --fw-floating-bottom-center: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 900px) {
+  :root[data-template="classic"] {
+    --fw-floating-right: 1rem;
+  }
+}

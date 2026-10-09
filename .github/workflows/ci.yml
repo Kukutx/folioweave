@@ -62,12 +62,59 @@ jobs:
         if: steps.impact.outputs.full != 'false'
       - run: npm run qa:profiles
         if: steps.impact.outputs.full != 'false'
+      # A runner has no audio output, and Firefox then reports every track as
+      # undecodable. A null sink lets the music suite play in all engines.
+      - name: Start a null audio sink
+        if: steps.impact.outputs.full != 'false'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes pulseaudio
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=ci
+      - run: npm run qa:music-quality
+        if: steps.impact.outputs.full != 'false'
+      - run: npm run qa:comments
+        if: steps.impact.outputs.full != 'false'
       - run: node qa/run-with-server.mjs qa:browsers
         if: steps.impact.outputs.full != 'false'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure() && steps.impact.outputs.full != 'false'
         with:
           name: verification-failure
+          path: |
+            qa/*-report.json
+            qa/screens/
+
+  refract-templates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        style: [light, dark]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Fetch pull-request base
+        if: github.base_ref
+        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Classify validation impact
+        id: impact
+        run: node scripts/ci-impact.mjs
+      - run: npm ci
+        if: steps.impact.outputs.full != 'false'
+      - run: node node_modules/playwright-core/cli.js install --with-deps chromium
+        if: steps.impact.outputs.full != 'false'
+      - name: Verify Refract scene and template
+        if: steps.impact.outputs.full != 'false'
+        run: npm run qa:refract -- --style=${{ matrix.style }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure() && steps.impact.outputs.full != 'false'
+        with:
+          name: refract-${{ matrix.style }}-failure
           path: |
             qa/*-report.json
             qa/screens/

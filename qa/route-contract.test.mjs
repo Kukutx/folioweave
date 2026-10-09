@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import {
   hasPublicationGuard,
@@ -46,7 +46,7 @@ test("route groups normalize, private folders are excluded, unsupported public c
   );
 });
 test("bidirectional contract rejects missing registration, guard, page, and custom blog registration", async (t) => {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "folioweave-routes-"));
+  const root = await fs.mkdtemp(path.join(qaTempRoot, "folioweave-routes-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const write = async (
     name,
@@ -67,13 +67,35 @@ test("bidirectional contract rejects missing registration, guard, page, and cust
     validateRouteContract(root, [{ path: "/missing", demoOnly: true }], []),
     /page missing/,
   );
-  await write("(site)/demo");
+  await write("(demo)/demo");
   await assert.rejects(validateRouteContract(root, [], []), /Unclassified/);
   const routes = [{ path: "/demo", demoOnly: true }];
   await assert.rejects(validateRouteContract(root, routes, []), /must begin/);
   await write(
-    "(site)/demo",
+    "(demo)/demo",
     source('requirePublishedRoute("/demo"); return null;'),
   );
   await validateRouteContract(root, routes, []);
+  // Examples live in their group and nothing else does.
+  await assert.rejects(
+    validateRouteContract(root, [{ path: "/demo", demoOnly: false }], []),
+    /not an example route/,
+  );
+  await write(
+    "(site)/stray",
+    source('requirePublishedRoute("/stray"); return null;'),
+  );
+  await assert.rejects(
+    validateRouteContract(
+      root,
+      [...routes, { path: "/stray", demoOnly: true }],
+      [],
+    ),
+    /must live under src\/app\/\(demo\)/,
+  );
+  await validateRouteContract(
+    root,
+    [...routes, { path: "/stray", demoOnly: false }],
+    [],
+  );
 });

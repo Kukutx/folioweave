@@ -59,7 +59,8 @@ function runScript(script, env) {
     child.on("error", reject);
     child.on("exit", (code, signal) => {
       if (code === 0) resolve();
-      else reject(new Error(`${script} failed (${code ?? signal ?? "unknown"})`));
+      else
+        reject(new Error(`${script} failed (${code ?? signal ?? "unknown"})`));
     });
   });
 }
@@ -98,7 +99,9 @@ try {
   let ready = false;
   while (Date.now() < deadline) {
     if (server.exitCode !== null) {
-      throw new Error(`Next server exited early (${server.exitCode}).\n${output}`);
+      throw new Error(
+        `Next server exited early (${server.exitCode}).\n${output}`,
+      );
     }
     try {
       const response = await fetch(base, { redirect: "manual" });
@@ -119,10 +122,21 @@ try {
     NEXT_URL: base,
   };
   console.log(`\nQA server ready: ${base}\n`);
+  const failures = [];
   for (const script of scripts) {
-    await runScript(script, env);
+    try {
+      await runScript(script, env);
+    } catch (error) {
+      failures.push(error);
+      console.error(error.message);
+    }
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
+  if (failures.length)
+    throw new AggregateError(
+      failures,
+      `${failures.length} QA suite(s) failed: ${failures.map((error) => error.message).join("; ")}`,
+    );
 } finally {
   stopTree(server);
 }
