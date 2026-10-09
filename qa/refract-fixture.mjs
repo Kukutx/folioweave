@@ -27,7 +27,13 @@ export async function prepareRefractFixture({
       !path.basename(resolved).startsWith(prefix)
     )
       throw new Error("Refusing cleanup outside the owned Refract fixture.");
-    await fs.rm(resolved, { recursive: true, force: true });
+    // Windows keeps a directory busy briefly after a child process leaves it.
+    await fs.rm(resolved, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 300,
+    });
   };
   try {
     for (const entry of [
