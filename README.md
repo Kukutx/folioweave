@@ -1,5 +1,7 @@
 # FolioWeave
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) ![Node.js 24](https://img.shields.io/badge/node-24.x-339933.svg) ![Next.js 16](https://img.shields.io/badge/Next.js-16-000000.svg) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)
+
 A **Next.js 16 portfolio framework** with selectable templates, shared plugins, and a content workflow for personal websites.
 
 FolioWeave brings three portfolio designs into one application: Classic, Refract Light, and Refract Dark. Choose a template through the CLI, keep your profile and Markdown articles, and enable music or comments independently. Layout, motion, content publication, and extension contracts live in the reusable code; personal information and media stay in the authoring layer.
@@ -16,9 +18,9 @@ FolioWeave brings three portfolio designs into one application: Classic, Refract
 
 Refract Light and Refract Dark are separate build-time choices. The published site has no style switcher. They share scene geometry and interaction code so fixes apply consistently to both designs. Read the [Refract guide](docs/REFRACT.md) for content mapping, settings, and asset credits.
 
-|                                                                     Refract Light                                                                      |                                                                       Refract Dark                                                                        |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [![Refract Light desktop preview with a white canvas and geometric globe](docs/images/refract-light.png)](https://folioweave-refract-light.vercel.app) | [![Refract Dark desktop preview with a warm dark canvas and illuminated globe](docs/images/refract-dark.png)](https://folioweave-refract-dark.vercel.app) |
+|                                                                      Classic                                                                       |                                                                     Refract Light                                                                      |                                                                       Refract Dark                                                                        |
+| :------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [![Classic desktop preview with an editorial opening and a tilted portrait print](docs/images/classic.png)](https://folioweave-classic.vercel.app) | [![Refract Light desktop preview with a white canvas and geometric globe](docs/images/refract-light.png)](https://folioweave-refract-light.vercel.app) | [![Refract Dark desktop preview with a warm dark canvas and illuminated globe](docs/images/refract-dark.png)](https://folioweave-refract-dark.vercel.app) |
 
 ## Start here
 

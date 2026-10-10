@@ -1,0 +1,27 @@
+name: Feature request
+description: A template, plugin, option or workflow FolioWeave does not have yet.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you are trying to do
+      description: The situation that the current templates, plugins or options do not cover.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help
+      description: The behaviour you have in mind. An option name or a sketch is welcome, not required.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you tried instead
+      description: Existing options or workarounds, and where they fall short.
+  - type: markdown
+    attributes:
+      value: |
+        Each template's approved look is a compatibility contract ([DESIGN-SYSTEM.md](https://github.com/Kukutx/folioweave/blob/main/docs/DESIGN-SYSTEM.md)). A request that changes how an existing template looks is weighed as a design change, not as a fix.

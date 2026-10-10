@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/Kukutx/folioweave/tree/main/docs
+    about: Quick start, personalization, templates, plugins and every command.
+  - name: Report a vulnerability
+    url: https://github.com/Kukutx/folioweave/security/advisories/new
+    about: Security problems are reported privately, never in a public issue.
