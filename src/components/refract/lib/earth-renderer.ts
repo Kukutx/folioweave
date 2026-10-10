@@ -28,11 +28,11 @@ import {
 } from "./scene-theme";
 import {
   assemblyGlint,
-  continentalChapter,
-  continentalPhase,
-  continentalYaw,
+  continentalScroll,
+  facingAnchor,
+  galleryYaw,
   heroSpin,
-  createContinentalPlayback,
+  toolsVortex,
   researchBlend,
   sceneExit,
   sceneLayout,
@@ -128,6 +128,8 @@ type Frame = {
   turn: number;
   rotation: Rotation;
   globeRotation: Rotation;
+  /** The globe's rotation for each of the four slices of the Tools assembly. */
+  sliceRotations: Rotation[];
   layerRotation: Rotation;
   coreAlpha: number;
   drawing: ReturnType<typeof sceneDrawing>;
@@ -164,7 +166,13 @@ export function createEarthRenderer(
   canvas: HTMLCanvasElement,
   options: EarthRendererOptions = {},
 ): EarthRenderer {
-  const context = canvas.getContext("2d", { alpha: true });
+  // In a worker the scene is rasterized on the processor. Its thousands of
+  // small anti-aliased paths are slow work for a graphics process, which would
+  // hold up the page's own compositing while it draws them.
+  const context = canvas.getContext("2d", {
+    alpha: true,
+    willReadFrequently: typeof document === "undefined",
+  });
   if (!context) return INERT_RENDERER;
   const ctx = context;
   const stylePreset = options.style ?? "dark";
@@ -179,10 +187,6 @@ export function createEarthRenderer(
   let progress = 0,
     clock = 0,
     spin = 0;
-  let snapshot = false;
-  const continentalPlayback = createContinentalPlayback(
-    options.continentalDrift,
-  );
   let introProgress = options.introProgress ?? 1;
   let mobileLayout: { centerY: number; radius: number } | null = null;
   let toolsBounds = options.toolsBounds ?? null;
@@ -262,39 +266,30 @@ export function createEarthRenderer(
           Math.min(width * 0.28, height * 0.28, 274) * 0.72,
           width * 0.132,
         ) / baseRadius;
-    const continental = snapshot
-      ? continentalPhase(p, options.continentalDrift, reducedMotion, clock)
-      : continentalPlayback.sample(p, clock, reducedMotion);
-    const chapter = continentalChapter(p, options.continentalDrift);
-    const range = options.continentalDrift
-      ? options.continentalDrift.ranges[chapter]
-      : undefined;
-    const local = range ? (p - range[0]) / (range[1] - range[0]) : 1;
-    const continentalVisibility = 1 - smooth(0.75, 1, local);
+    // The scroll position owns the continents' separation: nothing plays by
+    // itself, and every chapter opens the land it has turned to the reader.
+    const count = options.projectCount ?? 4;
+    const continental =
+      options.continentalDrift && !reducedMotion
+        ? continentalScroll(p, count, options.continentalDrift.ranges.length)
+        : 0;
+    const continentalVisibility = 1;
     const assemblyScale = 1 - stack * (1 - stackScale);
-    // A hand-turned globe belongs to the opening only: the offset is gone
-    // before the first transformation, so every later pose stays repeatable.
+    // The opening globe turns with the clock and the reader's hand. From the
+    // drawing stage on, where the folded stack hides the handover, the scroll
+    // position owns its facing; the clock only adds a slow sway.
     const globeYaw =
-      initialLongitude +
-      (reducedMotion ? 0 : clock * 0.12 + spin * heroSpin(p));
-    // Turn the land-rich hemisphere into view during playback, then return to
-    // the same uninterrupted globe rotation. Derive the turn from entry time
-    // so crossing +/- PI cannot flip the chosen direction between frames.
-    const elapsed =
-      Math.max(0, continental) *
-      (options.continentalDrift ? (options.continentalDrift.duration ?? 8) : 8);
-    const entryYaw = globeYaw - elapsed * 0.12;
-    const focus = continentalYaw(chapter);
-    const landTurn = Math.atan2(
-      Math.sin(focus - entryYaw),
-      Math.cos(focus - entryYaw),
-    );
-    const landFocus =
-      continental < 0
-        ? 0
-        : smooth(0, 0.22, continental) *
-          (1 - smooth(0.72, 1, continental)) *
-          continentalVisibility;
+      !reducedMotion && p >= facingAnchor
+        ? galleryYaw(p, count) + Math.sin(clock * 0.21) * 0.05
+        : initialLongitude +
+          (reducedMotion ? 0 : clock * 0.12 + spin * heroSpin(p));
+    const slice = (extra: number) =>
+      axialRotation(
+        globeYaw * (1 - stack) + turn + extra,
+        toolsSpinOpening(split),
+        0.1 * (1 - Math.max(split, stack)),
+        -0.14 * (1 - Math.max(split, stack)),
+      );
     return {
       p,
       dark,
@@ -314,12 +309,10 @@ export function createEarthRenderer(
       opacity: reducedMotion ? 1 - smooth(0.965, 1, p) : 1,
       rotation: rotation(camera.yaw, camera.pitch, camera.roll),
       layerRotation: rotation(camera.layerYaw, camera.layerPitch),
-      globeRotation: axialRotation(
-        (globeYaw + landTurn * landFocus) * (1 - stack) + turn,
-        toolsSpinOpening(split),
-        0.1 * (1 - Math.max(split, stack)),
-        -0.14 * (1 - Math.max(split, stack)),
-      ),
+      globeRotation: slice(0),
+      sliceRotations: reducedMotion
+        ? Array.from({ length: 4 }, () => slice(0))
+        : [0, 1, 2, 3].map((band) => slice(toolsVortex(p, band) * TAU)),
       coreAlpha: 1 - smooth(0.025, 0.8, split),
       continental,
       continentalVisibility,
@@ -337,7 +330,7 @@ export function createEarthRenderer(
   const scenePoint = (point: Vec3, frame: Frame) =>
     rotate(point, frame.rotation);
   const earthPoint = (vertex: Vec3, frame: Frame) => {
-    const point = rotate(vertex, frame.globeRotation);
+    const point = rotate(vertex, frame.sliceRotations[layerOf(vertex.z)]);
     return scenePoint(
       {
         x: point.x * (1 + frame.split * 0.1),
@@ -400,7 +393,7 @@ export function createEarthRenderer(
         const pose = glassShardPose(
           shard,
           frame.split,
-          frame.globeRotation,
+          frame.sliceRotations[shard.face.band],
           frame.rotation,
           (shard.face.band - 1.5) * frame.split * 0.96,
         );
@@ -601,7 +594,7 @@ export function createEarthRenderer(
           frame.glint,
         ) *
           (1 - frame.split * 0.8),
-        0.018 + fresnel * 0.08 + highlight * 0.12 + face.seed * 0.025,
+        0.04 + fresnel * 0.15 + highlight * 0.17 + face.seed * 0.07,
         fracture,
       );
       ctx.fillStyle = gray(
@@ -619,7 +612,7 @@ export function createEarthRenderer(
           fracture *
           back *
           stageAlpha *
-          (0.12 + fresnel * 0.2 + highlight * 0.6);
+          (0.22 + fresnel * 0.26 + highlight * 0.7);
         ctx.fillStyle = reflection;
         ctx.fill();
         ctx.restore();
@@ -629,7 +622,7 @@ export function createEarthRenderer(
         mix(frame.ink, glass.edge, fracture),
         mix(
           0.018 + frame.split * 0.025 + fresnel * 0.03,
-          0.22 + fresnel * 0.2,
+          0.3 + fresnel * 0.3,
           fracture,
         ) *
           back *
@@ -1317,24 +1310,17 @@ export function createEarthRenderer(
             (1 - smooth(0.91, 1, frame.continental)) *
             frame.continentalVisibility;
       if (continentalReveal > 0) {
-        ctx.save();
-        ctx.globalAlpha *= 1 - continentalReveal;
+        // The land leaves with its plates. The globe beneath keeps its
+        // glass, mesh and light, so an opened chapter is never an empty disc.
         drawFaces(frame, false);
-        if (continentalReveal < 0.998) drawGraticule(frame);
-        ctx.restore();
-        ctx.save();
-        ctx.globalAlpha *= 1 - continentalReveal * 0.85;
+        drawGraticule(frame);
         drawGlassBody(frame);
-        ctx.restore();
         ctx.save();
         ctx.globalAlpha *= 1 - continentalReveal;
         drawLand(frame);
         ctx.restore();
-        ctx.save();
-        ctx.globalAlpha *= 1 - continentalReveal;
         drawFaces(frame, true);
         drawReflections(frame);
-        ctx.restore();
         continents ??= createContinentalRenderer(land);
         ctx.save();
         ctx.globalAlpha *= frame.continentalVisibility;
@@ -1460,7 +1446,7 @@ export function createEarthRenderer(
     const nextMobile = nextWidth < sceneLayout.mobile;
     const nextDpr = Math.min(
       options.pixelRatio ?? (browser ? window.devicePixelRatio || 1 : 1),
-      nextMobile ? 1.5 : 1.8,
+      2,
     );
     const needsGeometry = !shell.length || nextMobile !== mobile;
     width = nextWidth;
@@ -1553,11 +1539,9 @@ export function createEarthRenderer(
     },
     setProgress(value) {
       if (destroyed || !Number.isFinite(value)) return;
-      snapshot = false;
       const next = clamp(value);
       if (Math.abs(progress - next) < 0.00001) return;
       progress = next;
-      continentalPlayback.sample(progress, clock, reducedMotion);
       if (!autoStart) draw();
       else wake();
     },
@@ -1603,11 +1587,10 @@ export function createEarthRenderer(
       draw();
       if (!reducedMotion && !paused) wake();
     },
-    drawAtProgress(value, timeSeconds = 0, mode = "snapshot") {
+    drawAtProgress(value, timeSeconds = 0) {
       if (destroyed) return;
       progress = Number.isFinite(value) ? clamp(value) : 0;
       clock = Number.isFinite(timeSeconds) ? Math.max(0, timeSeconds) : 0;
-      snapshot = mode === "snapshot";
       draw();
     },
     resize,

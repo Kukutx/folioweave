@@ -232,7 +232,8 @@ export function sceneAccent(progress: number, paper = 0, projectCount = 4) {
   // reparses a generated rgb string as if it were a six-digit source color.
   const next = Math.round(position);
   const boundary = 0.42 + next * span;
-  const blendWidth = Math.min(0.004, span * 0.04);
+  // Wide enough to be a cross-fade under the reader's hand, not a switch.
+  const blendWidth = span * 0.1;
   if (
     next > 0 &&
     next < count &&

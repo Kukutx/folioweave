@@ -12,8 +12,11 @@ the branch boundary. `npm run check` runs those before the build and is what CI
 uses. `npm run content:check` is the read-only content validation on its own.
 A deployment that called `npm run build` needs no change.
 
-Refract's `continentalDrift` option now applies to every project chapter when
-`true`; set `"first"` to keep the earlier single-chapter behaviour.
+Refract's `continentalDrift` option applies to every project chapter when
+`true`; set `"first"` to keep it to the first. The separation now follows the
+scroll position instead of playing on a timer. Refract no longer turns a GitHub
+social link into the hero tile: the tile is the `featuredLink` option, and is
+absent without it.
 
 ## Same repository: update `personal` from `main`
 

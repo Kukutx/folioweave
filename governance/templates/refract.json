@@ -23,6 +23,30 @@
         "icon": "github",
         "href": "https://github.com/Kukutx/folioweave",
         "brand": "#252423"
+      },
+      {
+        "label": "Documentation",
+        "icon": "website",
+        "href": "https://github.com/Kukutx/folioweave/tree/main/docs",
+        "brand": "#252423"
+      },
+      {
+        "label": "Classic demo",
+        "icon": "website",
+        "href": "https://folioweave-classic.vercel.app",
+        "brand": "#252423"
+      },
+      {
+        "label": "Refract Light",
+        "icon": "website",
+        "href": "https://folioweave-refract-light.vercel.app",
+        "brand": "#252423"
+      },
+      {
+        "label": "Refract Dark",
+        "icon": "website",
+        "href": "https://folioweave-refract-dark.vercel.app",
+        "brand": "#252423"
       }
     ],
     "navigation": [
@@ -83,7 +107,7 @@
     ],
     "summary": [
       {
-        "text": "I explore how thoughtful interfaces can make complex ideas tangible. Working between design, code and the natural world."
+        "text": "I explore how thoughtful interfaces can make complex ideas tangible. Working between design, code and the natural world, I build visual systems that stay calm under a lot of information."
       }
     ]
   },
@@ -92,13 +116,23 @@
       {
         "year": "2024 — Present",
         "title": "Independent practice",
-        "desc": "Designing experimental interfaces, visual systems and open tools.",
+        "desc": "Designing experimental interfaces, visual systems and open tools with research groups and small studios.",
         "current": true
       },
       {
         "year": "2021 — 2024",
         "title": "Design & development",
         "desc": "Exploring the connection between information, motion and everyday digital experiences."
+      },
+      {
+        "year": "2018 — 2021",
+        "title": "Interaction designer",
+        "desc": "Shaped data-rich products with small teams, from the first sketch to the shipped interface."
+      },
+      {
+        "year": "2014 — 2018",
+        "title": "Studies in visual communication",
+        "desc": "Typography, information design and a growing curiosity for code."
       }
     ],
     "story": [
@@ -106,6 +140,12 @@
         {
           "tone": "strong",
           "text": "I make digital things with clarity, curiosity and care."
+        }
+      ],
+      [
+        {
+          "tone": "muted",
+          "text": "My work starts with looking: at maps, at instruments, at the way light moves across a surface. From those observations I build interfaces, visual systems and small open tools that help other people look more closely too."
         }
       ],
       [
@@ -124,18 +164,18 @@
       "mobileTreatment": "standard",
       "name": "Field Notes",
       "date": "Visual notebook · 2026",
-      "description": "A visual notebook for observing patterns in landscapes, cities and everyday life.",
+      "description": "A visual notebook for observing patterns in landscapes, cities and everyday life. Three years of field sketches became a searchable atlas of forms, colours and rhythms.",
       "media": {
         "kind": "image",
         "image": {
           "src": "/portfolio/demo/field-notes.svg",
-          "alt": "Field Notes: an original abstract diagram created for this template demo"
+          "alt": "Field Notes: contour lines of an invented terrain crossed by a surveyed transect"
         }
       },
       "actions": [
         {
           "label": "Read the notes",
-          "href": "/blogs/designing-with-constraints"
+          "href": "/blogs/observing-patterns"
         }
       ]
     },
@@ -145,17 +185,17 @@
       "mobileTreatment": "standard",
       "name": "Common Ground",
       "date": "Interface study · 2025",
-      "description": "An interface study that makes complex environmental information easier to explore.",
+      "description": "An interface study that makes complex environmental information easier to explore. Climate, land use and movement share one calm, legible reading.",
       "media": {
         "kind": "image",
         "image": {
           "src": "/portfolio/demo/common-ground.svg",
-          "alt": "Common Ground: an original abstract diagram created for this template demo"
+          "alt": "Common Ground: three layered environmental series with one annotated reading"
         }
       },
       "actions": [
         {
-          "label": "Read the notes",
+          "label": "Read the process",
           "href": "/blogs/designing-with-constraints"
         }
       ]
@@ -166,18 +206,18 @@
       "mobileTreatment": "standard",
       "name": "Open Atlas",
       "date": "Open tools · 2025",
-      "description": "A small collection of open visual tools for navigating connected ideas.",
+      "description": "A small collection of open visual tools for navigating connected ideas. Every node keeps its sources, so a line of thought can be retraced and shared.",
       "media": {
         "kind": "image",
         "image": {
           "src": "/portfolio/demo/open-atlas.svg",
-          "alt": "Open Atlas: an original abstract diagram created for this template demo"
+          "alt": "Open Atlas: a constellation of connected nodes around a few anchors"
         }
       },
       "actions": [
         {
-          "label": "Read the notes",
-          "href": "/blogs/designing-with-constraints"
+          "label": "View the source",
+          "href": "https://github.com/Kukutx/folioweave"
         }
       ]
     },
@@ -187,18 +227,18 @@
       "mobileTreatment": "standard",
       "name": "Material Studies",
       "date": "Material research · 2024",
-      "description": "Experiments with light, geometry and motion across physical and digital surfaces.",
+      "description": "Experiments with light, geometry and motion across physical and digital surfaces. Glass, paper and pixels are studied under the same light.",
       "media": {
         "kind": "image",
         "image": {
           "src": "/portfolio/demo/material-studies.svg",
-          "alt": "Material Studies: an original abstract diagram created for this template demo"
+          "alt": "Material Studies: a ray of light dispersed into six bands by a faceted solid"
         }
       },
       "actions": [
         {
           "label": "Read the notes",
-          "href": "/blogs/designing-with-constraints"
+          "href": "/blogs/observing-patterns"
         }
       ]
     }
@@ -257,18 +297,86 @@
               {
                 "label": "Source",
                 "url": "https://github.com/Kukutx/folioweave"
+              },
+              {
+                "label": "Documentation",
+                "url": "https://github.com/Kukutx/folioweave/tree/main/docs"
               }
             ]
+          },
+          {
+            "id": "contour",
+            "name": "Contour",
+            "description": "Draws topographic lines from any field of numbers, in the browser."
+          },
+          {
+            "id": "tessera",
+            "name": "Tessera",
+            "description": "Palettes that keep their contrast on paper and on a dark stage."
           }
         ],
         "news": [
           {
             "id": "template-release",
-            "date": "2026",
+            "date": "Oct 2026",
             "description": "Refract joins the FolioWeave template collection. This page uses fictional demo content.",
             "url": "https://github.com/Kukutx/folioweave"
+          },
+          {
+            "id": "field-notes-show",
+            "date": "Jun 2026",
+            "description": "Field Notes is shown in a small exhibition of working sketchbooks."
+          },
+          {
+            "id": "calm-maps-talk",
+            "date": "Mar 2026",
+            "description": "A talk on calm maps for dense information, with the slides published as an essay.",
+            "url": "/blogs/designing-with-constraints"
+          },
+          {
+            "id": "open-atlas-stable",
+            "date": "Nov 2025",
+            "description": "Open Atlas reaches its first stable release."
+          },
+          {
+            "id": "paper-light",
+            "date": "May 2025",
+            "description": "A year-long study of light on folded paper begins."
           }
-        ]
+        ],
+        "labels": {
+          "publications": "Talks & essays"
+        },
+        "publications": [
+          {
+            "id": "designing-with-constraints",
+            "title": "Designing with constraints",
+            "authors": "Alex Morgan.",
+            "year": 2026,
+            "journal": "Essay",
+            "url": "/blogs/designing-with-constraints",
+            "highlight": "What a project leaves out says as much as what it keeps."
+          },
+          {
+            "id": "observing-patterns",
+            "title": "Observing patterns",
+            "authors": "Alex Morgan.",
+            "year": 2026,
+            "journal": "Essay",
+            "url": "/blogs/observing-patterns",
+            "highlight": "Finding a visual rhythm in the ordinary."
+          },
+          {
+            "id": "calm-maps",
+            "title": "Calm maps for dense information",
+            "authors": "Alex Morgan.",
+            "year": 2025,
+            "journal": "Talk"
+          }
+        ],
+        "featuredLink": {
+          "label": "Your link"
+        }
       }
     }
   }

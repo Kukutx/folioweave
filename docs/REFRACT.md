@@ -49,7 +49,7 @@ module copied from the original project.
 | ------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `site.identity`                             | Name, role and affiliation                                                          |
 | `site.location`                             | Location label and city-level globe marker                                          |
-| `site.contact.email` and `site.socialLinks` | Contact links; the GitHub link also supplies the featured link when present         |
+| `site.contact.email` and `site.socialLinks` | Contact links at the foot of the page                                               |
 | `hero.roleLine`, `hero.summary`             | Introductory copy; a template `tagline` can override the role line                  |
 | First `hero.portraits` item                 | About portrait                                                                      |
 | `about.story` and `about.timeline`          | Biography and CV experience                                                         |
@@ -103,26 +103,46 @@ npm run folio -- template use refract-light --options refract-options.json
 want to retain. Omitted options use their defaults; omit optional text instead of
 supplying an empty string. These settings are public and must not contain secrets.
 
-| Option                           | Purpose and default                                                                                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tagline`                        | Intro text override; defaults to the shared hero role line                                                                                  |
-| `rotatingTopics`                 | Optional rotating endings for the tagline; defaults to an empty list                                                                        |
-| `projectHeading`, `toolsHeading` | Section labels; default to `Projects` and `Tools`                                                                                           |
-| `focus`, `group`                 | Optional About details; omitted by default                                                                                                  |
-| `layerLabels`                    | Up to four captions for the drawing stage's sheets on desktop; defaults to the first four `focus` entries, otherwise none                   |
-| `tools`                          | Tool entries with `id`, `name`, `description`, optional `url`, and optional `links` containing `label`/`url`                                |
-| `news`                           | Entries with `id`, `date`, `description`, and optional `url`                                                                                |
-| `publications`                   | Entries with `id`, `title`, `authors`, `year`, `journal`, `citation`, optional `url` and optional `highlight`                               |
-| `researchFigures`                | Figure overrides keyed by project id; each has `source`, `width`, `height`, optional `animatedSource` and optional `caption`                |
-| `fracturedGlass`                 | Glass shards in the tools stage; enabled by default                                                                                         |
-| `continentalDrift`               | Each project chapter turns its own hemisphere into view and separates its continents; `"first"` limits it to the first, `false` disables it |
-| `labels`                         | Replacements for individual interface labels, keyed as in `src/components/refract/copy.ts`                                                  |
+| Option                           | Purpose and default                                                                                                                                                        |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tagline`                        | Intro text override; defaults to the shared hero role line                                                                                                                 |
+| `rotatingTopics`                 | Optional rotating endings for the tagline; defaults to an empty list                                                                                                       |
+| `projectHeading`, `toolsHeading` | Section labels; default to `Projects` and `Tools`                                                                                                                          |
+| `focus`, `group`                 | Optional About details; omitted by default                                                                                                                                 |
+| `layerLabels`                    | Up to four captions for the drawing stage's sheets on desktop; defaults to the first four `focus` entries, otherwise none                                                  |
+| `tools`                          | Tool entries with `id`, `name`, `description`, optional `url`, and optional `links` containing `label`/`url`                                                               |
+| `news`                           | Entries with `id`, `date`, `description`, and optional `url`                                                                                                               |
+| `publications`                   | Entries with `id`, `title`, `authors`, `year`, `journal`, optional `citation`, optional `url` and optional `highlight`                                                     |
+| `featuredLink`                   | The tile beside the hero: `label`, optional `href`, optional `icon` (`github`, `linkedin`, `cv`, `sponsor`, `external`) or `image`, optional `download`; absent by default |
+| `researchFigures`                | Figure overrides keyed by project id; each has `source`, `width`, `height`, optional `animatedSource` and optional `caption`                                               |
+| `fracturedGlass`                 | Glass shards in the tools stage; enabled by default                                                                                                                        |
+| `continentalDrift`               | Each project chapter opens the continents of the region it faces as its copy arrives; `"first"` limits it to the first, `false` disables it                                |
+| `labels`                         | Replacements for individual interface labels, keyed as in `src/components/refract/copy.ts`                                                                                 |
 
 Interface wording follows `site.identity.locale`: English by default and Chinese
 for `zh-*` profiles. `labels` overrides single entries in any language, for
 example `{ "contact": "Say hello", "cv": "Experience" }`; an unknown key fails
 validation. Section headings you set yourself (`projectHeading`, `toolsHeading`)
 are never translated.
+
+`featuredLink` is the one thing the author chooses to put forward beside the
+hero: a repository, a sponsor, a résumé to download. Nothing is derived from the
+profile, so without the option the tile is absent. With a `label` alone it is
+the placeholder, a keyline drawing tied to nothing. Add `href` to make it lead
+somewhere, and `icon` or `image` to replace the drawing with your own mark;
+`download` saves the target instead of opening it. Below 900px the tile gives
+way to a button at the foot of the menu, shown only when the tile has an `href`.
+
+```json
+{
+  "featuredLink": {
+    "label": "Resume",
+    "href": "/portfolio/resume/resume.pdf",
+    "icon": "cv",
+    "download": true
+  }
+}
+```
 
 Tools, news and publications default to empty lists. They do not contain sample
 academic claims. With no tools, the scene retains a shorter geometric transition
@@ -211,24 +231,38 @@ decision first.
   position, both endpoints included, with no lagging proxy; every pose is
   reversible. Time drives only ambient loops, which stop when paused, hidden or
   under reduced motion.
-- Every project chapter faces a different hemisphere and separates the continents
-  seen there, so no two chapters show the same globe. The sequence plays in time
-  inside its chapter and never adds scroll distance.
+- From the drawing stage on, the scroll position owns the globe. Each project
+  chapter holds its own part of the world while its copy is in place (Africa and
+  Europe, Asia, Oceania, the Americas) and turns to the next, always the same
+  way round, as the page moves between two chapters.
+- The continents of the region in view lift off as mirror plates while a
+  chapter's copy arrives, float while it rests and close as it leaves. The
+  scroll position owns that too: nothing plays by itself, scrolling back undoes
+  every step, and it never adds scroll distance. The plates hover over the
+  places they left, and the glass globe stays whole beneath them.
 - The overview unfolds into a layered rectangular terrain, mesh and data field,
   then folds back into the globe. Leaders run from the label through a horizontal
   segment and a 45-degree bend. Ring arcs fill continuously with scroll.
 - The tools stage opens into independently tilted glass shards with their
-  geographic dots attached, and never fades them out at full opening.
+  geographic dots attached, and never fades them out at full opening. Closing,
+  the four slices wind in like a vortex: beyond the turn they share, the inner
+  slices make one and two whole turns more, and all come home in register.
 - The timeline is a 336 by 40px track with a 12px radius, dense ticks and a red
-  cursor, with no extra buttons in it. Home is a separate control. Both appear
-  only after the hero's bottom row has left the viewport.
+  cursor, with no extra buttons in it. The way back to the top is a separate key
+  at the track's right end, in the same panel, height and corners, and it
+  arrives and leaves as the track does. Both appear only after the hero's bottom
+  row has left the viewport.
 - Below 1200px, copy and figures appear in their own scroll phases while the
   scene is suppressed, then the scene returns at the same centre. The mobile
-  menu is a narrow draggable pane with a dimmed backdrop, not a full-screen
-  takeover.
-- Performance work keeps the approved pixels and motion. Geometry is measured
-  outside scroll updates, caches are invalidated on viewport, pose and
-  reduced-motion changes, and offscreen stores are released on destroy.
+  menu is a draggable pane as wide as its longest label, with a dimmed backdrop,
+  not a full-screen takeover.
+- Performance work keeps the approved pixels and motion, and never lowers the
+  canvas resolution, which is every device pixel up to 2x. A frame is thousands
+  of small anti-aliased paths; workers rasterize it on the processor so the page
+  itself keeps the display's rate, and up to three of them draw consecutive
+  frames at once (`lib/earth-runtime.ts`). Geometry is measured outside scroll
+  updates, caches are invalidated on viewport, pose and reduced-motion changes,
+  and offscreen stores are released on destroy.
 
 Pointer parallax was removed during design review: it added poses that broke
 text clearance and repeatable scroll positions. Decorations the owner removed are

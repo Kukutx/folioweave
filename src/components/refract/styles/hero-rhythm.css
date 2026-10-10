@@ -28,7 +28,8 @@
 }
 @media (max-width: 1199px) {
   :where(.refract-site) .site-header nav {
-    width: 176px;
+    width: max-content;
+    min-width: 176px;
     padding: var(--header-height) 0 80px;
     gap: 0;
     transition: none;
@@ -44,13 +45,73 @@
     gap: 8px;
     min-height: 40px;
   }
-  :where(.refract-site) .site-header nav a:last-child {
+  :where(.refract-site) .site-header nav > a:last-of-type {
     padding: 0 16px;
   }
   :where(.refract-site) .site-header nav svg {
     width: 24px;
     height: 24px;
     flex-shrink: 0;
+  }
+  :where(.refract-site) .site-header nav > a {
+    max-width: var(--menu-width, none);
+  }
+  :where(.refract-site) .site-header nav > a > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :where(.refract-site) .site-header nav:has(.menu-featured) {
+    padding-bottom: 0;
+  }
+  :where(.refract-site) .site-header .menu-featured {
+    display: block;
+    width: var(--menu-width, auto);
+    margin-top: auto;
+    padding: 32px 16px max(24px, env(safe-area-inset-bottom));
+  }
+  /* The same button as the hero's first one. */
+  :where(.refract-site) .site-header .menu-featured a {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid #302e2d;
+    border-radius: 0.25rem;
+    background: #302e2d;
+    color: #f6f4f2;
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+  :where(.refract-site) .site-header .menu-featured a:hover {
+    border-color: #3b3936;
+    background: #3b3936;
+    color: #fff;
+  }
+  :where(.refract-site) .site-header .menu-featured span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :where(.refract-site) .site-header .menu-featured .featured-link-logo,
+  :where(.refract-site) .site-header .menu-featured .featured-link-monogram {
+    position: static;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    transform: none;
+    font-size: 15px;
+    line-height: 18px;
+  }
+  .refract-site[data-style="light"] .site-header .menu-featured a {
+    border-color: #111;
+    background: #111;
+    color: #fff;
   }
   :where(.refract-site) .menu-backdrop {
     opacity: calc(var(--menu-progress, 0) * 0.4);

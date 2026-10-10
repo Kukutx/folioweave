@@ -254,8 +254,7 @@
           "title",
           "authors",
           "year",
-          "journal",
-          "citation"
+          "journal"
         ]
       },
       "maxItems": 50
@@ -302,6 +301,42 @@
           "width",
           "height"
         ]
+      }
+    },
+    "featuredLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "href": {
+          "type": "string",
+          "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+          "maxLength": 2048
+        },
+        "icon": {
+          "enum": [
+            "github",
+            "linkedin",
+            "external",
+            "cv",
+            "sponsor"
+          ]
+        },
+        "image": {
+          "type": "string",
+          "pattern": "^(https?://[^\\s]+|/(?!/)[^\\s]*)$",
+          "maxLength": 2048
+        },
+        "download": {
+          "type": "boolean"
+        }
       }
     }
   }
