@@ -33,9 +33,13 @@ test("music skins, placement and notes are validated independently", () => {
     { accent: "red" },
     { notes: { colors: ["#cf8750"] } },
     { notes: { enabled: "yes" } },
-    { autoplay: true },
+    { autoplay: "always" },
+    { shuffle: true },
   ])
     assert.throws(() => resolve({ tracks: [track], ...extra }), /options/);
+  // Starting on arrival is the author's explicit choice, never a default.
+  const arrival = { tracks: [track], autoplay: true };
+  assert.deepEqual(resolve(arrival).plugins[0].options, arrival);
 });
 
 test("duplicate track identities and unsafe audio or artwork fail before publication", () => {

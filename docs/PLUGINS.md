@@ -33,6 +33,7 @@ supported. An options file contains:
   "position": "right",
   "theme": "graphite",
   "initialExpanded": false,
+  "autoplay": false,
   "volume": 0.7,
   "notes": {
     "enabled": false,
@@ -43,7 +44,8 @@ supported. An options file contains:
       "id": "evening",
       "title": "Evening",
       "artist": "Your artist",
-      "src": "/portfolio/audio/evening.mp3"
+      "src": "/portfolio/audio/evening.mp3",
+      "cover": "/portfolio/covers/evening.webp"
     }
   ]
 }
@@ -53,23 +55,39 @@ Supported local file extensions are MP3, M4A, OGG, WAV, AAC and FLAC. Actual cod
 playback depends on the browser. Files are validated for path/existence and
 published as hash-checked byte snapshots; a corrupt or unsupported audio stream
 is reported by the player. No tracks are bundled or enabled on the author's behalf.
-Track ids must be unique. Add `cover` to a track for local or HTTPS artwork; a
-missing or failed cover uses the built-in record label. Local artwork uses the
-same validated publication pipeline as other profile images.
+Track ids must be unique. `cover` is optional per track, local or HTTPS: it
+becomes the label at the centre of the record (the whole tile in the `square`
+skin) and the artwork the system shows for the track. A missing or failed cover
+leaves the built-in label with its note. Local artwork uses the same validated
+publication pipeline as other profile images.
 
 The player uses `site.floating` and portals its UI into the document body so a
-template's transforms or clipping cannot trap it. It never autoplays and uses
-`preload="none"`. One instance lives in the root layout, so Next.js client
-navigation keeps playback. A full document navigation/reload restarts the app;
-there is no promise of playback across a browser reload. Unmounting releases playback.
+template's transforms or clipping cannot trap it. It uses `preload="none"` and
+waits for the visitor unless `autoplay` is set. One instance lives in the root
+layout, so Next.js client navigation keeps playback. A full document
+navigation/reload restarts the app; there is no promise of playback across a
+browser reload. Unmounting releases playback.
+
+`autoplay` starts the first track on arrival. Browsers decide whether a page may
+make sound before the visitor has touched it, and most refuse a first visit.
+The player then stays silent, shows no error, and starts on the visitor's first
+click, tap or key press anywhere on the page; scrolling alone does not count. A
+press on the player itself is the visitor taking over, so it cancels the wait
+instead. No setting can override the browser's rule.
+
+While a track plays, the player also registers with the system's media session:
+the keyboard's media keys, a headset's buttons and a phone's lock screen show
+the title, artist and cover and can play, pause and change track.
 
 | Option            | Values / default                                          |
 | ----------------- | --------------------------------------------------------- |
+| `label`           | The player's accessible name; defaults to “Music player”  |
 | `skin`            | `capsule` (default), `square`                             |
 | `position`        | `right` (bottom-right, default), `bottom` (bottom-center) |
 | `theme`           | `graphite` (default), `porcelain`, `cobalt`               |
 | `accent`          | Optional six-digit hex; otherwise follows the theme       |
 | `initialExpanded` | `false` by default; disclosure is always the left artwork |
+| `autoplay`        | `false` by default; `true` starts on arrival (see above)  |
 | `volume`          | 0–1, default 0.7; device media policies may override it   |
 | `notes.enabled`   | `false` by default; visitors can toggle in the playlist   |
 | `notes.colors`    | Exactly three six-digit hex colors                        |
@@ -255,8 +273,9 @@ are canceled on unmount/article changes. The React UI, transport and session log
 are separate files; another native service adapter can implement `CommentService`
 from `src/plugins/comments/types.ts` without importing a template.
 
-Visual options include `appearance: "minimal" | "panel"`, light/dark/system
-`theme`, a six-digit `accent`, `heading` and `placeholder`. Native UI copy currently
+Visual options include `appearance: "minimal" | "panel"`, `light`/`dark`/`preferred_color_scheme`
+`theme`, a six-digit `accent`, `heading` and `placeholder`. `pageSize` takes 1–30
+(default 6) and `maxLength` 100–10000 characters (default 2000). Native UI copy currently
 supports Simplified Chinese and English; other configured locales use English
 controls with localized dates. Giscus retains its wider native language support.
 Advanced theming uses these inherited CSS variables on the plugin's wrapper:
@@ -353,7 +372,9 @@ identities for arbitrary demo pages.
 A plugin directory contains a `manifest.json`, a component entry and local styles.
 Use the music/comments implementations as complete examples. The manifest declares
 `id`, `name`, `description`, `version`, `apiVersion: 1`, `entry`, supported `slots`
-and an object `optionsSchema`. Unknown options should be rejected. A plugin's
+and an object `optionsSchema`. Unknown options should be rejected. A plugin
+mounts in the first slot its manifest lists; `plugins.<id>.slot` in
+`portfolio.json` picks another of them. A plugin's
 component accepts `PluginProps<YourOptions>` from `src/core/contracts.ts`.
 
 All enabled configuration is public. Keep credentials in server environment

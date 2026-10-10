@@ -122,10 +122,6 @@
   width: 24px;
   height: 24px;
 }
-:where(.refract-site) .builtin-logo {
-  filter: invert(1);
-  opacity: 0.85;
-}
 :where(.refract-site) .featured-link-monogram {
   font-family: Arial, sans-serif;
   font-size: 19px;
@@ -330,9 +326,6 @@ html[data-template="refract-light"],
 }
 .refract-site[data-style="light"] .featured-link-frame {
   filter: invert(1);
-}
-.refract-site[data-style="light"] .builtin-logo {
-  filter: none;
 }
 .refract-site[data-style="light"] [data-tone="light"] .scene-tool a:hover {
   color: var(--accent-on-paper);

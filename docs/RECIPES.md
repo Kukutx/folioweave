@@ -153,10 +153,10 @@ Set the corresponding `features` flag to `false`. Disabled content stays in the 
 Set `site.origin` in `portfolio.json` to the real production origin, then run:
 
 ```bash
-npm run check
-npm run audit:prod
-npm run qa:maintainer
+npm run build
 ```
+
+If it passes, the site is deployable.
 
 FolioWeave uses standard Next.js deployment conventions. Vercel can use the normal Next.js preset; other compatible hosts can use their standard Next.js integration. Repository visibility and deployment visibility are separate concerns.
 
@@ -173,9 +173,8 @@ npm run content:check
 Release path:
 
 ```bash
-npm run check
-npm run audit:prod
-npm run qa:maintainer
+npm run build
 ```
 
-If visual regression fails, inspect the cause. Do not update baselines until the visual difference is understood and explicitly accepted.
+Shared-code changes go through `npm run check` and the suites in
+[COMMANDS.md](COMMANDS.md) instead. If visual regression fails, inspect the cause. Do not update baselines until the visual difference is understood and explicitly accepted.

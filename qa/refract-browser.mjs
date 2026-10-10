@@ -104,6 +104,15 @@ const browser = await chromium.launch({
   headless: true,
 });
 
+/** The tile both demos put beside the hero: a label and nothing else. */
+const demoTile = JSON.parse(
+  await fs.readFile(
+    path.join(root, "governance/templates/refract.json"),
+    "utf8",
+  ),
+).template.settings.refract.featuredLink;
+assert.deepEqual(Object.keys(demoTile), ["label"]);
+
 async function checkScene(base, style, directory, { width, fallback }) {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
@@ -149,6 +158,40 @@ async function checkScene(base, style, directory, { width, fallback }) {
         await page.locator(`[id=${JSON.stringify(controls)}]`).count(),
         1,
       );
+      // The foot of the pane is the hero's tile in its own state. The demo's
+      // tile leads nowhere, so it is drawn there and offers nothing to press.
+      const measureFoot = () =>
+        page.locator(".menu-featured").evaluate((element) => {
+          const pane = element.closest("nav").getBoundingClientRect();
+          const row = element.firstElementChild;
+          const box = row.getBoundingClientRect();
+          return {
+            left: box.left,
+            links: element.querySelectorAll("a").length,
+            label: row.textContent.trim(),
+            drawn: Boolean(row.querySelector(".featured-link-frame")),
+            inside:
+              box.width > 0 &&
+              box.left >= pane.left &&
+              box.right <= innerWidth &&
+              box.bottom <= innerHeight,
+          };
+        });
+      // The pane arrives on a spring; it is measured once it has come to rest.
+      let { left, ...foot } = await measureFoot();
+      for (let attempt = 0; attempt < 60; attempt++) {
+        await page.waitForTimeout(50);
+        const { left: next, ...later } = await measureFoot();
+        foot = later;
+        if (next === left) break;
+        left = next;
+      }
+      assert.deepEqual(foot, {
+        links: 0,
+        label: demoTile.label,
+        drawn: true,
+        inside: true,
+      });
       await page.keyboard.press("Escape");
       await page.waitForFunction(
         () =>

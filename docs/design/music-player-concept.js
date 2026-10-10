@@ -241,9 +241,6 @@
       value ? "收起播放器" : "展开播放器",
     );
     $("record-control").title = value ? "收起播放器" : "展开播放器";
-    $("record-control").querySelector(".record-tip").textContent = value
-      ? "收起"
-      : "展开";
     if (!value) togglePanel("queue", false);
     if (moveFocus)
       $(retracted ? "reveal-control" : "record-control").focus({

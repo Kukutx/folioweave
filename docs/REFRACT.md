@@ -130,8 +130,13 @@ hero: a repository, a sponsor, a résumé to download. Nothing is derived from t
 profile, so without the option the tile is absent. With a `label` alone it is
 the placeholder, a keyline drawing tied to nothing. Add `href` to make it lead
 somewhere, and `icon` or `image` to replace the drawing with your own mark;
-`download` saves the target instead of opening it. Below 900px the tile gives
-way to a button at the foot of the menu, shown only when the tile has an `href`.
+`download` saves the target instead of opening it.
+
+The menu that replaces the header links below 1200px carries the same tile at
+its foot, in the same state: a button when it has an `href`, the outlined
+placeholder while it has none. Below 900px, where the hero has no room for the
+tile, that is where it lives. Leave the option out and it appears in neither
+place; there is no separate switch to keep in step.
 
 ```json
 {

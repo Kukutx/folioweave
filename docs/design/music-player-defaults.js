@@ -5,6 +5,7 @@ globalThis.musicConfiguration = {
     position: "right",
     theme: "graphite",
     initialExpanded: false,
+    autoplay: false,
     volume: 0.7,
     notes: { enabled: false, colors: ["#cf8750", "#ac719b", "#528ba6"] },
   },

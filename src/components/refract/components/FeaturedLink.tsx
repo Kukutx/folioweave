@@ -1,4 +1,5 @@
 import type { FeaturedLink as LinkConfig } from "../data";
+import { NorthEastIcon } from "./Icons";
 
 // The GitHub mark, from Simple Icons (CC0).
 const githubMark =
@@ -60,27 +61,15 @@ export function FeaturedLinkMark({ link }: { link: LinkConfig }) {
         <path d="M16 27S5 20.5 5 12.5A6 6 0 0 1 16 9.2a6 6 0 0 1 11 3.3C27 20.5 16 27 16 27Z" />
       </svg>
     );
+  if (link.icon === "external")
+    return <NorthEastIcon className="featured-link-logo" />;
   return null;
 }
 
-/** Where the link leads: a download stays in the page, the rest opens beside it. */
-export const featuredLinkTarget = (link: LinkConfig) =>
-  link.download
-    ? { download: true }
-    : { target: "_blank", rel: "noopener noreferrer" };
-
-/** The tile beside the hero. It starts as a construction drawing that stands
- * for nothing in particular; the author's mark replaces it, and a link makes it
- * lead somewhere. With no tile configured there is nothing here at all. */
-export function FeaturedLink({ link }: { link: LinkConfig | null }) {
-  if (!link) return null;
-  const mark = <FeaturedLinkMark link={link} />;
-  const populated = Boolean(link.image || link.icon);
-  const content = populated ? (
-    mark
-  ) : (
-    // The keyline grid an icon is drawn on: frame, inset, three circles,
-    // centre lines and diagonals.
+/** What stands in the tile before the author's mark: the keyline grid an icon
+ * is drawn on (frame, inset, three circles, centre lines and diagonals). */
+export function FeaturedLinkFrame() {
+  return (
     <svg
       className="featured-link-frame"
       viewBox="0 0 48 48"
@@ -104,6 +93,25 @@ export function FeaturedLink({ link }: { link: LinkConfig | null }) {
         <path d="M24 3.9v40.2M3.9 24h40.2M5.4 5.4l37.2 37.2M42.6 5.4 5.4 42.6" />
       </g>
     </svg>
+  );
+}
+
+/** Where the link leads: a download stays in the page, the rest opens beside it. */
+export const featuredLinkTarget = (link: LinkConfig) =>
+  link.download
+    ? { download: true }
+    : { target: "_blank", rel: "noopener noreferrer" };
+
+/** The tile beside the hero. It starts as a construction drawing that stands
+ * for nothing in particular; the author's mark replaces it, and a link makes it
+ * lead somewhere. With no tile configured there is nothing here at all. */
+export function FeaturedLink({ link }: { link: LinkConfig | null }) {
+  if (!link) return null;
+  const populated = Boolean(link.image || link.icon);
+  const content = populated ? (
+    <FeaturedLinkMark link={link} />
+  ) : (
+    <FeaturedLinkFrame />
   );
   return (
     <div className="featured-link" data-populated={populated}>

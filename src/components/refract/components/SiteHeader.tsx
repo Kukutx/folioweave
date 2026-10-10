@@ -6,7 +6,11 @@ import { sceneLayout } from "@/components/refract/lib/scene-progress";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { animate, createDraggable } from "animejs";
-import { FeaturedLinkMark, featuredLinkTarget } from "./FeaturedLink";
+import {
+  FeaturedLinkFrame,
+  FeaturedLinkMark,
+  featuredLinkTarget,
+} from "./FeaturedLink";
 
 const navigationPaths: Record<string, string> = {
   About:
@@ -20,10 +24,16 @@ const navigationPaths: Record<string, string> = {
 
 export function SiteHeader() {
   const { copy, profile, sections, siteConfig } = useRefractData();
-  // The pane offers the tile's link; a placeholder leads nowhere and stays out.
-  const featured = siteConfig.hero.featuredLink?.href
-    ? siteConfig.hero.featuredLink
-    : null;
+  // The foot of the pane is the hero's tile in the same state: a button when
+  // it leads somewhere, the placeholder while it does not, nothing without one.
+  const featured = siteConfig.hero.featuredLink;
+  const featuredMark =
+    featured &&
+    (featured.image || featured.icon ? (
+      <FeaturedLinkMark link={featured} />
+    ) : (
+      <FeaturedLinkFrame />
+    ));
   const [open, setOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -271,17 +281,24 @@ export function SiteHeader() {
         ))}
         {featured && (
           <div className="menu-featured">
-            <a
-              href={featured.href}
-              {...featuredLinkTarget(featured)}
-              onClick={() => {
-                unlock.current();
-                setOpen(false);
-              }}
-            >
-              <span>{featured.label}</span>
-              <FeaturedLinkMark link={featured} />
-            </a>
+            {featured.href ? (
+              <a
+                href={featured.href}
+                {...featuredLinkTarget(featured)}
+                onClick={() => {
+                  unlock.current();
+                  setOpen(false);
+                }}
+              >
+                <span>{featured.label}</span>
+                {featuredMark}
+              </a>
+            ) : (
+              <div>
+                <span>{featured.label}</span>
+                {featuredMark}
+              </div>
+            )}
           </div>
         )}
       </nav>
