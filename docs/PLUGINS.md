@@ -68,7 +68,8 @@ layout, so Next.js client navigation keeps playback. A full document
 navigation/reload restarts the app; there is no promise of playback across a
 browser reload. Unmounting releases playback.
 
-`autoplay` starts the first track on arrival. Browsers decide whether a page may
+`autoplay` starts the first track on arrival, once the page has finished
+loading so the track never competes with what the page shows. Browsers decide whether a page may
 make sound before the visitor has touched it, and most refuse a first visit.
 The player then stays silent, shows no error, and starts on the visitor's first
 click, tap or key press anywhere on the page; scrolling alone does not count. A
