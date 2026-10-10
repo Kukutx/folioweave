@@ -92,12 +92,8 @@ export type EarthRenderer = {
   /** Keep the latest pose without drawing while the parent hides the stage. */
   setSuspended(suspended: boolean): void;
   setReducedMotion(reduced: boolean): void;
-  /** Snapshots use time as elapsed effect time; live frames use the chapter-entry clock. */
-  drawAtProgress(
-    progress: number,
-    timeSeconds?: number,
-    mode?: "snapshot" | "live",
-  ): void;
+  /** Draw one frame for exactly this scroll position and scene time. */
+  drawAtProgress(progress: number, timeSeconds?: number): void;
   resize(): void;
   destroy(clearCanvas?: boolean): void;
 };
@@ -134,7 +130,6 @@ type Frame = {
   coreAlpha: number;
   drawing: ReturnType<typeof sceneDrawing>;
   continental: number;
-  continentalVisibility: number;
 };
 const gray = (value: number, alpha = 1) => {
   const v = Math.round(clamp(value, 0, 255));
@@ -273,7 +268,6 @@ export function createEarthRenderer(
       options.continentalDrift && !reducedMotion
         ? continentalScroll(p, count, options.continentalDrift.ranges.length)
         : 0;
-    const continentalVisibility = 1;
     const assemblyScale = 1 - stack * (1 - stackScale);
     // The opening globe turns with the clock and the reader's hand. From the
     // drawing stage on, where the folded stack hides the handover, the scroll
@@ -315,7 +309,6 @@ export function createEarthRenderer(
         : [0, 1, 2, 3].map((band) => slice(toolsVortex(p, band) * TAU)),
       coreAlpha: 1 - smooth(0.025, 0.8, split),
       continental,
-      continentalVisibility,
     };
   };
   const project = (point: Vec3, frame: Frame): ScreenPoint => {
@@ -1304,11 +1297,8 @@ export function createEarthRenderer(
       drawWireShell(frame, false);
       drawFlow(frame, false);
       const continentalReveal =
-        frame.continental < 0
-          ? 0
-          : smooth(0, 0.13, frame.continental) *
-            (1 - smooth(0.91, 1, frame.continental)) *
-            frame.continentalVisibility;
+        smooth(0, 0.13, frame.continental) *
+        (1 - smooth(0.91, 1, frame.continental));
       if (continentalReveal > 0) {
         // The land leaves with its plates. The globe beneath keeps its
         // glass, mesh and light, so an opened chapter is never an empty disc.
@@ -1322,21 +1312,17 @@ export function createEarthRenderer(
         drawFaces(frame, true);
         drawReflections(frame);
         continents ??= createContinentalRenderer(land);
-        ctx.save();
-        ctx.globalAlpha *= frame.continentalVisibility;
         continents.draw(ctx, {
           phase: frame.continental,
           amplitude:
             (options.continentalDrift
               ? options.continentalDrift.amplitude
-              : 1) *
-            (mobile ? 0.66 : 1) *
-            frame.continentalVisibility,
+              : 1) * (mobile ? 0.66 : 1),
           spread: options.continentalDrift
             ? options.continentalDrift.spread
             : 1,
           clock,
-          geometryKey: `${faceGeometryKey}/${frame.continental}/${clock}/${frame.continentalVisibility}`,
+          geometryKey: `${faceGeometryKey}/${frame.continental}/${clock}`,
           bounds: {
             cx: frame.cx,
             cy: frame.cy,
@@ -1353,7 +1339,6 @@ export function createEarthRenderer(
             scenePoint(rotate(point, frame.globeRotation), frame),
           project: (point) => project(point, frame),
         });
-        ctx.restore();
       } else {
         drawFaces(frame, false);
         drawGlassBody(frame);
