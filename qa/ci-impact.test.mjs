@@ -218,8 +218,19 @@ test("workflow actions are GitHub-owned and pinned to immutable SHAs", () => {
   const directory = new URL("../.github/workflows/", import.meta.url);
   const workflows = fs.readdirSync(directory);
   assert.ok(workflows.includes("ci.yml"));
-  const workflow = workflows
-    .map((file) => fs.readFileSync(new URL(file, directory), "utf8"))
+  // Local composite actions run inside those workflows and are held to the same rule.
+  const actions = new URL("../.github/actions/", import.meta.url);
+  const composites = fs.existsSync(actions)
+    ? fs
+        .readdirSync(actions)
+        .map((name) => new URL(`${name}/action.yml`, actions))
+        .filter((file) => fs.existsSync(file))
+    : [];
+  const workflow = [
+    ...workflows.map((file) => new URL(file, directory)),
+    ...composites,
+  ]
+    .map((file) => fs.readFileSync(file, "utf8"))
     .join("\n");
   const actionUses = [
     ...workflow.matchAll(/^\s*- uses:\s*([^\s#]+)(?:\s+#.*)?$/gm),

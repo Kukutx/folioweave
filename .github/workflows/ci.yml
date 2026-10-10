@@ -16,52 +16,87 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-# Heavy steps run unless the classifier explicitly reported a documentation-only
-# change, so a missing classification can never turn into a skipped suite.
+# The suites run side by side, so one failure never hides the others' results
+# and a full validation takes as long as its slowest suite. Each job classifies
+# the change itself: heavy steps run unless that classification explicitly
+# reported a documentation-only change, so a missing one can never skip a suite.
 jobs:
-  validate:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # The personal tree is always compared with main, even in a pull request
-      # whose base is personal; the base itself is needed for the patch checks.
+      # whose base is personal.
       - name: Fetch boundary base
         run: git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main
-      - name: Fetch pull-request base
-        if: github.base_ref && github.base_ref != 'main'
-        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: 24
-          cache: npm
-      - name: Classify validation impact
-        id: impact
-        run: node scripts/ci-impact.mjs
+      - id: impact
+        uses: ./.github/actions/prepare
       - name: Check pull-request patch whitespace
         if: github.event_name == 'pull_request'
         run: git diff --check origin/${{ github.base_ref }} HEAD --
       - name: Documentation-only fast path
         if: steps.impact.outputs.full == 'false'
         run: echo "Documentation-only change; skipping dependency, build, browser, and runtime work."
-      - run: npm ci
-        if: steps.impact.outputs.full != 'false'
       - run: npm run check
         if: steps.impact.outputs.full != 'false'
       - run: npm run audit:prod
         if: steps.impact.outputs.full != 'false'
-      # Browsers are only needed once lint, build and audit have passed.
-      - run: node node_modules/playwright-core/cli.js install --with-deps chromium firefox webkit
+
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: impact
+        uses: ./.github/actions/prepare
+        with:
+          browsers: chromium
+      - run: npm run build
         if: steps.impact.outputs.full != 'false'
       - name: Run reference runtime and QA suite
         if: steps.impact.outputs.full != 'false'
         run: npm run qa:all
         env:
           QA_RUNTIME_REFERENCE: "1"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure() && steps.impact.outputs.full != 'false'
+        with:
+          name: site-failure
+          path: |
+            qa/*-report.json
+            qa/screens/
+
+  fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: impact
+        uses: ./.github/actions/prepare
+        with:
+          browsers: chromium
       - run: npm run qa:visual-fixtures
         if: steps.impact.outputs.full != 'false'
       - run: npm run qa:profiles
         if: steps.impact.outputs.full != 'false'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure() && steps.impact.outputs.full != 'false'
+        with:
+          name: fixtures-failure
+          path: |
+            qa/*-report.json
+            qa/screens/
+
+  extensions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: impact
+        uses: ./.github/actions/prepare
+        with:
+          browsers: chromium firefox webkit
       # A runner has no audio output, and Firefox then reports every track as
       # undecodable. A null sink lets the music suite play in all engines.
       - name: Start a null audio sink
@@ -75,15 +110,27 @@ jobs:
         if: steps.impact.outputs.full != 'false'
       - run: npm run qa:comments
         if: steps.impact.outputs.full != 'false'
-      - run: node qa/run-with-server.mjs qa:browsers
-        if: steps.impact.outputs.full != 'false'
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure() && steps.impact.outputs.full != 'false'
         with:
-          name: verification-failure
+          name: extensions-failure
           path: |
             qa/*-report.json
             qa/screens/
+
+  browsers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - id: impact
+        uses: ./.github/actions/prepare
+        with:
+          browsers: chromium firefox webkit
+      - run: npm run build
+        if: steps.impact.outputs.full != 'false'
+      - run: node qa/run-with-server.mjs qa:browsers
+        if: steps.impact.outputs.full != 'false'
 
   refract-templates:
     runs-on: ubuntu-latest
@@ -94,20 +141,10 @@ jobs:
         style: [light, dark]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Fetch pull-request base
-        if: github.base_ref
-        run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      - id: impact
+        uses: ./.github/actions/prepare
         with:
-          node-version: 24
-          cache: npm
-      - name: Classify validation impact
-        id: impact
-        run: node scripts/ci-impact.mjs
-      - run: npm ci
-        if: steps.impact.outputs.full != 'false'
-      - run: node node_modules/playwright-core/cli.js install --with-deps chromium
-        if: steps.impact.outputs.full != 'false'
+          browsers: chromium
       - name: Verify Refract scene and template
         if: steps.impact.outputs.full != 'false'
         run: npm run qa:refract -- --style=${{ matrix.style }}
@@ -118,6 +155,24 @@ jobs:
           path: |
             qa/*-report.json
             qa/screens/
+
+  # The required check. It passes only when every suite above did, so branch
+  # protection keeps one name while the suites stay independent.
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [check, site, fixtures, extensions, browsers, refract-templates]
+    if: always()
+    steps:
+      - name: Require every suite
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        env:
+          SUITES: ${{ toJSON(needs) }}
+        run: |
+          echo "A suite did not pass:"
+          echo "$SUITES"
+          exit 1
+      - run: echo "Every suite passed."
 
   visual-regression:
     # Golden images are platform-specific. Do not compare Linux rasterization

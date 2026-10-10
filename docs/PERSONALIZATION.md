@@ -118,5 +118,5 @@ lock and rolled back on ordinary errors.
 Replace placeholder social previews with your own raster artwork before public
 promotion. Only use media you own or have permission to publish.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md), [BRANCHING.md](BRANCHING.md) and
+See [ARCHITECTURE.md](ARCHITECTURE.md), [REPOSITORY-MODEL.md](REPOSITORY-MODEL.md) and
 [VISUAL-QA.md](VISUAL-QA.md) for implementation, privacy and verification contracts.
