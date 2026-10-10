@@ -3,6 +3,8 @@
 // artwork without the author naming an image and without the browser parsing
 // anything.
 
+import { optionSelector, optionValues } from "./extensions.mjs";
+
 const signatures = [
   ["jpg", (data) => data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff],
   [
@@ -184,54 +186,49 @@ export function embeddedArtwork(bytes) {
   }
 }
 
-const selector = /^[a-zA-Z][a-zA-Z0-9]*(?:\.(?:\*|[a-zA-Z][a-zA-Z0-9]*))*$/;
-function selected(value, segments) {
-  if (!segments.length)
-    return value && typeof value === "object" ? [value] : [];
-  const [key, ...rest] = segments;
-  if (key === "*")
-    return Array.isArray(value)
-      ? value.flatMap((item) => selected(item, rest))
-      : [];
-  return value && Object.hasOwn(value, key) ? selected(value[key], rest) : [];
-}
-
 /**
  * Apply a manifest's `embeddedArtwork` rules, each
  * `{ "each": "tracks.*", "audio": "src", "image": "cover" }`: an item that
  * names a published local audio file and no image takes the picture the file
- * carries, published beside it as `<name>.cover.<type>`. An image the author
+ * carries, published as `<audio file>.cover.<type>`. An image the author
  * names always wins, and a remote file is never fetched to look inside it.
  *
- * Returns the options with those images named and the images to publish.
+ * `admit(target, data, audio)` decides whether a picture is published; one
+ * that is refused leaves its item as the author wrote it. Returns the options
+ * with the admitted images named.
  */
-export function withEmbeddedArtwork(manifest, options, publishedBytes) {
+export async function withEmbeddedArtwork(
+  manifest,
+  options,
+  publishedBytes,
+  admit,
+) {
   const rules = manifest.embeddedArtwork ?? [];
-  const images = new Map();
   if (
     !Array.isArray(rules) ||
     rules.some(
       (rule) =>
-        !selector.test(rule?.each ?? "") ||
+        !optionSelector.test(rule?.each ?? "") ||
         !/^[a-zA-Z][a-zA-Z0-9]*$/.test(rule.audio ?? "") ||
         !/^[a-zA-Z][a-zA-Z0-9]*$/.test(rule.image ?? ""),
     )
   )
     throw new Error(`${manifest.id}: invalid embeddedArtwork declaration`);
-  if (!rules.length) return { options, images };
+  if (!rules.length) return options;
   const next = structuredClone(options);
   for (const rule of rules)
-    for (const item of selected(next, rule.each.split("."))) {
+    for (const item of optionValues(next, rule.each.split("."))) {
+      if (!item || typeof item !== "object") continue;
       const audio = item[rule.audio];
       if (item[rule.image] !== undefined || typeof audio !== "string") continue;
       const bytes = audio.startsWith("/portfolio/") && publishedBytes(audio);
       const artwork = bytes && embeddedArtwork(bytes);
       if (!artwork) continue;
-      const target = `${audio.replace(/\.[^./]+$/, "")}.cover.${artwork.extension}`;
+      // Named after the whole file name, so `a.mp3` and `a.flac` keep apart.
+      const target = `${audio}.cover.${artwork.extension}`;
       // A file the author published under that name is theirs to keep.
       if (publishedBytes(target)) continue;
-      item[rule.image] = target;
-      images.set(target, artwork.data);
+      if (await admit(target, artwork.data, audio)) item[rule.image] = target;
     }
-  return { options: next, images };
+  return next;
 }

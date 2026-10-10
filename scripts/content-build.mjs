@@ -153,18 +153,26 @@ export async function prepareContent(root = projectRoot, candidate) {
   }
   // A plugin item that names a local audio file and no image takes the cover
   // the file itself carries, published beside it and held to the same limits.
-  for (const plugin of extensions.plugins) {
-    const { options, images } = withEmbeddedArtwork(
+  // The author did not write that picture: one that is too large or cannot be
+  // read is left out with a notice, and never stops the build.
+  for (const plugin of extensions.plugins)
+    plugin.options = await withEmbeddedArtwork(
       plugin.manifest,
       plugin.options,
       (asset) => assets[asset],
+      async (asset, bytes, audio) => {
+        try {
+          media[asset] = await describeAsset(asset, bytes);
+        } catch (error) {
+          console.warn(
+            `The cover embedded in ${audio} is not used (${error.message}). Name an image for it in the plugin's options to choose one.`,
+          );
+          return false;
+        }
+        assets[asset] = bytes;
+        return true;
+      },
     );
-    plugin.options = options;
-    for (const [asset, bytes] of images) {
-      media[asset] = await describeAsset(asset, bytes);
-      assets[asset] = bytes;
-    }
-  }
   return {
     root,
     profileSource,

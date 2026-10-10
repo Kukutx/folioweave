@@ -252,7 +252,7 @@ test("a file without a cover, or a damaged one, yields none and never throws", (
     assert.equal(embeddedArtwork(file), null);
 });
 
-test("an item takes its file's cover only where the author named none", () => {
+test("an item takes its file's cover only where the author named none", async () => {
   const manifest = {
     id: "music",
     embeddedArtwork: [{ each: "tracks.*", audio: "src", image: "cover" }],
@@ -263,7 +263,10 @@ test("an item takes its file's cover only where the author named none", () => {
     "/portfolio/audio/chosen.mp3": withCover,
     "/portfolio/audio/plain.mp3": id3(3, [title]),
     "/portfolio/audio/kept.mp3": withCover,
-    "/portfolio/audio/kept.cover.png": other,
+    "/portfolio/audio/kept.mp3.cover.png": other,
+    // The same name with another extension is another file with another cover.
+    "/portfolio/audio/official.flac": flac(other),
+    "/portfolio/audio/refused.mp3": withCover,
   };
   const options = {
     tracks: [
@@ -276,33 +279,52 @@ test("an item takes its file's cover only where the author named none", () => {
       { id: "plain", src: "/portfolio/audio/plain.mp3" },
       { id: "remote", src: "https://audio.example/remote.mp3" },
       { id: "kept", src: "/portfolio/audio/kept.mp3" },
+      { id: "lossless", src: "/portfolio/audio/official.flac" },
+      { id: "refused", src: "/portfolio/audio/refused.mp3" },
     ],
   };
   const before = structuredClone(options);
-  const result = withEmbeddedArtwork(
+  const admitted = [];
+  const result = await withEmbeddedArtwork(
     manifest,
     options,
     (asset) => published[asset],
+    (target, data, audio) => {
+      if (audio.includes("refused")) return false;
+      admitted.push([target, data, audio]);
+      return true;
+    },
   );
   assert.deepEqual(options, before, "The author's options were changed");
   assert.deepEqual(
-    result.options.tracks.map((track) => track.cover ?? null),
+    result.tracks.map((track) => track.cover ?? null),
     [
-      "/portfolio/audio/official.cover.png",
+      "/portfolio/audio/official.mp3.cover.png",
       "/portfolio/covers/mine.webp",
       null,
       null,
       // A published file of that name belongs to the author.
       null,
+      "/portfolio/audio/official.flac.cover.png",
+      // A picture that is not admitted leaves the item as it was written.
+      null,
     ],
   );
-  assert.deepEqual(
-    [...result.images],
-    [["/portfolio/audio/official.cover.png", png]],
-  );
+  assert.deepEqual(admitted, [
+    [
+      "/portfolio/audio/official.mp3.cover.png",
+      png,
+      "/portfolio/audio/official.mp3",
+    ],
+    [
+      "/portfolio/audio/official.flac.cover.png",
+      other,
+      "/portfolio/audio/official.flac",
+    ],
+  ]);
   // A plugin that declares no rule is handed back exactly what it gave.
   assert.equal(
-    withEmbeddedArtwork({ id: "comments" }, options, () => null).options,
+    await withEmbeddedArtwork({ id: "comments" }, options, () => null),
     options,
   );
   for (const embeddedArtwork of [
@@ -311,18 +333,18 @@ test("an item takes its file's cover only where the author named none", () => {
     [{ each: "tracks[0]", audio: "src", image: "cover" }],
     [{ each: "tracks.*", audio: "a.b", image: "cover" }],
   ])
-    assert.throws(
-      () =>
-        withEmbeddedArtwork(
-          { id: "music", embeddedArtwork },
-          options,
-          () => null,
-        ),
+    await assert.rejects(
+      withEmbeddedArtwork(
+        { id: "music", embeddedArtwork },
+        options,
+        () => null,
+        () => true,
+      ),
       /embeddedArtwork/,
     );
 });
 
-test("the content build publishes an embedded cover and names it for the player", async () => {
+test("the content build publishes an embedded cover, and a cover it cannot use never stops it", async (t) => {
   const temporary = await fs.mkdtemp(
     path.join(qaTempRoot, "folioweave-artwork-"),
   );
@@ -371,24 +393,30 @@ test("the content build publishes an embedded cover and names it for the player"
       id3(3, [["APIC", apic(png)], title]),
     );
     await fs.writeFile(path.join(audioDirectory, "plain.mp3"), id3(3, [title]));
+    // The start of a PNG and nothing a decoder can read after it.
+    await fs.writeFile(
+      path.join(audioDirectory, "damaged.mp3"),
+      id3(3, [
+        ["APIC", apic(Buffer.concat([png.subarray(0, 24), Buffer.alloc(40)]))],
+      ]),
+    );
+    const track = (id) => ({
+      id,
+      title: id,
+      src: `/portfolio/audio/${id}.mp3`,
+    });
     config.plugins = {
       music: {
         enabled: true,
         options: {
-          tracks: [
-            {
-              id: "official",
-              title: "Official",
-              src: "/portfolio/audio/official.mp3",
-            },
-            { id: "plain", title: "Plain", src: "/portfolio/audio/plain.mp3" },
-          ],
+          tracks: [track("official"), track("plain"), track("damaged")],
         },
       },
     };
     await seedProjectDefinitions(temporary);
+    const warn = t.mock.method(console, "warn", () => {});
     const plan = await prepareContent(temporary, config);
-    const cover = "/portfolio/audio/official.cover.png";
+    const cover = "/portfolio/audio/official.mp3.cover.png";
     assert.deepEqual(
       { width: plan.media[cover]?.width, height: plan.media[cover]?.height },
       { width: 48, height: 32 },
@@ -399,14 +427,16 @@ test("the content build publishes an embedded cover and names it for the player"
       (item) => item.target === "public/portfolio",
     );
     assert.deepEqual(
+      published.files
+        .map(([name]) => name)
+        .filter((name) => name.includes(".cover.")),
+      ["audio/official.mp3.cover.png"],
+    );
+    assert.deepEqual(
       published.files.find(
-        ([name]) => name === "audio/official.cover.png",
+        ([name]) => name === "audio/official.mp3.cover.png",
       )?.[1],
       png,
-    );
-    assert.equal(
-      published.files.some(([name]) => name.startsWith("audio/plain.cover")),
-      false,
     );
     const slot = outputs.find((item) =>
       item.target.endsWith("plugins-site-floating.generated.tsx"),
@@ -415,7 +445,13 @@ test("the content build publishes an embedded cover and names it for the player"
     assert.equal(
       slot.split('"cover"').length,
       2,
-      "Only the tagged file has a cover",
+      "Only the readable cover is named",
+    );
+    // The author is told which file, why, and what to do about it.
+    assert.equal(warn.mock.callCount(), 1);
+    assert.match(
+      warn.mock.calls[0].arguments[0],
+      /damaged\.mp3 is not used .*Name an image/,
     );
   } finally {
     await fs.rm(temporary, { recursive: true });

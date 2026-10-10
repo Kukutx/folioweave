@@ -2,14 +2,20 @@
 
 import { useEffect, type RefObject } from "react";
 
-/** What the visitor does that the warm-up must never compete with. */
-const activity = [
-  "scroll",
-  "wheel",
-  "touchstart",
-  "pointerdown",
-  "keydown",
-] as const;
+/** What the visitor does that the warm-up must never compete with, and how
+ * long it stays away afterwards. A moving pointer drives the cursor decoration,
+ * so it counts, but it is over as soon as the pointer rests. */
+const activity = {
+  scroll: 1000,
+  wheel: 1000,
+  touchstart: 1000,
+  pointerdown: 1000,
+  keydown: 1000,
+  pointermove: 250,
+} as const;
+/** The programs stay compiled for as long as the document lives, so one pass
+ * serves every later return to this page. */
+let warmed = false;
 /** Inside the stage everything starts unpainted and is painted piece by piece.
  * Opacity and deferred rendering are lifted so a part that the page reveals
  * later is painted here as well, and nothing moves: an animation would paint
@@ -79,9 +85,16 @@ function copyStyleSheets() {
 }
 
 /** A copy of one section that paints like it: the same ancestors, ids and
- * attributes for selectors and inheritance, the same width, and nothing that
- * loads or plays. The closed shadow root it goes into is what keeps its ids
- * and classes out of the document's reach. */
+ * attributes for selectors and inheritance, the same width, and no frame,
+ * media, script or image element the page has not loaded. The closed shadow
+ * root it goes into is what keeps its ids and classes out of the document's
+ * reach.
+ *
+ * Two things it does not reproduce. A background image named in CSS is
+ * fetched when its element is styled here, which for a deferred section is
+ * earlier than the page would have. And a reference by fragment (`url(#id)`,
+ * `<use href="#id">`) to something outside the section finds nothing in the
+ * shadow tree, so that shape or clip is not painted. */
 function copyOf(section: HTMLElement) {
   const box = section.getBoundingClientRect();
   const unit = section.cloneNode(true) as HTMLElement;
@@ -110,7 +123,8 @@ function copyOf(section: HTMLElement) {
     ancestor = ancestor.parentElement
   ) {
     const mirror = ancestor.cloneNode(false) as HTMLElement;
-    mirror.style.cssText = "display:contents!important";
+    // Without a box of its own, but with whatever it hands down inline.
+    mirror.style.setProperty("display", "contents", "important");
     mirror.append(tree);
     tree = mirror;
   }
@@ -134,15 +148,18 @@ function copyOf(section: HTMLElement) {
 export function useRasterWarmUp(root: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const container = root.current;
-    if (!container || !compilesOnFirstUse()) return;
+    if (!container || warmed || !compilesOnFirstUse()) return;
     let disposed = false;
     let busyUntil = 0;
     let host: HTMLElement | undefined;
-    const busy = () => {
-      busyUntil = performance.now() + 1000;
+    const busy = (event: Event) => {
+      busyUntil = Math.max(
+        busyUntil,
+        performance.now() + activity[event.type as keyof typeof activity],
+      );
     };
     const listening = { passive: true, capture: true };
-    for (const name of activity) addEventListener(name, busy, listening);
+    for (const name in activity) addEventListener(name, busy, listening);
     /** The next frame in which the visitor is not using the page. */
     const quietFrame = async () => {
       for (;;) {
@@ -225,7 +242,9 @@ export function useRasterWarmUp(root: RefObject<HTMLElement | null>) {
         if (disposed) return;
         if (section.offsetHeight) await paint(section, stage);
       }
-      if (!disposed) container.dataset.rasterWarmUp = "done";
+      if (disposed) return;
+      warmed = true;
+      container.dataset.rasterWarmUp = "done";
     };
     const finish = () => {
       host?.remove();
@@ -246,7 +265,7 @@ export function useRasterWarmUp(root: RefObject<HTMLElement | null>) {
     return () => {
       disposed = true;
       removeEventListener("load", start);
-      for (const name of activity) removeEventListener(name, busy, listening);
+      for (const name in activity) removeEventListener(name, busy, listening);
       finish();
       delete container.dataset.rasterWarmUp;
     };

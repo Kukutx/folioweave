@@ -63,8 +63,10 @@ for the track. Where it comes from, in order:
    uses the same validated publication pipeline as other profile images.
 2. Otherwise, for a local file, the cover the file itself carries. The picture
    an MP3 (ID3v2), FLAC or M4A was tagged with is read during the content build
-   and published beside the audio as `<name>.cover.<type>`, byte for byte and
-   held to the same 4 MiB limit as any image. Nothing is read in the browser.
+   and published beside the audio as `<audio file>.cover.<type>`, byte for
+   byte. Nothing is read in the browser. An embedded picture over the 4 MiB
+   image limit, or one that cannot be read, is left out with a notice in the
+   build output; it never fails the build.
 3. Otherwise the record's built-in label with its note. A cover that fails to
    load falls back to it as well.
 
