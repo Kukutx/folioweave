@@ -22,31 +22,32 @@
   color: #f6f4f2;
   border-radius: 4px;
 }
+/* The way back to the top is a key of the chapter track: the same panel, height
+   and corners, set at the track's right end and arriving and leaving with it. */
 :where(.refract-site) .back-to-home {
   position: fixed;
-  right: max(24px, calc((100vw - 1500px) / 2 + 24px));
-  bottom: calc(var(--control-bottom) + 4px);
+  right: max(16px, calc(var(--control-right) - 48px));
+  bottom: var(--control-bottom);
   z-index: 30;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  color: #aaa6a2;
-  background: none;
+  width: 40px;
+  height: 40px;
   border: 0;
+  border-radius: 12px;
+  background: var(--panel);
+  color: #cccac8;
   transition:
-    opacity 0.2s,
+    opacity 0.25s,
+    transform 0.25s,
+    visibility 0.25s,
     color 0.2s;
-}
-:where(.refract-site) .back-to-home::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
 }
 :where(.refract-site) .back-to-home svg {
   width: 18px;
   height: 18px;
   transform: rotate(-90deg);
+  transition: transform 0.2s;
 }
 :where(.refract-site) .back-to-home span {
   position: absolute;
@@ -58,29 +59,14 @@
 :where(.refract-site) .back-to-home:hover {
   color: var(--accent-red);
 }
-@media (min-width: 900px) {
-  .refract-site:has(.portfolio-experience[data-tone="light"]) .back-to-home {
-    color: #706b66;
-  }
-}
-@media (min-width: 900px) {
-  .refract-site:has(.portfolio-experience[data-tone="light"])
-    .back-to-home:hover {
-    color: var(--accent-red);
-  }
-}
-@media (min-width: 900px) {
-  .refract-site[data-style="light"]:has(
-      .portfolio-experience[data-tone="light"]
-    )
-    .back-to-home:hover {
-    color: var(--accent-on-paper);
-  }
+:where(.refract-site) .back-to-home:hover svg {
+  transform: rotate(-90deg) translateX(2px);
 }
 :where(.refract-site) .back-to-home[data-visible="false"] {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transform: translateY(100%);
 }
 :where(.refract-site) .profile-content {
   background: var(--profile-background);
@@ -204,10 +190,14 @@
     background-size: 0.7692307692% 8px;
   }
   :where(.refract-site) .back-to-home {
-    right: 16px;
+    right: 1rem;
     bottom: calc(var(--control-bottom) + 48px);
-    background: #302e2d;
-    border-radius: 50%;
+  }
+  /* Without the track beneath it, the key stands above the footer's rule
+     instead of covering the location at its end. */
+  .refract-site:has(.portfolio-experience[data-nav-visible="false"])
+    .back-to-home {
+    bottom: calc(var(--control-bottom) + 6.5rem);
   }
   :where(.refract-site) .feature-content .reference-text h2 {
     font-size: 2rem;
@@ -279,7 +269,7 @@
     justify-content: flex-start;
     border: 0;
   }
-  :where(.refract-site) .site-header nav a:last-child {
+  :where(.refract-site) .site-header nav > a:last-of-type {
     min-height: 40px;
     padding-inline: 0;
     border: 0;

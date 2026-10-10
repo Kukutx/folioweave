@@ -435,9 +435,13 @@ try {
       .evaluate((img) => img.naturalWidth > 0),
     true,
   );
-  await musicPlayer.screenshot({
-    path: path.join(root, "docs/design/music-player-runtime.png"),
-  });
+  // The tracked design image changes only when asked for; a normal run keeps
+  // its evidence with the other ignored QA screenshots.
+  const runtimeShot = process.argv.includes("--screenshots")
+    ? path.join(root, "docs/design/music-player-runtime.png")
+    : path.join(root, "qa/screens/music-player-runtime.png");
+  await fs.mkdir(path.dirname(runtimeShot), { recursive: true });
+  await musicPlayer.screenshot({ path: runtimeShot });
   await page.setViewportSize({ width: 480, height: 240 });
   await musicPlayer
     .getByRole("button", { name: "播放列表", exact: true })

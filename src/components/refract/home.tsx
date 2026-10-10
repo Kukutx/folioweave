@@ -18,6 +18,11 @@ export function RefractHome({
   const data = createRefractData(context);
   const { copy, profile, news, publications, experience, links, socialLinks } =
     data;
+  // Only a link that leaves the site opens a new tab.
+  const leaving = (url: string) =>
+    /^https?:/.test(url)
+      ? { target: "_blank", rel: "noopener noreferrer" }
+      : {};
   return (
     <RefractProvider data={data}>
       <a className="skip-link" href="#overview">
@@ -97,11 +102,7 @@ export function RefractHome({
                     <time>{item.date}</time>
                     <p>
                       {item.url ? (
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={item.url} {...leaving(item.url)}>
                           {item.description}
                           <NorthEastIcon />
                         </a>
@@ -150,11 +151,7 @@ export function RefractHome({
                           <span>{paper.year}</span>
                           <h4>
                             {paper.url ? (
-                              <a
-                                href={paper.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
+                              <a href={paper.url} {...leaving(paper.url)}>
                                 {paper.title}
                                 <NorthEastIcon />
                               </a>

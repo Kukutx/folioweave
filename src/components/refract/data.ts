@@ -9,10 +9,13 @@ export type ResearchFigureConfig = {
   height: number;
   caption?: string;
 };
+/** The tile beside the hero. By default it is a placeholder that stands for
+ * nothing in particular; the author may point it at whatever they want to put
+ * forward: a repository, a sponsor, a résumé to download. */
 export type FeaturedLink = {
   label: string;
   href?: string;
-  icon?: "github" | "linkedin" | "external" | "cv" | null;
+  icon?: "github" | "linkedin" | "external" | "cv" | "sponsor" | null;
   image?: string;
   download?: boolean;
 };
@@ -38,6 +41,7 @@ export type RefractOptions = {
   group?: string;
   fracturedGlass?: boolean;
   continentalDrift?: boolean | "first";
+  featuredLink?: FeaturedLink;
   tools?: {
     id: string;
     name: string;
@@ -52,7 +56,7 @@ export type RefractOptions = {
     authors: string;
     year: number;
     journal: string;
-    citation: string;
+    citation?: string;
     url?: string;
     highlight?: string;
   }[];
@@ -120,7 +124,6 @@ export function createRefractData(context: TemplateContext) {
   const socialLinks = context.site.socialLinks.filter(
     (link) => link.icon !== "email",
   );
-  const github = socialLinks.find((link) => link.icon === "github");
   const tools = (options.tools ?? []).map((tool) => ({
     ...tool,
     links: tool.links ?? [],
@@ -189,11 +192,10 @@ export function createRefractData(context: TemplateContext) {
             options.continentalDrift === "first"
               ? ("first" as const)
               : ("all" as const),
-          amplitude: 1,
-          spread: 1.18,
-          duration: 8,
-          repeatDelay: 3,
-          leadIn: 0.012,
+          // The plates hover over the places they left, close enough to read
+          // each continent as one broken mirror rather than scattered debris.
+          amplitude: 0.55,
+          spread: 0.9,
         },
       },
       researchFigures,
@@ -202,13 +204,9 @@ export function createRefractData(context: TemplateContext) {
         contactHref: `mailto:${email}`,
         learnLabel: copy.learnMore,
         learnHref: "#overview",
-        featuredLink: github
-          ? ({
-              label: github.label,
-              href: github.href,
-              icon: "github",
-            } as FeaturedLink)
-          : null,
+        // Only what the author configures; nothing is derived from the profile.
+        // Unset, the tile is absent. With a label alone it is the placeholder.
+        featuredLink: options.featuredLink ?? null,
         rotatingTopics: options.rotatingTopics ?? [],
       },
     },

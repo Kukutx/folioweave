@@ -230,20 +230,30 @@ personal-content, and downstream/fork workflow.
 
 ## Documentation
 
+Start with the group that matches what you are doing; [docs/README.md](docs/README.md) says what each page answers.
+
+**Making your site**
+
 - [Five-minute quick start](docs/QUICKSTART.md)
 - [Personalization reference](docs/PERSONALIZATION.md)
 - [Common recipes](docs/RECIPES.md)
-- [Design system](docs/DESIGN-SYSTEM.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Extending the template](docs/TEMPLATE.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Upgrading](docs/UPGRADING.md)
+- [Commands](docs/COMMANDS.md)
+
+**Choosing or building a design**
+
 - [Selecting and integrating templates](docs/TEMPLATES.md)
 - [Refract Light and Refract Dark](docs/REFRACT.md)
 - [Music, comments and plugin development](docs/PLUGINS.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Upgrading](docs/UPGRADING.md)
+- [Extending FolioWeave](docs/EXTENDING.md)
+- [Design system](docs/DESIGN-SYSTEM.md)
+
+**Maintaining FolioWeave**
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Repository model and branch boundaries](docs/REPOSITORY-MODEL.md)
 - [Visual QA](docs/VISUAL-QA.md)
-- [Repository model](docs/REPOSITORY-MODEL.md)
-- [Branch/repository boundaries](docs/BRANCHING.md)
 - [Asset policy](docs/ASSETS.md)
 
 ## Demo routes and media

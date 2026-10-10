@@ -6,6 +6,7 @@ import { sceneLayout } from "@/components/refract/lib/scene-progress";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { animate, createDraggable } from "animejs";
+import { FeaturedLinkMark, featuredLinkTarget } from "./FeaturedLink";
 
 const navigationPaths: Record<string, string> = {
   About:
@@ -18,7 +19,11 @@ const navigationPaths: Record<string, string> = {
 };
 
 export function SiteHeader() {
-  const { copy, profile, sections } = useRefractData();
+  const { copy, profile, sections, siteConfig } = useRefractData();
+  // The pane offers the tile's link; a placeholder leads nowhere and stays out.
+  const featured = siteConfig.hero.featuredLink?.href
+    ? siteConfig.hero.featuredLink
+    : null;
   const [open, setOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -37,15 +42,22 @@ export function SiteHeader() {
       drawer.current = null;
       setOpen(false);
       element.style.removeProperty("width");
+      element.style.removeProperty("--menu-width");
       element.style.removeProperty("visibility");
       container.style.setProperty("--menu-progress", "0");
       if (!breakpoint.matches) {
         element.inert = false;
         return;
       }
-      const width = element.offsetWidth;
+      // As wide as its longest label, in whole pixels so no label is clipped
+      // by a fraction, and short of covering the page behind it.
+      const width = Math.min(
+        Math.ceil(element.getBoundingClientRect().width) + 1,
+        innerWidth - 56,
+      );
       let dragged = false;
       // The reference doubles its intrinsic panel width and exposes one half.
+      element.style.setProperty("--menu-width", `${width}px`);
       element.style.width = `${width * 2}px`;
       drawer.current = createDraggable(element, {
         container: [0, width * 2, innerHeight, width],
@@ -257,6 +269,21 @@ export function SiteHeader() {
             <span>{item.label}</span>
           </a>
         ))}
+        {featured && (
+          <div className="menu-featured">
+            <a
+              href={featured.href}
+              {...featuredLinkTarget(featured)}
+              onClick={() => {
+                unlock.current();
+                setOpen(false);
+              }}
+            >
+              <span>{featured.label}</span>
+              <FeaturedLinkMark link={featured} />
+            </a>
+          </div>
+        )}
       </nav>
       <noscript>
         <style>{`:where(.refract-site) .site-header .menu-toggle{display:none}@media(max-width:1199px){:where(.refract-site) .site-header{height:auto;flex-wrap:wrap}:where(.refract-site) .site-header #main-navigation{position:static;display:flex;flex-direction:row;flex-wrap:wrap;visibility:visible;opacity:1;pointer-events:auto;width:100%;height:auto;padding:0;border:0;transform:none}:where(.refract-site) .site-header #main-navigation a{min-height:44px;border:0;font-size:.7rem}:where(.refract-site) .site-header #main-navigation svg{display:none}}`}</style>

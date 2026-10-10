@@ -30,6 +30,13 @@ export const toolsOpening = (p: number) =>
  * an identity rotation, so the normal globe continues without a phase jump. */
 export const toolsTurn = (p: number) =>
   smooth(toolsMotion.close, toolsMotion.assembled, p);
+/** Whole turns each of the four slices winds through, beyond the one they share,
+ * as the assembly closes. The inner slices turn furthest, so the stack is drawn
+ * together like a vortex; whole numbers bring every slice home in register, and
+ * this many keep the outline as steady as a single turn does. */
+const vortexTurns = [0, 1, 2, 1] as const;
+export const toolsVortex = (p: number, slice: number) =>
+  toolsTurn(p) * vortexTurns[Math.max(0, Math.min(3, slice))];
 /** Optical energy peaks as the pieces meet, then settles to the normal glass.
  * Scroll owns this envelope, including reverse seeking and a stopped wheel. */
 export const assemblyGlint = (p: number) =>
@@ -56,79 +63,68 @@ export type ContinentalDriftOptions = {
   ranges: readonly ChapterRange[];
   amplitude: number;
   spread?: number;
-  duration?: number;
-  repeatDelay?: number;
-  leadIn?: number;
 };
+
 export type ChapterSize = { start: number; end: number };
 
-/** Each chapter turns a different face of the globe towards the reader. The
- * yaws follow the globe's own convention; chapters past the fourth repeat them. */
-const continentalFocus = [-0.38, 1.58, -1.57, -2.25] as const;
-export const continentalYaw = (chapter: number) =>
-  continentalFocus[Math.max(0, chapter) % continentalFocus.length];
-
-/** The chapter whose continents separate at this position, or -1. */
-export function continentalChapter(
-  progress: number,
-  options?: ContinentalDriftOptions | false,
+/** Where the globe's facing passes from the clock to the scroll position: in
+ * the drawing stage, while the globe is folded flat and its facing unseen. */
+export const facingAnchor = 0.29;
+/** The part of the world each project chapter turns to the reader, as globe
+ * yaw: Africa and Europe, Asia, Oceania, the Americas. Always the same way
+ * round, so scrolling on never spins the globe back. */
+const galleryFaces = [-0.38, -1.57, -2.4, -4.7] as const;
+export const galleryFace = (chapter: number) => {
+  const index = Math.max(0, chapter);
+  return (
+    galleryFaces[index % galleryFaces.length] -
+    Math.floor(index / galleryFaces.length) * Math.PI * 2
+  );
+};
+const galleryPosition = (p: number, count: number) =>
+  ((p - 0.42) / 0.4) * count;
+/** Scroll owns the facing through the project chapters. A chapter holds its
+ * part of the world while its copy is in place and turns to the next as the
+ * page moves between the two, so every chapter shows different land and the
+ * way there is as gradual as the scrolling itself. */
+export function galleryYaw(p: number, projectCount: number) {
+  const count = Math.max(1, projectCount);
+  const position = clamp(galleryPosition(p, count), 0, count);
+  const chapter = Math.max(0, Math.min(count - 1, Math.floor(position)));
+  return mix(
+    galleryFace(chapter),
+    galleryFace(Math.min(count - 1, chapter + 1)),
+    smooth(0.34, 0.74, position - chapter),
+  );
+}
+const ramp = (from: number, to: number, value: number) =>
+  clamp((value - from) / (to - from));
+/** How far the continents of the chapter in view have left the globe, as the
+ * phase `continentalPose` plays: 0 and 1 are the intact globe. The scroll
+ * position owns it. The plates lift as a chapter's copy arrives, float while
+ * it rests and close again as it leaves, so nothing plays by itself and
+ * scrolling back undoes every step. `chapters` limits it to the first few. */
+export function continentalScroll(
+  p: number,
+  projectCount: number,
+  chapters = projectCount,
 ) {
-  if (!options) return -1;
-  return options.ranges.findIndex(
-    ([start, end]) =>
-      end > start &&
-      progress >= start - (options.leadIn ?? 0) &&
-      progress < end,
+  const count = Math.max(1, projectCount);
+  const position = galleryPosition(p, count);
+  const chapter = Math.max(0, Math.min(count - 1, Math.round(position)));
+  if (chapter >= chapters) return 0;
+  const offset = position - chapter;
+  // The first chapter waits for the globe to re-form from the drawing stage.
+  const [arrive, placed] = chapter === 0 ? [-0.02, 0.2] : [-0.44, -0.1];
+  const hold = placed + 0.04;
+  return (
+    ramp(arrive, placed, offset) * 0.42 +
+    ramp(placed, Math.max(hold, 0.22), offset) * 0.2 +
+    ramp(Math.max(hold, 0.22), 0.46, offset) * 0.38
   );
 }
 
-/** Playback time never adds scroll distance or prevents leaving a chapter. */
-export function continentalPhase(
-  progress: number,
-  options?: ContinentalDriftOptions | false,
-  reduced = false,
-  elapsed = 0,
-) {
-  if (!options || reduced || continentalChapter(progress, options) < 0)
-    return -1;
-  const duration =
-    options.duration &&
-    Number.isFinite(options.duration) &&
-    options.duration > 0
-      ? options.duration
-      : 8;
-  const repeat = options.repeatDelay;
-  const time =
-    repeat !== undefined && Number.isFinite(repeat) && repeat >= 0
-      ? Math.max(0, elapsed) % (duration + repeat)
-      : elapsed;
-  return clamp(time / duration);
-}
-
-/** The renderer's active clock already pauses for hidden stages and reduced motion. */
-export function createContinentalPlayback(
-  options?: ContinentalDriftOptions | false,
-) {
-  let active = -1,
-    elapsed = 0,
-    previousClock = 0;
-  return {
-    sample(progress: number, clock: number, reduced = false) {
-      const chapter = reduced ? -1 : continentalChapter(progress, options);
-      const eligible = chapter >= 0;
-      // Scrolling straight into the next chapter starts its own sequence.
-      if (!eligible || chapter !== active) elapsed = 0;
-      else elapsed += clamp(clock - previousClock, 0, 0.05);
-      active = chapter;
-      previousClock = clock;
-      return eligible
-        ? continentalPhase(progress, options, reduced, elapsed)
-        : -1;
-    },
-  };
-}
-
-/** Data order, scroll seeking and the stage use the same chapter partition. */
+/** The chapter whose continents separate at this position, or -1. */
 export function chapterRanges(researchCount: number): ChapterRange[] {
   return [
     [0, 0.3],

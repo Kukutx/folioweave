@@ -41,7 +41,7 @@
   width: 18px;
   height: 18px;
 }
-:where(.refract-site) .site-header nav a:last-child {
+:where(.refract-site) .site-header nav > a:last-of-type {
   min-height: 32px;
   padding-inline: 12px;
   border-radius: 4px;
@@ -51,12 +51,15 @@
     background-color 0.18s,
     color 0.18s;
 }
-:where(.refract-site) .site-header nav a:last-child:hover {
+:where(.refract-site) .site-header nav > a:last-of-type:hover {
   background: var(--contact-hover-background);
   color: var(--contact-foreground);
 }
 :where(.refract-site) .wordmark {
   color: #f6f4f2;
+}
+:where(.refract-site) .site-header .menu-featured {
+  display: none;
 }
 :where(.refract-site) .menu-toggle {
   display: none;

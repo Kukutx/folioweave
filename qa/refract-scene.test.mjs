@@ -152,52 +152,6 @@ test("Research ink and terrain do not flash when the folding backdrop crosses mi
   layers.destroy();
 });
 
-test("scroll state reaches the worker in one batch without another animation-frame delay", async () => {
-  const { createEarthRuntime } = await load("lib/earth-runtime.ts");
-  const names = ["window", "document", "Worker", "OffscreenCanvas", "ResizeObserver", "IntersectionObserver"];
-  const originals = names.map(name => Object.getOwnPropertyDescriptor(globalThis, name));
-  const sent = [], workers = [];
-  class WorkerMock {
-    constructor() { workers.push(this); }
-    postMessage(message) {
-      sent.push(structuredClone(message));
-      if (message.type === "init") queueMicrotask(() => this.onmessage({ data: { type: "ready" } }));
-    }
-    terminate() { this.terminated = true; }
-  }
-  class ObserverMock { observe() {} disconnect() {} }
-  let renderer;
-  try {
-    Object.assign(globalThis, {
-      window: { devicePixelRatio: 1, setTimeout, clearTimeout, addEventListener() {}, removeEventListener() {} },
-      document: { hidden: false, addEventListener() {}, removeEventListener() {} },
-      Worker: WorkerMock, OffscreenCanvas: class {}, ResizeObserver: ObserverMock, IntersectionObserver: ObserverMock,
-    });
-    const { canvas } = recordingCanvas();
-    canvas.dataset = {};
-    canvas.getBoundingClientRect = () => ({ width: 1440, height: 900 });
-    renderer = await createEarthRuntime(canvas, {});
-    const count = sent.length;
-    renderer.setProgress(.35); renderer.setPaused(true); renderer.setProgress(.375);
-    assert.equal(sent.length, count, "Setters sent intermediate states in the same scroll update");
-    await Promise.resolve();
-    assert.equal(sent.length, count + 1);
-    assert.equal(sent.at(-1).state.progress, .375);
-    assert.equal(sent.at(-1).state.paused, true);
-    renderer.setProgress(.4); renderer.drawAtProgress(.39, 3);
-    const afterSnapshot = sent.length;
-    await Promise.resolve();
-    assert.equal(sent.length, afterSnapshot, "Immediate seek left a redundant queued update");
-    renderer.setProgress(.42); renderer.destroy();
-    await Promise.resolve();
-    assert.equal(sent.length, afterSnapshot, "Destroyed runtime sent a queued state");
-    assert.equal(workers[0].terminated, true);
-  } finally {
-    renderer?.destroy();
-    names.forEach((name, i) => originals[i] ? Object.defineProperty(globalThis, name, originals[i]) : Reflect.deleteProperty(globalThis, name));
-  }
-});
-
 test("Tools winds continuously into a centered front view before departure, without zooming", () => {
   for (const mobile of [false, true]) {
     let previous = sceneCamera(.89, false, mobile);
@@ -371,25 +325,6 @@ test("reading clearance uses actual triangles and text lines, not their empty bo
   const lines = [{ left: 64, right: 400, top: 100, bottom: 160 }, { left: 64, right: 180, top: 500, bottom: 520 }];
   assert.equal(fitBesideReading(gap, 720, 450, 1, { ...bounds, bottom: 520, lines }), 1, "The blank space between tool entries forced a zoom-out");
   assert.ok(fitBesideReading(gap, 720, 450, 1, { ...bounds, bottom: 520 }) < 1);
-});
-
-test("featured continental playback repeats after an intact rest and works at the anchor lead-in", () => {
-  const options = { ...siteConfig.effects.continentalDrift, ranges: [[.42, .52]] };
-  const player = progress.createContinentalPlayback(options);
-  const p = .412;
-  assert.equal(player.sample(p, 0), 0);
-  for (let i = 1; i <= 900; i++) {
-    const phase = player.sample(p, i / 60);
-    if (i === 240) assert.ok(Math.abs(phase - .5) < 1e-10);
-    if (i === 540) assert.equal(phase, 1, 'Keep the assembled globe during the rest');
-    if (i === 900) assert.ok(Math.abs(phase - .5) < 1e-10, 'The second fracture cycle never appeared');
-  }
-  const paused = player.sample(p, 15);
-  assert.equal(player.sample(p, 15), paused);
-  assert.equal(player.sample(.53, 16), -1);
-  assert.equal(player.sample(p, 17), 0);
-  assert.equal(player.sample(p, 18, true), -1);
-  assert.equal(progress.continentalPhase(.40, options), -1);
 });
 
 test("camera framing uses space below measured copy and refreshes after reading bounds change", () => {
@@ -602,62 +537,6 @@ test("open mirrors continue turning at fixed scroll and stop deforming at both e
     }
   });
   assert.ok(moving>plates.length*.8,'Most shards were visually stationary');
-});
-
-test("continental sequence is project-local, deterministic, and skipped for reduced motion",()=>{
-  const drift={ranges:[[.42,.52]],amplitude:1};
-  const point=[[-122,37],[18,0],[80,30]];
-  for(const style of ['dark','light']) for(const reducedMotion of [false,true]) {
-    const on=recordingCanvas(),off=recordingCanvas();
-    const a=createEarthRenderer(on.canvas,{autoStart:false,style,reducedMotion,landPoints:point,continentalDrift:drift});
-    const b=createEarthRenderer(off.canvas,{autoStart:false,style,reducedMotion,landPoints:point});
-    for(const p of [0,.2,.4199,.52,.7,.875,.94]) assert.equal(on.capture(a,p),off.capture(b,p),`Effect escaped its research project at ${p}`);
-    assert.equal(on.capture(a,.42,0),off.capture(b,.42,0),'Entering starts with the intact globe');
-    assert.equal(on.capture(a,.475,8),off.capture(b,.475,8),'The globe must reassemble without scrolling');
-    if(reducedMotion) assert.equal(on.capture(a,.475),off.capture(b,.475));
-    else assert.notEqual(on.capture(a,.475),off.capture(b,.475));
-    a.destroy();b.destroy();
-  }
-  for(const count of [1,3,5]) {
-    const range=progress.chapterRanges(count)[2];
-    assert.ok(progress.continentalPhase((range[0]+range[1])/2,{...drift,ranges:[range]},false,4)>0);
-    assert.equal(progress.continentalPhase(range[1],{...drift,ranges:[range]}),-1);
-  }
-});
-
-test("continental playback completes at fixed scroll, pauses with its clock, and replays after leaving",()=>{
-  const options={ranges:[[.42,.52]],amplitude:1,duration:8};
-  const playback=progress.createContinentalPlayback(options);
-  assert.equal(playback.sample(.42,20),0);
-  let phase=0;
-  for(let i=1;i<=480;i++) {
-    phase=playback.sample(.45,20+i/60);
-    if(i===240) assert.ok(Math.abs(phase-.5)<1e-10,'Unfold/rotation should progress while scroll is stationary');
-  }
-  assert.ok(Math.abs(phase-1)<1e-10);
-  assert.equal(playback.sample(.45,40),1,'Completed playback must not loop or trap the reader');
-  assert.equal(playback.sample(.53,41),-1,'Leaving is immediate, even when no animation has finished');
-  assert.equal(playback.sample(.45,42),0,'Returning restarts a complete sequence');
-  phase=playback.sample(.45,42.025);
-  assert.equal(playback.sample(.45,42.025),phase,'Paused and hidden scenes must not consume playback time');
-  assert.equal(playback.sample(.45,42.05,true),-1);
-  assert.equal(playback.sample(.45,42.05,false),0);
-  assert.equal(playback.sample(.60,42.1),-1);
-  assert.equal(playback.sample(.45,43),0,'A partially played sequence also restarts on a new visit');
-});
-
-test("worker live frames and deterministic snapshots share the same continental pose",()=>{
-  const live=recordingCanvas(),exact=recordingCanvas();
-  const options={autoStart:false,continentalDrift:{ranges:[[.42,.52]],amplitude:1,duration:8}};
-  const a=createEarthRenderer(live.canvas,options),b=createEarthRenderer(exact.canvas,options);
-  a.setSuspended(true);a.drawAtProgress(.46,0,'live');a.setSuspended(false);
-  for(let i=1;i<=180;i++) {
-    live.commands.length=0;
-    a.setSuspended(true);a.drawAtProgress(.46,i/60,'live');a.setSuspended(false);
-  }
-  const digest=createHash('sha256').update(JSON.stringify(live.commands)).digest('hex');
-  assert.equal(digest,exact.capture(b,.46,3));
-  a.destroy();b.destroy();
 });
 
 test("continental caches survive reverse seeking, resizing, reduced motion and destruction",()=>{
@@ -920,29 +799,6 @@ test("drawing-stage captions come from the author's options, never from the rend
   assert.deepEqual(captions(["a", "b", "c", "d", "e"]), ["a", "b", "c", "d"], "More than four sheets were captioned");
 });
 
-test("each project chapter separates its own hemisphere and starts its own sequence", () => {
-  const options = { ranges: [[.42, .52], [.52, .62], [.62, .72]], amplitude: 1, duration: 8, leadIn: .012 };
-  assert.deepEqual([.41, .47, .515, .57, .67, .73].map(p => progress.continentalChapter(p, options)), [0, 0, 0, 1, 2, -1]);
-  assert.equal(progress.continentalChapter(.47, { ...options, ranges: [] }), -1);
-  const playback = progress.createContinentalPlayback(options);
-  playback.sample(.47, 10);
-  assert.ok(playback.sample(.47, 10.05) > 0);
-  for (let i = 2; i <= 120; i++) playback.sample(.47, 10 + i * .05);
-  assert.equal(playback.sample(.57, 16.05), 0, "The next chapter inherited the previous chapter's playback time");
-  assert.equal(playback.sample(.80, 16.1), -1);
-  const yaws = [0, 1, 2, 3].map(progress.continentalYaw);
-  assert.equal(new Set(yaws).size, 4, "Two chapters face the same hemisphere");
-  assert.equal(progress.continentalYaw(4), yaws[0], "Later chapters must reuse the defined faces");
-  const digests = [.47, .57, .67].map(p => {
-    const target = recordingCanvas();
-    const renderer = createEarthRenderer(target.canvas, { autoStart: false, continentalDrift: options, landPoints: [[18, 0], [-60, -20], [90, 40]] });
-    const digest = target.capture(renderer, p, 2);
-    renderer.destroy(false);
-    return digest;
-  });
-  assert.equal(new Set(digests).size, 3, "Project chapters drew the same scene");
-});
-
 test("a hand-turned globe changes only the opening and returns the same frame after a whole turn", () => {
   const target = recordingCanvas();
   const renderer = createEarthRenderer(target.canvas, { autoStart: false, landPoints: [[18, 0], [-60, -20], [90, 40]] });
@@ -960,4 +816,157 @@ test("a hand-turned globe changes only the opening and returns the same frame af
   const still = at(0, 0);
   assert.equal(at(0, 1.2), still, "Reduced motion still turned the globe");
   renderer.destroy(false);
+});
+
+test("the scroll position owns the continents: they open as a chapter arrives and close as it leaves", () => {
+  const span = .4 / 4;
+  const at = (chapter, offset) => progress.continentalScroll(.42 + (chapter + offset) * span, 4);
+  const open = phase => phase > .13 && phase < .91;
+  for (let chapter = 0; chapter < 4; chapter++) {
+    assert.ok(open(at(chapter, .12)), `Chapter ${chapter} is closed while its copy is in place`);
+    assert.ok([0, 1].includes(at(chapter, .5)), `Chapter ${chapter} is still open half-way to the next`);
+  }
+  for (let chapter = 1; chapter < 4; chapter++) assert.ok([0, 1].includes(at(chapter, -.5)), `Chapter ${chapter} opened before the turn`);
+  assert.equal(progress.continentalScroll(.41, 4), 0, "The first chapter opened before the globe re-formed");
+  let previous = 0;
+  for (let p = .40; p <= .83; p += .0005) {
+    const phase = progress.continentalScroll(p, 4);
+    assert.ok(phase >= 0 && phase <= 1);
+    // A phase that wraps from 1 to 0 is the same intact globe; inside a chapter it only moves gently.
+    if (!(previous === 1 && phase === 0)) assert.ok(Math.abs(phase - previous) < .03, `The separation jumped at ${p.toFixed(4)}`);
+    previous = phase;
+  }
+  assert.equal(progress.continentalScroll(.47, 4), progress.continentalScroll(.47, 4), "The same scroll position gave two phases");
+  assert.ok(open(progress.continentalScroll(.43 + .0, 4, 1) || progress.continentalScroll(.44, 4, 1)));
+  for (const p of [.55, .65, .75]) assert.equal(progress.continentalScroll(p, 4, 1), 0, "A chapter beyond the configured ones opened");
+});
+
+test("each project chapter turns its own part of the world to the reader, always the same way round", () => {
+  const longitude = yaw => { const d = ((.18 - yaw) * 180) / Math.PI; return Math.round(((((d + 180) % 360) + 360) % 360) - 180); };
+  assert.deepEqual([0, 1, 2, 3].map(i => longitude(progress.galleryFace(i))), [32, 100, 148, -80], "Chapters no longer face Africa, Asia, Oceania and the Americas");
+  assert.ok(Math.abs(progress.galleryFace(4) - (progress.galleryFace(0) - Math.PI * 2)) < 1e-9, "A fifth chapter must repeat the first face one full turn on");
+  const span = .4 / 4;
+  let previous = Infinity;
+  for (let p = progress.facingAnchor; p <= .835; p += .0025) {
+    const yaw = progress.galleryYaw(p, 4);
+    assert.ok(yaw <= previous + 1e-9, `The globe turned back at ${p.toFixed(4)}`);
+    assert.ok(previous === Infinity || previous - yaw < .25, `The globe jumped at ${p.toFixed(4)}`);
+    previous = yaw;
+  }
+  for (let chapter = 0; chapter < 4; chapter++)
+    for (const offset of [0, .15, .3])
+      assert.ok(Math.abs(progress.galleryYaw(.42 + (chapter + offset) * span, 4) - progress.galleryFace(chapter)) < 1e-9, `Chapter ${chapter} left its face while its copy is in place`);
+});
+
+test("project chapters draw different land, repeat exactly, and keep still for reduced motion", () => {
+  const land = [[18, 0], [-60, -20], [90, 40], [140, -25], [-100, 45], [30, 50]];
+  const drift = { ranges: progress.chapterRanges(4).slice(2, 6), amplitude: .55, spread: .9 };
+  const draw = (p, t, extra = {}) => {
+    const target = recordingCanvas();
+    const renderer = createEarthRenderer(target.canvas, { autoStart: false, projectCount: 4, landPoints: land, continentalDrift: drift, ...extra });
+    const digest = target.capture(renderer, p, t);
+    renderer.destroy(false);
+    return digest;
+  };
+  assert.equal(new Set([.432, .532, .632, .732].map(p => draw(p, 2))).size, 4, "Project chapters drew the same scene");
+  assert.equal(draw(.532, 2), draw(.532, 2), "The same scroll position and time drew two different frames");
+  assert.notEqual(draw(.532, 2), draw(.532, 2, { continentalDrift: false }), "The continents never left the globe");
+  assert.equal(draw(.57, 2), draw(.57, 2, { continentalDrift: false }), "Half-way to the next chapter the globe must be whole");
+  assert.equal(draw(.532, 2, { reducedMotion: true }), draw(.532, 2, { reducedMotion: true, continentalDrift: false }), "Reduced motion still separated the continents");
+  for (const p of [0, .2, .875, .94]) assert.equal(draw(p, 2), draw(p, 2, { continentalDrift: false }), `The separation escaped the project chapters at ${p}`);
+});
+
+test("the Tools slices wind in by whole turns, the inner ones furthest", () => {
+  for (let slice = 0; slice < 4; slice++) {
+    assert.equal(progress.toolsVortex(progress.toolsMotion.close, slice), 0);
+    assert.ok(Number.isInteger(progress.toolsVortex(progress.toolsMotion.assembled, slice)), "A slice came home out of register");
+  }
+  assert.ok(progress.toolsVortex(.915, 2) > progress.toolsVortex(.915, 1));
+  assert.equal(progress.toolsVortex(.915, 0), 0, "The outer slice keeps to the shared turn");
+  assert.equal(progress.toolsVortex(.915, 1), progress.toolsVortex(.915, 3), "The stack must wind symmetrically");
+  const draw = p => {
+    const target = recordingCanvas();
+    const renderer = createEarthRenderer(target.canvas, { autoStart: false, landPoints: [[18, 0], [-60, -20], [90, 40]] });
+    const digest = target.capture(renderer, p, 2);
+    renderer.destroy(false);
+    return digest;
+  };
+  assert.notEqual(draw(.91), draw(.915), "The closing assembly did not move");
+  assert.equal(draw(.944), draw(.944));
+});
+
+test("every lane draws whole frames from one clock, and a late frame never replaces a newer one", async () => {
+  const { createEarthRuntime, sceneLanes } = await load("lib/earth-runtime.ts");
+  assert.deepEqual([1, 4, 7, 8, 12, 16, 64].map(sceneLanes), [1, 1, 1, 2, 3, 3, 3]);
+  const names = ["window", "document", "navigator", "Worker", "OffscreenCanvas", "ResizeObserver", "IntersectionObserver", "requestAnimationFrame", "cancelAnimationFrame"];
+  const originals = names.map(name => Object.getOwnPropertyDescriptor(globalThis, name));
+  const workers = [], frames = [];
+  let now = performance.now() + 5;
+  class WorkerMock {
+    constructor() { this.sent = []; workers.push(this); }
+    postMessage(message) {
+      this.sent.push(structuredClone(message));
+      if (message.type === "init") queueMicrotask(() => this.onmessage({ data: { type: "ready" } }));
+    }
+    finish(id, duration = 30) { this.onmessage({ data: { type: "frame", id, duration, bitmap: { width: 4, height: 4, close() { this.closed = true; } } } }); }
+    terminate() { this.terminated = true; }
+  }
+  class ObserverMock { observe() {} disconnect() {} }
+  const step = async (ms = 7) => { now += ms; const queue = frames.splice(0); for (const callback of queue) callback(now); await Promise.resolve(); };
+  let renderer;
+  try {
+    for (const [name, value] of Object.entries({
+      window: { devicePixelRatio: 3, setTimeout, clearTimeout, addEventListener() {}, removeEventListener() {} },
+      document: { hidden: false, addEventListener() {}, removeEventListener() {} },
+      navigator: { hardwareConcurrency: 16 },
+      Worker: WorkerMock, OffscreenCanvas: class {}, ResizeObserver: ObserverMock, IntersectionObserver: ObserverMock,
+      requestAnimationFrame: callback => frames.push(callback), cancelAnimationFrame() {},
+    })) Object.defineProperty(globalThis, name, { configurable: true, writable: true, value });
+    const { canvas, commands: calls } = recordingCanvas();
+    canvas.dataset = {};
+    canvas.getBoundingClientRect = () => ({ width: 1440, height: 900 });
+    renderer = await createEarthRuntime(canvas, {});
+    await Promise.resolve(); await Promise.resolve();
+    assert.equal(workers.length, 3, "A 16-thread device should open three lanes");
+    assert.equal(canvas.dataset.renderThread, "worker");
+    const sentFrames = () => workers.flatMap(worker => worker.sent.filter(message => message.type === "frame"));
+    renderer.setProgress(.35); renderer.setProgress(.375);
+    assert.equal(sentFrames().length, 0, "A setter drew before the next animation frame");
+    await step();
+    assert.equal(sentFrames().length, 1);
+    assert.equal(sentFrames()[0].state.progress, .375, "The frame did not carry the latest pose");
+    assert.equal(sentFrames()[0].state.pixelRatio, 2, "The scene must use every device pixel up to 2x");
+    renderer.setProgress(.38);
+    for (let i = 0; i < 12; i++) await step();
+    const sent = sentFrames().sort((a, b) => a.id - b.id);
+    assert.ok(sent.length >= 3, "Idle lanes were left waiting while the page scrolled");
+    assert.deepEqual(sent.map(frame => frame.id), sent.map((_, index) => index), "Frame numbers must rise by one");
+    assert.ok(sent.every((frame, index) => !index || frame.clock >= sent[index - 1].clock), "The shared clock ran backwards");
+    assert.equal(new Set(workers.filter(worker => worker.sent.some(message => message.type === "frame"))).size, 3, "Frames did not spread across the lanes");
+    const owner = id => workers.find(worker => worker.sent.some(message => message.type === "frame" && message.id === id));
+    const drawn = () => calls.filter(call => call[0] === "drawImage").length;
+    owner(1).finish(1);
+    assert.equal(drawn(), 1);
+    owner(0).finish(0);
+    assert.equal(drawn(), 1, "A late frame replaced a newer one");
+    owner(2).finish(2);
+    assert.equal(drawn(), 2);
+    // Every lane is free again; the exact frame goes out on the next tick.
+    workers.forEach(worker => worker.sent.filter(message => message.type === "frame").forEach(message => worker.finish(message.id)));
+    for (let i = 0; i < 6; i++) await step();
+    workers.forEach(worker => worker.sent.filter(message => message.type === "frame").forEach(message => worker.finish(message.id)));
+    renderer.drawAtProgress(.5, 3);
+    await step();
+    const exact = sentFrames().sort((a, b) => a.id - b.id).at(-1);
+    assert.equal(exact.state.progress, .5);
+    assert.equal(exact.clock, 3, "An exact frame was drawn at another time");
+    renderer.destroy();
+    assert.ok(workers.every(worker => worker.terminated), "A lane outlived the scene");
+    const after = sentFrames().length;
+    renderer.setProgress(.6); await step();
+    assert.equal(sentFrames().length, after, "A destroyed runtime kept drawing");
+  } finally {
+    renderer?.destroy();
+    names.forEach((name, i) => originals[i] ? Object.defineProperty(globalThis, name, originals[i]) : Reflect.deleteProperty(globalThis, name));
+  }
 });
