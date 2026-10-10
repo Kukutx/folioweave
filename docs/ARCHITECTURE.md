@@ -154,6 +154,25 @@ cards: visible fractional-sized images keep stable sampling, while distant cards
 release their `will-change` hint. Gallery preferences use the shared media-query
 store so changing reduced motion also stops existing parallax subscriptions.
 
+Chromium compiles a GPU program the first time a paint effect is rasterized, and
+rasterizes only what is near the viewport. On a first visit that used to stop
+the first scroll for as long as the About camera's gradients and shadows took to
+compile (0.4 to 1.6 s on integrated graphics), and again at each later section.
+`useRasterWarmUp` moves that work to idle time after load: it paints a copy of
+each section once, a few elements per frame, inside a closed shadow root on a
+fixed layer. The copy is painted at full resolution, shown at a tenth of its
+size and blended one step above nothing, so it cannot be seen and cannot pass
+for the page's largest paint or a layout shift; shown at full size, the copy of
+the hero was reported as the largest paint. It cannot be reached by the
+pointer, the keyboard, assistive technology or a selector, keeps unloaded images
+unloaded and drops frames, media and scripts. It steps aside while the visitor
+scrolls, presses or types, and removes itself when done. Measured cold on
+integrated graphics, the worst frame of a first full scroll fell from 400 ms or
+more to under 80 ms, and LCP and CLS are unchanged. The cost is a few pauses of
+about 0.1 s in the seconds after load, when the visitor is not moving anything.
+Do not replace it with `will-change` or eager rendering: neither makes Chromium
+rasterize content that is far from the viewport.
+
 `ThemeScope` keeps foreground-color inheritance local to server-composed content
 regions. A stable client-only Motion value is shared through `HomeForeground`;
 only near-viewport, visible scopes subscribe, and re-entry immediately samples
