@@ -1,1 +1,5 @@
-{}
+{
+  "media-src": [
+    "https://upload.wikimedia.org"
+  ]
+}
