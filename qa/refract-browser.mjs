@@ -160,21 +160,32 @@ async function checkScene(base, style, directory, { width, fallback }) {
       );
       // The foot of the pane is the hero's tile in its own state. The demo's
       // tile leads nowhere, so it is drawn there and offers nothing to press.
-      const foot = await page.locator(".menu-featured").evaluate((element) => {
-        const pane = element.closest("nav").getBoundingClientRect();
-        const row = element.firstElementChild;
-        const box = row.getBoundingClientRect();
-        return {
-          links: element.querySelectorAll("a").length,
-          label: row.textContent.trim(),
-          drawn: Boolean(row.querySelector(".featured-link-frame")),
-          inside:
-            box.width > 0 &&
-            box.left >= pane.left &&
-            box.right <= innerWidth &&
-            box.bottom <= innerHeight,
-        };
-      });
+      const measureFoot = () =>
+        page.locator(".menu-featured").evaluate((element) => {
+          const pane = element.closest("nav").getBoundingClientRect();
+          const row = element.firstElementChild;
+          const box = row.getBoundingClientRect();
+          return {
+            left: box.left,
+            links: element.querySelectorAll("a").length,
+            label: row.textContent.trim(),
+            drawn: Boolean(row.querySelector(".featured-link-frame")),
+            inside:
+              box.width > 0 &&
+              box.left >= pane.left &&
+              box.right <= innerWidth &&
+              box.bottom <= innerHeight,
+          };
+        });
+      // The pane arrives on a spring; it is measured once it has come to rest.
+      let { left, ...foot } = await measureFoot();
+      for (let attempt = 0; attempt < 60; attempt++) {
+        await page.waitForTimeout(50);
+        const { left: next, ...later } = await measureFoot();
+        foot = later;
+        if (next === left) break;
+        left = next;
+      }
       assert.deepEqual(foot, {
         links: 0,
         label: demoTile.label,
