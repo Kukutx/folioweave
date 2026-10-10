@@ -2,7 +2,7 @@
 
 FolioWeave selects one template per build. The available templates are `classic`,
 `refract-light`, and `refract-dark`.
-Profiles without a `template` field keep that design and do not enable plugins.
+Profiles without a `template` field use `classic` and do not enable plugins.
 Template selection, source content and plugin settings are independent.
 
 | Template        | Presentation                                                   | Implementation                 |

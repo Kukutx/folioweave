@@ -8,14 +8,24 @@ write articles under `content/blogs/`, and optionally keep the resume source in
 
 ```bash
 npm ci
+git switch -c personal
 npm run personalize
 npm run dev
 ```
 
+`main` and `develop` keep the demo profile, so the wizard stops there and names
+the branch to create. On `personal` its first run starts clean: the bundled demo
+links to example routes that only those two branches publish, so it cannot be
+kept. A clean start removes demo content from the author configuration, creates
+neutral placeholders, and disables empty sections; it preserves existing source
+files without publishing unreferenced ones. Later runs keep your content and
+ask before clearing it.
+
 The wizard updates identity, contact details and optional social links. Enter
-keeps a value; `-` clears optional values. A clean start removes demo content
-from the author configuration, creates neutral placeholders, and disables empty
-sections. It preserves existing source files without publishing unreferenced ones.
+keeps a value; `-` clears optional values. To set the weather and clock it looks the
+city name up in Open-Meteo's geocoding service, the one network request the
+wizard makes; without a match it keeps UTC or the coordinates you already had. `npm run personalize -- --defaults` accepts every
+default without asking.
 
 After manual edits:
 
@@ -80,7 +90,7 @@ description: "A short summary."
 Article body.
 ```
 
-Optional frontmatter: `subtitle`, `cover`, `tags`, `draft`. Images must use
+Optional frontmatter: `id`, `subtitle`, `cover`, `tags`, `draft`. Images must use
 local paths. Drafts remain author content; their images are not published unless
 another published item references the same file.
 

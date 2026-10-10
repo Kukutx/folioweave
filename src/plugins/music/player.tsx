@@ -17,6 +17,7 @@ import {
   refreshFloatingLayout,
 } from "@/core/floating-surfaces";
 import { createMusicController, type MusicController } from "./controller";
+import { bindMediaSession } from "./media-session";
 import type { MusicOptions } from "./types";
 import { optionDefaults, themeAccents } from "./options.generated";
 import { MusicIcon } from "./icons";
@@ -27,8 +28,6 @@ const messages = {
     label: "Music player",
     expand: "Expand player",
     collapse: "Collapse player",
-    open: "Open",
-    close: "Close",
     play: "Play",
     pause: "Pause",
     previous: "Previous track",
@@ -48,8 +47,6 @@ const messages = {
     label: "音乐播放器",
     expand: "展开播放器",
     collapse: "收起播放器",
-    open: "展开",
-    close: "收起",
     play: "播放",
     pause: "暂停",
     previous: "上一首",
@@ -198,6 +195,27 @@ function Player({ options, context }: PluginProps<MusicOptions>) {
     () => controller.setTracks(options.tracks),
     [controller, options.tracks],
   );
+  useEffect(() => bindMediaSession(controller), [controller]);
+  const autoplay = options.autoplay ?? optionDefaults.autoplay;
+  useEffect(() => {
+    if (!autoplay) return;
+    // The page loads first, so the track never competes with what it shows.
+    let stop = () => {};
+    const begin = () => {
+      stop = controller.autostart(
+        document,
+        (event) =>
+          event.target instanceof Node &&
+          !!root.current?.contains(event.target),
+      );
+    };
+    if (document.readyState === "complete") begin();
+    else window.addEventListener("load", begin, { once: true });
+    return () => {
+      window.removeEventListener("load", begin);
+      stop();
+    };
+  }, [controller, autoplay]);
   useEffect(() => {
     const onPageHide = () => controller.pause();
     window.addEventListener("pagehide", onPageHide);
@@ -459,9 +477,6 @@ function Player({ options, context }: PluginProps<MusicOptions>) {
               <Cover key={state.track?.cover} src={state.track?.cover} />
             </span>
             <span className={styles["record-glint"]} aria-hidden="true" />
-            <span className={styles["record-tip"]} aria-hidden="true">
-              {expanded ? text.close : text.open}
-            </span>
           </button>
           <div
             className={styles.metadata}

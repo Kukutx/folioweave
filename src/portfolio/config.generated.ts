@@ -444,6 +444,7 @@ const portfolio = {
         "position": "right",
         "theme": "graphite",
         "initialExpanded": false,
+        "autoplay": true,
         "volume": 0.7,
         "tracks": [
           {

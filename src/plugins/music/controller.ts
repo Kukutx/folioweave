@@ -13,6 +13,10 @@ type Snapshot = {
 };
 type Progress = { elapsed: number; duration: number };
 type Listener = () => void;
+/** The presses a browser accepts as the visitor's consent to sound. */
+const gestures = ["pointerdown", "pointerup", "keydown", "touchend"] as const;
+/** Heard before the page's own handlers can stop the event. */
+const early = { capture: true };
 
 /** Owns one audio element. Progress has a separate subscription from transport. */
 export function createMusicController(
@@ -62,25 +66,55 @@ export function createMusicController(
     audio?.pause();
     publish({ status: "paused", intent: false });
   }
-  async function play() {
-    if (!audio || !snapshot.track) return;
+  /** Resolves to whether this request is the one that started playback. */
+  async function play(unprompted = false) {
+    if (!audio || !snapshot.track) return false;
     const element = audio,
       version = ++request;
-    publish({ status: "loading", intent: true, error: "" });
+    // An unprompted start may be refused outright, so it claims nothing until
+    // the element itself reports that it is under way.
+    if (!unprompted) publish({ status: "loading", intent: true, error: "" });
     try {
       if (element.error) element.load();
       await element.play();
+      return version === request && element === audio;
     } catch (error) {
-      if (version !== request || element !== audio) return;
+      if (version !== request || element !== audio) return false;
+      const name = error instanceof Error ? error.name : "";
+      if (unprompted && name === "NotAllowedError") return false;
       publish({
         status: "error",
         intent: false,
-        error:
-          error instanceof Error && error.name === "AbortError"
-            ? "playback"
-            : "unavailable",
+        error: name === "AbortError" ? "playback" : "unavailable",
       });
+      return false;
     }
+  }
+  /** Start on arrival. Where the browser withholds sound until the visitor has
+   * touched the page, their first press outside the player starts it instead; a
+   * press on the player is the visitor taking over. Returns the way to call it
+   * off. */
+  function autostart(page: EventTarget, own: (event: Event) => boolean) {
+    let waiting = true;
+    const stop = () => {
+      if (!waiting) return;
+      waiting = false;
+      for (const name of gestures) page.removeEventListener(name, press, early);
+    };
+    // Only the browser's refusal keeps the wait going. A start that is under
+    // way has done its work, and one that failed has said so in the player,
+    // where the visitor can retry it.
+    const attempt = () =>
+      void play(true).then((started) => {
+        if (started || snapshot.error) stop();
+      });
+    function press(event: Event) {
+      if (own(event)) stop();
+      else attempt();
+    }
+    for (const name of gestures) page.addEventListener(name, press, early);
+    attempt();
+    return stop;
   }
   function loadTrack(track: Track | null) {
     request++;
@@ -149,7 +183,12 @@ export function createMusicController(
         publish({ status: "playing", error: "" });
     };
     on("play", () => {
-      if (!element.paused) publish({ intent: true });
+      if (element.paused) return;
+      publish(
+        snapshot.status === "playing"
+          ? { intent: true }
+          : { status: "loading", intent: true, error: "" },
+      );
     });
     on("playing", () => {
       if (!element.paused)
@@ -190,6 +229,7 @@ export function createMusicController(
     attach,
     setTracks,
     play,
+    autostart,
     pause,
     select,
     getSnapshot: () => snapshot,

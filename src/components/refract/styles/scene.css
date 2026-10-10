@@ -459,11 +459,6 @@
   color: #ddd;
   margin-top: 0.5rem;
 }
-:where(.refract-site) .text-link {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.875rem;
-}
 :where(.refract-site) .contact-section {
   padding-bottom: 0;
   text-align: center;

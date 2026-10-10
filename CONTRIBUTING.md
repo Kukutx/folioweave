@@ -1,6 +1,6 @@
 # Contributing to FolioWeave
 
-Thanks for improving FolioWeave.
+Thanks for improving FolioWeave. Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Development
 
@@ -34,11 +34,13 @@ npm run audit:prod
 `check` runs lint, the branch boundary (`qa:boundary`), the content test suites
 and the production build. A plain `npm run build` validates content only.
 
-For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite:
+For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite against the production build `check` just made:
 
 ```bash
 npm run qa:maintainer
 ```
+
+It needs the lockfile-pinned browsers (`node node_modules/playwright-core/cli.js install chromium firefox webkit`), and its visual comparison has reviewed baselines for Windows only. On another system run `npm run qa:all`, `npm run qa:visual-fixtures`, `npm run qa:profiles` and `npm run qa:refract` and let the `visual-regression` check on the pull request do the comparison.
 
 `qa:maintainer` also builds a disposable independent template with music/comments and verifies CLI switching and plugin lifecycle. Existing visual and interaction baselines belong to Classic; new finished templates require their own reviewed coverage.
 
@@ -78,6 +80,8 @@ See `docs/DESIGN-SYSTEM.md` and `docs/VISUAL-QA.md`.
 `npm run qa:boundary` also runs the reusable-vs-demo dependency guard.
 
 ## Pull requests
+
+Open pull requests against `develop`. `main` receives shared code from there, and `personal` holds the maintainer's own site ([docs/REPOSITORY-MODEL.md](docs/REPOSITORY-MODEL.md)). The pull request template asks for the same four things.
 
 Explain:
 

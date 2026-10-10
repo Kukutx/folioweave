@@ -239,3 +239,29 @@ test("a profile may omit the blocks only Classic renders, and Classic insists on
   );
   requireProfileBlocks(lean, selected.template);
 });
+
+test("every mark the hero tile's option accepts is drawn, and the pane's foot follows the tile", async () => {
+  const read = (file) =>
+    fs.readFile(path.join(root, "src/components/refract", file), "utf8");
+  const schema = JSON.parse(
+    await fs.readFile(
+      path.join(root, "src/templates/_refract/options.schema.json"),
+      "utf8",
+    ),
+  );
+  const tile = await read("components/FeaturedLink.tsx");
+  for (const icon of schema.properties.featuredLink.properties.icon.enum)
+    assert.ok(
+      tile.includes(`link.icon === "${icon}"`),
+      `The "${icon}" mark is accepted but never drawn`,
+    );
+  assert.deepEqual(schema.properties.featuredLink.required, ["label"]);
+  // Nothing stands in for an absent tile: no social link, no résumé.
+  assert.match(
+    await read("data.ts"),
+    /featuredLink: options\.featuredLink \?\? null/,
+  );
+  const header = await read("components/SiteHeader.tsx");
+  assert.match(header, /const featured = siteConfig\.hero\.featuredLink;/);
+  assert.doesNotMatch(header, /featuredLink\?\.href/);
+});

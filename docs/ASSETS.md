@@ -29,13 +29,15 @@ Photography has a 2 MiB per-image source limit; other configured images have a 4
 
 The reusable starter also contains demo media under shared `public/` paths so the canonical demo can run immediately.
 
-`qa/assets-manifest.json` records protected demo paths, sizes, and SHA-256 hashes. Run:
+`qa/assets-manifest.json` records protected demo paths, sizes, and SHA-256 hashes, and
 
 ```bash
 npm run qa:assets
 ```
 
-after an intentional demo asset change.
+fails when a file no longer matches its entry. The check only reads: after an
+intentional demo asset change, edit that asset's `size` and `sha256` in the
+manifest by hand (the failure prints the actual values) and commit both together.
 
 ## Refract assets
 
