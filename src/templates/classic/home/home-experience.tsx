@@ -17,6 +17,7 @@ import { useMediaQuery, useMobileViewport } from "@/hooks/use-media-query";
 import { siteConfig } from "@/config/site";
 import styles from "./home-experience.module.css";
 import { HomeForeground } from "./theme-scope";
+import { useRasterWarmUp } from "./use-raster-warm-up";
 import { useSectionRendering } from "./use-section-rendering";
 
 function useSectionRef(id: string) {
@@ -34,6 +35,7 @@ export function HomeExperience({ children }: { children: ReactNode }) {
   useLenis();
   const root = useRef<HTMLDivElement>(null);
   useSectionRendering(root);
+  useRasterWarmUp(root);
   const mobile = useMobileViewport();
   const desktop = useMediaQuery("(min-width: 768px)");
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");

@@ -451,7 +451,8 @@ const portfolio = {
             "id": "time-is-broken",
             "title": "Time Is Broken",
             "artist": "Phonk",
-            "src": "/portfolio/audio/time-is-broken.mp3"
+            "src": "/portfolio/audio/time-is-broken.mp3",
+            "cover": "/portfolio/covers/time-is-broken.webp"
           },
           {
             "id": "gymnopedie-1",
