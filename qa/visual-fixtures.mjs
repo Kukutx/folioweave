@@ -206,13 +206,19 @@ try {
   throw error;
 } finally {
   await browser?.close();
+  // The development server writes into the sandbox until it has left, so the
+  // tree is removed only after it has, and a straggling write is retried.
+  const stopped = server.exitCode === null && server.signalCode === null
+    ? new Promise((resolve) => server.once("exit", resolve))
+    : Promise.resolve();
   if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(server.pid), "/T", "/F"], { stdio: "ignore" });
   else server.kill("SIGTERM");
+  await Promise.race([stopped, new Promise((resolve) => setTimeout(resolve, 10000))]);
   await fs.writeFile(path.join(root, minimalHome ? "qa/profile-matrix-report.json" : "qa/visual-fixtures-report.json"), JSON.stringify({ report, sandbox: "project-scoped disposable" }, null, 2));
   // Unlink dependencies first so recursive cleanup can never follow the junction.
   await fs.unlink(dependencyLink).catch((error) => { if (error?.code !== "ENOENT") throw error; });
   assert.equal(path.dirname(temporary), sandboxRoot, "fixture cleanup must stay in its owned sandbox");
-  await fs.rm(temporary, { recursive: true, force: true });
+  await fs.rm(temporary, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
   const remainingSandboxes = await fs.readdir(sandboxRoot).catch(() => []);
   if (!remainingSandboxes.length) await fs.rmdir(sandboxRoot).catch(() => {});
   if (passed && !minimalHome && !keepScreenshots) {

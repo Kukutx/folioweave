@@ -199,11 +199,22 @@ function Player({ options, context }: PluginProps<MusicOptions>) {
   const autoplay = options.autoplay ?? optionDefaults.autoplay;
   useEffect(() => {
     if (!autoplay) return;
-    return controller.autostart(
-      document,
-      (event) =>
-        event.target instanceof Node && !!root.current?.contains(event.target),
-    );
+    // The page loads first, so the track never competes with what it shows.
+    let stop = () => {};
+    const begin = () => {
+      stop = controller.autostart(
+        document,
+        (event) =>
+          event.target instanceof Node &&
+          !!root.current?.contains(event.target),
+      );
+    };
+    if (document.readyState === "complete") begin();
+    else window.addEventListener("load", begin, { once: true });
+    return () => {
+      window.removeEventListener("load", begin);
+      stop();
+    };
   }, [controller, autoplay]);
   useEffect(() => {
     const onPageHide = () => controller.pause();
