@@ -193,6 +193,12 @@
     right: 1rem;
     bottom: calc(var(--control-bottom) + 48px);
   }
+  /* Without the track beneath it, the key stands above the footer's rule
+     instead of covering the location at its end. */
+  .refract-site:has(.portfolio-experience[data-nav-visible="false"])
+    .back-to-home {
+    bottom: calc(var(--control-bottom) + 6.5rem);
+  }
   :where(.refract-site) .feature-content .reference-text h2 {
     font-size: 2rem;
     line-height: 0.95;
