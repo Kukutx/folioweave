@@ -289,6 +289,9 @@ test("a failure other than the browser's refusal is still reported on arrival", 
   );
   await settled();
   assert.equal(player.getSnapshot().error, "unavailable");
+  assert.equal(page.attached, 0, "A failed start kept waiting for presses");
+  page.press("pointerdown");
+  assert.equal(audio.pending.length, 1, "A press retried a failed start");
   stop();
   detach();
 });

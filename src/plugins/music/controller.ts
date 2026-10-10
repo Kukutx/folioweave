@@ -101,9 +101,12 @@ export function createMusicController(
       waiting = false;
       for (const name of gestures) page.removeEventListener(name, press, early);
     };
+    // Only the browser's refusal keeps the wait going. A start that is under
+    // way has done its work, and one that failed has said so in the player,
+    // where the visitor can retry it.
     const attempt = () =>
       void play(true).then((started) => {
-        if (started) stop();
+        if (started || snapshot.error) stop();
       });
     function press(event: Event) {
       if (own(event)) stop();
