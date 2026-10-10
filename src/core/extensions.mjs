@@ -46,7 +46,12 @@ function optionsValidator(schema) {
     .compile(schema);
 }
 
-function optionValues(value, segments) {
+/** A dot-separated option path; `*` steps through an array. */
+export const optionSelector =
+  /^[a-zA-Z][a-zA-Z0-9]*(?:\.(?:\*|[a-zA-Z][a-zA-Z0-9]*))*$/;
+
+/** Every value an option path selects. */
+export function optionValues(value, segments) {
   if (!segments.length) return value === undefined ? [] : [value];
   const [key, ...rest] = segments;
   if (key === "*")
@@ -68,10 +73,7 @@ function networkFromOptions(manifest, options) {
       !Array.isArray(selectors) ||
       selectors.some(
         (selector) =>
-          typeof selector !== "string" ||
-          !/^[a-zA-Z][a-zA-Z0-9]*(?:\.(?:\*|[a-zA-Z][a-zA-Z0-9]*))*$/.test(
-            selector,
-          ),
+          typeof selector !== "string" || !optionSelector.test(selector),
       )
     )
       throw new Error(`${manifest.id}: invalid networkOptions declaration`);

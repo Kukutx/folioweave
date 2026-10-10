@@ -164,9 +164,12 @@ fixed layer. The copy is painted at full resolution, shown at a tenth of its
 size and blended one step above nothing, so it cannot be seen and cannot pass
 for the page's largest paint or a layout shift; shown at full size, the copy of
 the hero was reported as the largest paint. It cannot be reached by the
-pointer, the keyboard, assistive technology or a selector, keeps unloaded images
-unloaded and drops frames, media and scripts. It steps aside while the visitor
-scrolls, presses or types, and removes itself when done. Measured cold on
+pointer, the keyboard, assistive technology or a selector, keeps image elements
+the page has not loaded unloaded, and drops frames, media and scripts. (A
+background image named in CSS is fetched when the copy is styled, which for a
+deferred section is earlier than the page would have.) It steps aside while
+the visitor scrolls, presses, types or moves the pointer, runs once per
+document, and removes itself when done. Measured cold on
 integrated graphics, the worst frame of a first full scroll fell from 400 ms or
 more to under 80 ms, and LCP and CLS are unchanged. The cost is a few pauses of
 about 0.1 s in the seconds after load, when the visitor is not moving anything.

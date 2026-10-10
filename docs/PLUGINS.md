@@ -55,11 +55,23 @@ Supported local file extensions are MP3, M4A, OGG, WAV, AAC and FLAC. Actual cod
 playback depends on the browser. Files are validated for path/existence and
 published as hash-checked byte snapshots; a corrupt or unsupported audio stream
 is reported by the player. No tracks are bundled or enabled on the author's behalf.
-Track ids must be unique. `cover` is optional per track, local or HTTPS: it
-becomes the label at the centre of the record (the whole tile in the `square`
-skin) and the artwork the system shows for the track. A missing or failed cover
-leaves the built-in label with its note. Local artwork uses the same validated
-publication pipeline as other profile images.
+Track ids must be unique. A track's cover is the label at the centre of the
+record (the whole tile in the `square` skin) and the artwork the system shows
+for the track. Where it comes from, in order:
+
+1. `cover`, when you name one: a local image or an HTTPS URL. Local artwork
+   uses the same validated publication pipeline as other profile images.
+2. Otherwise, for a local file, the cover the file itself carries. The picture
+   an MP3 (ID3v2), FLAC or M4A was tagged with is read during the content build
+   and published beside the audio as `<audio file>.cover.<type>`, byte for
+   byte. Nothing is read in the browser. An embedded picture over the 4 MiB
+   image limit, or one that cannot be read, is left out with a notice in the
+   build output; it never fails the build.
+3. Otherwise the record's built-in label with its note. A cover that fails to
+   load falls back to it as well.
+
+A remote track is never fetched to look inside it; name a `cover` for it if you
+want one. To keep an embedded cover from being used, name another.
 
 The player uses `site.floating` and portals its UI into the document body so a
 template's transforms or clipping cannot trap it. It uses `preload="none"` and
@@ -396,6 +408,12 @@ options, for example `{ "media-src": ["tracks.*.src"] }` or
 names and `*` array traversal are supported. Only local paths or credential-free
 HTTPS URLs are accepted; executable script origins cannot be derived this way.
 The options validator supports `format: "https-url"` and array `uniqueBy: "id"`.
+
+Optional `embeddedArtwork` lets an option take the cover an audio file carries,
+for example `[{ "each": "tracks.*", "audio": "src", "image": "cover" }]`: for each
+selected item that names a published local audio file in `audio` and nothing in
+`image`, the content build publishes the embedded picture and names it there.
+The component receives the completed options; the author's profile is not changed.
 
 Keep styles in CSS Modules and consume the `--fw-*` tokens documented in
 [TEMPLATES.md](TEMPLATES.md). Do not import template components, install a scroller,

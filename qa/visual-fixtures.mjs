@@ -213,7 +213,9 @@ try {
     : Promise.resolve();
   if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(server.pid), "/T", "/F"], { stdio: "ignore" });
   else server.kill("SIGTERM");
-  await Promise.race([stopped, new Promise((resolve) => setTimeout(resolve, 10000))]);
+  let fallback;
+  await Promise.race([stopped, new Promise((resolve) => { fallback = setTimeout(resolve, 10000); })]);
+  clearTimeout(fallback);
   await fs.writeFile(path.join(root, minimalHome ? "qa/profile-matrix-report.json" : "qa/visual-fixtures-report.json"), JSON.stringify({ report, sandbox: "project-scoped disposable" }, null, 2));
   // Unlink dependencies first so recursive cleanup can never follow the junction.
   await fs.unlink(dependencyLink).catch((error) => { if (error?.code !== "ENOENT") throw error; });
