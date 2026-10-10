@@ -34,7 +34,7 @@ geometry limit and a 0.2% changed-pixel limit (pixelmatch color threshold 0.15).
 Missing regions, missing baselines, damaged image hashes, and a changed browser
 version fail closed. Weather and wall-clock time are fixed; artwork is not masked.
 The canonical screenshot CI uses Windows 2025 and Playwright's pinned Chromium;
-the Linux job tests behavior separately. Baselines are not portable between OSes.
+the Linux jobs test behavior separately. Baselines are not portable between OSes.
 
 Only for an intentional reviewed visual/content change, run
 `npm run qa:visual-baseline` on the canonical platform. It replaces every region
@@ -84,7 +84,7 @@ that is strongly affected by the host compositor/scheduler:
 | RAF frame-interval p95                          |                 50ms |                100ms | warn               | fail         |
 | Event-duration p95                              | 200ms warning target | 200ms warning target | warn               | warn         |
 
-This split does not loosen protected CI. GitHub `validate` sets
+This split does not loosen protected CI. The `site` job behind `validate` sets
 `QA_RUNTIME_REFERENCE=1`, so the full long-task and frame budgets remain blocking
 on the reference runner. Use `npm run qa:runtime -- --reference` to request the same
 strict host-sensitive gate locally. Ordinary `npm run qa:runtime` still fails on

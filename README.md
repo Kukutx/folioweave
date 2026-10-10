@@ -207,7 +207,7 @@ npm run qa:maintainer
 npm run qa:refract
 ```
 
-`qa:maintainer` exercises Classic's runtime budgets, interaction/accessibility, media health, bundle budgets, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit. Run it against a Classic build. `qa:refract` builds both Refract styles in isolated demo fixtures and checks their scene contracts and browser behavior. It does not replace your author profile. Each design has its own visual contract; passing one suite does not validate all templates.
+`qa:maintainer` exercises Classic's runtime budgets, interaction/accessibility, media health, bundle budgets, reusable fixtures, profile variants, visual regression, and Chromium/Firefox/WebKit. It runs against an existing Classic production build (`npm run build` first) and needs the pinned browsers; its visual comparison has reviewed baselines for Windows only, so on other systems run the suites it is made of and leave the comparison to CI. [docs/COMMANDS.md](docs/COMMANDS.md) lists both. `qa:refract` builds both Refract styles in isolated demo fixtures and checks their scene contracts and browser behavior. It does not replace your author profile. Each design has its own visual contract; passing one suite does not validate all templates.
 
 ## Deployment
 

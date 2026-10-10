@@ -34,11 +34,13 @@ npm run audit:prod
 `check` runs lint, the branch boundary (`qa:boundary`), the content test suites
 and the production build. A plain `npm run build` validates content only.
 
-For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite:
+For shared UI, interaction, content-pipeline, responsive, or performance work, run the maintainer suite against the production build `check` just made:
 
 ```bash
 npm run qa:maintainer
 ```
+
+It needs the lockfile-pinned browsers (`node node_modules/playwright-core/cli.js install chromium firefox webkit`), and its visual comparison has reviewed baselines for Windows only. On another system run `npm run qa:all`, `npm run qa:visual-fixtures`, `npm run qa:profiles` and `npm run qa:refract` and let the `visual-regression` check on the pull request do the comparison.
 
 `qa:maintainer` also builds a disposable independent template with music/comments and verifies CLI switching and plugin lifecycle. Existing visual and interaction baselines belong to Classic; new finished templates require their own reviewed coverage.
 
