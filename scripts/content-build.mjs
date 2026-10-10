@@ -8,6 +8,7 @@ import {
   resolveExtensions,
   extensionOutputs,
 } from "../src/core/extensions.mjs";
+import { withEmbeddedArtwork } from "../src/core/audio-artwork.mjs";
 import {
   collectAssets,
   publishedPortfolio,
@@ -37,6 +38,26 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
+
+/** Size and integrity of one asset, with the dimensions and budget of an image. */
+async function describeAsset(asset, bytes) {
+  const entry = {
+    bytes: bytes.length,
+    sha256: createHash("sha256").update(bytes).digest("hex"),
+  };
+  if (/\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(asset)) {
+    const { width, height, orientation } = await sharp(bytes).metadata();
+    if (!width || !height) throw new Error(`Cannot measure image ${asset}`);
+    Object.assign(
+      entry,
+      orientation >= 5 ? { width: height, height: width } : { width, height },
+    );
+    const budget = asset.startsWith("/portfolio/photography/") ? 2 : 4;
+    if (bytes.length > budget * 1024 * 1024)
+      throw new Error(`Image exceeds ${budget} MiB: ${asset}`);
+  }
+  return entry;
+}
 
 export async function prepareContent(root = projectRoot, candidate) {
   root = path.resolve(root);
@@ -124,26 +145,34 @@ export async function prepareContent(root = projectRoot, candidate) {
         { code: "ENOENT" },
       );
     });
-    const entry = {
-      bytes: bytes.length,
-      sha256: createHash("sha256").update(bytes).digest("hex"),
-    };
-    if (/\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(asset)) {
-      const { width, height, orientation } = await sharp(bytes).metadata();
-      if (!width || !height) throw new Error(`Cannot measure image ${asset}`);
-      Object.assign(
-        entry,
-        orientation >= 5 ? { width: height, height: width } : { width, height },
-      );
-      const budget = asset.startsWith("/portfolio/photography/") ? 2 : 4;
-      if (bytes.length > budget * 1024 * 1024)
-        throw new Error(`Image exceeds ${budget} MiB: ${asset}`);
-    }
+    const entry = await describeAsset(asset, bytes);
     if (published.has(asset)) {
       media[asset] = entry;
       if (asset.startsWith("/portfolio/")) assets[asset] = bytes;
     }
   }
+  // A plugin item that names a local audio file and no image takes the cover
+  // the file itself carries, published beside it and held to the same limits.
+  // The author did not write that picture: one that is too large or cannot be
+  // read is left out with a notice, and never stops the build.
+  for (const plugin of extensions.plugins)
+    plugin.options = await withEmbeddedArtwork(
+      plugin.manifest,
+      plugin.options,
+      (asset) => assets[asset],
+      async (asset, bytes, audio) => {
+        try {
+          media[asset] = await describeAsset(asset, bytes);
+        } catch (error) {
+          console.warn(
+            `The cover embedded in ${audio} is not used (${error.message}). Name an image for it in the plugin's options to choose one.`,
+          );
+          return false;
+        }
+        assets[asset] = bytes;
+        return true;
+      },
+    );
   return {
     root,
     profileSource,
