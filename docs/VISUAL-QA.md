@@ -164,6 +164,9 @@ JavaScript-disabled content. It also requires zero CSS transition-run events
 during a reduced-motion scroll, no duplicate CSS navigation interpolation, and
 viewport-scoped image compositing in both motion modes. Offscreen theme scopes
 must stop receiving foreground updates while the photography scope becomes white.
+Its last step holds Classic's idle raster warm-up to its promises: the copy is
+out of sight and out of reach, the page keeps one of everything, no deferred
+image is fetched early, input pauses it, and nothing is left behind.
 Fixtures also clear/refill a carousel, verify that autoplay resumes, then stop it
 with a live reduced-motion change. Switching the same preference during photo
 hover must clear both scale and tilt. Font-failure tests block every local webfont,
