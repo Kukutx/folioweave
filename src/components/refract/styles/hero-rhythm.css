@@ -71,9 +71,10 @@
     margin-top: auto;
     padding: 32px 16px max(24px, env(safe-area-inset-bottom));
   }
-  /* The same button as the hero's first one. */
-  :where(.refract-site) .site-header .menu-featured a {
+  /* The hero's tile, as a row of the pane. */
+  :where(.refract-site) .site-header .menu-featured > * {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
     height: 48px;
@@ -81,16 +82,24 @@
     padding: 0 16px;
     border: 1px solid #302e2d;
     border-radius: 0.25rem;
-    background: #302e2d;
-    color: #f6f4f2;
     font-size: 12px;
     line-height: 1.6;
     letter-spacing: 0.01em;
+  }
+  /* Leading somewhere, it is the hero's first button. */
+  :where(.refract-site) .site-header .menu-featured a {
+    background: #302e2d;
+    color: #f6f4f2;
   }
   :where(.refract-site) .site-header .menu-featured a:hover {
     border-color: #3b3936;
     background: #3b3936;
     color: #fff;
+  }
+  /* Leading nowhere yet, it is the hero's second: an outline, not pressed. */
+  :where(.refract-site) .site-header .menu-featured > div {
+    border-color: #66615b;
+    color: #aaa6a2;
   }
   :where(.refract-site) .site-header .menu-featured span {
     min-width: 0;
@@ -108,10 +117,24 @@
     font-size: 15px;
     line-height: 18px;
   }
+  /* The keyline grid keeps its hairlines at this size. */
+  :where(.refract-site) .site-header .menu-featured .featured-link-frame {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    opacity: 1;
+  }
+  :where(.refract-site) .site-header .menu-featured .featured-link-frame * {
+    vector-effect: non-scaling-stroke;
+  }
   .refract-site[data-style="light"] .site-header .menu-featured a {
     border-color: #111;
     background: #111;
     color: #fff;
+  }
+  .refract-site[data-style="light"] .site-header .menu-featured > div {
+    border-color: #ccc;
+    color: #555;
   }
   :where(.refract-site) .menu-backdrop {
     opacity: calc(var(--menu-progress, 0) * 0.4);
@@ -203,11 +226,6 @@
   width: 38px;
   height: 38px;
   object-fit: contain;
-}
-:where(.refract-site) .featured-link[data-populated="true"] .builtin-logo {
-  width: 54px;
-  height: 54px;
-  max-width: none;
 }
 :where(.refract-site)
   .featured-link[data-populated="true"]

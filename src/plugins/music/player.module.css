@@ -268,24 +268,6 @@
   border: 1px solid #ffffff0c;
   pointer-events: none;
 }
-.record-tip {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #10101488;
-  color: #fff;
-  font-size: 10px;
-  letter-spacing: 1px;
-  display: grid;
-  place-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 160ms;
-}
-.record-control:hover .record-tip,
-.record-control:focus-visible .record-tip {
-  opacity: 1;
-}
 .record-control:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: -3px;
@@ -604,9 +586,6 @@
 .music[data-skin="square"][data-expanded="true"] .record {
   animation-play-state: paused;
 }
-.music[data-skin="square"] .record-tip {
-  border-radius: 50%;
-}
 .music[data-position="right"][data-expanded="false"] {
   width: var(--player-height);
 }
@@ -625,9 +604,6 @@
 .music[data-position="right"][data-expanded="false"] .record,
 .music[data-position="right"][data-expanded="false"] .record-glint {
   visibility: visible;
-}
-.music[data-position="right"][data-expanded="false"] .record-tip {
-  border-radius: 50%;
 }
 .music[data-position="right"][data-expanded="false"] .square-art,
 .music[data-position="right"][data-expanded="false"] .metadata,
@@ -810,15 +786,6 @@
     transition: none !important;
   }
 }
-@media (hover: none) {
-  .record-tip {
-    opacity: 0;
-  }
-  .record-control:active .record-tip,
-  .record-control:focus-visible .record-tip {
-    opacity: 1;
-  }
-}
 @media (forced-colors: active) {
   .reveal-control svg {
     filter: none;
@@ -829,11 +796,6 @@
   }
   .music .reveal-control:focus-visible {
     outline: 2px solid Highlight;
-  }
-  .record-tip {
-    background: ButtonFace;
-    color: ButtonText;
-    border-color: ButtonText;
   }
   .music .music-notes,
   .music .edge-glow {
@@ -896,6 +858,12 @@
   place-items: center;
   color: #b9b9c3;
   background: #34343c;
+  transition: color 160ms;
+}
+/* The note is the record's own label; it lights up under the pointer. */
+.record-control:hover .record-fallback,
+.record-control:focus-visible .record-fallback {
+  color: #fff;
 }
 .square-art .record-cover,
 .square-art .record-fallback {

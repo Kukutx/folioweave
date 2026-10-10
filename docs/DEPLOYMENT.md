@@ -19,14 +19,14 @@ For a personal site, normally keep `features.demoRoutes: false` so bundled examp
 Run:
 
 ```bash
-npm run content:build
-npm run content:check
-npm run check
-npm run audit:prod
-npm run qa:maintainer
+npm run build
 ```
 
-Do not deploy from a working tree whose visual regression is unexplained.
+The build publishes and validates your content, then compiles the site; a
+personal site needs nothing more. If you also changed shared code, run
+`npm run check` and `npm run audit:prod` and the suites in
+[COMMANDS.md](COMMANDS.md). Do not deploy from a working tree whose visual
+regression is unexplained.
 
 ## Vercel
 
@@ -56,10 +56,11 @@ After attaching a custom domain, update `site.origin`, rebuild, and redeploy so 
 ## The public demos
 
 Each template has a public demo in its own Vercel project: `folioweave-classic`,
-`folioweave-refract-light` and `folioweave-refract-dark`. None is built from a
-branch. A demo is an isolated snapshot of the shared code with a demo profile
+`folioweave-refract-light` and `folioweave-refract-dark`. None has a branch of
+its own. A demo is the shared code with a demo profile
 (`governance/demo-portfolio.json` for Classic, `governance/templates/` for
-Refract), uploaded with the Vercel CLI:
+Refract), staged as an isolated snapshot. It can be uploaded by hand with the
+Vercel CLI:
 
 ```bash
 npm run demo:deploy -- classic

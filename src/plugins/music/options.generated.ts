@@ -14,6 +14,10 @@ export interface MusicOptions {
   accent?: Color;
   initialExpanded?: boolean;
   /**
+   * Start the first track on arrival. Browsers that withhold sound until the visitor has touched the page start it on their first press instead.
+   */
+  autoplay?: boolean;
+  /**
    * Bottom spacing in pixels, allowing the plugin to clear existing site controls without moving them.
    */
   offsetBottom?: number;
@@ -40,6 +44,7 @@ export const optionDefaults = {
   position: "right",
   theme: "graphite",
   initialExpanded: false,
+  autoplay: false,
   volume: 0.7,
   notes: { enabled: false, colors: ["#cf8750", "#ac719b", "#528ba6"] },
 } satisfies Partial<MusicOptions>;

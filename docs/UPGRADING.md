@@ -16,7 +16,13 @@ Refract's `continentalDrift` option applies to every project chapter when
 `true`; set `"first"` to keep it to the first. The separation now follows the
 scroll position instead of playing on a timer. Refract no longer turns a GitHub
 social link into the hero tile: the tile is the `featuredLink` option, and is
-absent without it.
+absent without it. The menu's foot now shows that tile in whichever state it
+is in, so a tile with no `href` appears there as the placeholder; remove the
+option to remove both.
+
+The music plugin (1.2.0) accepts `autoplay`, off by default, and no longer
+prints "Open" or "Close" over the record under the pointer. Existing options
+need no change.
 
 ## Same repository: update `personal` from `main`
 
@@ -94,11 +100,13 @@ Run:
 ```bash
 npm run check
 npm run audit:prod
-npm run qa:boundary
-npm run qa:maintainer
 ```
 
-Review the site locally before deploying.
+`check` includes the branch boundary. After integrating shared UI or runtime
+changes, also run the suites in [COMMANDS.md](COMMANDS.md) that your system can
+(`qa:maintainer` compares against Windows baselines), or let the pull request's
+`validate` and `visual-regression` checks run them. Review the site locally
+before deploying.
 
 ## Visual compatibility
 
@@ -117,10 +125,10 @@ Never refresh the entire baseline set merely because an upgrade changed renderin
 Do not hand-merge:
 
 ```text
-src/portfolio/config.generated.ts
-src/portfolio/media.generated.ts
-src/blog/posts.generated.ts
-src/blog/custom-posts.generated.ts
+src/portfolio/*.generated.ts
+src/portfolio/*.generated.tsx
+src/portfolio/security.generated.json
+src/blog/*.generated.ts
 public/portfolio/
 ```
 

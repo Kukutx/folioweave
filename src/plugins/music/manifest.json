@@ -1,9 +1,9 @@
 {
   "id": "music",
   "name": "Music player",
-  "description": "A persistent, user-started player with configurable skins, docking and optional notes.",
+  "description": "A persistent player, started by the visitor or on arrival, with configurable skins, docking, covers and optional notes.",
   "setupHelp": "Configure local audio or HTTPS direct URLs in a JSON options file (see docs/PLUGINS.md).",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "apiVersion": 1,
   "entry": "player.tsx",
   "slots": ["site.floating"],
@@ -91,6 +91,11 @@
       "initialExpanded": {
         "type": "boolean",
         "default": false
+      },
+      "autoplay": {
+        "type": "boolean",
+        "default": false,
+        "description": "Start the first track on arrival. Browsers that withhold sound until the visitor has touched the page start it on their first press instead."
       },
       "offsetBottom": {
         "type": "integer",
