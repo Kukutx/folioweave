@@ -3,7 +3,7 @@
   "name": "Music player",
   "description": "A persistent player, started by the visitor or on arrival, with configurable skins, docking, covers and optional notes.",
   "setupHelp": "Configure local audio or HTTPS direct URLs in a JSON options file (see docs/PLUGINS.md).",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "apiVersion": 1,
   "entry": "player.tsx",
   "slots": ["site.floating"],
@@ -138,6 +138,7 @@
     },
     "title": "MusicOptions"
   },
+  "embeddedArtwork": [{ "each": "tracks.*", "audio": "src", "image": "cover" }],
   "networkOptions": {
     "media-src": ["tracks.*.src"],
     "img-src": ["tracks.*.cover"]
