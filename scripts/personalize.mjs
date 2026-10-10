@@ -125,10 +125,19 @@ console.log("\nFolioWeave personalization\n");
 console.log("Choose your profile, template and optional plugins.\n");
 
 const defaultCleanStart = portfolio.features?.demoRoutes !== false;
-const cleanStart = await yes(
-  "Start from a clean portfolio (remove bundled demo content)?",
-  defaultCleanStart,
-);
+// The bundled demo links to example routes that only the core branches publish,
+// so a profile branch cannot keep it: its first run starts clean, unasked.
+const mustStartClean = defaultCleanStart && branch === policy.personalBranch;
+if (mustStartClean)
+  console.log(
+    `The bundled demo content stays on ${policy.coreBranches.join(" and ")}; ${branch} starts from a clean portfolio.\n`,
+  );
+const cleanStart =
+  mustStartClean ||
+  (await yes(
+    "Start from a clean portfolio (remove bundled demo content)?",
+    defaultCleanStart,
+  ));
 
 const current = portfolio.site.identity;
 const defaults = cleanStart
