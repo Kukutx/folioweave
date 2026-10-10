@@ -292,7 +292,8 @@ function projectPlates(plates: ContinentalPlate[], frame: ContinentalFrame) {
       dots[Math.min(3, Math.floor(depth * 3.999))].push({
         screen,
         size:
-          (frame.mobile ? 0.9 : 1.15) *
+          // The same dot as on the globe, so land keeps its colour as it lifts.
+          (frame.mobile ? 1.02 : 1.32) *
           (0.57 + depth * 0.65) *
           screen.perspective,
       });
@@ -479,7 +480,7 @@ export function createContinentalRenderer(land: readonly GeoVertex[]) {
         ctx.fillStyle = frame.landColor;
         for (let i = 0; i < dots.length; i++) {
           ctx.save();
-          ctx.globalAlpha *= (0.18 + i * 0.2) * frame.landOpacity * 0.68;
+          ctx.globalAlpha *= (0.18 + i * 0.2) * frame.landOpacity;
           ctx.beginPath();
           for (const { screen: p, size } of dots[i]) {
             ctx.moveTo(p.x + size, p.y);
