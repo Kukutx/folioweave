@@ -12,9 +12,10 @@ const activity = [
 ] as const;
 /** Inside the stage everything starts unpainted and is painted piece by piece.
  * Opacity and deferred rendering are lifted so a part that the page reveals
- * later is painted here as well. */
+ * later is painted here as well, and nothing moves: an animation would paint
+ * the same element again on every frame. */
 const stageRules =
-  "[data-warm],[data-warm] *{visibility:hidden!important;opacity:1!important;content-visibility:visible!important}" +
+  "[data-warm],[data-warm] *{visibility:hidden!important;opacity:1!important;content-visibility:visible!important;animation-play-state:paused!important;transition:none!important}" +
   "[data-warm][data-drawn],[data-warm] [data-drawn]{visibility:visible!important}";
 /** A frame the GPU could not present in time: paint one element at a time. */
 const strained = 34;
@@ -77,16 +78,14 @@ function copyStyleSheets() {
   return [...copies, stage];
 }
 
-/** A copy of one section that paints like it: the same ancestors for selectors
- * and inheritance, the same width, and nothing that loads, plays or can be
- * addressed. */
+/** A copy of one section that paints like it: the same ancestors, ids and
+ * attributes for selectors and inheritance, the same width, and nothing that
+ * loads or plays. The closed shadow root it goes into is what keeps its ids
+ * and classes out of the document's reach. */
 function copyOf(section: HTMLElement) {
   const box = section.getBoundingClientRect();
   const unit = section.cloneNode(true) as HTMLElement;
   unit.setAttribute("data-warm", "");
-  unit.removeAttribute("data-theme-scope");
-  unit.removeAttribute("id");
-  for (const node of unit.querySelectorAll("[id]")) node.removeAttribute("id");
   for (const node of unit.querySelectorAll(
     "iframe,video,audio,object,embed,script",
   ))
@@ -111,7 +110,6 @@ function copyOf(section: HTMLElement) {
     ancestor = ancestor.parentElement
   ) {
     const mirror = ancestor.cloneNode(false) as HTMLElement;
-    mirror.removeAttribute("id");
     mirror.style.cssText = "display:contents!important";
     mirror.append(tree);
     tree = mirror;
@@ -149,19 +147,22 @@ export function useRasterWarmUp(root: RefObject<HTMLElement | null>) {
     const quietFrame = async () => {
       for (;;) {
         const time = await nextFrame();
-        if (disposed || !host) return null;
+        if (disposed) return null;
         const wait = busyUntil - performance.now();
         if (wait <= 0) {
-          if (!host.style.display) return time;
+          if (!host?.style.display) return time;
           host.style.display = "";
           continue;
         }
         // Out of the compositor's way until the visitor has finished.
-        host.style.display = "none";
+        if (host) host.style.display = "none";
         await new Promise((resolve) => setTimeout(resolve, wait));
       }
     };
     const paint = async (section: HTMLElement, into: ShadowRoot) => {
+      // Copying and measuring a section is the one long step: not while the
+      // visitor is using the page.
+      if ((await quietFrame()) === null) return;
       const { tree, unit } = copyOf(section);
       const sheet = document.createElement("div");
       sheet.style.cssText = `position:absolute;left:0;top:0;width:${innerWidth}px;transform-origin:0 0;will-change:transform;transform:scale(${Math.min(shown, innerHeight / section.offsetHeight)})`;
@@ -206,7 +207,7 @@ export function useRasterWarmUp(root: RefObject<HTMLElement | null>) {
     const run = async () => {
       if (disposed) return;
       await document.fonts.ready;
-      if (disposed) return;
+      if ((await quietFrame()) === null) return;
       host = document.createElement("div");
       host.setAttribute("aria-hidden", "true");
       host.inert = true;
