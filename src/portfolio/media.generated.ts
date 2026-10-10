@@ -4,6 +4,22 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1920,
     "height": 765
   },
+  "/portfolio/covers/clair-de-lune.webp": {
+    "width": 640,
+    "height": 640
+  },
+  "/portfolio/covers/gymnopedie-1.webp": {
+    "width": 640,
+    "height": 640
+  },
+  "/portfolio/covers/nocturne-op9-2.webp": {
+    "width": 640,
+    "height": 640
+  },
+  "/portfolio/covers/time-is-broken.webp": {
+    "width": 640,
+    "height": 640
+  },
   "/portfolio/photography/about-01.jpg": {
     "width": 1536,
     "height": 2048
