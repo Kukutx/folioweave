@@ -17,6 +17,30 @@ try {
     reducedMotion: "no-preference",
   });
   await installServiceFixtures(context);
+  // The stage is described in the page at the moment it is added: however fast
+  // the warm-up is, what it looked like while it existed is on record.
+  await context.addInitScript(() => {
+    new MutationObserver((records, observer) => {
+      const host = records
+        .flatMap((record) => [...record.addedNodes])
+        .find((node) => node.dataset?.rasterWarmUpStage !== undefined);
+      if (!host) return;
+      observer.disconnect();
+      const style = getComputedStyle(host);
+      const hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+      window.__stage = {
+        state: document.querySelector("[data-raster-warm-up]").dataset
+          .rasterWarmUp,
+        closed: host.shadowRoot === null,
+        hidden: host.getAttribute("aria-hidden"),
+        inert: host.inert,
+        pointerEvents: style.pointerEvents,
+        faint: Number(style.opacity) > 0 && Number(style.opacity) < 0.01,
+        children: host.childElementCount,
+        reachable: hit === host || host.contains(hit),
+      };
+    }).observe(document, { childList: true, subtree: true });
+  });
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -59,27 +83,8 @@ try {
       };
     });
   const before = await survey();
-  await page.waitForSelector("[data-raster-warm-up-stage]", {
-    state: "attached",
-    timeout: 20000,
-  });
-  const stage = await page.evaluate(() => {
-    const host = document.querySelector("[data-raster-warm-up-stage]");
-    const style = getComputedStyle(host);
-    const hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
-    return {
-      state: document.querySelector("[data-raster-warm-up]").dataset
-        .rasterWarmUp,
-      closed: host.shadowRoot === null,
-      hidden: host.getAttribute("aria-hidden"),
-      inert: host.inert,
-      pointerEvents: style.pointerEvents,
-      faint: Number(style.opacity) > 0 && Number(style.opacity) < 0.01,
-      children: host.childElementCount,
-      reachable: hit === host || host.contains(hit),
-    };
-  });
-  assert.deepEqual(stage, {
+  await page.waitForFunction(() => window.__stage, null, { timeout: 20000 });
+  assert.deepEqual(await page.evaluate(() => window.__stage), {
     state: "running",
     closed: true,
     hidden: "true",
@@ -123,7 +128,7 @@ try {
     },
     { sections: before.sections, cameras: before.cameras, ids: 0 },
   );
-  // Nothing was fetched early: the copies leave unloaded images unloaded.
+  // No image element is fetched early: the copies leave unloaded ones unloaded.
   assert.deepEqual(
     fetched.filter((address) => before.deferred.includes(address)),
     [],
@@ -131,7 +136,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    `PASS raster warm-up: ${before.sections} sections painted out of sight and out of reach, yields to input, loads nothing early, leaves nothing behind`,
+    `PASS raster warm-up: ${before.sections} sections painted out of sight and out of reach, yields to input, fetches no image element early, leaves nothing behind`,
   );
 } finally {
   await browser.close();

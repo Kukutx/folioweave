@@ -21,8 +21,10 @@ is in, so a tile with no `href` appears there as the placeholder; remove the
 option to remove both.
 
 The music plugin (1.2.0) accepts `autoplay`, off by default, and no longer
-prints "Open" or "Close" over the record under the pointer. Existing options
-need no change.
+prints "Open" or "Close" over the record under the pointer. From 1.3.0 a local
+track that names no `cover` shows the cover embedded in its MP3, FLAC or M4A
+file, if it has one; a track that already names a `cover` is unchanged.
+Existing options need no change.
 
 ## Same repository: update `personal` from `main`
 
