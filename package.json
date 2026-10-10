@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "A Next.js portfolio platform with selectable templates, shared plugins, and a validated content pipeline.",
+  "description": "A Next.js portfolio framework with selectable templates, shared plugins, and a validated content pipeline.",
   "license": "MIT",
+  "author": "Kukutx (https://github.com/Kukutx)",
+  "homepage": "https://github.com/Kukutx/folioweave#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kukutx/folioweave.git"
@@ -14,7 +16,10 @@
   },
   "keywords": [
     "nextjs",
+    "react",
     "portfolio",
+    "portfolio-template",
+    "personal-website",
     "template",
     "plugin-system",
     "typescript",

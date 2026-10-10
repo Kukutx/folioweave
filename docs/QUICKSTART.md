@@ -4,7 +4,7 @@ FolioWeave is a portfolio framework with three selectable templates. You customi
 
 ## 1. Install
 
-Requirements: Node.js 24 and npm.
+Requirements: Node.js 24 and npm. The repository carries an `.nvmrc`, so `nvm use` or `fnm use` selects the right version.
 
 ```bash
 npm ci

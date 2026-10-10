@@ -1,0 +1,50 @@
+name: Bug report
+description: Something in FolioWeave does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problems do not belong in a public issue. Report them privately as described in [SECURITY.md](https://github.com/Kukutx/folioweave/blob/main/SECURITY.md).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Classic template
+        - Refract Light or Refract Dark
+        - Music plugin
+        - Comments plugin
+        - Content pipeline or CLI
+        - Documentation
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: The fewest steps, or the smallest `portfolio.json` fragment, that shows it. Leave out anything private.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Node.js version, and the browser with its version.
+      placeholder: Windows 11, Node 24.4, Chrome 140
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: The error text, or what `npm run folio -- doctor` prints.
+      render: text
