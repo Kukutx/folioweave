@@ -1,6 +1,6 @@
 # Contributing to FolioWeave
 
-Thanks for improving FolioWeave.
+Thanks for improving FolioWeave. Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Development
 
@@ -80,6 +80,8 @@ See `docs/DESIGN-SYSTEM.md` and `docs/VISUAL-QA.md`.
 `npm run qa:boundary` also runs the reusable-vs-demo dependency guard.
 
 ## Pull requests
+
+Open pull requests against `develop`. `main` receives shared code from there, and `personal` holds the maintainer's own site ([docs/REPOSITORY-MODEL.md](docs/REPOSITORY-MODEL.md)). The pull request template asks for the same four things.
 
 Explain:
 
