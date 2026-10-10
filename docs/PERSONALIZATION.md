@@ -22,9 +22,9 @@ files without publishing unreferenced ones. Later runs keep your content and
 ask before clearing it.
 
 The wizard updates identity, contact details and optional social links. Enter
-keeps a value; `-` clears optional values. To set the weather and clock it sends
-the city and country you type to Open-Meteo's geocoding service; leave the city
-empty to skip the request. `npm run personalize -- --defaults` accepts every
+keeps a value; `-` clears optional values. To set the weather and clock it looks the
+city name up in Open-Meteo's geocoding service, the one network request the
+wizard makes; without a match it keeps UTC or the coordinates you already had. `npm run personalize -- --defaults` accepts every
 default without asking.
 
 After manual edits:
