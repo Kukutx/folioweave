@@ -1,0 +1,88 @@
+{
+  "id": "comments",
+  "name": "Comments",
+  "description": "Independent, customizable guest comments through Waline, with optional login and a Giscus adapter.",
+  "setupHelp": "For guest comments, set provider to waline and serverURL to your HTTPS Waline service. Giscus configuration remains supported. See docs/PLUGINS.md.",
+  "version": "1.1.0",
+  "generateOptions": true,
+  "apiVersion": 1,
+  "entry": "comments.tsx",
+  "slots": ["article.after"],
+  "network": {
+    "frame-src": ["https://giscus.app"]
+  },
+  "networkOptions": {
+    "connect-src": ["serverURL"]
+  },
+  "optionsSchema": {
+    "title": "CommentsOptions",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["provider"],
+    "allOf": [
+      {
+        "if": {
+          "required": ["provider"],
+          "properties": { "provider": { "const": "waline" } }
+        },
+        "then": { "required": ["serverURL"] }
+      },
+      {
+        "if": {
+          "required": ["provider"],
+          "properties": { "provider": { "const": "giscus" } }
+        },
+        "then": { "required": ["repo", "repoId", "category", "categoryId"] }
+      }
+    ],
+    "properties": {
+      "provider": { "enum": ["giscus", "waline"] },
+      "serverURL": {
+        "type": "string",
+        "format": "https-url",
+        "pattern": "^https://[^?#]+$"
+      },
+      "appearance": { "enum": ["minimal", "panel"], "default": "minimal" },
+      "accent": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+      "heading": { "type": "string", "minLength": 1, "maxLength": 80 },
+      "placeholder": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "loading": { "enum": ["manual", "viewport"] },
+      "login": { "enum": ["optional", "disabled"], "default": "disabled" },
+      "pageSize": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 30,
+        "default": 6
+      },
+      "maxLength": {
+        "type": "integer",
+        "minimum": 100,
+        "maximum": 10000,
+        "default": 2000
+      },
+      "repo": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+      },
+      "repoId": { "type": "string", "pattern": "^[A-Za-z0-9_=-]+$" },
+      "category": { "type": "string", "minLength": 1 },
+      "categoryId": { "type": "string", "pattern": "^[A-Za-z0-9_=-]+$" },
+      "theme": { "enum": ["light", "dark", "preferred_color_scheme"] },
+      "lang": {
+        "enum": [
+          "en",
+          "zh-CN",
+          "zh-TW",
+          "it",
+          "fr",
+          "de",
+          "es",
+          "ja",
+          "ko",
+          "pt",
+          "ru"
+        ]
+      }
+    }
+  }
+}

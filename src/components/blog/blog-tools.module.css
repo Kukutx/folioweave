@@ -1,0 +1,102 @@
+/* Native blog actions follow Classic Home's geometry; plugins stay independent. */
+.action {
+  position: fixed;
+  right: var(--fw-floating-right, clamp(1rem, 2.5vw, 2rem));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: calc(var(--layer-navigation, 20000) - 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.68rem 0.92rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-pill, 999px);
+  color: #111;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 12px 34px rgba(18, 21, 29, 0.16),
+    inset 0 1px rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  font: 600 0.86rem/1 var(--font-main, system-ui, sans-serif);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 180ms var(--motion-ease, ease),
+    opacity 180ms ease;
+}
+.action:hover {
+  transform: translateY(-2px);
+}
+.action:active {
+  transform: scale(0.97);
+}
+.action:focus-visible {
+  outline: 2px solid var(--color-accent, #0071e3);
+  outline-offset: 3px;
+}
+.iconOnly {
+  width: 44px;
+  padding: 0;
+}
+.label {
+  transform: translateY(-0.01em);
+}
+.action[hidden] {
+  display: none;
+}
+.action:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.enter {
+  animation: appear 220ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.error {
+  position: fixed;
+  bottom: 72px;
+  right: 1rem;
+  z-index: var(--layer-navigation, 20000);
+  max-width: min(300px, calc(100vw - 32px));
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
+  color: #333;
+  font-size: 13px;
+}
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+@media (max-width: 900px) {
+  .action {
+    right: var(--fw-floating-right, 1rem);
+    width: 44px;
+    padding: 0;
+  }
+  .label {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    animation: none;
+    transition: none;
+  }
+  .action:hover,
+  .action:active {
+    transform: none;
+  }
+}
+@media print {
+  .action,
+  .error {
+    display: none;
+  }
+}

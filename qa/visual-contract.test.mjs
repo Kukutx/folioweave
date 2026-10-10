@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import { PNG } from "pngjs";
 import {
@@ -31,7 +31,7 @@ test("a reviewed image is kept only well inside the regression budget", () => {
 });
 
 test("a baseline update replaces only what changed and reports what it kept", async () => {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), "folioweave-visual-"));
+  const root = await fs.mkdtemp(path.join(qaTempRoot, "folioweave-visual-"));
   const baseline = path.join(root, "baseline");
   const directory = path.join(root, "capture");
   await fs.mkdir(directory);

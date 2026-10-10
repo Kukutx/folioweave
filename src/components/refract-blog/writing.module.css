@@ -1,0 +1,330 @@
+.shell {
+  --writing-paper: #faf9f6;
+  --writing-ink: #252423;
+  --writing-muted: #66635e;
+  --writing-rule: #d8d5ce;
+  min-height: 100svh;
+  background: var(--writing-paper);
+  color: var(--writing-ink);
+  font-family: "DIN", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+}
+.shell[data-style="dark"] {
+  --writing-paper: #252423;
+  --writing-ink: #f0ede7;
+  --writing-muted: #b2ada4;
+  --writing-rule: #4c4843;
+  color-scheme: dark;
+}
+.shell :is(a, summary):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 6px;
+}
+.shell a {
+  color: inherit;
+  text-decoration: none;
+}
+.header,
+.footer {
+  max-width: 1500px;
+  margin: auto;
+  padding: 1.5rem clamp(1.25rem, 4.5vw, 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.header nav {
+  display: flex;
+  gap: 1.5rem;
+}
+.header a:hover,
+.footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.wordmark {
+  font-size: 1.125rem;
+  font-weight: 750;
+}
+.index,
+.article {
+  width: min(100% - 2.5rem, 1100px);
+  margin: 5rem auto 8rem;
+}
+.intro {
+  margin-bottom: 3.5rem;
+  max-width: 720px;
+}
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--writing-muted);
+  margin-bottom: 1.25rem;
+}
+.intro h1 {
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 650;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0 0 1.5rem;
+  overflow-wrap: anywhere;
+}
+.intro > p:last-child {
+  font-size: 1.2rem;
+  max-width: 560px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--writing-muted);
+}
+.tags a {
+  padding-block: 0.6rem;
+}
+.tags a[aria-current="page"] {
+  color: var(--writing-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.6rem;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--writing-rule);
+}
+.list li {
+  border-bottom: 1px solid var(--writing-rule);
+}
+.postLink {
+  display: grid;
+  grid-template-columns: 180px 1fr 2rem;
+  gap: 2rem;
+  padding: 2.5rem 0;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.25rem;
+  color: var(--writing-muted);
+  font-size: 0.875rem;
+}
+.postLink .meta {
+  align-content: start;
+  flex-direction: column;
+}
+.postLink h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+.postLink:hover h2 {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.postLink p {
+  color: var(--writing-muted);
+  max-width: 650px;
+  margin: 0;
+}
+.topicText {
+  display: block;
+  color: var(--writing-muted);
+  font-size: 0.75rem;
+  margin-top: 1.25rem;
+}
+.arrow {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.footer {
+  border-top: 1px solid var(--writing-rule);
+  color: var(--writing-muted);
+  font-size: 0.875rem;
+}
+.article {
+  max-width: 800px;
+}
+.back {
+  display: inline-block;
+  margin-bottom: 3rem;
+  font-size: 0.875rem;
+}
+.articleHeader {
+  margin-bottom: 3rem;
+}
+.articleHeader h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 1.25rem 0 1.75rem;
+  overflow-wrap: anywhere;
+}
+.dek {
+  font-size: 1.25rem;
+  color: var(--writing-muted);
+}
+.articleTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+.articleTags a {
+  border-bottom: 1px solid var(--writing-rule);
+}
+.outline {
+  padding: 1.25rem 0;
+  margin: 2rem 0 3rem;
+  border-block: 1px solid var(--writing-rule);
+}
+.outline summary {
+  cursor: pointer;
+}
+.outline ol {
+  padding-left: 1.25rem;
+}
+.outline li {
+  padding: 0.3rem 0;
+}
+.outline li[data-depth="3"] {
+  margin-left: 1rem;
+}
+.body {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.body > * {
+  margin-block: 1.5rem;
+}
+.body :is(h2, h3) {
+  scroll-margin-top: 2rem;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-top: 3rem;
+}
+.body h2 {
+  font-size: 2rem;
+}
+.body h3 {
+  font-size: 1.5rem;
+}
+.body a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.body img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+}
+.body blockquote {
+  border-left: 2px solid var(--writing-rule);
+  padding-left: 1.5rem;
+  margin-inline: 0;
+  color: var(--writing-muted);
+}
+.body pre {
+  padding: 1.25rem;
+  border: 1px solid var(--writing-rule);
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.body code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}
+.body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.body :is(th, td) {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--writing-rule);
+  text-align: left;
+}
+.body hr {
+  border: 0;
+  border-top: 1px solid var(--writing-rule);
+}
+.after:has(> *) {
+  padding-block: 3rem;
+  border-top: 1px solid var(--writing-rule);
+  margin-top: 4rem;
+}
+.articleEnd {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--writing-rule);
+  font-size: 0.875rem;
+}
+.empty {
+  padding-block: 4rem;
+  color: var(--writing-muted);
+}
+.skip {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50000;
+  padding: 1rem;
+  background: var(--writing-paper);
+  transform: translateY(-200%);
+}
+.skip:focus {
+  transform: none;
+}
+@media (max-width: 700px) {
+  .index,
+  .article {
+    margin-block: 3rem 5rem;
+  }
+  .postLink {
+    grid-template-columns: 1fr 1.5rem;
+    gap: 1rem;
+    padding-block: 2rem;
+  }
+  .postLink .meta {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+@media print {
+  .header,
+  .footer,
+  .back,
+  .outline,
+  .articleEnd,
+  .after {
+    display: none;
+  }
+  .shell {
+    background: #fff;
+    color: #000;
+  }
+  .article {
+    width: 100%;
+    margin: 0;
+  }
+}

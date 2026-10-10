@@ -1,0 +1,36 @@
+name: Prepare
+description: Node, the validation impact of this change, dependencies and browsers.
+
+inputs:
+  browsers:
+    description: Playwright browsers to install with their system libraries, space separated. Empty installs none.
+    default: ""
+
+outputs:
+  full:
+    description: "'false' only when this change was classified as documentation-only; every other value means validate everything."
+    value: ${{ steps.classify.outputs.full }}
+
+runs:
+  using: composite
+  steps:
+    - name: Fetch pull-request base
+      if: github.base_ref
+      shell: bash
+      run: git fetch --no-tags --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+    - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      with:
+        node-version: 24
+        cache: npm
+    - name: Classify validation impact
+      id: classify
+      shell: bash
+      run: node scripts/ci-impact.mjs
+    - name: Install dependencies
+      if: steps.classify.outputs.full != 'false'
+      shell: bash
+      run: npm ci
+    - name: Install browsers
+      if: steps.classify.outputs.full != 'false' && inputs.browsers != ''
+      shell: bash
+      run: node node_modules/playwright-core/cli.js install --with-deps ${{ inputs.browsers }}

@@ -3,9 +3,13 @@ import fs from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 
-const scripts = process.argv.slice(2);
+// Names are npm scripts; anything starting with "--" is passed on to each.
+const scripts = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+const flags = process.argv.slice(2).filter((arg) => arg.startsWith("--"));
 if (!scripts.length) {
-  console.error("Usage: node qa/run-with-server.mjs <npm-script> [...]");
+  console.error(
+    "Usage: node qa/run-with-server.mjs <npm-script> [...] [--flag ...]",
+  );
   process.exit(2);
 }
 
@@ -30,10 +34,11 @@ async function freePort() {
 }
 
 function runScript(script, env) {
+  const forwarded = flags.length ? ["--", ...flags] : [];
   return new Promise((resolve, reject) => {
     const npmCli = process.env.npm_execpath;
     const child = npmCli
-      ? spawn(process.execPath, [npmCli, "run", script], {
+      ? spawn(process.execPath, [npmCli, "run", script, ...forwarded], {
           cwd: process.cwd(),
           env,
           stdio: "inherit",
@@ -48,10 +53,11 @@ function runScript(script, env) {
               ),
               "run",
               script,
+              ...forwarded,
             ],
             { cwd: process.cwd(), env, stdio: "inherit" },
           )
-        : spawn("npm", ["run", script], {
+        : spawn("npm", ["run", script, ...forwarded], {
             cwd: process.cwd(),
             env,
             stdio: "inherit",
@@ -59,7 +65,8 @@ function runScript(script, env) {
     child.on("error", reject);
     child.on("exit", (code, signal) => {
       if (code === 0) resolve();
-      else reject(new Error(`${script} failed (${code ?? signal ?? "unknown"})`));
+      else
+        reject(new Error(`${script} failed (${code ?? signal ?? "unknown"})`));
     });
   });
 }
@@ -98,7 +105,9 @@ try {
   let ready = false;
   while (Date.now() < deadline) {
     if (server.exitCode !== null) {
-      throw new Error(`Next server exited early (${server.exitCode}).\n${output}`);
+      throw new Error(
+        `Next server exited early (${server.exitCode}).\n${output}`,
+      );
     }
     try {
       const response = await fetch(base, { redirect: "manual" });
@@ -119,10 +128,21 @@ try {
     NEXT_URL: base,
   };
   console.log(`\nQA server ready: ${base}\n`);
+  const failures = [];
   for (const script of scripts) {
-    await runScript(script, env);
+    try {
+      await runScript(script, env);
+    } catch (error) {
+      failures.push(error);
+      console.error(error.message);
+    }
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
+  if (failures.length)
+    throw new AggregateError(
+      failures,
+      `${failures.length} QA suite(s) failed: ${failures.map((error) => error.message).join("; ")}`,
+    );
 } finally {
   stopTree(server);
 }

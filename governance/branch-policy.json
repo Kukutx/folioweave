@@ -1,5 +1,8 @@
 {
-  "coreBranches": ["main", "develop"],
+  "coreBranches": [
+    "main",
+    "develop"
+  ],
   "personalBranch": "personal",
   "profileConfig": "portfolio.json",
   "profileSpecificFiles": [

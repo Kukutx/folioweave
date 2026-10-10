@@ -1,0 +1,55 @@
+{
+  "title": "Global land point samples",
+  "credit": "Made with Natural Earth. Land boundaries redistributed by World Atlas, Mike Bostock and contributors.",
+  "description": "Deterministic, approximately equal-area points on the sphere, retained only when contained in the source global land polygons. These are geographic surface samples, not research measurements or flux-tower locations.",
+  "source": {
+    "name": "Natural Earth",
+    "dataVersion": "4.1.0",
+    "dataset": "Land polygons including major islands",
+    "scale": "1:110,000,000",
+    "url": "https://www.naturalearthdata.com/downloads/110m-physical-vectors/110m-land/",
+    "license": "Public domain",
+    "licenseUrl": "https://www.naturalearthdata.com/about/terms-of-use/"
+  },
+  "distribution": {
+    "package": "world-atlas",
+    "version": "2.0.2",
+    "file": "land-110m.json",
+    "repository": "https://github.com/topojson/world-atlas",
+    "archiveUrl": "https://registry.npmjs.org/world-atlas/-/world-atlas-2.0.2.tgz",
+    "directFileUrl": "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json",
+    "sourceSha256": "ead5f68119c49a9250902e7da303bcb209341bbb8fefe7369a439b48b704658a",
+    "packageLicense": "ISC",
+    "packageLicenseText": "Copyright 2013-2019 Michael Bostock\n\nPermission to use, copy, modify, and/or distribute this software for any purpose\nwith or without fee is hereby granted, provided that the above copyright notice\nand this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH\nREGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND\nFITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,\nINDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS\nOF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER\nTORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF\nTHIS SOFTWARE."
+  },
+  "output": {
+    "file": "src/components/refract/lib/land-points.json",
+    "coordinateOrder": [
+      "longitude",
+      "latitude"
+    ],
+    "units": "decimal degrees",
+    "pointCount": 4031,
+    "decimalPlaces": 6,
+    "sha256": "4ad4714c65ae3e43fba4f82d7e94cdc1a52ab330eebdbb82d48602215954ba09"
+  },
+  "sampling": {
+    "method": "Fibonacci sphere followed by spherical point-in-polygon containment",
+    "candidateCount": 14000,
+    "seed": "deterministic, no random numbers",
+    "formulas": {
+      "goldenAngleRadians": "PI * (3 - sqrt(5))",
+      "z": "1 - 2 * (i + 0.5) / 14000",
+      "latitudeDegrees": "asin(z) * 180 / PI",
+      "longitudeDegrees": "((i * goldenAngleRadians * 180 / PI + 180) % 360) - 180"
+    },
+    "rounding": "Longitude and latitude rounded to 6 decimal places before containment.",
+    "geometryConversion": "topojson-client@3.1.0 feature(topology, topology.objects.land)",
+    "containment": "d3-geo@3.1.1 geoContains(land, [longitude, latitude])",
+    "sphericalAreaFraction": 0.28869864,
+    "sampledLandFraction": 0.28792857,
+    "includesAntarctica": true,
+    "notes": "Fibonacci candidates are approximately uniform per spherical area, avoiding polar oversampling from a regular longitude/latitude grid. Small islands may receive no sample at this density."
+  },
+  "generatedOn": "2026-10-07"
+}

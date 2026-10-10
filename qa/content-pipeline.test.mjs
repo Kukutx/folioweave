@@ -1,6 +1,7 @@
+import { seedProjectDefinitions, publishFixture as publishContent } from "./project-fixture.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
+import { qaTempRoot } from "./temp-directory.mjs";
 import path from "node:path";
 import test from "node:test";
 import { createHash } from "node:crypto";
@@ -12,10 +13,10 @@ import {
 } from "../src/portfolio/content-policy.mjs";
 import {
   prepareContent,
-  publishContent,
   generatedOutputs,
 } from "../scripts/content-build.mjs";
 import { commitGeneratedOutputs } from "../scripts/atomic-output.mjs";
+import { resolveExtensions } from "../src/core/extensions.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const personal = JSON.parse(
@@ -27,10 +28,12 @@ const demo = JSON.parse(
 
 test("published asset bytes are the validated snapshot, not deferred source reads", async () => {
   const temporary = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-content-test-"),
+    path.join(qaTempRoot, "folioweave-content-test-"),
   );
   try {
-    const config = structuredClone(personal);
+    // This fixture supplies no author's posts or routes. Start from the known
+    // demo contract rather than inheriting arbitrary links from their profile.
+    const config = structuredClone(demo);
     config.features.demoRoutes = false;
     config.features.work = false;
     config.projects = [];
@@ -78,6 +81,7 @@ test("published asset bytes are the validated snapshot, not deferred source read
     await fs.copyFile(path.join(temporary, originalRelative), snapshotSource);
     config.site.assets.socialPreview = snapshotPath;
 
+    await seedProjectDefinitions(temporary);
     const plan = await prepareContent(temporary, config);
     const output = generatedOutputs(plan, temporary).find(
       (item) => item.target === "public/portfolio",
@@ -103,10 +107,10 @@ test("published asset bytes are the validated snapshot, not deferred source read
 
 test("Markdown-only downloads are published; draft downloads stay in source", async () => {
   const temporary = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-content-test-"),
+    path.join(qaTempRoot, "folioweave-content-test-"),
   );
   try {
-    const config = structuredClone(personal);
+    const config = structuredClone(demo);
     config.features.resume = false;
     config.features.demoRoutes = false;
     config.features.work = false;
@@ -154,6 +158,7 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
       `---\ntitle: Download\ndate: 2026-01-01\ndescription: Test\ndraft: ${draft}\n---\n\n[Download](${downloadPath}#page=2)`;
     const filename = path.join(temporary, "content/blogs/download.md");
     await fs.writeFile(filename, article(false));
+    await seedProjectDefinitions(temporary);
     const published = await prepareContent(temporary, config);
     assert.ok(published.media[downloadPath]);
     await publishContent(published, temporary);
@@ -179,7 +184,7 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
       /unpublished route/,
     );
   } finally {
-    assert.equal(path.dirname(temporary), os.tmpdir());
+    assert.equal(path.dirname(temporary), qaTempRoot);
     assert.ok(path.basename(temporary).startsWith("folioweave-content-test-"));
     await fs.rm(temporary, { recursive: true });
   }
@@ -187,7 +192,7 @@ test("Markdown-only downloads are published; draft downloads stay in source", as
 
 test("an incomplete rollback retains the journal and blocks further writers", async (t) => {
   const temporary = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-content-test-"),
+    path.join(qaTempRoot, "folioweave-content-test-"),
   );
   const rename = fs.rename;
   try {
@@ -199,7 +204,6 @@ test("an incomplete rollback retains the journal and blocks further writers", as
       "recover me",
     );
     await fs.mkdir(path.join(temporary, "src"));
-    await fs.writeFile(path.join(temporary, "src/blog"), "obstruction");
     t.mock.method(fs, "rename", async (from, to) => {
       if (
         from === path.join(temporary, "public/portfolio") &&
@@ -214,7 +218,11 @@ test("an incomplete rollback retains the journal and blocks further writers", as
       commitGeneratedOutputs(temporary, [
         { target: "public/portfolio", files: [] },
         { target: "src/blog/posts.generated.ts", contents: "new" },
-      ]),
+      ], {
+        // Introduce the obstruction after staging. A pre-existing file parent
+        // fails during reads as ENOTDIR on Linux, before rollback is exercised.
+        beforeCommit: () => fs.writeFile(path.join(temporary, "src/blog"), "obstruction"),
+      }),
       /rollback needs recovery/,
     );
     const lock = JSON.parse(
@@ -240,7 +248,7 @@ test("an incomplete rollback retains the journal and blocks further writers", as
     });
   } finally {
     t.mock.restoreAll();
-    assert.equal(path.dirname(temporary), os.tmpdir());
+    assert.equal(path.dirname(temporary), qaTempRoot);
     assert.ok(path.basename(temporary).startsWith("folioweave-content-test-"));
     await fs.rm(temporary, { recursive: true });
   }
@@ -378,7 +386,7 @@ test("profile image fields reject non-images and ambiguous path aliases", async 
 
 test("publication removes old output without removing author sources", async () => {
   const temporary = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-content-test-"),
+    path.join(qaTempRoot, "folioweave-content-test-"),
   );
   try {
     await fs.mkdir(path.join(temporary, "public/portfolio"), {
@@ -396,9 +404,19 @@ test("publication removes old output without removing author sources", async () 
       path.join(temporary, "content/assets/portfolio/draft.txt"),
       "author source",
     );
-    await publishContent(
-      { config: personal, media: {}, routes: ["/"], posts: [] },
+    await commitGeneratedOutputs(
       temporary,
+      generatedOutputs(
+        {
+          config: personal,
+          extensions: resolveExtensions(personal),
+          media: {},
+          routes: ["/"],
+          posts: [],
+          customPosts: [],
+        },
+        temporary,
+      ),
     );
     assert.deepEqual(
       await fs.readdir(path.join(temporary, "public/portfolio")),
@@ -412,7 +430,7 @@ test("publication removes old output without removing author sources", async () 
       "author source",
     );
   } finally {
-    assert.equal(path.dirname(temporary), os.tmpdir());
+    assert.equal(path.dirname(temporary), qaTempRoot);
     assert.ok(path.basename(temporary).startsWith("folioweave-content-test-"));
     await fs.rm(temporary, { recursive: true });
   }
@@ -420,7 +438,7 @@ test("publication removes old output without removing author sources", async () 
 
 test("an output failure restores previously replaced files", async () => {
   const temporary = await fs.mkdtemp(
-    path.join(os.tmpdir(), "folioweave-content-test-"),
+    path.join(qaTempRoot, "folioweave-content-test-"),
   );
   try {
     await fs.mkdir(path.join(temporary, "public/portfolio"), {
@@ -452,7 +470,7 @@ test("an output failure restores previously replaced files", async () => {
     );
     assert.deepEqual(await fs.readdir(path.join(temporary, ".generated")), []);
   } finally {
-    assert.equal(path.dirname(temporary), os.tmpdir());
+    assert.equal(path.dirname(temporary), qaTempRoot);
     assert.ok(path.basename(temporary).startsWith("folioweave-content-test-"));
     await fs.rm(temporary, { recursive: true });
   }

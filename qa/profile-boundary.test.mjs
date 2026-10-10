@@ -5,18 +5,43 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { qaTempRoot } from "./temp-directory.mjs";
 import { assertProjectPublicationAllowed } from "../scripts/content-build.mjs";
 import {
   assertProfilePublicationAllowed,
   evaluateProfileBoundary,
+  loadBranchPolicy,
+  profileOwnedFiles,
   resolveBoundaryTarget,
   sharedBaseCandidates,
 } from "../scripts/profile-boundary.mjs";
+import {
+  extensionOutputs,
+  loadCatalog,
+  resolveExtensions,
+} from "../src/core/extensions.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const demo = JSON.parse(
   fs.readFileSync(path.join(root, "governance", "demo-portfolio.json"), "utf8"),
 );
+
+test("Git-free canonical snapshots cannot override an explicit personal deployment", () => {
+  const snapshot = fs.mkdtempSync(path.join(qaTempRoot, "profile-policy-"));
+  try {
+    fs.cpSync(path.join(root, "governance"), path.join(snapshot, "governance"), { recursive: true });
+    assert.equal(fs.existsSync(path.join(snapshot, ".git")), false);
+    const standalone = evaluateProfileBoundary(snapshot, demo, { targetBranch: "snapshot" });
+    assert.equal(standalone.core, true);
+    assert.deepEqual(standalone.errors, []);
+    const deployed = evaluateProfileBoundary(snapshot, demo, { targetBranch: "personal" });
+    assert.equal(deployed.core, false);
+    assert.equal(deployed.personal, true);
+    assert.throws(() => assertProfilePublicationAllowed(snapshot, demo, { targetBranch: "personal" }), /Profile publication blocked for personal/);
+  } finally {
+    fs.rmSync(snapshot, { recursive: true, force: true });
+  }
+});
 
 test("profile boundary keeps core and personal publication roles distinct", () => {
   assert.deepEqual(
@@ -174,4 +199,27 @@ test("content build blocks demo publication before generated output replacement"
     before,
     "blocked publication still changed generated profile output",
   );
+});
+
+test("selecting any template or plugin rewrites only profile-owned files", () => {
+  const policy = loadBranchPolicy(root);
+  const owned = profileOwnedFiles(policy);
+  const catalog = loadCatalog(root);
+  for (const file of policy.profileSpecificFiles)
+    assert.ok(
+      fs.existsSync(path.join(root, file)),
+      `Branch policy names a file nothing produces: ${file}`,
+    );
+  for (const template of catalog.templates) {
+    const profile = structuredClone(demo);
+    profile.template = { id: template.id, settings: {} };
+    profile.plugins = {};
+    const outputs = extensionOutputs(resolveExtensions(profile, catalog));
+    assert.ok(outputs.length > 2);
+    for (const { target } of outputs)
+      assert.ok(
+        owned.includes(target),
+        `${template.id} rewrites ${target}, which the personal branch may not change`,
+      );
+  }
 });

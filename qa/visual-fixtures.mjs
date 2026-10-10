@@ -12,8 +12,7 @@ const root = process.cwd();
 const minimalHome = process.argv.includes("--minimal-home");
 // Keep disposable QA state inside the one FolioWeave project directory.
 const sandboxRoot = path.join(root, ".generated", "qa-sandboxes");
-// Recover automatically from a previously interrupted local fixture run.
-await fs.rm(sandboxRoot, { recursive: true, force: true });
+// Each run owns only its own directory; another QA process may still be active.
 await fs.mkdir(sandboxRoot, { recursive: true });
 const temporary = await fs.mkdtemp(path.join(sandboxRoot, "visual-"));
 const dependencyLink = path.join(temporary, "node_modules");
@@ -212,6 +211,7 @@ try {
   await fs.writeFile(path.join(root, minimalHome ? "qa/profile-matrix-report.json" : "qa/visual-fixtures-report.json"), JSON.stringify({ report, sandbox: "project-scoped disposable" }, null, 2));
   // Unlink dependencies first so recursive cleanup can never follow the junction.
   await fs.unlink(dependencyLink).catch((error) => { if (error?.code !== "ENOENT") throw error; });
+  assert.equal(path.dirname(temporary), sandboxRoot, "fixture cleanup must stay in its owned sandbox");
   await fs.rm(temporary, { recursive: true, force: true });
   const remainingSandboxes = await fs.readdir(sandboxRoot).catch(() => []);
   if (!remainingSandboxes.length) await fs.rmdir(sandboxRoot).catch(() => {});

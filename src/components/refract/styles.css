@@ -1,0 +1,15 @@
+/* Refract's cascade, in order. Each layer refines the ones before it, so the
+   order below is part of the design: later files win ties. */
+@import "./styles/typeface.css"; /* The typeface, one file per script (generated) */
+@import "./styles/base.css"; /* Reset, typeface, root surface, links and focus */
+@import "./styles/scene.css"; /* Stage, chapters, scene copy, figures and profile sections */
+@import "./styles/responsive.css"; /* First responsive pass and reduced motion */
+@import "./styles/stage-repairs.css"; /* Corrections inside the full-screen stage */
+@import "./styles/measurements.css"; /* Header, type and control sizes taken from the reference */
+@import "./styles/controls.css"; /* Pause, Home, header and figure placement */
+@import "./styles/presets.css"; /* Structure shared by both styles, then the light surfaces */
+@import "./styles/intro.css"; /* The opening sequence's single clock */
+@import "./styles/hero-rhythm.css"; /* Hero footer exit, mobile menu pane and the featured tile */
+@import "./styles/timeline.css"; /* Chapter timeline entrance, cursors and seeking */
+@import "./styles/reading-phases.css"; /* Below desktop width: copy and figures in their own scroll phases */
+@import "./styles/host.css"; /* Tokens the host and plugins read */

@@ -53,6 +53,34 @@ skipped, while the latter must still build normally.
 
 After attaching a custom domain, update `site.origin`, rebuild, and redeploy so canonical URLs, sitemap, Open Graph metadata, and JSON-LD point at the real production origin.
 
+## The public demos
+
+Each template has a public demo in its own Vercel project: `folioweave-classic`,
+`folioweave-refract-light` and `folioweave-refract-dark`. None is built from a
+branch. A demo is an isolated snapshot of the shared code with a demo profile
+(`governance/demo-portfolio.json` for Classic, `governance/templates/` for
+Refract), uploaded with the Vercel CLI:
+
+```bash
+npm run demo:deploy -- classic
+npm run demo:deploy -- light
+npm run demo:deploy -- dark
+```
+
+Add `--preview` to upload without promoting to production. The command never
+reads or writes `portfolio.json` or author media, works from any branch, and
+removes its snapshot when it finishes.
+
+The three projects are also connected to this repository, so they redeploy
+themselves: a push to `main` updates all three with no command and no token. Each
+project carries two environment variables, `FOLIO_DEMO` (`classic`, `light` or
+`dark`) and `BOUNDARY_TARGET=snapshot`. `vercel.json` runs
+`scripts/demo-stage.mjs` before the build; in a project that names a demo it
+writes that demo's profile, artwork and sample writing into the host's checkout,
+and in every other project it does nothing. It refuses to run outside a Vercel
+build, because it replaces `portfolio.json`. Demo projects build `main` and
+`develop` only; other branches and pull requests are skipped.
+
 ## Other Next.js hosts
 
 Use the provider's current Next.js integration. The application uses App Router routes and Route Handlers, so the host must support the project's Next.js runtime rather than only static HTML export.

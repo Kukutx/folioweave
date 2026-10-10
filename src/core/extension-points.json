@@ -1,0 +1,14 @@
+{
+  "slots": {
+    "site.floating": "site-floating",
+    "site.footer": "site-footer",
+    "article.after": "article-after"
+  },
+  "views": {
+    "Layout": "layout",
+    "Home": "home",
+    "BlogIndex": "blog-index",
+    "BlogPost": "blog-post",
+    "BlogTag": "blog-tag"
+  }
+}
