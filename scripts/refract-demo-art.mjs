@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Draws the four figures of the Refract demo profile. They are original,
+// Draws the four project figures of the Refract demo profile. They are original,
 // deterministic drawings: run this again after changing a study and commit the
 // SVG files it writes to governance/templates/assets.
 import fs from "node:fs/promises";
@@ -239,32 +239,7 @@ const materialStudies = () => {
   return frame(accent, "MATERIAL STUDIES", "04", body);
 };
 
-// The demo's stand-in portrait: a figure drawn as a contour study.
-const portrait = () => {
-  const accent = "#ff4b4b";
-  let body = "";
-  for (let i = 0; i < 9; i++) {
-    const grow = i * 13;
-    body += `<circle cx="300" cy="238" r="${92 + grow}" fill="none" stroke="${i === 0 ? accent : ink}" stroke-opacity="${i === 0 ? 1 : 0.34 - i * 0.034}" stroke-width="${i === 0 ? 2.4 : 1.2}"/>`;
-    body += `<path d="M${88 - grow} 600C${88 - grow} ${452 - grow} ${196 - grow * 0.4} ${372 - grow} 300 ${372 - grow}S${512 + grow} ${452 - grow} ${512 + grow} 600" fill="none" stroke="${i === 0 ? accent : ink}" stroke-opacity="${i === 0 ? 1 : 0.34 - i * 0.034}" stroke-width="${i === 0 ? 2.4 : 1.2}"/>`;
-  }
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">` +
-    `<defs><radialGradient id="g" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#3a3735"/><stop offset="1" stop-color="#191817"/></radialGradient>` +
-    `<radialGradient id="a" cx="50%" cy="42%" r="46%"><stop offset="0" stop-color="${accent}" stop-opacity=".3"/><stop offset="1" stop-color="${accent}" stop-opacity="0"/></radialGradient>` +
-    `<pattern id="d" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1" fill="${ink}" fill-opacity=".1"/></pattern>` +
-    `<clipPath id="c"><rect width="600" height="600"/></clipPath></defs>` +
-    `<rect width="600" height="600" fill="url(#g)"/><rect width="600" height="600" fill="url(#d)"/><rect width="600" height="600" fill="url(#a)"/>` +
-    `<g clip-path="url(#c)">${body}</g>` +
-    `<circle cx="300" cy="238" r="92" fill="${ink}" fill-opacity=".08"/>` +
-    `<path d="M88 600C88 452 196 372 300 372S512 452 512 600Z" fill="${ink}" fill-opacity=".08"/>` +
-    `<g font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="13" fill="${ink}" fill-opacity=".55"><text x="32" y="44">PORTRAIT</text><text x="568" y="44" text-anchor="end">PLACEHOLDER</text></g></svg>
-`
-  );
-};
-
 const figures = {
-  "portrait.svg": portrait(),
   "field-notes.svg": fieldNotes(),
   "common-ground.svg": commonGround(),
   "open-atlas.svg": openAtlas(),
