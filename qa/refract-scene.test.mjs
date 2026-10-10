@@ -970,3 +970,26 @@ test("every lane draws whole frames from one clock, and a late frame never repla
     names.forEach((name, i) => originals[i] ? Object.defineProperty(globalThis, name, originals[i]) : Reflect.deleteProperty(globalThis, name));
   }
 });
+
+test("a resting chapter keeps its plates afloat on the clock, and a closed globe stays still", async () => {
+  const drift = await load("lib/continental-drift.ts");
+  const plates = drift.createContinentalPlates([]);
+  const plate = plates.find(item => item.region === "asia"), index = plates.indexOf(plate);
+  const angle = (a, b) => Math.acos(Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z)) * 180 / Math.PI;
+  const travel = phase => {
+    const start = drift.continentalPose(plate, phase, index, .55, 0, .9);
+    let tilt = 0, lift = 0;
+    for (let time = 0; time <= 40; time += .25) {
+      const pose = drift.continentalPose(plate, phase, index, .55, time, .9);
+      tilt = Math.max(tilt, angle(start.normal, pose.normal));
+      lift = Math.max(lift, Math.hypot(pose.center.x - start.center.x, pose.center.y - start.center.y, pose.center.z - start.center.z));
+    }
+    return { tilt, lift };
+  };
+  const resting = travel(.5);
+  assert.ok(resting.tilt > 15, "A resting plate barely rocks");
+  assert.ok(resting.lift > .01, "A resting plate does not breathe away from the globe");
+  for (const phase of [0, 1]) assert.deepEqual(travel(phase), { tilt: 0, lift: 0 }, "The closed globe moved by itself");
+  const a = drift.continentalPose(plate, .5, index, .55, 3, .9), b = drift.continentalPose(plate, .5, index, .55, 3 + 1 / 60, .9);
+  assert.ok(angle(a.normal, b.normal) < .2, "The float must be slow enough to read as drifting");
+});

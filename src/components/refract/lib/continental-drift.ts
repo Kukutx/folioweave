@@ -124,23 +124,32 @@ export function continentalPose(
   time = 0,
   spread = 1,
 ): ContinentalPose {
-  const amount = continentalAmount(phase, index) * clamp(amplitude, 0, 1.4);
+  const open = continentalAmount(phase, index);
+  const amount = open * clamp(amplitude, 0, 1.4);
   const seed = plate.seed,
     n = plate.normal;
-  const turn = amount * (1 - 1.1 * smooth(0.71, 0.94, phase));
+  const settle = 1 - 1.1 * smooth(0.71, 0.94, phase);
+  const turn = amount * settle;
+  // The scroll position opens and closes the plates; the clock keeps them
+  // afloat in between. A resting chapter is never still: each plate rocks on
+  // three axes, rolls slowly and breathes away from the globe, at the strength
+  // of a full separation however far the lift itself is set.
+  const afloat = open * Math.max(0, settle);
   const local = rotation(
-    ((seed - 0.5) * 2.5 +
-      Math.sin(time * 0.55 + seed * 17) * 0.4 +
-      (phase - 0.45) * (seed > 0.5 ? 1 : -1)) *
-      turn,
-    ((noise(seed * 91) - 0.5) * 1.8 +
-      Math.cos(time * 0.43 + seed * 23) * 0.32) *
-      turn,
-    ((noise(seed * 37) - 0.5) * 1.1 +
-      Math.sin(time * 0.31 + seed * 31) * 0.18) *
-      turn,
+    ((seed - 0.5) * 2.5 + (phase - 0.45) * (seed > 0.5 ? 1 : -1)) * turn +
+      (Math.sin(time * 0.55 + seed * 17) * 0.4 +
+        Math.sin(time * 0.19 + seed * 9) * 0.3) *
+        afloat,
+    (noise(seed * 91) - 0.5) * 1.8 * turn +
+      Math.cos(time * 0.43 + seed * 23) * 0.32 * afloat,
+    (noise(seed * 37) - 0.5) * 1.1 * turn +
+      Math.sin(time * 0.31 + seed * 31) * 0.18 * afloat,
   );
-  const lift = (0.22 + seed * 0.26) * amount * clamp(spread, 0.5, 1.6),
+  const lift =
+      (0.22 + seed * 0.26) *
+      amount *
+      clamp(spread, 0.5, 1.6) *
+      (1 + Math.sin(time * 0.47 + seed * 41) * 0.2 * afloat),
     flatten = Math.min(1, amount),
     scale = 1 - amount * 0.09;
   const axis = (x: number, y: number, z: number) => {

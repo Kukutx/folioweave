@@ -76,6 +76,10 @@ jobs:
         uses: ./.github/actions/prepare
         with:
           browsers: chromium
+      # The fixtures render the profile's own published media. No build runs in
+      # this job, so publish the content the suites read.
+      - run: npm run content:build
+        if: steps.impact.outputs.full != 'false'
       - run: npm run qa:visual-fixtures
         if: steps.impact.outputs.full != 'false'
       - run: npm run qa:profiles
