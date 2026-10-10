@@ -295,7 +295,7 @@ html[data-template="refract-light"],
 .refract-site[data-style="light"] .site-header nav a:hover {
   color: #111;
 }
-.refract-site[data-style="light"] .site-header nav a:last-child {
+.refract-site[data-style="light"] .site-header nav > a:last-of-type {
   color: var(--contact-foreground);
 }
 .refract-site[data-style="light"] .intro-text .intro-position {
@@ -350,7 +350,7 @@ html[data-template="refract-light"],
   .refract-site[data-style="light"] .site-header nav {
     background: #fff;
   }
-  .refract-site[data-style="light"] .site-header nav a:last-child {
+  .refract-site[data-style="light"] .site-header nav > a:last-of-type {
     background: transparent;
   }
   .refract-site[data-style="light"] .site-header::after {

@@ -3,9 +3,13 @@ import fs from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 
-const scripts = process.argv.slice(2);
+// Names are npm scripts; anything starting with "--" is passed on to each.
+const scripts = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+const flags = process.argv.slice(2).filter((arg) => arg.startsWith("--"));
 if (!scripts.length) {
-  console.error("Usage: node qa/run-with-server.mjs <npm-script> [...]");
+  console.error(
+    "Usage: node qa/run-with-server.mjs <npm-script> [...] [--flag ...]",
+  );
   process.exit(2);
 }
 
@@ -30,10 +34,11 @@ async function freePort() {
 }
 
 function runScript(script, env) {
+  const forwarded = flags.length ? ["--", ...flags] : [];
   return new Promise((resolve, reject) => {
     const npmCli = process.env.npm_execpath;
     const child = npmCli
-      ? spawn(process.execPath, [npmCli, "run", script], {
+      ? spawn(process.execPath, [npmCli, "run", script, ...forwarded], {
           cwd: process.cwd(),
           env,
           stdio: "inherit",
@@ -48,10 +53,11 @@ function runScript(script, env) {
               ),
               "run",
               script,
+              ...forwarded,
             ],
             { cwd: process.cwd(), env, stdio: "inherit" },
           )
-        : spawn("npm", ["run", script], {
+        : spawn("npm", ["run", script, ...forwarded], {
             cwd: process.cwd(),
             env,
             stdio: "inherit",

@@ -86,7 +86,7 @@ that is strongly affected by the host compositor/scheduler:
 
 This split does not loosen protected CI. GitHub `validate` sets
 `QA_RUNTIME_REFERENCE=1`, so the full long-task and frame budgets remain blocking
-on the reference runner. Use `npm run qa:runtime-reference` to request the same
+on the reference runner. Use `npm run qa:runtime -- --reference` to request the same
 strict host-sensitive gate locally. Ordinary `npm run qa:runtime` still fails on
 CLS, LCP and deterministic interaction-work regressions, but records host-sensitive
 long-task/frame overruns as warnings instead of treating machine pressure as an
@@ -99,8 +99,10 @@ a warning in every mode; deterministic interaction work is gated separately.
 These synthetic budgets are not field INP, a 60fps guarantee or real-user Core
 Web Vitals.
 
-`qa:runtime-diagnostic` runs one constrained desktop/reduced-motion sample and
-reports every overrun without failing. `qa:runtime-trace` additionally captures a
+`npm run qa:runtime -- --diagnostic` runs one constrained desktop/reduced-motion
+sample and reports every overrun without failing; add `--motion=normal`,
+`--viewport=mobile` or `--profile=native` to change the sample.
+`npm run qa:runtime -- --trace` additionally captures a
 Chrome timeline and sampled CPU profile. The normal/mobile/native diagnostic
 variants narrow that diagnostic sample only; they cannot narrow the acceptance
 matrix. Profiling overhead can itself exceed timing budgets, so a trace is evidence
