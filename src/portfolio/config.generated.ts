@@ -446,6 +446,9 @@ const portfolio = {
         "initialExpanded": false,
         "autoplay": true,
         "volume": 0.7,
+        "notes": {
+          "enabled": true
+        },
         "tracks": [
           {
             "id": "time-is-broken",
