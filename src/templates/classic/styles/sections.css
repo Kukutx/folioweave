@@ -455,8 +455,10 @@
 .work-item:hover {
   opacity: 1;
 }
-.work-carousel-enabled .work-content,
-.work-screens-enabled .work-content {
+/* Every card fills the column whatever its media. Sized by its content, an
+   image card stayed narrow until its lazy image arrived, then reflowed and
+   pushed the rest of the page down. */
+.work-content {
   width: 100%;
 }
 /* Screens bring their own frames; the panel behind them stays clear so the
