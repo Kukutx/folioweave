@@ -132,17 +132,17 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 512,
     "height": 512
   },
-  "/portfolio/projects/devmate/devmate-main.png": {
-    "width": 2538,
-    "height": 1367
+  "/portfolio/projects/devmate/devmate-workbench-mobile.webp": {
+    "width": 1440,
+    "height": 1400
   },
-  "/portfolio/projects/devmate/devmate-obsidian.png": {
-    "width": 2555,
-    "height": 1376
+  "/portfolio/projects/devmate/devmate-workbench.webp": {
+    "width": 2000,
+    "height": 1250
   },
   "/portfolio/projects/devmate/icon.png": {
-    "width": 128,
-    "height": 128
+    "width": 256,
+    "height": 256
   },
   "/portfolio/resume/liu-zhong-li-cv.png": {
     "width": 1240,
