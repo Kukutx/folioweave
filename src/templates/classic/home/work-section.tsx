@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image, { getImageProps } from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Award, MessageSquareText } from "lucide-react";
-import { memo, useEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "@/components/motion-text";
 import { MediaCarousel } from "@/components/media/media-carousel";
@@ -83,21 +83,11 @@ function BookOpenGlyph({ size = 16 }: { size?: number }) {
   );
 }
 
+// Spacing between actions belongs to the `.work-actions` row, not to a link,
+// so any number of actions wraps cleanly at every width.
 function ActionLink({ action }: { action: PortfolioProjectAction }) {
-  const accent = action.tone === "accent";
-  const style: CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: ".4rem",
-    textDecoration: "none",
-    color: accent ? "var(--color-accent)" : "inherit",
-    fontWeight: 500,
-    fontSize: ".9rem",
-    borderBottom: accent ? "1px solid transparent" : "1px solid currentColor",
-    paddingBottom: 2,
-    cursor: "pointer",
-    ...(accent ? { marginLeft: "1.5rem" } : {}),
-  };
+  const className =
+    action.tone === "accent" ? "work-action work-action--accent" : "work-action";
   const content = (
     <>
       {action.label}
@@ -108,16 +98,6 @@ function ActionLink({ action }: { action: PortfolioProjectAction }) {
       )}
     </>
   );
-  const hoverProps = accent
-    ? {
-        onMouseOver: (event: React.MouseEvent<HTMLElement>) => {
-          event.currentTarget.style.borderBottomColor = "var(--color-accent)";
-        },
-        onMouseOut: (event: React.MouseEvent<HTMLElement>) => {
-          event.currentTarget.style.borderBottomColor = "transparent";
-        },
-      }
-    : {};
   const newTab = action.newTab ?? !action.href.startsWith("/");
   const tabProps = newTab
     ? { target: "_blank" as const, rel: "noopener noreferrer" }
@@ -125,13 +105,13 @@ function ActionLink({ action }: { action: PortfolioProjectAction }) {
 
   if (action.href.startsWith("/")) {
     return (
-      <Link href={action.href} {...tabProps} style={style} {...hoverProps}>
+      <Link href={action.href} {...tabProps} className={className}>
         {content}
       </Link>
     );
   }
   return (
-    <a href={action.href} {...tabProps} style={style} {...hoverProps}>
+    <a href={action.href} {...tabProps} className={className}>
       {content}
     </a>
   );
@@ -453,7 +433,7 @@ const ProjectCard = memo(function ProjectCard({
               />
             )}
             {project.actions?.length ? (
-              <div>
+              <div className="work-actions">
                 {project.actions.map((action) => (
                   <ActionLink
                     key={`${project.id}-${action.label}`}

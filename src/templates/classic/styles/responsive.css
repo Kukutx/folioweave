@@ -476,9 +476,11 @@ body {
 #work .work-text-side {
   gap: 0.16rem;
 }
+/* The project name follows the scroll theme like the rest of the page, so it
+   stays readable while the background darkens towards Photography. */
 #work .work-text-company {
   gap: 0.3em;
-  color: var(--color-heading);
+  color: inherit;
   font-size: clamp(1.02rem, 1.25vw, 1.12rem);
   font-weight: 500;
   line-height: 1.4;
@@ -511,7 +513,6 @@ body {
   text-wrap: pretty;
 }
 #work .work-text-side a:not(.award-badge) {
-  color: #242424;
   font-family: "Satoshi", var(--font-main);
   font-weight: 500 !important;
   letter-spacing: -0.004em;

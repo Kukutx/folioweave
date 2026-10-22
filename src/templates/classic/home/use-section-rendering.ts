@@ -51,13 +51,30 @@ export function useSectionRendering(root: RefObject<HTMLDivElement | null>) {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(measure);
     });
-    void document.fonts.ready.then(() => {
-      if (!disposed) {
-        // ResizeObserver supplies the initial width as well. Measure once,
-        // before visibility observers can skip any unmeasured section.
-        observer.observe(container);
-      }
+    // Measure only once the page has settled: fonts, the load event (images
+    // and lazily imported sections) and an idle frame. On a slow phone an
+    // earlier measurement recorded pre-hydration heights, and sections that
+    // grew afterwards pushed the content below them when they were rendered
+    // again during a scroll (layout shifts of 0.5 under 4x CPU throttling).
+    const loaded = new Promise<void>((resolve) => {
+      if (document.readyState === "complete") resolve();
+      else window.addEventListener("load", () => resolve(), { once: true });
     });
+    const idle = () =>
+      new Promise<void>((resolve) => {
+        if (typeof window.requestIdleCallback === "function")
+          window.requestIdleCallback(() => resolve(), { timeout: 2000 });
+        else setTimeout(resolve, 200);
+      });
+    void Promise.all([document.fonts.ready, loaded])
+      .then(idle)
+      .then(() => {
+        if (!disposed) {
+          // ResizeObserver supplies the initial width as well. Measure once,
+          // before visibility observers can skip any unmeasured section.
+          observer.observe(container);
+        }
+      });
     return () => {
       disposed = true;
       cancelAnimationFrame(frame);

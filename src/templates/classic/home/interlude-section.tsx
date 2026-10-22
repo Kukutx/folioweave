@@ -193,6 +193,7 @@ export function InterludeSection() {
               src={portfolio.interlude.image}
               alt=""
               {...mediaDimensions(portfolio.interlude.image)}
+              loading="lazy"
               decoding="async"
               fetchPriority="low"
               style={{
