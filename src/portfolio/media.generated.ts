@@ -112,9 +112,9 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 675,
     "height": 900
   },
-  "/portfolio/profile/social-preview.png": {
-    "width": 675,
-    "height": 900
+  "/portfolio/profile/social-preview.jpg": {
+    "width": 1200,
+    "height": 630
   },
   "/portfolio/projects/crew/crew-app-store.webp": {
     "width": 1878,

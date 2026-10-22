@@ -78,7 +78,7 @@ const portfolio = {
       "downloadName": "Liu-Zhong-Li-CV.pdf"
     },
     "assets": {
-      "socialPreview": "/portfolio/profile/social-preview.png",
+      "socialPreview": "/portfolio/profile/social-preview.jpg",
       "icon": "/portfolio/profile/favicon.png",
       "appleTouchIcon": "/portfolio/profile/apple-touch-icon.png"
     }
