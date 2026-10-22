@@ -144,12 +144,47 @@ test("the template never takes text out of normal flow", () => {
   // follows paint order: one `position: relative` on list items moves every
   // bullet to the end of the extracted text. The browser suite checks the
   // computed styles; this keeps the rule enforced where no browser exists.
-  const style = renderResumeHtml(example).match(
-    /<style>([\s\S]*?)<\/style>/,
-  )[1];
-  assert.doesNotMatch(
-    style,
-    /(?<![-\w])(position|transform|float|z-index|order|opacity|filter|will-change|isolation|mix-blend-mode|contain)\s*:/,
+  for (const density of ["regular", "compact"]) {
+    const style = renderResumeHtml({
+      ...example,
+      density,
+      footnote: "A closing line.",
+    }).match(/<style>([\s\S]*?)<\/style>/)[1];
+    assert.doesNotMatch(
+      style,
+      /(?<![-\w])(position|transform|float|z-index|order|opacity|filter|will-change|isolation|mix-blend-mode|contain)\s*:/,
+      density,
+    );
+  }
+});
+
+test("density and footnote change only the resumes that ask for them", async () => {
+  const plain = renderResumeHtml(example);
+  // An existing resume keeps its exact document, so its lock stays current.
+  assert.equal(renderResumeHtml({ ...example, density: "regular" }), plain);
+  assert.doesNotMatch(plain, /footnote/);
+
+  const compact = renderResumeHtml({ ...example, density: "compact" });
+  assert.ok(compact.startsWith(plain.slice(0, plain.indexOf("</style>"))));
+  assert.match(compact, /\.page \{ padding: 13\.8mm 18mm 3\.5mm; \}/);
+
+  const noted = renderResumeHtml({
+    ...example,
+    footnote: "I consent to **data** processing <here>.",
+  });
+  assert.match(noted, /\.footnote \{/);
+  // The footnote closes the page, after the last section, in reading order.
+  assert.match(
+    noted,
+    /<\/section>\n<p class="footnote">I consent to <strong>data<\/strong> processing &lt;here&gt;\.<\/p>\n<\/main>/,
+  );
+
+  assert.throws(
+    () => renderResumeHtml({ ...example, density: "dense" }),
+    /density must be regular or compact/,
+  );
+  await withResumeProject({ ...example, density: "dense" }, (project) =>
+    assert.rejects(loadResume(project), /Invalid resume/),
   );
 });
 
