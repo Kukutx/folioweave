@@ -120,17 +120,21 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1878,
     "height": 568
   },
+  "/portfolio/projects/crew/crew-event.webp": {
+    "width": 900,
+    "height": 1955
+  },
+  "/portfolio/projects/crew/crew-host.webp": {
+    "width": 900,
+    "height": 1955
+  },
   "/portfolio/projects/crew/crew-icon.png": {
     "width": 512,
     "height": 512
   },
-  "/portfolio/projects/crew/crew-screens-mobile.webp": {
-    "width": 2000,
-    "height": 1440
-  },
-  "/portfolio/projects/crew/crew-screens.webp": {
-    "width": 2000,
-    "height": 1206
+  "/portfolio/projects/crew/crew-moment.webp": {
+    "width": 900,
+    "height": 1955
   },
   "/portfolio/projects/devmate/devmate-icon.png": {
     "width": 256,
@@ -140,17 +144,21 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2000,
     "height": 1250
   },
+  "/portfolio/projects/tradepilot212/tradepilot-dashboard.webp": {
+    "width": 900,
+    "height": 1950
+  },
   "/portfolio/projects/tradepilot212/tradepilot-icon.png": {
     "width": 256,
     "height": 256
   },
-  "/portfolio/projects/tradepilot212/tradepilot-screens-mobile.webp": {
-    "width": 2000,
-    "height": 1440
+  "/portfolio/projects/tradepilot212/tradepilot-order.webp": {
+    "width": 900,
+    "height": 1950
   },
-  "/portfolio/projects/tradepilot212/tradepilot-screens.webp": {
-    "width": 2000,
-    "height": 1206
+  "/portfolio/projects/tradepilot212/tradepilot-performance.webp": {
+    "width": 900,
+    "height": 1950
   },
   "/portfolio/resume/liu-zhong-li-cv.png": {
     "width": 1240,

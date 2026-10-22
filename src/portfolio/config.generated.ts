@@ -228,12 +228,21 @@ const portfolio = {
       "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join an event or start one of your own — at a meeting spot or along a route with a few stops — and use the group chat to sort out the details. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
       "icon": "/portfolio/projects/crew/crew-icon.png",
       "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/crew/crew-screens.webp",
-          "mobile": "/portfolio/projects/crew/crew-screens-mobile.webp",
-          "alt": "Crew on iPhone: an event page, a shared post and a host profile"
-        }
+        "kind": "screens",
+        "screens": [
+          {
+            "src": "/portfolio/projects/crew/crew-event.webp",
+            "alt": "An event in Crew: a picnic on Primrose Hill with its host, date, places taken and Register Now"
+          },
+          {
+            "src": "/portfolio/projects/crew/crew-moment.webp",
+            "alt": "A post in Crew: golden hour at Tower Bridge, with its photo, place and comments"
+          },
+          {
+            "src": "/portfolio/projects/crew/crew-host.webp",
+            "alt": "A host profile in Crew: Maya Chen's events, with Follow and Message"
+          }
+        ]
       },
       "badge": {
         "text": "Live on Google Play & App Store",
@@ -297,12 +306,21 @@ const portfolio = {
       "description": "TradePilot 212 is a self-hosted MCP app that connects a Trading 212 account to ChatGPT and Claude: a portfolio dashboard, analytics and order preparation right in the chat. Demo and Live stay separate, and every Live order waits for an explicit confirmation.",
       "icon": "/portfolio/projects/tradepilot212/tradepilot-icon.png",
       "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/tradepilot212/tradepilot-screens.webp",
-          "mobile": "/portfolio/projects/tradepilot212/tradepilot-screens-mobile.webp",
-          "alt": "TradePilot 212 in a chat on a sample account: the portfolio dashboard, an order draft and performance"
-        }
+        "kind": "screens",
+        "screens": [
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-dashboard.webp",
+            "alt": "TradePilot 212 in a chat: the portfolio dashboard of a sample Demo account"
+          },
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-order.webp",
+            "alt": "TradePilot 212 in a chat: an order draft to buy Apple with a limit price, ready to review"
+          },
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-performance.webp",
+            "alt": "TradePilot 212 in a chat: portfolio performance with profit and returns"
+          }
+        ]
       },
       "badge": {
         "text": "Open source · MIT",
