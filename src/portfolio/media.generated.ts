@@ -140,6 +140,18 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2000,
     "height": 1250
   },
+  "/portfolio/projects/tradepilot212/tradepilot-icon.png": {
+    "width": 256,
+    "height": 256
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-screens-mobile.webp": {
+    "width": 2000,
+    "height": 1440
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-screens.webp": {
+    "width": 2000,
+    "height": 1206
+  },
   "/portfolio/resume/liu-zhong-li-cv.png": {
     "width": 1240,
     "height": 1754

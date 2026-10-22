@@ -287,6 +287,35 @@ const portfolio = {
           "icon": "arrow"
         }
       ]
+    },
+    {
+      "id": "tradepilot212",
+      "enabled": true,
+      "mobileTreatment": "standard",
+      "name": "TradePilot 212",
+      "date": "Sep 2026 — Present",
+      "description": "TradePilot 212 is a self-hosted MCP app that connects a Trading 212 account to ChatGPT and Claude: a portfolio dashboard, analytics and order preparation right in the chat. Demo and Live stay separate, and every Live order waits for an explicit confirmation.",
+      "icon": "/portfolio/projects/tradepilot212/tradepilot-icon.png",
+      "media": {
+        "kind": "image",
+        "image": {
+          "src": "/portfolio/projects/tradepilot212/tradepilot-screens.webp",
+          "mobile": "/portfolio/projects/tradepilot212/tradepilot-screens-mobile.webp",
+          "alt": "TradePilot 212 in a chat on a sample account: the portfolio dashboard, an order draft and performance"
+        }
+      },
+      "badge": {
+        "text": "Open source · MIT",
+        "tone": "blue",
+        "href": "https://github.com/Kukutx/TradePilot212"
+      },
+      "actions": [
+        {
+          "label": "View on GitHub",
+          "href": "https://github.com/Kukutx/TradePilot212",
+          "icon": "arrow"
+        }
+      ]
     }
   ],
   "photography": {
