@@ -116,17 +116,17 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 675,
     "height": 900
   },
-  "/portfolio/projects/crew/crew-main-mobile.png": {
+  "/portfolio/projects/crew/crew-app-store.webp": {
+    "width": 1878,
+    "height": 568
+  },
+  "/portfolio/projects/crew/crew-work-mobile.webp": {
     "width": 2000,
     "height": 1744
   },
-  "/portfolio/projects/crew/crew-main.png": {
+  "/portfolio/projects/crew/crew-work.webp": {
     "width": 2000,
     "height": 1206
-  },
-  "/portfolio/projects/crew/crew-play-store.png": {
-    "width": 2400,
-    "height": 657
   },
   "/portfolio/projects/crew/icon.png": {
     "width": 512,

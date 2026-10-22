@@ -225,14 +225,14 @@ const portfolio = {
       "mobileTreatment": "standard",
       "name": "Crew",
       "date": "Dec 2025 — Present",
-      "description": "Crew is a social events app: discover what's on, create Spot and Route events, chat, buy tickets, and give organizers the tools to run them. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
+      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join or start a meetup — at a single spot or along a route — and sort out the details in the group chat. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
       "icon": "/portfolio/projects/crew/icon.png",
       "media": {
         "kind": "image",
         "image": {
-          "src": "/portfolio/projects/crew/crew-main.png",
-          "mobile": "/portfolio/projects/crew/crew-main-mobile.png",
-          "alt": "Three Crew mobile app screens"
+          "src": "/portfolio/projects/crew/crew-work.webp",
+          "mobile": "/portfolio/projects/crew/crew-work-mobile.webp",
+          "alt": "Crew on iPhone: a shared post, an event page and a host profile"
         }
       },
       "badge": {
@@ -255,8 +255,8 @@ const portfolio = {
       ],
       "story": {
         "title": "Behind the build",
-        "image": "/portfolio/projects/crew/crew-play-store.png",
-        "imageAlt": "Crew Google Play listing",
+        "image": "/portfolio/projects/crew/crew-app-store.webp",
+        "imageAlt": "Crew: Interests & Meetups on the App Store",
         "body": "Crew is the project that pushed me out of neat frontend/backend boxes. Building it on my own means I get to make the product and engineering decisions together — from small interaction details and geospatial data to payments, infrastructure and app store releases."
       }
     },
