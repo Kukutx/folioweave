@@ -266,34 +266,6 @@
       }
     },
     {
-      "id": "devmate",
-      "enabled": true,
-      "mobileTreatment": "featured",
-      "name": "DevMate",
-      "date": "Jun 2026 — Present",
-      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
-      "icon": "/portfolio/projects/devmate/devmate-icon.png",
-      "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/devmate/devmate-workbench.webp",
-          "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
-        }
-      },
-      "badge": {
-        "text": "Open source · MIT",
-        "tone": "blue",
-        "href": "https://github.com/Kukutx/DevMate"
-      },
-      "actions": [
-        {
-          "label": "View on GitHub",
-          "href": "https://github.com/Kukutx/DevMate",
-          "icon": "arrow"
-        }
-      ]
-    },
-    {
       "id": "tradepilot212",
       "enabled": true,
       "mobileTreatment": "standard",
@@ -327,6 +299,34 @@
         {
           "label": "View on GitHub",
           "href": "https://github.com/Kukutx/TradePilot212",
+          "icon": "arrow"
+        }
+      ]
+    },
+    {
+      "id": "devmate",
+      "enabled": true,
+      "mobileTreatment": "featured",
+      "name": "DevMate",
+      "date": "Jun 2026 — Present",
+      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
+      "icon": "/portfolio/projects/devmate/devmate-icon.png",
+      "media": {
+        "kind": "image",
+        "image": {
+          "src": "/portfolio/projects/devmate/devmate-workbench.webp",
+          "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
+        }
+      },
+      "badge": {
+        "text": "Open source · MIT",
+        "tone": "blue",
+        "href": "https://github.com/Kukutx/DevMate"
+      },
+      "actions": [
+        {
+          "label": "View on GitHub",
+          "href": "https://github.com/Kukutx/DevMate",
           "icon": "arrow"
         }
       ]
