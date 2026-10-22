@@ -17,6 +17,9 @@ const enabledProjects = (portfolio.projects ?? []).filter(
 const carouselProjects = enabledProjects.filter(
   (project) => project.media?.kind === "carousel",
 );
+const screensProjects = enabledProjects.filter(
+  (project) => project.media?.kind === "screens",
+);
 const mobileProject = enabledProjects.find(
   (project) =>
     (project.media?.kind === "carousel"
@@ -60,6 +63,52 @@ async function launch(extraArgs = []) {
     headless: true,
     args: [...commonArgs, ...extraArgs],
   });
+}
+
+// Every screens project shows its screens in content order, aligned, with
+// `visible` of them in view and the rest reachable by scrolling the row.
+async function checkScreenRows(page, visible) {
+  const rows = page.locator(".work-item .screen-row__list");
+  assert(
+    (await rows.count()) === screensProjects.length,
+    `expected ${screensProjects.length} screen rows`,
+  );
+  const checked = [];
+  for (let index = 0; index < screensProjects.length; index++) {
+    const project = screensProjects[index];
+    const row = rows.nth(index);
+    await row.scrollIntoViewIfNeeded();
+    await row
+      .locator("img")
+      .evaluateAll((nodes) => Promise.all(nodes.map((img) => img.decode())));
+    const state = await row.evaluate((list) => {
+      const box = list.getBoundingClientRect();
+      const items = [...list.children].map((item) => item.getBoundingClientRect());
+      return {
+        alts: [...list.querySelectorAll("img")].map((img) => img.alt),
+        inView: items.filter(
+          (item) => item.left >= box.left - 1 && item.right <= box.right + 1,
+        ).length,
+        tops: new Set(items.map((item) => Math.round(item.top))).size,
+        heights: new Set(items.map((item) => Math.round(item.height))).size,
+        scrollable: list.scrollWidth > list.clientWidth + 1,
+      };
+    });
+    const screens = project.media.screens;
+    assert(
+      state.alts.join("|") === screens.map((screen) => screen.alt).join("|"),
+      `${project.id}: screens out of order`,
+    );
+    assert(state.tops === 1 && state.heights === 1, `${project.id}: screens misaligned`);
+    const expected = Math.min(visible, screens.length);
+    assert(state.inView === expected, `${project.id}: ${state.inView}/${expected} screens in view`);
+    assert(
+      state.scrollable === screens.length > visible,
+      `${project.id}: scrollable ${state.scrollable} with ${screens.length} screens`,
+    );
+    checked.push({ project: project.id, inView: state.inView, scrollable: state.scrollable });
+  }
+  return checked;
 }
 
 async function waitForHydratedElement(page, selector) {
@@ -370,6 +419,11 @@ async function runHomeMedia() {
         tested.push({ project: project.id, first, second });
       }
       return tested;
+    });
+
+    await test("screens projects show three aligned screens", async () => {
+      if (!screensProjects.length) return { skipped: true };
+      return checkScreenRows(page, 3);
     });
 
     await test("photography cards reveal on demand without stalled loaders", async () => {
@@ -689,6 +743,11 @@ async function runMobile() {
       // enters the viewport, making currentSrc stay empty indefinitely.
       await page.waitForFunction(() => !window.__lenis?.isScrolling);
       return true;
+    });
+
+    await test("mobile screens projects show two and scroll to the rest", async () => {
+      if (!screensProjects.length) return { skipped: true };
+      return checkScreenRows(page, 2);
     });
 
     await test("mobile uses configured art-directed work image", async () => {

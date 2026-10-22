@@ -1,5 +1,6 @@
 import { AboutSection } from "@/templates/classic/about-section";
 import { MediaCarousel } from "@/components/media/media-carousel";
+import { ScreenRow } from "@/components/media/screen-row";
 import { MarkdownBlogPostPage } from "@/components/blog/markdown-blog-post";
 import { portfolio } from "@/portfolio";
 import "@/templates/classic/styles.css";
@@ -11,6 +12,11 @@ const images = [
   { src: portrait, alt: "Portrait test artwork" },
   { src: "/media/brink-work-desktop.jpg", alt: "Landscape test artwork" },
 ];
+const screens = (count: number) =>
+  Array.from({ length: count }, (_, index) => ({
+    src: portrait,
+    alt: `Screen ${index + 1}`,
+  }));
 
 // This file is copied into an isolated temporary app by qa/visual-fixtures.mjs.
 // It is never a route in the production application.
@@ -30,6 +36,15 @@ export default function VisualFixtures() {
       </section>
       <section id="fixture-empty">
         <MediaCarousel images={[]} />
+      </section>
+      <section id="fixture-screens" className="container">
+        <ScreenRow screens={screens(3)} label="Three screens" />
+      </section>
+      <section id="fixture-screens-many" className="container">
+        <ScreenRow screens={screens(5)} label="Five screens" />
+      </section>
+      <section id="fixture-screens-single" className="container">
+        <ScreenRow screens={screens(1)} frame="none" label="One screen" />
       </section>
       <AboutSection />
       <MarkdownBlogPostPage

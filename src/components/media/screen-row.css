@@ -1,0 +1,132 @@
+/* App screens in one row. The row sizes itself from its own width, not the
+   viewport, so it behaves the same in any template column: three screens
+   side by side when there is room, two when it is narrow, and any screens
+   beyond that scroll in sideways with the next one peeking at the edge.
+   Frames scale with the screen, so any phone screenshot works. */
+.screen-row {
+  container-type: inline-size;
+  width: 100%;
+}
+.screen-row__list {
+  /* How many screens fit across, and how many gaps sit between them. A
+     fractional span leaves part of the next screen visible. */
+  --screen-span: 3.2;
+  --screen-gaps: 3;
+  --screen-gap: clamp(0.75rem, 3.5cqi, 1.75rem);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--screen-gap);
+  margin: 0;
+  padding: 0.75rem 1rem 1.75rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  scrollbar-width: none;
+}
+.screen-row__list::-webkit-scrollbar {
+  display: none;
+}
+.screen-row__list[data-count="3"] {
+  --screen-span: 3;
+  --screen-gaps: 2;
+}
+.screen-row__list[data-count="2"] {
+  --screen-span: 2.4;
+  --screen-gaps: 1;
+  justify-content: center;
+}
+.screen-row__list[data-count="1"] {
+  --screen-span: 1.6;
+  --screen-gaps: 0;
+  justify-content: center;
+}
+.screen-row__list:focus-visible {
+  outline: 2px solid var(--color-accent, #0071e3);
+  outline-offset: 2px;
+  border-radius: 16px;
+}
+.screen-row__item {
+  flex: 0 0
+    calc((100% - var(--screen-gaps) * var(--screen-gap)) / var(--screen-span));
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.screen-row__frame {
+  position: relative;
+  /* Corner radii follow the frame's own width and height (phone ratio). */
+  border-radius: 13.5% / 6.25%;
+  padding: 2.6%;
+  background: #0b0b0c;
+  box-shadow:
+    inset 0 0 0 2px #2a2a2c,
+    0 22px 44px -18px rgba(0, 0, 0, 0.28),
+    0 8px 18px -10px rgba(0, 0, 0, 0.2);
+}
+.screen-row__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 11.2% / 5.2%;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.screen-row--none .screen-row__frame {
+  padding: 0;
+  border-radius: 12px;
+  background: none;
+  box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.3);
+}
+.screen-row--none .screen-row__frame img {
+  border-radius: 12px;
+}
+
+/* A mouse cannot swipe, so a row that scrolls keeps a thin scrollbar there.
+   Whether a row scrolls follows from its count and its width alone, so the
+   scrollbar is present from the first paint and never moves the page. */
+.screen-row__list::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: rgba(127, 127, 127, 0.45);
+}
+@media (hover: hover) and (pointer: fine) {
+  .screen-row__list:not([data-count="1"], [data-count="2"], [data-count="3"]) {
+    scrollbar-width: thin;
+  }
+  .screen-row__list:not(
+      [data-count="1"],
+      [data-count="2"],
+      [data-count="3"]
+    )::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+}
+
+/* Narrow rows: two screens in view, then the next one peeks in. */
+@container (max-width: 32rem) {
+  .screen-row__list,
+  .screen-row__list[data-count="3"] {
+    --screen-span: 2.2;
+    --screen-gaps: 2;
+    --screen-gap: 0.75rem;
+  }
+  .screen-row__list[data-count="2"] {
+    --screen-span: 2;
+    --screen-gaps: 1;
+  }
+  .screen-row__list[data-count="1"] {
+    --screen-span: 1.6;
+    --screen-gaps: 0;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .screen-row__list[data-count="3"] {
+      scrollbar-width: thin;
+    }
+    .screen-row__list[data-count="3"]::-webkit-scrollbar {
+      display: block;
+      height: 6px;
+    }
+  }
+}

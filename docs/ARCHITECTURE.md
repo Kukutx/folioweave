@@ -223,6 +223,14 @@ the existing cascade. New shell-local styles use a CSS Module. Tokens belong in
 `src/styles/theme.css`; global reduced-motion policy belongs in `motion.css`.
 Run `npm run format:styles` before the CSS contract check.
 
+`ScreenRow` shows a project's `screens` media: one row in a fixed order that
+sizes itself with a container query on its own width, so a template can put it
+in any column; its parent needs a width of its own, since the row takes none
+from its screens. A row with more screens than fit scrolls sideways with snap
+points and becomes a keyboard stop only while it overflows. For a mouse it
+keeps a thin scrollbar, chosen in CSS from the screen count and the row width,
+so the scrollbar is there from the first paint and never moves the page.
+
 `MediaCarousel` is the generic carousel. Image intrinsic dimensions come from the
 generated media manifest, not manual `size`, `mobileSize` or `imageSize` fields.
 Art-directed image selection and intentional thumbnail cropping remain explicit.
