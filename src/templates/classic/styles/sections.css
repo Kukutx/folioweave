@@ -504,6 +504,33 @@
 .work-text-side > div:last-child {
   margin-top: 1rem;
 }
+.work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+.work-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.work-action--accent {
+  border-bottom-color: transparent;
+  color: var(--color-accent);
+}
+.work-action--accent:hover,
+.work-action--accent:focus-visible {
+  border-bottom-color: var(--color-accent);
+}
 .work-text-side p {
   margin: 0;
 }
@@ -1570,8 +1597,9 @@
   .mobile-work-clipt .work-text-side > div:last-child {
     margin-top: 0 !important;
   }
-  .mobile-work-clipt .work-text-side > div:last-child a + a {
-    margin-left: 1.25rem !important;
+  .work-actions {
+    justify-content: center;
+    column-gap: 1.25rem;
   }
   .work-text-side {
     width: 100%;

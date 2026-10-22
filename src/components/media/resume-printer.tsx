@@ -79,7 +79,9 @@ export function ResumePrinter({
     [],
   );
 
-  useEffect(() => {
+  // The sheet is only needed once someone heads for the button, so it is not
+  // fetched with the page; hover, focus or touch warm it before the click.
+  const warmSheet = useCallback(() => {
     preloadImage(siteConfig.resume.image).catch(() => {});
   }, [preloadImage]);
 
@@ -187,6 +189,9 @@ export function ResumePrinter({
         <button
           type="button"
           className="resume-print-button"
+          onPointerEnter={warmSheet}
+          onFocus={warmSheet}
+          onTouchStart={warmSheet}
           onClick={start}
           disabled={state !== "idle"}
           aria-label={ready ? "Resume printed" : "Print resume"}

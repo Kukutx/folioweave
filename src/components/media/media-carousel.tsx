@@ -6,10 +6,25 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { mediaDimensions } from "@/portfolio/media";
 import type { PortfolioMediaAsset } from "@/portfolio/schema";
 import "./media-carousel.css";
 
 const MotionImage = motion.create(Image);
+
+/**
+ * The frame takes the first slide's own shape, so artwork of any proportion
+ * fills it without bars. Images outside the publication manifest (fixtures)
+ * keep the stylesheet's ratio.
+ */
+function slideRatio(src: string): string | undefined {
+  try {
+    const { width, height } = mediaDimensions(src);
+    return `${width} / ${height}`;
+  } catch {
+    return undefined;
+  }
+}
 
 export function MediaCarousel({
   images,
@@ -49,6 +64,7 @@ function CarouselContent({
     return () => window.clearInterval(id);
   }, [active, hover, focused, next, reducedMotion, slides.length]);
   const currentIndex = index % slides.length;
+  const frameRatio = slideRatio(slides[0].src);
 
   return (
     <div
@@ -62,7 +78,10 @@ function CarouselContent({
           setFocused(false);
       }}
     >
-      <div className="media-carousel-container">
+      <div
+        className="media-carousel-container"
+        style={frameRatio ? { aspectRatio: frameRatio } : undefined}
+      >
         <AnimatePresence initial={false} custom={direction}>
           <MotionImage
             key={currentIndex}
