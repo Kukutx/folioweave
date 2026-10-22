@@ -120,29 +120,25 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1878,
     "height": 568
   },
-  "/portfolio/projects/crew/crew-work-mobile.webp": {
-    "width": 2000,
-    "height": 1744
-  },
-  "/portfolio/projects/crew/crew-work.webp": {
-    "width": 2000,
-    "height": 1206
-  },
-  "/portfolio/projects/crew/icon.png": {
+  "/portfolio/projects/crew/crew-icon.png": {
     "width": 512,
     "height": 512
   },
-  "/portfolio/projects/devmate/devmate-workbench-mobile.webp": {
-    "width": 1440,
-    "height": 1400
+  "/portfolio/projects/crew/crew-screens-mobile.webp": {
+    "width": 2000,
+    "height": 1440
+  },
+  "/portfolio/projects/crew/crew-screens.webp": {
+    "width": 2000,
+    "height": 1206
+  },
+  "/portfolio/projects/devmate/devmate-icon.png": {
+    "width": 256,
+    "height": 256
   },
   "/portfolio/projects/devmate/devmate-workbench.webp": {
     "width": 2000,
     "height": 1250
-  },
-  "/portfolio/projects/devmate/icon.png": {
-    "width": 256,
-    "height": 256
   },
   "/portfolio/resume/liu-zhong-li-cv.png": {
     "width": 1240,

@@ -221,14 +221,14 @@
       "mobileTreatment": "standard",
       "name": "Crew",
       "date": "Dec 2025 — Present",
-      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join or start a meetup — at a single spot or along a route — and sort out the details in the group chat. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
-      "icon": "/portfolio/projects/crew/icon.png",
+      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join an event or start one of your own — at a meeting spot or along a route with a few stops — and use the group chat to sort out the details. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
+      "icon": "/portfolio/projects/crew/crew-icon.png",
       "media": {
         "kind": "image",
         "image": {
-          "src": "/portfolio/projects/crew/crew-work.webp",
-          "mobile": "/portfolio/projects/crew/crew-work-mobile.webp",
-          "alt": "Crew on iPhone: a shared post, an event page and a host profile"
+          "src": "/portfolio/projects/crew/crew-screens.webp",
+          "mobile": "/portfolio/projects/crew/crew-screens-mobile.webp",
+          "alt": "Crew on iPhone: an event page, a shared post and a host profile"
         }
       },
       "badge": {
@@ -263,12 +263,11 @@
       "name": "DevMate",
       "date": "Jun 2026 — Present",
       "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
-      "icon": "/portfolio/projects/devmate/icon.png",
+      "icon": "/portfolio/projects/devmate/devmate-icon.png",
       "media": {
         "kind": "image",
         "image": {
           "src": "/portfolio/projects/devmate/devmate-workbench.webp",
-          "mobile": "/portfolio/projects/devmate/devmate-workbench-mobile.webp",
           "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
         }
       },
