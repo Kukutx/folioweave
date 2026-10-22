@@ -152,6 +152,37 @@ export function renderInline(text) {
 export const RESUME_FONT_STACK =
   'Arial, "Liberation Sans", Arimo, Helvetica, sans-serif';
 
+/**
+ * The same design at two spacings. `compact` tightens the page margins, the
+ * space around section headings and the line height, so a fuller resume still
+ * fits one page; type sizes and colours stay the same.
+ */
+const DENSITY = {
+  regular: "",
+  compact: `
+.page { padding: 13.8mm 18mm 3.5mm; }
+.masthead { padding-bottom: 5.1pt; }
+h1 { line-height: 1.1; letter-spacing: -0.018em; }
+.headline { margin-top: 0.6pt; line-height: 1.3; }
+.reach { margin-bottom: 0; line-height: 1.45; }
+section { margin-top: 9pt; }
+section > p { padding-bottom: 0; line-height: 1.44; }
+h2 { margin-bottom: 4.6pt; padding-bottom: 2.3pt; line-height: 1.42; }
+.entry + .entry { margin-top: 4pt; }
+h3 { line-height: 1.42; }
+.meta { margin-top: 0.4pt; line-height: 1.5; }
+ul { margin-top: 0.8pt; padding-bottom: 0; line-height: 1.38; }
+li + li { margin-top: 0.8pt; }
+dl { row-gap: 2.8pt; padding-bottom: 0; line-height: 1.4; }
+`,
+};
+
+/** A small closing line, such as a data-processing consent. Only a resume
+ * that has one carries its rule, so adding it changes no other document. */
+const FOOTNOTE_STYLE = `
+.footnote { padding-top: 6pt; color: var(--muted); font-size: 6.8pt; line-height: 1.4; }
+`;
+
 /*
  * Two rules keep the PDF honest and are covered by tests:
  * - No box is positioned, transformed, floated or otherwise promoted. Those
@@ -161,10 +192,14 @@ export const RESUME_FONT_STACK =
  * - Vertical rhythm uses padding where it must add up. Margins collapse
  *   through the section boundary and would silently drop the smaller one.
  */
-const stylesheet = (accent) => {
-  // The schema already restricts this; the renderer is also called directly.
+const stylesheet = (accent, density = "regular", footnote = false) => {
+  // The schema already restricts these; the renderer is also called directly.
   if (!/^#[0-9a-f]{6}$/i.test(accent))
     throw new Error(`Resume accentColor must be #RRGGBB; received ${accent}`);
+  if (!Object.hasOwn(DENSITY, density))
+    throw new Error(
+      `Resume density must be ${Object.keys(DENSITY).join(" or ")}; received ${density}`,
+    );
   const { widthMm, heightMm } = RESUME_RENDER.page;
   return `
 @page { size: ${widthMm}mm ${heightMm}mm; margin: 0; }
@@ -234,7 +269,7 @@ li::before { content: "•"; display: inline-block; width: 5pt; text-indent: 0; 
 dl { display: grid; grid-template-columns: 94pt 1fr; row-gap: 2.9pt; margin: 0; padding-bottom: 3.8pt; font-size: 8pt; }
 dt { font-weight: 700; }
 dd { margin: 0; }
-`;
+${footnote ? FOOTNOTE_STYLE : ""}${DENSITY[density]}`;
 };
 
 const renderEntry = (entry) => {
@@ -289,7 +324,7 @@ export function renderResumeHtml(resume) {
     "<head>",
     '<meta charset="utf-8">',
     `<title>${escapeHtml(resume.documentTitle ?? resume.name)}</title>`,
-    `<style>${stylesheet(resume.accentColor ?? "#0066cc")}</style>`,
+    `<style>${stylesheet(resume.accentColor ?? "#0066cc", resume.density, Boolean(resume.footnote))}</style>`,
     "</head>",
     "<body>",
     '<main class="page">',
@@ -298,6 +333,9 @@ export function renderResumeHtml(resume) {
     reach ? `<div class="reach">${reach}</div>` : "",
     "</header>",
     resume.sections.map(renderSection).join(""),
+    resume.footnote
+      ? `<p class="footnote">${renderInline(resume.footnote)}</p>`
+      : "",
     "</main>",
     "</body>",
     "</html>",
