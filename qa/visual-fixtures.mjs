@@ -129,15 +129,17 @@ try {
       await row.locator("img").evaluateAll((nodes) => Promise.all(nodes.map((img) => img.decode())));
       return row.evaluate((list) => {
         const box = list.getBoundingClientRect();
-        const items = [...list.children].map((item) => item.getBoundingClientRect());
+        const nodes = [...list.children];
+        const items = nodes.map((item) => item.getBoundingClientRect());
         return {
           count: items.length,
           visible: items.filter((item) => item.left >= box.left - 1 && item.right <= box.right + 1).length,
-          tops: new Set(items.map((item) => Math.round(item.top))).size,
-          heights: new Set(items.map((item) => Math.round(item.height))).size,
+          tops: new Set(nodes.map((item) => item.offsetTop)).size,
+          heights: new Set(nodes.map((item) => item.offsetHeight)).size,
           scrollable: list.scrollWidth > list.clientWidth + 1,
           marked: list.hasAttribute("data-scrollable"),
           tabIndex: list.getAttribute("tabindex"),
+          dots: [...list.parentElement.querySelectorAll(".screen-row__dot")].filter((dot) => dot.getBoundingClientRect().width > 0).length,
         };
       });
     };
@@ -154,6 +156,20 @@ try {
     assert.equal(many.visible, narrow ? 2 : 3, "screens in view before scrolling");
     assert.ok(many.scrollable && many.tabIndex === "0", "extra screens scroll in");
     assert.equal(single.scrollable, false, "one screen never scrolls");
+    assert.equal(three.dots, narrow ? 2 : 0, "dots only where the row scrolls");
+    assert.equal(many.dots, narrow ? 4 : 3, "one dot per scroll position");
+    assert.equal(single.dots, 0, "one screen has no dots");
+    if (narrow) {
+      // A dot moves the row; the dots follow it.
+      const row = page.locator("#fixture-screens");
+      await row.locator(".screen-row__dot:visible").last().click();
+      await page.waitForFunction(() => {
+        const list = document.querySelector("#fixture-screens .screen-row__list");
+        return list.scrollLeft + list.clientWidth >= list.scrollWidth - 1;
+      });
+      assert.equal(await row.locator(".screen-row__dot:visible").last().getAttribute("aria-current"), "true");
+      await row.locator(".screen-row__list").evaluate((node) => node.scrollTo({ left: 0, behavior: "instant" }));
+    }
     await page.locator("#fixture-screens").screenshot({ path: path.join(screens, `${width}-screens.png`) });
     if (narrow) {
       const list = page.locator("#fixture-screens-many .screen-row__list");

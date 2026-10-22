@@ -11,6 +11,7 @@ import { MediaCarousel } from "@/components/media/media-carousel";
 import { ScreenRow } from "@/components/media/screen-row";
 import { workProjects } from "@/content/work";
 import { useMobileViewport } from "@/hooks/use-media-query";
+import { useViewReveal } from "@/hooks/use-view-reveal";
 import type {
   PortfolioProject,
   PortfolioProjectAction,
@@ -20,12 +21,43 @@ import type {
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 import { mediaDimensions } from "@/portfolio/media";
 
+// The story box settles in just after its card, as on the original site.
+const storyVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: 0.2,
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+};
+
 type Preview = {
   src: string;
   x: number;
   y: number;
   maxWidth?: number;
 };
+
+// Hover previews follow a mouse. A touch screen fakes mouseenter on a tap and
+// never sends the matching leave, which would leave a preview stuck open.
+const canHover = () =>
+  window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+/** Fetch a card's preview images once the pointer reaches the card, so the
+ * preview opens with its image instead of an empty frame. */
+function warmPreviews(project: PortfolioProject) {
+  if (!canHover()) return;
+  for (const src of [project.story?.image, project.badge?.previewImage]) {
+    if (!src) continue;
+    const image = new window.Image();
+    image.decoding = "async";
+    image.src = src;
+  }
+}
 
 function WorkImage({
   image,
@@ -196,14 +228,16 @@ function StoryBlock({
   setPreview: React.Dispatch<React.SetStateAction<Preview | null>>;
 }) {
   const story = project.story;
+  const box = useRef<HTMLDivElement>(null);
+  const reveal = useViewReveal(box);
   if (!story) return null;
   const dimensions = mediaDimensions(story.image);
   return (
     <motion.div
+      ref={box}
+      variants={storyVariants}
       initial={false}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: 0.2 }}
+      animate={reveal}
       className="story-time-box"
       style={{
         marginTop: "2rem",
@@ -261,6 +295,7 @@ function StoryBlock({
       >
         <motion.div
           onMouseEnter={(event) => {
+            if (!canHover()) return;
             const rect = event.currentTarget.getBoundingClientRect();
             setPreview({
               src: story.image,
@@ -276,14 +311,19 @@ function StoryBlock({
                 : current,
             )
           }
-          // The width the loaded image would take (its own width, at most
-          // 400px), given up front: the lazy image then reserves its height,
-          // where a box sized by its content would grow when the image
-          // arrives and push the rest of the page down.
+          // The width the loaded image gives this box, set up front so the
+          // lazy image reserves its height instead of growing the box when it
+          // arrives: its own width, at most 400px, plus its 1px border on
+          // each side. An SVG that declares only a viewBox has no width of
+          // its own and takes the browser's default of 300px.
           style={{
             position: "relative",
             flex: "0 1 auto",
-            width: Math.min(400, dimensions.width),
+            width:
+              Math.min(
+                400,
+                story.image.endsWith(".svg") ? 300 : dimensions.width,
+              ) + 2,
             maxWidth: "100%",
           }}
         >
@@ -307,9 +347,6 @@ function StoryBlock({
         </motion.div>
         <motion.p
           variants={sectionChildVariants}
-          initial={false}
-          whileInView="visible"
-          viewport={{ once: true, margin: "-10%" }}
           style={{
             fontSize: ".95rem",
             lineHeight: 1.6,
@@ -359,6 +396,10 @@ const ProjectCard = memo(function ProjectCard({
   setPreview: React.Dispatch<React.SetStateAction<Preview | null>>;
 }) {
   const previewFrame = useRef<number | null>(null);
+  // Each card rises in as it scrolls into view, not all of them with the
+  // section heading.
+  const card = useRef<HTMLDivElement>(null);
+  const reveal = useViewReveal(card);
   const classes = ["work-item"];
   if (project.media.kind === "image") classes.push("responsive-work-image");
   if (project.media.kind === "carousel") classes.push("work-carousel-enabled");
@@ -391,7 +432,7 @@ const ProjectCard = memo(function ProjectCard({
     event: React.MouseEvent<HTMLElement>,
     badge: PortfolioProjectBadge,
   ) => {
-    if (!badge.previewImage) return;
+    if (!badge.previewImage || !canHover()) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const next = {
       src: badge.previewImage,
@@ -417,9 +458,17 @@ const ProjectCard = memo(function ProjectCard({
 
   return (
     <motion.div
+      ref={card}
       variants={sectionChildVariants}
+      initial={false}
+      animate={reveal}
       className={classes.join(" ")}
       style={{ marginBottom: "6rem" }}
+      onPointerEnter={
+        project.story || project.badge?.previewImage
+          ? () => warmPreviews(project)
+          : undefined
+      }
     >
       <div className="work-content">
         <div className="work-body">
@@ -478,16 +527,19 @@ export function WorkSection() {
   const mobile = useMobileViewport();
   const [preview, setPreview] = useState<Preview | null>(null);
 
+  const inner = useRef<HTMLDivElement>(null);
+  const reveal = useViewReveal(inner);
+
   if (!workProjects.length) return null;
 
   return (
     <div className="container">
       <section id="work">
         <motion.div
+          ref={inner}
           variants={sectionRevealVariants}
           initial={false}
-          whileInView="visible"
-          viewport={{ once: true, margin: "-10%" }}
+          animate={reveal}
           className="section-inner"
         >
           <motion.div

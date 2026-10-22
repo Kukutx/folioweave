@@ -37,6 +37,57 @@
   position: relative;
   z-index: 2;
 }
+/* The opening: the hero rises in, the name follows letter by letter (see
+   CharReveal), the portrait drops into place and the bio comes last. CSS, so
+   it plays from the first paint; the server HTML is the final state, and
+   without JavaScript or with reduced motion everything is simply there. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .hero-content {
+    animation: hero-intro-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .hero-image-side {
+    animation: hero-intro-portrait 0.9s cubic-bezier(0.34, 1.36, 0.64, 1) 0.5s
+      backwards;
+  }
+  .hero-bio {
+    animation: hero-intro-bio 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.75s
+      backwards;
+  }
+}
+@keyframes hero-intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes hero-intro-portrait {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.86);
+  }
+}
+@keyframes hero-intro-bio {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@media print {
+  .hero-content,
+  .hero-image-side,
+  .hero-bio {
+    animation: none;
+  }
+}
+/* The portrait's placeholder while a photo loads. */
+@keyframes classic-portrait-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
 .hero-grid {
   display: flex;
   justify-content: center;
@@ -100,27 +151,11 @@
 .hero-main-text {
   cursor: pointer;
 }
+/* The wave runs along the whole name, one character after another. */
 .hero-main-text:hover span {
   display: inline-block;
   animation: waveChar 0.6s ease-in-out;
-}
-.hero-main-text:hover span:nth-child(1) {
-  animation-delay: 0s;
-}
-.hero-main-text:hover span:nth-child(2) {
-  animation-delay: 0.05s;
-}
-.hero-main-text:hover span:nth-child(3) {
-  animation-delay: 0.1s;
-}
-.hero-main-text:hover span:nth-child(4) {
-  animation-delay: 0.15s;
-}
-.hero-main-text:hover span:nth-child(5) {
-  animation-delay: 0.2s;
-}
-.hero-main-text:hover span:nth-child(6) {
-  animation-delay: 0.25s;
+  animation-delay: calc(var(--char, 0) * 0.05s);
 }
 @keyframes waveChar {
   0%,
@@ -290,8 +325,77 @@
     display: none;
   }
 }
+/* The scroll cue at the foot of the first screen (see ScrollHint). Its
+   colours follow the hero's theme through currentColor. */
 .hero-scroll-indicator {
-  display: none;
+  position: absolute;
+  top: calc(100svh - 9rem);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+.hero-scroll-mouse {
+  position: relative;
+  width: 22px;
+  height: 34px;
+  border: 1.5px solid currentColor;
+  border-radius: 11px;
+  opacity: 0.45;
+}
+.hero-scroll-wheel {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: hero-scroll-wheel 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.hero-scroll-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  opacity: 0.45;
+}
+.hero-scroll-indicator:hover .hero-scroll-mouse,
+.hero-scroll-indicator:hover .hero-scroll-label {
+  opacity: 0.8;
+}
+.hero-scroll-indicator:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-scroll-mouse,
+  .hero-scroll-label {
+    transition: opacity 0.25s ease;
+  }
+}
+@keyframes hero-scroll-wheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
 }
 .hero-wrapper {
   position: relative;
@@ -548,7 +652,7 @@
   height: 56px;
 }
 .resume-print-button,
-.resume-download-button,
+.resume-preview-button,
 .resume-discard-button {
   width: 100%;
   height: 56px;
@@ -582,7 +686,7 @@
     background 0.55s ease,
     color 0.25s ease;
 }
-.resume-download-button {
+.resume-preview-button {
   width: auto;
 }
 .resume-print-button {
@@ -605,7 +709,7 @@
   box-shadow: none;
 }
 .resume-print-button:not(:disabled):hover,
-.resume-download-button:hover,
+.resume-preview-button:hover,
 .resume-discard-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px #11111129;
@@ -696,9 +800,6 @@
 .resume-printer.is-ready .resume-print-button:after,
 .resume-printer.is-closing .resume-print-button:after {
   opacity: 1;
-}
-.resume-printer.is-downloaded .resume-print-button:after {
-  animation: resumeSavedBlink 0.72s ease;
 }
 .resume-paper-slot {
   position: absolute;
@@ -816,6 +917,22 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.09), transparent);
   opacity: 0.5;
 }
+/* Once printed, the sheet itself opens the preview. Its transform belongs to
+   Motion, so the hover only deepens its shadow. */
+.resume-printer.is-ready .resume-paper {
+  pointer-events: auto;
+  cursor: zoom-in;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .resume-paper {
+    transition: box-shadow 0.3s ease;
+  }
+  .resume-printer.is-ready .resume-paper:hover {
+    box-shadow:
+      0 2px #ffffffe0 inset,
+      0 22px 38px #1111112e;
+  }
+}
 .resume-paper img {
   position: relative;
   z-index: 0;
@@ -839,17 +956,12 @@
   white-space: nowrap;
   z-index: 5;
 }
-.resume-download-button {
+.resume-preview-button {
   flex: 0 0 auto;
   background: #fff;
   color: #111;
   font-weight: 500;
   box-shadow: 0 6px 16px #11111114;
-}
-.resume-printer.is-downloaded .resume-download-button {
-  color: #147a32;
-  border-color: #147a3238;
-  background: #f7fff9;
 }
 @keyframes resumeInk {
   to {
@@ -864,24 +976,6 @@
   }
   50% {
     transform: translate(0.5px, 0.2px);
-  }
-}
-@keyframes resumeSavedBlink {
-  0%,
-  to {
-    background: #34c759;
-    box-shadow: 0 0 10px #34c759b8;
-    transform: scale(1);
-  }
-  35% {
-    background: #7cff93;
-    box-shadow: 0 0 18px #34c759f2;
-    transform: scale(1.28);
-  }
-  62% {
-    background: #1f8f3b;
-    box-shadow: 0 0 6px #34c7596b;
-    transform: scale(0.88);
   }
 }
 .profile-portrait-card img {

@@ -1,12 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { CharReveal } from "@/components/motion-text";
 import { GalleryLightbox, PhotoCard } from "@/components/media/gallery";
 import { photographyImages } from "@/content/media";
 import { homeContent } from "@/content/home";
 import { useMobileViewport } from "@/hooks/use-media-query";
+import { useViewReveal } from "@/hooks/use-view-reveal";
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 
 // Keep the entire motion-provider subtree outside modal state updates.
@@ -17,13 +18,15 @@ const PhotographyContent = memo(function PhotographyContent({
   onSelect: (index: number) => void;
 }) {
   const mobile = useMobileViewport();
+  const inner = useRef<HTMLDivElement>(null);
+  const reveal = useViewReveal(inner);
   return (
     <section id="photography" style={{ padding: "6rem 0" }}>
       <motion.div
+        ref={inner}
         variants={sectionRevealVariants}
         initial={false}
-        whileInView="visible"
-        viewport={{ once: true, margin: "-10%" }}
+        animate={reveal}
         className="section-inner"
       >
         <motion.div variants={sectionChildVariants}>

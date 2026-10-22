@@ -98,7 +98,7 @@
 }
 .bird-container-one {
   animation-duration: 15s;
-  animation-delay: 0;
+  animation-delay: 0s;
 }
 .bird-container-two {
   animation-duration: 16s;
@@ -450,10 +450,6 @@
   text-align: left;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.2s ease;
-}
-.work-item:hover {
-  opacity: 1;
 }
 /* Every card fills the column whatever its media. Sized by its content, an
    image card stayed narrow until its lazy image arrived, then reflowed and
@@ -480,6 +476,11 @@
   justify-content: center;
   gap: 0.1rem;
   padding-top: 0;
+}
+/* A badge keeps its own width instead of stretching across the column. */
+.work-text-side > .award-badge,
+.work-text-side > .award-badge-blue {
+  align-self: flex-start;
 }
 .work-text-company {
   font-size: clamp(1.2rem, 2.2vw, 1.45rem);
@@ -577,7 +578,6 @@
 }
 .work-image-container img,
 .work-image-container video {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   display: block;
   width: 100%;
   height: auto;
@@ -598,13 +598,20 @@
   justify-content: center;
   aspect-ratio: auto;
 }
-.work-item:hover .work-image-container img,
-.work-item:hover .work-image-container video {
-  transform: scale(1.03);
+/* The card's media zooms a little under the pointer. A carousel slide is
+   moved by Motion and the screens of a row by the row, so neither takes a
+   transform of its own here: one owner per property. */
+.work-image-container img:not(.media-carousel-image, .screen-row img),
+.work-image-container video,
+.work-image-container .screen-row {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* A row of app screens scrolls on its own; zooming it would crop the frames. */
-.work-item:hover .work-image-container .screen-row img {
-  transform: none;
+.work-item:hover
+  .work-image-container
+  img:not(.media-carousel-image, .screen-row img),
+.work-item:hover .work-image-container video,
+.work-item:hover .work-image-container .screen-row {
+  transform: scale(1.03);
 }
 .work-meta {
   font-size: 0.9rem;

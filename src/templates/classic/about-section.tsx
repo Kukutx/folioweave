@@ -11,7 +11,8 @@ import {
 import { aboutStory, aboutTimeline } from "@/content/about";
 import { storyGalleryImages } from "@/content/media";
 import { mobileViewportQuery, useMediaQuery } from "@/hooks/use-media-query";
-import { scrollToElement } from "@/lib/scroll";
+import { useViewReveal } from "@/hooks/use-view-reveal";
+import { scrollToElement, scrollToPosition } from "@/lib/scroll";
 import { CharReveal } from "@/components/motion-text";
 import {
   sectionChildVariants as childVariant,
@@ -23,6 +24,40 @@ import { InstaxCamera } from "@/components/media/instax-camera";
 type AboutView = "normal" | "bullets" | "timeline";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
+
+// Each polaroid rises in on its own as it comes into view, one after
+// another, so on a phone the ones further along the strip arrive as they are
+// swiped in.
+const polaroidVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: index * 0.1, ease: easeOut },
+  }),
+};
+
+function RevealPolaroid({
+  index,
+  children,
+}: {
+  index: number;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reveal = useViewReveal(ref);
+  return (
+    <motion.div
+      ref={ref}
+      custom={index}
+      variants={polaroidVariants}
+      initial={false}
+      animate={reveal}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function AlignLeftIcon({ size = 18 }: { size?: number }) {
   return (
@@ -297,6 +332,7 @@ export function AboutSection() {
   const [view, setView] = useState<AboutView>("normal");
   const mobile = useMediaQuery(mobileViewportQuery, { debounceMs: 150 });
   const sectionRef = useRef<HTMLElement>(null);
+  const reveal = useViewReveal(sectionRef, { rootMargin: "-15% 0px" });
   const previousView = useRef(view);
 
   useEffect(() => {
@@ -314,8 +350,7 @@ export function AboutSection() {
       className="profile-about-section"
       variants={sectionVariants}
       initial={false}
-      whileInView="visible"
-      viewport={{ once: true, margin: "-15%" }}
+      animate={reveal}
     >
       <div className="profile-about-section-inner">
         <div className="profile-about-section-header">
@@ -355,18 +390,16 @@ export function AboutSection() {
                 transform: `rotate(${styles[0]}deg) translateY(${styles[1]}px)`,
               }}
             >
-              <PhotoCard image={image} index={index} isPolaroid />
+              <RevealPolaroid index={index}>
+                <PhotoCard image={image} index={index} isPolaroid />
+              </RevealPolaroid>
             </div>
           );
         })}
       </motion.div>
 
       <motion.div variants={childVariant} className="life-camera-section">
-        <InstaxCamera
-          onPrint={() =>
-            window.scrollTo({ top: window.scrollY + 420, behavior: "smooth" })
-          }
-        />
+        <InstaxCamera onPrint={() => scrollToPosition(window.scrollY + 420)} />
       </motion.div>
     </motion.section>
   );

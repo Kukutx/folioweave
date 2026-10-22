@@ -8,6 +8,7 @@ import { mediaDimensions } from "@/portfolio/media";
 import { WordReveal } from "@/components/motion-text";
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 import { useMobileViewport } from "@/hooks/use-media-query";
+import { useViewReveal } from "@/hooks/use-view-reveal";
 
 const NIGHT_STAR_LAYOUT = (() => {
   // Seeded pseudo-random layout keeps an organic star field while
@@ -30,7 +31,14 @@ const NIGHT_STAR_LAYOUT = (() => {
 export function InterludeSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const { active, reducedMotion } = useMotionActivity(sectionRef);
+  // The birds fly only while their section is on screen.
+  const birdsRef = useRef<HTMLElement>(null);
+  const { active: birdsActive } = useMotionActivity(birdsRef);
   const mountain = useRef<HTMLDivElement>(null);
+  const nightCopy = useRef<HTMLDivElement>(null);
+  const returnCopy = useRef<HTMLDivElement>(null);
+  const nightReveal = useViewReveal(nightCopy);
+  const returnReveal = useViewReveal(returnCopy);
   const mobile = useMobileViewport();
   const { scrollYProgress } = useScroll({
     target: mountain,
@@ -71,10 +79,10 @@ export function InterludeSection() {
         </div>
         <div className="container night-content">
           <motion.div
+            ref={nightCopy}
             variants={sectionRevealVariants}
             initial={false}
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate={nightReveal}
           >
             <motion.div variants={sectionChildVariants}>
               <h2 className="night-text">
@@ -93,7 +101,9 @@ export function InterludeSection() {
         </div>
       </section>
       <section
+        ref={birdsRef}
         className="blank-section"
+        data-motion-active={birdsActive}
         style={{
           paddingBottom: 0,
           marginBottom: 0,
@@ -108,10 +118,10 @@ export function InterludeSection() {
         ))}
         <div className="container">
           <motion.div
+            ref={returnCopy}
             variants={sectionRevealVariants}
             initial={false}
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate={returnReveal}
             style={{
               textAlign: "center",
               paddingTop: "10vh",

@@ -620,7 +620,8 @@ html {
   color: #666;
   transition:
     color 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    transform 0.2s ease;
   position: relative;
   z-index: 1;
 }
