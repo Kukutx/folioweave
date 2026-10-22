@@ -62,6 +62,11 @@ through the `$schema` line. In short:
   bullets) or `facts` (label and value rows, for skills or languages).
 - Text accepts two inline marks: `**bold**` and `[label](https://…)`. Write `\*`
   for a literal asterisk. Links must be `https`, `http`, `mailto` or `tel`.
+- Optional `density`: `regular` (the default) or `compact`, which tightens the
+  page margins, the space around headings and the line height so a fuller
+  resume still fits one page. The type stays the same.
+- Optional `footnote`: a small closing line at the foot of the page, such as
+  the data-processing consent an Italian CV carries.
 
 The source must be named exactly `resume.json`. A differently cased name, or a
 lock left behind without its source, fails the check instead of being read on
@@ -70,6 +75,21 @@ one operating system and silently skipped on another.
 The resume is one A4 page. Content that does not fit, downwards or past the
 right margin, fails the build and says by how much, instead of silently
 shrinking, clipping or spilling onto a second sheet.
+
+## One resume everywhere
+
+`resume.json` is the only resume. The PDF visitors download, the sheet the
+printer shows and every copy sent with an application are the same document.
+A profile that keeps the versions it sent out does so under
+`content/resume/history/<date>/` (personal branches only), and each version is
+that one resume in three formats:
+
+- the PDF is a byte copy of the file `resume:build` wrote;
+- the DOCX and the Markdown are conversions of `resume.json`, with the same
+  text, links and order.
+
+To change the text, edit `resume.json`, rebuild, then archive the new build.
+Versions from a finished year move to `history/archive/`.
 
 ## Rendering
 
