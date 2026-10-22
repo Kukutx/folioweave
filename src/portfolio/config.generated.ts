@@ -141,7 +141,7 @@ const portfolio = {
       {
         "year": "2026",
         "title": "Crew released + DevMate",
-        "desc": "Released Crew on Google Play and started DevMate, an open-source bridge between ChatGPT and local development tools.",
+        "desc": "Released Crew on Google Play and the App Store, and started DevMate, an open-source bridge between ChatGPT, Claude and local development tools.",
         "current": true
       }
     ],
@@ -236,22 +236,28 @@ const portfolio = {
         }
       },
       "badge": {
-        "text": "Live on Google Play",
+        "text": "Live on Google Play & App Store",
         "tone": "gold",
-        "href": "https://play.google.com/store/apps/details?id=app.crew"
+        "href": "https://www.crew-app.com"
       },
       "actions": [
         {
           "label": "View in Google Play",
           "href": "https://play.google.com/store/apps/details?id=app.crew",
           "icon": "arrow"
+        },
+        {
+          "label": "View in App Store",
+          "href": "https://apps.apple.com/app/id6812583779",
+          "icon": "arrow",
+          "tone": "accent"
         }
       ],
       "story": {
         "title": "Behind the build",
         "image": "/portfolio/projects/crew/crew-play-store.png",
         "imageAlt": "Crew Google Play listing",
-        "body": "Crew is the project that pushed me out of neat frontend/backend boxes. Building it on my own means I get to make the product and engineering decisions together — from small interaction details and geospatial data to payments, infrastructure and Play Store releases."
+        "body": "Crew is the project that pushed me out of neat frontend/backend boxes. Building it on my own means I get to make the product and engineering decisions together — from small interaction details and geospatial data to payments, infrastructure and app store releases."
       }
     },
     {
@@ -260,7 +266,7 @@ const portfolio = {
       "mobileTreatment": "featured",
       "name": "DevMate",
       "date": "Jun 2026 — Present",
-      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI and remote Runners.",
+      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
       "icon": "/portfolio/projects/devmate/icon.png",
       "media": {
         "kind": "carousel",
@@ -276,9 +282,9 @@ const portfolio = {
         ]
       },
       "badge": {
-        "text": "DevMate 3.8.8 · Public release",
+        "text": "Open source · MIT",
         "tone": "blue",
-        "href": "https://github.com/Kukutx/DevMate/releases/tag/3.8.8"
+        "href": "https://github.com/Kukutx/DevMate"
       },
       "actions": [
         {

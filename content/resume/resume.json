@@ -6,6 +6,7 @@
   "contact": ["+39 347 629 6739", "Calusco d'Adda (BG), Italia"],
   "links": [
     { "label": "Email", "href": "mailto:liuzhongli.ascii@gmail.com" },
+    { "label": "kukutx.vercel.app", "href": "https://kukutx.vercel.app" },
     { "label": "LinkedIn", "href": "https://www.linkedin.com/in/zhongliliu" },
     { "label": "GitHub", "href": "https://github.com/Kukutx" }
   ],
@@ -35,11 +36,11 @@
         },
         {
           "title": "Hinge 16 S.r.l.",
-          "subtitle": "Junior Software Developer",
+          "subtitle": "Software Developer",
           "date": "lug 2024 — set 2025",
           "bullets": [
             "Sviluppo e manutenzione in autonomia di siti WordPress/Elementor e piccoli e-commerce WooCommerce/Stripe, dalla correzione dei bug ai controlli prima della consegna interna.",
-            "Interventi su progetti Vue, .NET/Blazor MAUI, Odoo e Azure AI Services, comprese attività di test, manutenzione e documentazione."
+            "Interventi su progetti di aziende clienti con Web API .NET, Vue, .NET/Blazor MAUI, Odoo e Azure AI Services, comprese attività di test, manutenzione e documentazione."
           ]
         },
         {
@@ -47,7 +48,7 @@
           "subtitle": "Junior PHP / Drupal Developer",
           "date": "gen 2024 — mag 2024",
           "bullets": [
-            "Sviluppo e manutenzione dello Sportello Telematico Polifunzionale con Drupal 10, PHP e JavaScript, utilizzando Git, Docker, PHPStan/PHPCS e automazioni; prime esperienze con Kubernetes."
+            "Sviluppo e manutenzione dello Sportello Telematico Polifunzionale con Drupal, PHP e JavaScript, utilizzando Git, Docker, PHPStan/PHPCS e automazioni; prime esperienze con Kubernetes."
           ]
         },
         {
@@ -70,8 +71,8 @@
           "badge": "Open source · MIT",
           "date": "giu 2026 — presente",
           "bullets": [
-            "Collega ChatGPT a workspace controllati; distribuito come estensione VS Code, host Obsidian e CLI standalone.",
-            "OAuth/RBAC, job persistenti, Runner esterni, audit e workflow di automazione."
+            "Collega ChatGPT e Claude a workspace controllati; distribuito come estensione VS Code, host Obsidian e CLI standalone.",
+            "OAuth/PKCE, job persistenti (SQLite), delega ad agenti locali (Codex, Claude Code) e registro degli eventi."
           ]
         },
         {
@@ -80,7 +81,7 @@
           "badge": "Open source · MIT",
           "date": "set 2026 — presente",
           "bullets": [
-            "Collega ChatGPT a Trading 212 con UI del portafoglio, preparazione degli ordini e integrazione con le API Demo/Live.",
+            "Collega ChatGPT e Claude a Trading 212 con UI del portafoglio, preparazione degli ordini e integrazione con le API Demo/Live.",
             "OAuth/PKCE, Cloudflare Workers/Durable Objects e conferma esplicita degli ordini; nessun retry automatico se l'esito è ambiguo."
           ]
         }
@@ -120,7 +121,7 @@
       "title": "Lingue",
       "items": [
         { "label": "Cinese", "value": "Madrelingua" },
-        { "label": "Italiano", "value": "Fluente" },
+        { "label": "Italiano", "value": "Bilingue" },
         { "label": "Inglese", "value": "A2 / base" }
       ]
     }
