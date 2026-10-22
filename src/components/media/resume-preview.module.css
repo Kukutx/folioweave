@@ -1,0 +1,133 @@
+/* The resume viewer: a dark veil over the whole page, a slim bar on top and
+   the sheet at reading width, scrolling inside the viewer when it is taller
+   than the screen. */
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: calc(100vw + var(--modal-scrollbar-width, 0px));
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #fff;
+  background: rgba(16, 16, 17, 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  z-index: 20001;
+  overflow: hidden;
+}
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.dialog::backdrop {
+  background: transparent;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  height: 4rem;
+  padding: 0 clamp(1rem, 3vw, 1.75rem);
+}
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.88;
+}
+.download,
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+.download {
+  gap: 0.5rem;
+  padding: 0 1rem;
+  background: #fff;
+  color: #111;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.download[data-saved] {
+  background: #f7fff9;
+  color: #147a32;
+}
+.close {
+  width: 2.5rem;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+.download:focus-visible,
+.close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.scroller {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  min-height: 0;
+  padding: 0.5rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.sheet {
+  display: block;
+  width: min(100%, 820px);
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .download,
+  .close {
+    transition:
+      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .download:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
+  }
+  .close:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+}
+
+@media (max-width: 480px) {
+  .download span {
+    display: none;
+  }
+  .download {
+    width: 2.5rem;
+    padding: 0;
+  }
+}

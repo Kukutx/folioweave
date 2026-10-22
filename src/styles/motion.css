@@ -1,5 +1,7 @@
 /* Continuous CSS decoration follows the same lifecycle as JS motion. */
-[data-motion-active="false"] .falling-star {
+[data-motion-active="false"] .falling-star,
+[data-motion-active="false"] .bird,
+[data-motion-active="false"] .bird-container {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {

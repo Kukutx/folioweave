@@ -1,0 +1,24 @@
+/* The opening reveal of above-the-fold text. It is plain CSS so it starts with
+   the first paint, before hydration, and the server HTML stays the final,
+   readable text: without JavaScript, with reduced motion and in print the
+   characters simply stand in place. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .intro > span {
+    animation: motion-char-intro 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--intro-delay, 0s) + var(--char, 0) * 45ms);
+  }
+}
+
+@keyframes motion-char-intro {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(10px);
+  }
+}
+
+@media print {
+  .intro > span {
+    animation: none;
+  }
+}

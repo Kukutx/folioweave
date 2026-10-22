@@ -397,7 +397,8 @@ body {
     animation: none !important;
   }
   .work-item:hover .work-image-container img,
-  .work-item:hover .work-image-container video {
+  .work-item:hover .work-image-container video,
+  .work-item:hover .work-image-container .screen-row {
     transform: none !important;
   }
 }
