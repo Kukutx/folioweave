@@ -123,6 +123,48 @@ try {
     }
     assert.equal(await page.locator("#fixture-single").getByRole("button", { name: "Next image", exact: true }).count(), 0);
     assert.equal(await page.locator("#fixture-empty img").count(), 0);
+    const screenRow = async (id) => {
+      const row = page.locator(`${id} .screen-row__list`);
+      await row.scrollIntoViewIfNeeded();
+      await row.locator("img").evaluateAll((nodes) => Promise.all(nodes.map((img) => img.decode())));
+      return row.evaluate((list) => {
+        const box = list.getBoundingClientRect();
+        const items = [...list.children].map((item) => item.getBoundingClientRect());
+        return {
+          count: items.length,
+          visible: items.filter((item) => item.left >= box.left - 1 && item.right <= box.right + 1).length,
+          tops: new Set(items.map((item) => Math.round(item.top))).size,
+          heights: new Set(items.map((item) => Math.round(item.height))).size,
+          scrollable: list.scrollWidth > list.clientWidth + 1,
+          marked: list.hasAttribute("data-scrollable"),
+          tabIndex: list.getAttribute("tabindex"),
+        };
+      });
+    };
+    const three = await screenRow("#fixture-screens");
+    const many = await screenRow("#fixture-screens-many");
+    const single = await screenRow("#fixture-screens-single");
+    const narrow = width < 600;
+    assert.equal(three.tops, 1, "screens must share one top edge");
+    assert.equal(three.heights, 1, "screens must share one height");
+    assert.equal(three.visible, narrow ? 2 : 3, "screens in view");
+    assert.equal(three.scrollable, narrow, "a three-screen row scrolls only when narrow");
+    assert.equal(three.marked, narrow, "scrollable marker follows overflow");
+    assert.equal(three.tabIndex, narrow ? "0" : null, "only a scrolling row is a keyboard stop");
+    assert.equal(many.visible, narrow ? 2 : 3, "screens in view before scrolling");
+    assert.ok(many.scrollable && many.tabIndex === "0", "extra screens scroll in");
+    assert.equal(single.scrollable, false, "one screen never scrolls");
+    await page.locator("#fixture-screens").screenshot({ path: path.join(screens, `${width}-screens.png`) });
+    if (narrow) {
+      const list = page.locator("#fixture-screens-many .screen-row__list");
+      await list.evaluate((node) => node.scrollTo({ left: node.scrollWidth, behavior: "instant" }));
+      const end = await list.evaluate((node) => {
+        const box = node.getBoundingClientRect();
+        const last = node.lastElementChild.getBoundingClientRect();
+        return last.left >= box.left - 1 && last.right <= box.right + 1;
+      });
+      assert.ok(end, "the last screen must be reachable");
+    }
     assert.equal(await page.locator(".story-photo-wrapper").count(), 6);
     if (width === 1440) {
       const photo = page.locator(".story-photo-wrapper").first();
@@ -195,7 +237,7 @@ try {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
     assert.equal(overflow, false, "fixture page horizontal overflow");
     assert.deepEqual(errors, []);
-    report.push({ width, ratioError, overflow, errors, aboutPhotos: 6, carousel: "empty / single / multiple passed" });
+    report.push({ width, ratioError, overflow, errors, aboutPhotos: 6, carousel: "empty / single / multiple passed", screens: "aligned / narrow scroll / overflow passed" });
     console.log(`PASS reusable visual fixtures at ${width}px`);
     await context.close();
   }

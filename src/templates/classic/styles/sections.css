@@ -455,8 +455,14 @@
 .work-item:hover {
   opacity: 1;
 }
-.work-carousel-enabled .work-content {
+.work-carousel-enabled .work-content,
+.work-screens-enabled .work-content {
   width: 100%;
+}
+/* Screens bring their own frames; the panel behind them stays clear so the
+   row reads the same on the light and the dark theme. */
+.work-screens-enabled .work-image-container {
+  background: transparent;
 }
 .work-body {
   display: flex;
@@ -593,6 +599,10 @@
 .work-item:hover .work-image-container img,
 .work-item:hover .work-image-container video {
   transform: scale(1.03);
+}
+/* A row of app screens scrolls on its own; zooming it would crop the frames. */
+.work-item:hover .work-image-container .screen-row img {
+  transform: none;
 }
 .work-meta {
   font-size: 0.9rem;

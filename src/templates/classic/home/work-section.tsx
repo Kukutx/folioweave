@@ -8,6 +8,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CharReveal } from "@/components/motion-text";
 import { MediaCarousel } from "@/components/media/media-carousel";
+import { ScreenRow } from "@/components/media/screen-row";
 import { workProjects } from "@/content/work";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import type {
@@ -316,6 +317,15 @@ function StoryBlock({
 
 function ProjectMedia({ project }: { project: PortfolioProject }) {
   const isMobile = useMobileViewport();
+  if (project.media.kind === "screens") {
+    return (
+      <ScreenRow
+        screens={project.media.screens}
+        frame={project.media.frame}
+        label={`${project.name} screens`}
+      />
+    );
+  }
   if (project.media.kind === "carousel") {
     const slides = project.media.images.map((slide) => ({
       src: isMobile ? (slide.mobile ?? slide.src) : slide.src,
@@ -341,6 +351,7 @@ const ProjectCard = memo(function ProjectCard({
   const classes = ["work-item"];
   if (project.media.kind === "image") classes.push("responsive-work-image");
   if (project.media.kind === "carousel") classes.push("work-carousel-enabled");
+  if (project.media.kind === "screens") classes.push("work-screens-enabled");
   if (project.mobileTreatment === "featured") {
     classes.push("mobile-featured-work", `mobile-work-${project.id}`);
   }
