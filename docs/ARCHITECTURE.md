@@ -142,6 +142,16 @@ and resume components remain client islands.
 `useMotionActivity` adds reduced-motion and pointer-capability policy. Continuous
 effects stop outside their useful lifetime; cursor decoration never writes styles
 onto content elements. Content is visible in server HTML before hydration.
+Scroll reveals use `useViewReveal`: once the page is interactive, content still
+below the viewport is set to its hidden variant and animates in as it scrolls
+into view (section text replays each time it comes back); content already on
+screen is left as it is, and reduced motion, a preference change or printing
+shows everything at once. `initial={false}` with `whileInView` alone renders
+visible and never animates. The hero's opening (the content rising, the name
+letter by letter, the portrait dropping in, the bio last) is CSS keyframes that
+start with the first paint under `(scripting: enabled) and
+(prefers-reduced-motion: no-preference)`, so nothing on screen is ever hidden
+at hydration.
 Hero greeting/portrait updates do not rerender About. Gallery selection does not
 rerender the photography motion subtree. Reduced motion also removes staggered
 text/filter work and theme spring lag, not only positional animation.
@@ -227,9 +237,22 @@ Run `npm run format:styles` before the CSS contract check.
 sizes itself with a container query on its own width, so a template can put it
 in any column; its parent needs a width of its own, since the row takes none
 from its screens. A row with more screens than fit scrolls sideways with snap
-points and becomes a keyboard stop only while it overflows. For a mouse it
-keeps a thin scrollbar, chosen in CSS from the screen count and the row width,
-so the scrollbar is there from the first paint and never moves the page.
+points, shows dots that follow the scroll and move it on a tap, and becomes a
+keyboard stop only while it overflows. Whether dots show is decided in CSS
+from the screen count and the row width, so nothing appears after the first
+paint. Motion matches the other cards: screens rise in one after another as
+they come into view, the row zooms with its card on hover, and a screen lifts
+under the pointer; with reduced motion all of it stays still.
+
+`ResumePrinter` prints the resume sheet; its image is fetched only once someone
+heads for the button. When the sheet is out, Preview (or a click on the sheet)
+opens `ResumePreview`: a native modal dialog with the sheet at reading width,
+scrolling inside the dialog, and the PDF download there. Escape, the close
+button or a click outside closes it and focus returns to Preview.
+
+Classic's home shows a scroll cue at the foot of the first screen only when a
+desktop visitor has stayed at the top for a few seconds, and only where the
+hero leaves room for it; the first scroll removes it for good. Phones get none.
 
 `MediaCarousel` is the generic carousel. Image intrinsic dimensions come from the
 generated media manifest, not manual `size`, `mobileSize` or `imageSize` fields.
