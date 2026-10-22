@@ -88,7 +88,9 @@ function BookOpenGlyph({ size = 16 }: { size?: number }) {
 // so any number of actions wraps cleanly at every width.
 function ActionLink({ action }: { action: PortfolioProjectAction }) {
   const className =
-    action.tone === "accent" ? "work-action work-action--accent" : "work-action";
+    action.tone === "accent"
+      ? "work-action work-action--accent"
+      : "work-action";
   const content = (
     <>
       {action.label}
@@ -274,7 +276,16 @@ function StoryBlock({
                 : current,
             )
           }
-          style={{ position: "relative", display: "inline-block" }}
+          // The width the loaded image would take (its own width, at most
+          // 400px), given up front: the lazy image then reserves its height,
+          // where a box sized by its content would grow when the image
+          // arrives and push the rest of the page down.
+          style={{
+            position: "relative",
+            flex: "0 1 auto",
+            width: Math.min(400, dimensions.width),
+            maxWidth: "100%",
+          }}
         >
           <Image
             src={story.image}
