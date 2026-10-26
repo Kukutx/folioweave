@@ -5,7 +5,7 @@
   "profileName": "personal",
   "files": {
     "1440-about.png": "f70d1d24ca0fa3abe662a70d5e5621cf826122bf3eab604ebf2ea54bfdb2cbca",
-    "1440-contact.png": "dba0c3d839a8f044570c3b63d536427388f61b4fb91b08661e554b30ab2c6c8b",
+    "1440-contact.png": "a9cad1cd168eb9c97a1249da74aa292a8abad98dff79b5ac1f01328c6bd49dcb",
     "1440-hero.png": "17adc0128d482d96c4b297ce814299ad793789438817ddf5229a57045b2a1516",
     "1440-lightbox-next.png": "b3cf543c55e39ab9d6817b1c2364dd5cc2660bdfdc0a67b88f63e2307a9c7bb6",
     "1440-lightbox-portrait.png": "a69e84502b708cc55d34c5ce455efb20dd4878fe17920d4f9c1c0b14e4986416",
@@ -13,7 +13,7 @@
     "1440-photography.png": "20fb863400da295101091aa0ed05bab477f575058e69b40cc824dd4c954a0963",
     "1440-work.png": "3657705da02ea2d3f1fd6e5800b005da2904ce641def76c1520d7492f7883ae9",
     "360-about.png": "08ca43f06f11adc94c5aeb270fec890b8ff8e738d58f6066ccfe5efbb709bde9",
-    "360-contact.png": "ae05b4b8b7d79b2a767d1082245b8416dccddc15e5e9a9c6e500cc4bc7129ce3",
+    "360-contact.png": "aa5396da8c3cbfc7859cec757f35a28aa6aaa1076d2b53de54885b98bc926181",
     "360-hero.png": "7e4104b1172f3ebae1e2bc0dce619f3234ae07ddf299327d1802d10c57467032",
     "360-lightbox-next.png": "384acab0c4007ded0854d31bc0e1872ebbe34b307b50c15133949b151f9274ea",
     "360-lightbox-portrait.png": "161cd927558e1ce6cfa7a17813dad90834de1a7bad88900a0da41fc5ad121862",
@@ -37,7 +37,7 @@
     "767-photography.png": "e0b46644bb0b68daf81efe8aa5627053a4d3cdf8468ad3831768ae3d48d1a7e8",
     "767-work.png": "4eade4c8416332691b6d000990a38adad97c4688aa0ab9ddc4b4ca81a6bf540a",
     "768-about.png": "3a13f722d2665515f6cce9dcc74a71e7206c9858e34fcb667239024dd8e03107",
-    "768-contact.png": "e2903f7408b42016e417df6377b92914392f26394c2efa46c6aabf9ad57d75ec",
+    "768-contact.png": "11d01ca08ee0d88af20f7a4a1e2455fb39bf54d11452e3ee87f68327481ce484",
     "768-hero.png": "751383792a3b53df23dcbd45ee547c3e67b2cc8a5dbbb1e47a73245da508a6e3",
     "768-lightbox-next.png": "b00b3390c9e9c1e5c0ce77655cadad9ed1cf0860a5db7331afe8532f108933eb",
     "768-lightbox-portrait.png": "8d4ff1ec210bcf0fe8b80e4ab77182fdd22ce701779babd2d6dfa600be46db47",
@@ -45,7 +45,7 @@
     "768-photography.png": "c18897785bcf5d195b3383118c62f8b9d9ee2f07749942a7623ce3a19f772e79",
     "768-work.png": "6418453c3f0624ccb5c6c6849d53751e21451e0d8c7802dd461c2ce9549be55d",
     "820-about.png": "204cd76514af4fd968c4d762abe2601ba2e409d31d2ee902f11b08eef2334192",
-    "820-contact.png": "15215c32930ced1d21b133e9eaefe775417a605ca95ceca188390a6cede4bab3",
+    "820-contact.png": "b2b39387c6385f6ac4e1e4cc68e98d44b1c9e51eb33f1b91b511d467d5d8e867",
     "820-hero.png": "8de832e0628d38c07adf3e83a0df6132536e4f17ee93001470a8c8afc6898a32",
     "820-lightbox-next.png": "88439ef7fb2918ae1ef7186a447fa9504f5948f1344276562a421df2c7d4ce69",
     "820-lightbox-portrait.png": "505e7e8ae47342178e84828f0e10161d420f0500a059e56b2fb75470c72a9c89",
@@ -86,11 +86,11 @@
             "x": 20,
             "y": 7812.625,
             "width": 320,
-            "height": 11180.5625
+            "height": 9978.8125
           },
           "contact": {
             "x": 20,
-            "y": 18993.1875,
+            "y": 17791.4375,
             "width": 320,
             "height": 673.09375
           }
@@ -211,18 +211,6 @@
             "y": 17126.5625,
             "width": 320,
             "height": 568.875
-          },
-          {
-            "x": 20,
-            "y": 17727.4375,
-            "width": 320,
-            "height": 568.875
-          },
-          {
-            "x": 20,
-            "y": 18328.3125,
-            "width": 320,
-            "height": 568.875
           }
         ],
         "overflow": false,
@@ -283,11 +271,11 @@
             "x": 20,
             "y": 7952.578125,
             "width": 350,
-            "height": 12140.75
+            "height": 10832.3125
           },
           "contact": {
             "x": 20,
-            "y": 20093.328125,
+            "y": 18784.890625,
             "width": 350,
             "height": 694.09375
           }
@@ -408,18 +396,6 @@
             "y": 18066.671875,
             "width": 350,
             "height": 622.21875
-          },
-          {
-            "x": 20,
-            "y": 18720.890625,
-            "width": 350,
-            "height": 622.21875
-          },
-          {
-            "x": 20,
-            "y": 19375.109375,
-            "width": 350,
-            "height": 622.21875
           }
         ],
         "overflow": false,
@@ -480,11 +456,11 @@
             "x": 20,
             "y": 8090.90625,
             "width": 727,
-            "height": 6182.796875
+            "height": 5533.03125
           },
           "contact": {
             "x": 20,
-            "y": 14273.703125,
+            "y": 13623.9375,
             "width": 727,
             "height": 792.0625
           }
@@ -605,18 +581,6 @@
             "y": 12910.171875,
             "width": 347.5,
             "height": 617.765625
-          },
-          {
-            "x": 20,
-            "y": 13559.9375,
-            "width": 347.5,
-            "height": 617.765625
-          },
-          {
-            "x": 399.5,
-            "y": 13559.9375,
-            "width": 347.5,
-            "height": 617.765625
           }
         ],
         "overflow": false,
@@ -677,11 +641,11 @@
             "x": 20,
             "y": 7997.75,
             "width": 728,
-            "height": 6190.8125
+            "height": 5540.15625
           },
           "contact": {
             "x": 20,
-            "y": 14188.5625,
+            "y": 13537.90625,
             "width": 728,
             "height": 792.625
           }
@@ -802,18 +766,6 @@
             "y": 12823.25,
             "width": 348,
             "height": 618.65625
-          },
-          {
-            "x": 20,
-            "y": 13473.90625,
-            "width": 348,
-            "height": 618.65625
-          },
-          {
-            "x": 400,
-            "y": 13473.90625,
-            "width": 348,
-            "height": 618.65625
           }
         ],
         "overflow": false,
@@ -874,11 +826,11 @@
             "x": 24,
             "y": 6606.609375,
             "width": 772,
-            "height": 6542.796875
+            "height": 5853.03125
           },
           "contact": {
             "x": 24,
-            "y": 13149.40625,
+            "y": 12459.640625,
             "width": 772,
             "height": 821.734375
           }
@@ -999,18 +951,6 @@
             "y": 11705.875,
             "width": 370,
             "height": 657.765625
-          },
-          {
-            "x": 24,
-            "y": 12395.640625,
-            "width": 370,
-            "height": 657.765625
-          },
-          {
-            "x": 426,
-            "y": 12395.640625,
-            "width": 370,
-            "height": 657.765625
           }
         ],
         "overflow": false,
@@ -1071,11 +1011,11 @@
             "x": 144,
             "y": 7215.859375,
             "width": 1152,
-            "height": 4395.40625
+            "height": 4395.375
           },
           "contact": {
             "x": 144,
-            "y": 11611.265625,
+            "y": 11611.234375,
             "width": 1152,
             "height": 902.546875
           }
@@ -1193,18 +1133,6 @@
           },
           {
             "x": 144,
-            "y": 10870.515625,
-            "width": 362.671875,
-            "height": 644.75
-          },
-          {
-            "x": 538.671875,
-            "y": 10870.515625,
-            "width": 362.671875,
-            "height": 644.75
-          },
-          {
-            "x": 933.34375,
             "y": 10870.515625,
             "width": 362.671875,
             "height": 644.75
