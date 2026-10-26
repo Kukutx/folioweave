@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, X } from "lucide-react";
+import { Check, Download, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { useManagedTimeouts } from "@/hooks/use-managed-timeouts";
@@ -41,8 +41,8 @@ function ResumeFileIcon({ size = 15 }: { size?: number }) {
 
 /**
  * Prints the resume: the button turns into a printer and feeds out the sheet.
- * Once it is out, Preview (or a click on the sheet) opens it at reading size,
- * with the PDF one tap away there; the cross feeds it back in.
+ * Once it is out, Download saves the PDF, a click on the sheet opens it at
+ * reading size, and the cross feeds it back in.
  */
 export function ResumePrinter({
   state,
@@ -60,7 +60,7 @@ export function ResumePrinter({
   const reducedMotion = usePrefersReducedMotion();
   const paperRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
-  const previewButtonRef = useRef<HTMLButtonElement>(null);
+  const [downloaded, setDownloaded] = useState(false);
   // One print at a time: the sheet's preload is awaited before the state
   // leaves idle, and a second click must not start another run meanwhile.
   const starting = useRef(false);
@@ -170,6 +170,19 @@ export function ResumePrinter({
     scheduleTimeout(() => setState("idle"), 2880);
   };
 
+  const save = () => {
+    if (!ready) return;
+    const anchor = document.createElement("a");
+    anchor.href = siteConfig.resume.pdf;
+    anchor.download = siteConfig.resume.downloadName;
+    anchor.click();
+    setDownloaded(true);
+    scheduleTimeout(() => {
+      setDownloaded(false);
+      beginClose();
+    }, 900);
+  };
+
   const openPreview = () => {
     if (ready) setPreviewOpen(true);
   };
@@ -187,7 +200,7 @@ export function ResumePrinter({
           ? { duration: 0.01 }
           : { duration: 1.05, ease: [0.16, 1, 0.3, 1] },
       }}
-      className={"resume-printer " + (morphing ? "is-morphing " : "") + (printing ? "is-printing " : "") + (ready ? "is-ready " : "") + (closing ? "is-closing " : "") + (collapsing ? "is-collapsing " : "")}
+      className={"resume-printer " + (morphing ? "is-morphing " : "") + (printing ? "is-printing " : "") + (ready ? "is-ready " : "") + (closing ? "is-closing " : "") + (collapsing ? "is-collapsing " : "") + (downloaded ? "is-downloaded" : "")}
     >
       <div className="resume-printer-stage">
         <button
@@ -214,9 +227,17 @@ export function ResumePrinter({
           <motion.div
             ref={paperRef}
             className="resume-paper"
-            // A click on the printed sheet opens it too; the Preview button
-            // is the accessible way in.
+            // A click on the printed sheet opens it at reading size.
             onClick={openPreview}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              openPreview();
+            }}
+            role={ready ? "button" : undefined}
+            tabIndex={ready ? 0 : -1}
+            aria-label={ready ? "Open the resume" : undefined}
+            aria-haspopup={ready ? "dialog" : undefined}
             initial={false}
             animate={
               closing
@@ -281,13 +302,19 @@ export function ResumePrinter({
             style={{ willChange: "transform, opacity" }}
           >
             <button
-              ref={previewButtonRef}
               type="button"
-              className="resume-preview-button"
-              onClick={openPreview}
-              aria-haspopup="dialog"
+              className="resume-download-button"
+              onClick={save}
             >
-              Preview <Eye size={15} aria-hidden />
+              {downloaded ? (
+                <>
+                  Saved <Check size={14} />
+                </>
+              ) : (
+                <>
+                  Download <Download size={14} />
+                </>
+              )}
             </button>
             <button
               type="button"
@@ -304,7 +331,7 @@ export function ResumePrinter({
         {previewOpen && (
           <ResumePreview
             onClose={() => setPreviewOpen(false)}
-            returnFocus={previewButtonRef}
+            returnFocus={paperRef}
           />
         )}
       </AnimatePresence>

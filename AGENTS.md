@@ -21,6 +21,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `personal` is the protected production branch. Change it through a pull request and merge only when `validate` and `visual-regression` pass; never push around a failing check.
 - When `content/resume/resume.json` exists it is the only source of the resume (see `content/resume/README.md`). After editing it run `npm run resume:build` and commit the source, lock, PDF and preview together; never hand-edit the generated PDF or preview.
 
+## Agent workflows
+
+Step-by-step procedures live in `.claude/skills/<name>/SKILL.md`:
+
+- `portfolio-content`: change what the profile shows, rebuild, check and recapture the baselines that changed.
+- `resume`: change the resume, rebuild it and archive its dated copies.
+- `ship-shared-change`: take a reusable change through `develop` and `main` to `personal`.
+
 ## Motion
 
 - Scroll reveals use `useViewReveal` and on-screen openings use CSS keyframes with `useOpening` (`docs/ARCHITECTURE.md`).

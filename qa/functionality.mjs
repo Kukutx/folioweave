@@ -313,7 +313,7 @@ async function runHomeCore() {
       return { firstTitle: timelineFirstTitle };
     });
 
-    await test("resume printer previews the sheet and downloads PDF", async () => {
+    await test("resume printer opens the sheet and downloads PDF", async () => {
       if (!portfolio.features.resume) return absent(page, ".resume-printer");
       // The sheet is fetched on demand, never with the page.
       assert(
@@ -322,9 +322,11 @@ async function runHomeCore() {
       );
       await page.evaluate(() => scrollTo(0, 0));
       await page.locator("button.resume-print-button").click();
-      const previewButton = page.locator("button.resume-preview-button");
-      await previewButton.waitFor({ state: "visible", timeout: 7000 });
-      await previewButton.click();
+      const downloadButton = page.locator("button.resume-download-button");
+      await downloadButton.waitFor({ state: "visible", timeout: 7000 });
+      // A click on the printed sheet opens it at reading size.
+      const paper = page.locator(".resume-paper");
+      await paper.click();
       const viewer = page.getByRole("dialog", { name: "Resume preview" });
       await viewer.waitFor({ state: "visible", timeout: 3000 });
       const sheet = viewer.locator("img");
@@ -355,33 +357,26 @@ async function runHomeCore() {
           timeout: 3000,
         });
       }
-      const [download] = await Promise.all([
-        page.waitForEvent("download", { timeout: 5000 }),
-        viewer.getByRole("link", { name: "Download PDF" }).click(),
-      ]);
-      const name = download.suggestedFilename();
-      assert(name.toLowerCase().endsWith(".pdf"), `unexpected file ${name}`);
       await page.keyboard.press("Escape");
       await viewer.waitFor({ state: "detached", timeout: 3000 });
       assert(
         await page.evaluate(() =>
-          document.activeElement?.classList.contains("resume-preview-button"),
+          document.activeElement?.classList.contains("resume-paper"),
         ),
-        "focus did not return to Preview",
+        "focus did not return to the sheet",
       );
-      // Opened from the sheet itself, focus still comes back to Preview.
-      await page.locator(".resume-paper").click();
+      // The keyboard opens it from the sheet too.
+      await page.keyboard.press("Enter");
       await viewer.waitFor({ state: "visible", timeout: 3000 });
       await page.keyboard.press("Escape");
       await viewer.waitFor({ state: "detached", timeout: 3000 });
-      assert(
-        await page.evaluate(() =>
-          document.activeElement?.classList.contains("resume-preview-button"),
-        ),
-        "focus did not return to Preview after opening from the sheet",
-      );
-      // Feed the sheet back in so later checks start from the plain hero.
-      await page.locator("button.resume-discard-button").click();
+      const [download] = await Promise.all([
+        page.waitForEvent("download", { timeout: 5000 }),
+        downloadButton.click(),
+      ]);
+      const name = download.suggestedFilename();
+      assert(name.toLowerCase().endsWith(".pdf"), `unexpected file ${name}`);
+      // Download feeds the sheet back in, so later checks start from the plain hero.
       await page.waitForFunction(
         () =>
           document.querySelector(".resume-printer")?.className.trim() ===
