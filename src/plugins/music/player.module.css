@@ -95,6 +95,15 @@
     opacity 200ms ease,
     visibility 0s linear 200ms;
 }
+/* The record art stays "visible" inside the hidden player, so taps must be
+   stopped explicitly: an invisible record must not catch a tap on the text. */
+:global(:root[data-fw-floating="tucked"])
+  .music[data-position="right"][data-expanded="false"],
+:global(:root[data-fw-floating="tucked"])
+  .music[data-position="right"][data-expanded="false"]
+  * {
+  pointer-events: none;
+}
 .music[data-position="center"] {
   --dock-gap: max(
     var(
