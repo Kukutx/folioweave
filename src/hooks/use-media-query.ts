@@ -82,6 +82,14 @@ export function useMediaQuery(
   return useSyncExternalStore(subscribe, read, () => false);
 }
 
+export const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+/** The live reduced-motion preference: false on the server and during
+ * hydration, then the visitor's setting, following any change. */
+export function usePrefersReducedMotion() {
+  return useMediaQuery(reducedMotionQuery);
+}
+
 export const mobileViewportQuery = "(max-width: 767px)";
 
 export function useMobileViewport(options?: { debounceMs?: number }) {

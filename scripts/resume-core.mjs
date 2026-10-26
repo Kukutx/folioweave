@@ -153,14 +153,15 @@ export const RESUME_FONT_STACK =
   'Arial, "Liberation Sans", Arimo, Helvetica, sans-serif';
 
 /**
- * The same design at two spacings. `compact` tightens the page margins, the
- * space around section headings and the line height, so a fuller resume still
- * fits one page; type sizes and colours stay the same.
+ * The same design at two spacings. `compact` tightens the space between
+ * sections, entries and lines and sets the name a touch tighter, so a fuller
+ * resume still fits one page; type sizes and colours stay the same. Its
+ * bottom margin stays clear of common printers' unprintable edge.
  */
 const DENSITY = {
   regular: "",
   compact: `
-.page { padding: 13.8mm 18mm 3.5mm; }
+.page { padding: 13.8mm 18mm 8mm; }
 .masthead { padding-bottom: 5.1pt; }
 h1 { line-height: 1.1; letter-spacing: -0.018em; }
 .headline { margin-top: 0.6pt; line-height: 1.3; }

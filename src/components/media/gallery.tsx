@@ -14,7 +14,6 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -24,10 +23,10 @@ import {
 } from "react";
 import { createPortal, flushSync } from "react-dom";
 import type { PortfolioMediaAsset } from "@/portfolio/schema";
-import { lockPageScroll } from "@/lib/scroll-lock";
 import { mediaDimensions } from "@/portfolio/media";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { usePrefersReducedMotion } from "@/hooks/use-media-query";
+import { useModalDialog } from "@/hooks/use-modal-dialog";
 import photoStyles from "./photo-card.module.css";
 
 const MotionImage = motion.create(Image);
@@ -88,7 +87,7 @@ export function PhotoCard({
   ariaLabel?: string;
 }) {
   const { src, alt } = image;
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const reducedMotion = usePrefersReducedMotion();
   const hoverEnabled = !disableHover && !reducedMotion;
   const ref = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
@@ -278,14 +277,25 @@ function GalleryContent({
   initialIndex,
   onClose,
 }: GalleryLightboxProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const { dialogRef, keyboardClosing, dialogProps } = useModalDialog({
+    onClose,
+    initialFocus: closeButtonRef,
+    gutterColor: "#000",
+    onKey: (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      // The listener sits on window, outside React's discrete-event
+      // priority. Commit the keyboard swap synchronously so the next paint
+      // is not delayed by the default scheduler queue.
+      flushSync(() => move(event.key === "ArrowLeft" ? -1 : 1, false));
+    },
+  });
+  const reducedMotion = usePrefersReducedMotion();
   const [selectedIndex, setIndex] = useState(() =>
       galleryIndex(initialIndex, images.length),
     ),
     [direction, setDirection] = useState(0),
-    [keyboardClosing, setKeyboardClosing] = useState(false),
     [warmImageIndices, setWarmImageIndices] = useState(() => [
       galleryIndex(initialIndex, images.length),
     ]);
@@ -371,77 +381,10 @@ function GalleryContent({
       cancelled = true;
       window.cancelAnimationFrame(frame);
     };
-  }, [images.length, index, warmImageIndices]);
-  useLayoutEffect(() => {
-    const previousFocus =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    const dialog = dialogRef.current;
-    const root = document.documentElement;
-    const rootBackground = root.style.backgroundColor;
-    const rootBackgroundPriority =
-      root.style.getPropertyPriority("background-color");
-    // Reserve only an existing classic scrollbar; do not add a gutter on
-    // touch/overlay-scrollbar devices and change their normal page width.
-    const scrollbarWidth = window.innerWidth - root.clientWidth;
-    // Paint the reserved gutter while this modal owns it. A root :has()
-    // selector would invalidate document-wide styles on every open/close.
-    if (scrollbarWidth > 0) root.style.backgroundColor = "#000";
-    const releaseScroll = lockPageScroll();
-    dialog?.showModal();
-    dialog?.style.setProperty("--modal-scrollbar-width", `${scrollbarWidth}px`);
-    closeButtonRef.current?.focus({ preventScroll: true });
-
-    const key = (event: KeyboardEvent) => {
-      // Native modality makes the background inert. Explicit wrapping keeps
-      // Tab in the viewer instead of moving into browser chrome at the edge.
-      if (event.key === "Tab") {
-        const controls = [
-          ...(dialog?.querySelectorAll<HTMLButtonElement>(
-            "button:not([disabled]):not([hidden])",
-          ) ?? []),
-        ];
-        const first = controls[0];
-        const last = controls.at(-1);
-        if (
-          first &&
-          last &&
-          ((event.shiftKey && document.activeElement === first) ||
-            (!event.shiftKey && document.activeElement === last))
-        ) {
-          event.preventDefault();
-          (event.shiftKey ? last : first).focus({ preventScroll: true });
-        }
-      }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        event.preventDefault();
-        // This listener is attached directly to window, outside React's
-        // discrete-event priority. Commit the keyboard swap synchronously so
-        // the next paint is not delayed by the default scheduler queue.
-        flushSync(() => move(event.key === "ArrowLeft" ? -1 : 1, false));
-      }
-    };
-    window.addEventListener("keydown", key);
-    return () => {
-      window.removeEventListener("keydown", key);
-      dialog?.close();
-      if (scrollbarWidth > 0) {
-        if (rootBackground)
-          root.style.setProperty(
-            "background-color",
-            rootBackground,
-            rootBackgroundPriority,
-          );
-        else root.style.removeProperty("background-color");
-      }
-      releaseScroll();
-      previousFocus?.focus({ preventScroll: true });
-    };
-  }, [move]);
+  }, [dialogRef, images.length, index, warmImageIndices]);
   return createPortal(
     <motion.dialog
-      ref={dialogRef}
+      {...dialogProps}
       initial={{ opacity: reducedMotion ? 1 : 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: keyboardClosing ? 1 : 0 }}
@@ -450,16 +393,6 @@ function GalleryContent({
       role="dialog"
       aria-modal="true"
       aria-label="Photography viewer"
-      onCancel={(event) => {
-        event.preventDefault();
-        // Native dialog cancel is outside React's discrete-event priority.
-        // Commit both the zero-delay exit mode and parent unmount together so
-        // keyboard Escape reaches its next paint without scheduler latency.
-        flushSync(() => {
-          setKeyboardClosing(true);
-          onClose();
-        });
-      }}
       style={{
         position: "fixed",
         inset: 0,
@@ -476,7 +409,6 @@ function GalleryContent({
         justifyContent: "center",
         contain: "layout paint",
       }}
-      onClick={onClose}
     >
       <button
         type="button"

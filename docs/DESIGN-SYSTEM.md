@@ -57,8 +57,7 @@ For new work:
 
 Motion communicates state and texture; it must not own layout correctness. Entrances, scroll reveals, hovers and the hero's opening are part of the reviewed visual.
 
-- content reveals as it scrolls into view (`useViewReveal`); content on screen at load opens with CSS keyframes that start with the first paint;
-- motion is checked with motion enabled and over time; visual baselines are captured with reduced motion and cannot show it;
+- content reveals as it scrolls into view and content on screen at load opens with CSS keyframes (see ARCHITECTURE.md);
 - one animated property has one interpolation owner;
 - continuous effects stop when off-screen or when the document is hidden;
 - reduced motion disables unnecessary interpolation and GPU prewarming, not just long durations;

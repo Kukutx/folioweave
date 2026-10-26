@@ -21,18 +21,12 @@ import type {
 import { sectionChildVariants, sectionRevealVariants } from "./motion-presets";
 import { mediaDimensions } from "@/portfolio/media";
 
-// The story box settles in just after its card, as on the original site.
+// The story box settles in just after it comes into view, on Motion's
+// default transition (a quick fade, a lively spring on y), as on the original
+// site. Its text rises on its own once well inside the viewport.
 const storyVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: 0.2,
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
+  visible: { opacity: 1, y: 0, transition: { delay: 0.2 } },
 };
 
 type Preview = {
@@ -229,7 +223,9 @@ function StoryBlock({
 }) {
   const story = project.story;
   const box = useRef<HTMLDivElement>(null);
-  const reveal = useViewReveal(box);
+  const text = useRef<HTMLParagraphElement>(null);
+  const reveal = useViewReveal(box, { rootMargin: "0px" });
+  const textReveal = useViewReveal(text, { rootMargin: "-10%" });
   if (!story) return null;
   const dimensions = mediaDimensions(story.image);
   return (
@@ -346,7 +342,10 @@ function StoryBlock({
           />
         </motion.div>
         <motion.p
+          ref={text}
           variants={sectionChildVariants}
+          initial={false}
+          animate={textReveal}
           style={{
             fontSize: ".95rem",
             lineHeight: 1.6,
@@ -364,7 +363,6 @@ function StoryBlock({
 }
 
 function ProjectMedia({ project }: { project: PortfolioProject }) {
-  const isMobile = useMobileViewport();
   if (project.media.kind === "screens") {
     return (
       <ScreenRow
@@ -375,11 +373,7 @@ function ProjectMedia({ project }: { project: PortfolioProject }) {
     );
   }
   if (project.media.kind === "carousel") {
-    const slides = project.media.images.map((slide) => ({
-      src: isMobile ? (slide.mobile ?? slide.src) : slide.src,
-      alt: slide.alt,
-    }));
-    return <MediaCarousel images={slides} />;
+    return <MediaCarousel images={project.media.images} />;
   }
   return <WorkImage image={project.media.image} projectName={project.name} />;
 }
