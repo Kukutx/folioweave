@@ -369,6 +369,16 @@
         }
       ]
     },
+    "localDocx": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/localPath"
+        },
+        {
+          "pattern": "\\.docx$"
+        }
+      ]
+    },
     "localIcon": {
       "allOf": [
         {
@@ -605,6 +615,10 @@
             "downloadName": {
               "type": "string",
               "pattern": "\\.pdf$"
+            },
+            "docx": {
+              "$ref": "#/$defs/localDocx",
+              "description": "Optional Word copy of the same resume, offered next to the PDF in the preview and saved under downloadName with a .docx extension."
             }
           },
           "description": "Author resume files and download name. Referenced source files must exist even when the feature is disabled; disabled resume files are excluded from publication unless another published item references them."
