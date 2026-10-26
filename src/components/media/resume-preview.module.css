@@ -103,6 +103,8 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
 }
 .scroller:focus-visible .sheet {
   outline: 2px solid #fff;
