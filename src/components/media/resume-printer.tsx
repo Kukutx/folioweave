@@ -5,6 +5,8 @@ import { Check, Download, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { useManagedTimeouts } from "@/hooks/use-managed-timeouts";
+import { usePrefersReducedMotion } from "@/hooks/use-media-query";
+import { ResumePreview } from "./resume-preview";
 
 export type ResumeState =
   | "idle"
@@ -37,10 +39,11 @@ function ResumeFileIcon({ size = 15 }: { size?: number }) {
   );
 }
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  matchMedia("(prefers-reduced-motion: reduce)").matches;
-
+/**
+ * Prints the resume: the button turns into a printer and feeds out the sheet.
+ * Once it is out, Download saves the PDF, a click on the sheet opens it at
+ * reading size, and the cross feeds it back in.
+ */
 export function ResumePrinter({
   state,
   setState,
@@ -54,10 +57,17 @@ export function ResumePrinter({
   const closing = state === "closing";
   const collapsing = state === "collapsing";
   const active = morphing || printing || ready || closing || collapsing;
-  const reducedMotion = reduced();
+  const reducedMotion = usePrefersReducedMotion();
   const paperRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
   const [downloaded, setDownloaded] = useState(false);
+  // One print at a time: the sheet's preload is awaited before the state
+  // leaves idle, and a second click must not start another run meanwhile.
+  const starting = useRef(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  // The sheet image is fetched once someone heads for the button, not with
+  // the page.
+  const [sheetWanted, setSheetWanted] = useState(false);
   const { scheduleTimeout } = useManagedTimeouts();
   const paperHeight = 326;
   const printDelay = reducedMotion ? 0 : 0.48;
@@ -79,7 +89,9 @@ export function ResumePrinter({
     [],
   );
 
-  useEffect(() => {
+  // Hover, focus or touch warms the sheet before the click.
+  const warmSheet = useCallback(() => {
+    setSheetWanted(true);
     preloadImage(siteConfig.resume.image).catch(() => {});
   }, [preloadImage]);
 
@@ -134,11 +146,14 @@ export function ResumePrinter({
   }, [printing, ready, printDelay]);
 
   const start = async (event?: React.MouseEvent<HTMLButtonElement>) => {
-    if (state !== "idle") return;
+    if (state !== "idle" || starting.current) return;
+    starting.current = true;
     event?.currentTarget.blur();
+    setSheetWanted(true);
     try {
       await preloadImage(siteConfig.resume.image);
     } catch {}
+    starting.current = false;
     setState("morphing");
     scheduleTimeout(
       () => {
@@ -168,6 +183,10 @@ export function ResumePrinter({
     }, 900);
   };
 
+  const openPreview = () => {
+    if (ready) setPreviewOpen(true);
+  };
+
   const close = () => {
     if (!ready) return;
     beginClose();
@@ -187,6 +206,9 @@ export function ResumePrinter({
         <button
           type="button"
           className="resume-print-button"
+          onPointerEnter={warmSheet}
+          onFocus={warmSheet}
+          onTouchStart={warmSheet}
           onClick={start}
           disabled={state !== "idle"}
           aria-label={ready ? "Resume printed" : "Print resume"}
@@ -205,6 +227,17 @@ export function ResumePrinter({
           <motion.div
             ref={paperRef}
             className="resume-paper"
+            // A click on the printed sheet opens it at reading size.
+            onClick={openPreview}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
+              openPreview();
+            }}
+            role={ready ? "button" : undefined}
+            tabIndex={ready ? 0 : -1}
+            aria-label={ready ? "Open the resume" : undefined}
+            aria-haspopup={ready ? "dialog" : undefined}
             initial={false}
             animate={
               closing
@@ -241,14 +274,14 @@ export function ResumePrinter({
                   : [0.18, 0.84, 0.32, 1],
             }}
           >
-            <img
-              src={siteConfig.resume.image}
-              alt=""
-              draggable={false}
-              loading="eager"
-              decoding="sync"
-              fetchPriority="low"
-            />
+            {sheetWanted && (
+              <img
+                src={siteConfig.resume.image}
+                alt=""
+                draggable={false}
+                decoding="sync"
+              />
+            )}
           </motion.div>
         </div>
         <div className="resume-slot-mouth" aria-hidden />
@@ -292,6 +325,14 @@ export function ResumePrinter({
               <X size={15} />
             </button>
           </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {previewOpen && (
+          <ResumePreview
+            onClose={() => setPreviewOpen(false)}
+            returnFocus={paperRef}
+          />
         )}
       </AnimatePresence>
     </motion.div>
