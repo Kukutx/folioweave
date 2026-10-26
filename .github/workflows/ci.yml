@@ -101,13 +101,13 @@ jobs:
         uses: ./.github/actions/prepare
         with:
           browsers: chromium firefox webkit
-      # A runner has no audio output, and Firefox then reports every track as
-      # undecodable. A null sink lets the music suite play in all engines.
+          # A runner has no audio output, and Firefox then reports every track
+          # as undecodable. A null sink lets the music suite play in all
+          # engines; prepare installs (and caches) its package.
+          packages: pulseaudio
       - name: Start a null audio sink
         if: steps.impact.outputs.full != 'false'
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes pulseaudio
           pulseaudio --start --exit-idle-time=-1
           pactl load-module module-null-sink sink_name=ci
       - run: npm run qa:music-quality

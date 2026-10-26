@@ -84,3 +84,9 @@ A pull request runs six suites side by side and one Windows job:
 `validate` passes only when the first six did; it and `visual-regression` are
 the two checks `main` and `personal` require. A change that touches only
 documentation takes a fast path through every job.
+
+The Linux jobs restore Playwright's browsers and the apt packages they need
+from a cache, so a slow package mirror costs nothing once the cache is warm.
+`Warm CI caches` fills it on `main` (when `main` moves, weekly as runner
+images update, or by hand from the Actions tab), where every pull request can
+read it.

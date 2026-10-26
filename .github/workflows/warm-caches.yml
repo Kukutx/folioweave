@@ -1,0 +1,40 @@
+name: Warm CI caches
+
+# CI caches browsers and their system packages (.github/actions/prepare).
+# Caches saved on the default branch are readable by every pull request, so
+# this fills them there: when main moves, and weekly as runner images update.
+# It validates nothing; CI does that.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    # Generous: on a slow mirror the first fill is exactly the long download
+    # that CI should never have to wait for.
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browsers: chromium
+          - browsers: chromium firefox webkit
+          - browsers: chromium firefox webkit
+            packages: pulseaudio
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ./.github/actions/prepare
+        with:
+          browsers: ${{ matrix.browsers }}
+          packages: ${{ matrix.packages }}
