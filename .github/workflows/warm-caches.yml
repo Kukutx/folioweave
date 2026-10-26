@@ -34,7 +34,8 @@ jobs:
             packages: pulseaudio
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: ./.github/actions/prepare
+      - id: prepare
+        uses: ./.github/actions/prepare
         with:
           browsers: ${{ matrix.browsers }}
           packages: ${{ matrix.packages }}
