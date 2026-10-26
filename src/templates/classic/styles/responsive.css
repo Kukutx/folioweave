@@ -397,7 +397,8 @@ body {
     animation: none !important;
   }
   .work-item:hover .work-image-container img,
-  .work-item:hover .work-image-container video {
+  .work-item:hover .work-image-container video,
+  .work-item:hover .work-image-container .screen-row {
     transform: none !important;
   }
 }
@@ -476,9 +477,15 @@ body {
 #work .work-text-side {
   gap: 0.16rem;
 }
+/* The project name, date and description follow the scroll theme like the
+   rest of the page, so they stay readable while the background darkens
+   towards Photography. The secondary lines are the theme colour at reduced
+   opacity, which on white matches --color-subtle and --color-body.
+   (color-mix() with currentColor would not follow the theme: Chromium keeps
+   the value it computed first.) */
 #work .work-text-company {
   gap: 0.3em;
-  color: var(--color-heading);
+  color: inherit;
   font-size: clamp(1.02rem, 1.25vw, 1.12rem);
   font-weight: 500;
   line-height: 1.4;
@@ -492,26 +499,25 @@ body {
 }
 #work .work-meta {
   padding-top: 0.08rem;
-  color: var(--color-subtle);
+  color: inherit;
   font-size: 0.78rem;
   font-weight: 500;
   line-height: 1.5;
   letter-spacing: 0.04em;
-  opacity: 1;
+  opacity: 0.46;
 }
 #work .work-text-side > p {
   max-width: 38rem;
   margin-top: 0.58rem !important;
-  color: var(--color-body);
+  color: inherit;
   font-size: clamp(1rem, 1.2vw, 1.08rem) !important;
   font-weight: 400;
   line-height: 1.62 !important;
   letter-spacing: -0.008em;
-  opacity: 1 !important;
+  opacity: 0.64 !important;
   text-wrap: pretty;
 }
 #work .work-text-side a:not(.award-badge) {
-  color: #242424;
   font-family: "Satoshi", var(--font-main);
   font-weight: 500 !important;
   letter-spacing: -0.004em;

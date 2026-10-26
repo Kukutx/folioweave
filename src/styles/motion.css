@@ -1,5 +1,31 @@
+/* The site's settle spring (stiffness 140, damping 20, mass 0.7, no
+   overshoot) as a 0.6s CSS easing, for openings that run before hydration. */
+:root {
+  --motion-settle: linear(
+    0,
+    0.099,
+    0.285,
+    0.469,
+    0.622,
+    0.738,
+    0.822,
+    0.881,
+    0.921,
+    0.948,
+    0.966,
+    0.978,
+    0.986,
+    0.991,
+    0.994,
+    0.996,
+    1
+  );
+}
+
 /* Continuous CSS decoration follows the same lifecycle as JS motion. */
-[data-motion-active="false"] .falling-star {
+[data-motion-active="false"] .falling-star,
+[data-motion-active="false"] .bird,
+[data-motion-active="false"] .bird-container {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {

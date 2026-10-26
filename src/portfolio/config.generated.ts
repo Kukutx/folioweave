@@ -78,7 +78,7 @@ const portfolio = {
       "downloadName": "Liu-Zhong-Li-CV.pdf"
     },
     "assets": {
-      "socialPreview": "/portfolio/profile/social-preview.png",
+      "socialPreview": "/portfolio/profile/social-preview.jpg",
       "icon": "/portfolio/profile/favicon.png",
       "appleTouchIcon": "/portfolio/profile/apple-touch-icon.png"
     }
@@ -140,8 +140,8 @@ const portfolio = {
       },
       {
         "year": "2026",
-        "title": "Crew released + DevMate",
-        "desc": "Released Crew on Google Play and started DevMate, an open-source bridge between ChatGPT and local development tools.",
+        "title": "Crew released, DevMate and TradePilot 212",
+        "desc": "Released Crew on Google Play and the App Store, and started two open-source MCP projects: DevMate, a bridge between ChatGPT, Claude and local development tools, and TradePilot 212, which connects them to a Trading 212 account.",
         "current": true
       }
     ],
@@ -202,19 +202,19 @@ const portfolio = {
     "galleryImages": [
       {
         "src": "/portfolio/photography/about-01.jpg",
-        "alt": "A personal moment from Liu's life in Milan"
+        "alt": "Liu at a lakeside balustrade, with an island and mountains behind"
       },
       {
         "src": "/portfolio/photography/about-02.jpg",
-        "alt": "A second personal moment from Liu's life in Milan"
+        "alt": "Liu leaning in a stone window above a river and a bridge"
       },
       {
         "src": "/portfolio/photography/about-03.jpg",
-        "alt": "A third personal moment from Liu's life in Milan"
+        "alt": "Liu in sunglasses by a lake, with a rocky mountain behind"
       },
       {
         "src": "/portfolio/photography/about-04.jpg",
-        "alt": "A fourth personal moment from Liu's life in Milan"
+        "alt": "Liu in a cap under the arch of a glass-roofed gallery"
       }
     ]
   },
@@ -225,34 +225,87 @@ const portfolio = {
       "mobileTreatment": "standard",
       "name": "Crew",
       "date": "Dec 2025 — Present",
-      "description": "Crew is a social events app: discover what's on, create Spot and Route events, chat, buy tickets, and give organizers the tools to run them. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
-      "icon": "/portfolio/projects/crew/icon.png",
+      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join an event or start one of your own — at a meeting spot or along a route with a few stops — and use the group chat to sort out the details. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
+      "icon": "/portfolio/projects/crew/crew-icon.png",
       "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/crew/crew-main.png",
-          "mobile": "/portfolio/projects/crew/crew-main-mobile.png",
-          "alt": "Three Crew mobile app screens"
-        }
+        "kind": "screens",
+        "screens": [
+          {
+            "src": "/portfolio/projects/crew/crew-event.webp",
+            "alt": "An event in Crew: a picnic on Primrose Hill with its host, date, places taken and Register Now"
+          },
+          {
+            "src": "/portfolio/projects/crew/crew-moment.webp",
+            "alt": "A post in Crew: golden hour at Tower Bridge, with its photo, place and comments"
+          },
+          {
+            "src": "/portfolio/projects/crew/crew-host.webp",
+            "alt": "A host profile in Crew: Maya Chen's events, with Follow and Message"
+          }
+        ]
       },
       "badge": {
-        "text": "Live on Google Play",
+        "text": "Live on Google Play & App Store",
         "tone": "gold",
-        "href": "https://play.google.com/store/apps/details?id=app.crew"
+        "href": "https://www.crew-app.com"
       },
       "actions": [
         {
           "label": "View in Google Play",
           "href": "https://play.google.com/store/apps/details?id=app.crew",
           "icon": "arrow"
+        },
+        {
+          "label": "View in App Store",
+          "href": "https://apps.apple.com/app/id6812583779",
+          "icon": "arrow",
+          "tone": "accent"
         }
       ],
       "story": {
         "title": "Behind the build",
-        "image": "/portfolio/projects/crew/crew-play-store.png",
-        "imageAlt": "Crew Google Play listing",
-        "body": "Crew is the project that pushed me out of neat frontend/backend boxes. Building it on my own means I get to make the product and engineering decisions together — from small interaction details and geospatial data to payments, infrastructure and Play Store releases."
+        "image": "/portfolio/projects/crew/crew-app-store.webp",
+        "imageAlt": "Crew: Interests & Meetups on the App Store",
+        "body": "Crew is the project that pushed me out of neat frontend/backend boxes. Building it on my own means I get to make the product and engineering decisions together — from small interaction details and geospatial data to payments, infrastructure and app store releases."
       }
+    },
+    {
+      "id": "tradepilot212",
+      "enabled": true,
+      "mobileTreatment": "standard",
+      "name": "TradePilot 212",
+      "date": "Sep 2026 — Present",
+      "description": "TradePilot 212 is a self-hosted MCP app that connects a Trading 212 account to ChatGPT and Claude: a portfolio dashboard, analytics and order preparation right in the chat. Demo and Live stay separate, and every Live order waits for an explicit confirmation.",
+      "icon": "/portfolio/projects/tradepilot212/tradepilot-icon.png",
+      "media": {
+        "kind": "screens",
+        "screens": [
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-dashboard.webp",
+            "alt": "TradePilot 212 in a chat: the portfolio dashboard of a sample Demo account"
+          },
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-order.webp",
+            "alt": "TradePilot 212 in a chat: an order draft to buy Apple with a limit price, ready to review"
+          },
+          {
+            "src": "/portfolio/projects/tradepilot212/tradepilot-performance.webp",
+            "alt": "TradePilot 212 in a chat: portfolio performance with profit and returns"
+          }
+        ]
+      },
+      "badge": {
+        "text": "Open source · MIT",
+        "tone": "blue",
+        "href": "https://github.com/Kukutx/TradePilot212"
+      },
+      "actions": [
+        {
+          "label": "View on GitHub",
+          "href": "https://github.com/Kukutx/TradePilot212",
+          "icon": "arrow"
+        }
+      ]
     },
     {
       "id": "devmate",
@@ -260,25 +313,25 @@ const portfolio = {
       "mobileTreatment": "featured",
       "name": "DevMate",
       "date": "Jun 2026 — Present",
-      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT to VS Code, Obsidian, the CLI and remote Runners.",
-      "icon": "/portfolio/projects/devmate/icon.png",
+      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
+      "icon": "/portfolio/projects/devmate/devmate-icon.png",
       "media": {
         "kind": "carousel",
         "images": [
           {
-            "src": "/portfolio/projects/devmate/devmate-main.png",
-            "alt": "DevMate VS Code control panel with project binding, MCP connection, diagnostics, permissions, and workspace state"
+            "src": "/portfolio/projects/devmate/devmate-workbench.webp",
+            "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
           },
           {
-            "src": "/portfolio/projects/devmate/devmate-obsidian.png",
-            "alt": "DevMate Obsidian host showing the vault graph alongside the shared runtime, workspace, active-note, and vault-index panel"
+            "src": "/portfolio/projects/devmate/devmate-agents.webp",
+            "alt": "DevMate handing a task to a local agent: Codex, Claude, Gemini or Grok, each in its own session"
           }
         ]
       },
       "badge": {
-        "text": "DevMate 3.8.8 · Public release",
+        "text": "Open source · MIT",
         "tone": "blue",
-        "href": "https://github.com/Kukutx/DevMate/releases/tag/3.8.8"
+        "href": "https://github.com/Kukutx/DevMate"
       },
       "actions": [
         {
@@ -294,75 +347,75 @@ const portfolio = {
     "images": [
       {
         "src": "/portfolio/photography/photo-01.jpg",
-        "alt": "Photograph 1 by Liu Zhong Li"
+        "alt": "Leaves against a blue sky and clouds, seen from below"
       },
       {
         "src": "/portfolio/photography/photo-02.jpg",
-        "alt": "Photograph 2 by Liu Zhong Li"
+        "alt": "A small reindeer made of logs on a cobbled street"
       },
       {
         "src": "/portfolio/photography/photo-03.jpg",
-        "alt": "Photograph 3 by Liu Zhong Li"
+        "alt": "An equestrian monument lit at dusk under a deep blue sky"
       },
       {
         "src": "/portfolio/photography/photo-04.webp",
-        "alt": "Photograph 4 by Liu Zhong Li"
+        "alt": "A lakeside town under a rocky mountain on a sunny day"
       },
       {
         "src": "/portfolio/photography/photo-05.webp",
-        "alt": "Photograph 5 by Liu Zhong Li"
+        "alt": "Boats on a lake at sunset, with a couple on the shore"
       },
       {
         "src": "/portfolio/photography/photo-06.webp",
-        "alt": "Photograph 6 by Liu Zhong Li"
+        "alt": "Small boats crowded with visitors on a deep blue sea"
       },
       {
         "src": "/portfolio/photography/photo-07.webp",
-        "alt": "Photograph 7 by Liu Zhong Li"
+        "alt": "A small chapel on a snowy mountain top under a clear sky"
       },
       {
         "src": "/portfolio/photography/photo-08.jpg",
-        "alt": "Photograph 8 by Liu Zhong Li"
+        "alt": "A domed church beside a street at dusk"
       },
       {
         "src": "/portfolio/photography/photo-09.jpg",
-        "alt": "Photograph 9 by Liu Zhong Li"
+        "alt": "A grilled sandwich with tortilla chips on a plate"
       },
       {
         "src": "/portfolio/photography/photo-10.jpg",
-        "alt": "Photograph 10 by Liu Zhong Li"
+        "alt": "A framed black-and-white photograph of a snowy ridge"
       },
       {
         "src": "/portfolio/photography/photo-11.jpg",
-        "alt": "Photograph 11 by Liu Zhong Li"
+        "alt": "A lake among mountains seen from above, with an island"
       },
       {
-        "src": "/portfolio/photography/photo-12.jpg",
-        "alt": "Photograph 12 by Liu Zhong Li"
+        "src": "/portfolio/photography/photo-19.webp",
+        "alt": "A bay full of small boats below steep green cliffs, seen from above"
       },
       {
         "src": "/portfolio/photography/photo-13.jpg",
-        "alt": "Photograph 13 by Liu Zhong Li"
+        "alt": "A red church spire over a riverside park in autumn"
       },
       {
-        "src": "/portfolio/photography/photo-14.jpg",
-        "alt": "Photograph 14 by Liu Zhong Li"
+        "src": "/portfolio/photography/photo-20.webp",
+        "alt": "A baroque fountain with marble statues, lit at night"
       },
       {
         "src": "/portfolio/photography/photo-15.jpg",
-        "alt": "Photograph 15 by Liu Zhong Li"
+        "alt": "Rowing boats waiting on an open blue sea"
       },
       {
         "src": "/portfolio/photography/photo-16.jpg",
-        "alt": "Photograph 16 by Liu Zhong Li"
+        "alt": "A rowing boat in a sea cave lit electric blue"
       },
       {
         "src": "/portfolio/photography/photo-17.jpg",
-        "alt": "Photograph 17 by Liu Zhong Li"
+        "alt": "A lakeside town under a rocky mountain, wind on the water"
       },
       {
         "src": "/portfolio/photography/photo-18.jpg",
-        "alt": "Photograph 18 by Liu Zhong Li"
+        "alt": "People on a lakeside wall at sunset between mountains"
       }
     ]
   },
@@ -444,7 +497,7 @@ const portfolio = {
         "position": "right",
         "theme": "graphite",
         "initialExpanded": false,
-        "autoplay": true,
+        "autoplay": false,
         "volume": 0.7,
         "notes": {
           "enabled": true

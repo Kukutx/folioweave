@@ -11,7 +11,9 @@ import {
   type CSSProperties,
 } from "react";
 import { useMotionActivity } from "@/hooks/use-motion-activity";
+import { useOpening } from "@/hooks/use-opening";
 import { AboutSection } from "../about-section";
+import { ScrollHint } from "./scroll-hint";
 import { CharReveal } from "@/components/motion-text";
 import { ResumePrinter, type ResumeState } from "@/components/media/resume-printer";
 import { homeContent } from "@/content/home";
@@ -112,7 +114,7 @@ const PortraitImage = memo(function PortraitImage({
               background:
                 "linear-gradient(90deg, #e5e5e5 0%, #f0f0f0 50%, #e5e5e5 100%)",
               backgroundSize: "200% 100%",
-              animation: "shimmer 1.5s infinite",
+              animation: "classic-portrait-shimmer 1.5s linear infinite",
               zIndex: 10,
             }}
           />
@@ -182,8 +184,11 @@ function RichText({
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const { active, reducedMotion } = useMotionActivity(heroRef);
+  const [opening] = useOpening(heroRef, "hero-intro-");
   const mobile = useMobileViewport(),
     [portrait, setPortrait] = useState(0),
+    // The white flash marks a change of portrait, so the first one has none.
+    [portraitChanges, setPortraitChanges] = useState(0),
     [mobileTilt, setMobileTilt] = useState({ x: 0, y: 0 }),
     [resume, setResume] = useState<ResumeState>("idle");
   useEffect(() => {
@@ -211,24 +216,27 @@ export function Hero() {
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [active, mobile]);
-  const next = () => setPortrait((v) => (v + 1) % portraitImages.length);
+  const next = () => {
+    setPortrait((v) => (v + 1) % portraitImages.length);
+    setPortraitChanges((count) => count + 1);
+  };
   return (
     <section
       ref={heroRef}
       id="home"
       className="hero-section"
+      data-opening={opening ? "" : undefined}
       style={{ "--mouse-x": "50%", "--mouse-y": "50%" } as CSSProperties}
     >
+      <ScrollHint blocked={resume !== "idle"} />
       <div className="container">
         <div
           className={`hero-wrapper ${resume !== "idle" && resume !== "collapsing" && resume !== "morphing" ? "is-resume-active" : ""}`}
         >
-          <motion.div
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="hero-content"
-          >
+          {/* The opening (content and greeting rising, name, bio, portrait)
+              is CSS in hero.css, so it plays from the first paint and the
+              server HTML is the final state. */}
+          <div className="hero-content">
             <div className="hero-grid">
               <div className="hero-text-side">
                 <h1 className="hero-title">
@@ -236,30 +244,21 @@ export function Hero() {
                     active={active}
                     reducedMotion={reducedMotion}
                   />
-                  <CharReveal delay={0.35} trigger className="hero-main-text">
+                  <CharReveal delay={0.35} intro className="hero-main-text">
                     {`I'm ${siteConfig.identity.name}`}
                   </CharReveal>{" "}
                   <span className="hero-wave" aria-hidden>
                     👋
                   </span>
                 </h1>
-                <motion.div
-                  className="hero-bio"
-                  initial={false}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.75,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
+                <div className="hero-bio">
                   <p className="hero-role-line">
                     <RichText segments={homeContent.hero.roleLine} />
                   </p>
                   <p className="hero-summary">
                     <RichText segments={homeContent.hero.summary} />
                   </p>
-                </motion.div>
+                </div>
                 <div id="profile-actions">
                   <div
                     className={`profile-action-row ${resume !== "idle" && resume !== "collapsing" ? "is-resume-active" : ""}`}
@@ -303,6 +302,9 @@ export function Hero() {
                   aria-label={`Show next portrait. Photo ${portrait + 1} of ${portraitImages.length}.`}
                   initial={false}
                   animate={{ opacity: 1, scale: 1, rotate: 6, y: 0 }}
+                  // As on the original site, hover and its return settle
+                  // after a short pause, so a pointer passing by leaves the
+                  // card alone.
                   transition={{
                     type: "spring",
                     stiffness: 140,
@@ -347,28 +349,30 @@ export function Hero() {
                     <AnimatePresence mode="wait" initial={false}>
                       <PortraitImage key={portrait} active={active} index={portrait} />
                     </AnimatePresence>
-                    <motion.div
-                      key={`flash-${portrait}`}
-                      aria-hidden
-                      initial={{ opacity: 0.32 }}
-                      animate={{ opacity: 0 }}
-                      transition={{
-                        duration: 0.38,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: "#fff",
-                        pointerEvents: "none",
-                      }}
-                    />
+                    {portraitChanges > 0 && (
+                      <motion.div
+                        key={`flash-${portraitChanges}`}
+                        aria-hidden
+                        initial={{ opacity: 0.32 }}
+                        animate={{ opacity: 0 }}
+                        transition={{
+                          duration: 0.38,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "#fff",
+                          pointerEvents: "none",
+                        }}
+                      />
+                    )}
                   </div>
                   <span>{`me_0${portrait + 1}.jpeg`}</span>
                 </motion.div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
         {siteConfig.features.about && <StableAboutSection />}
       </div>

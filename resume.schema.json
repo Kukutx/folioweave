@@ -30,6 +30,14 @@
       "pattern": "^#[0-9A-Fa-f]{6}$",
       "description": "Link color. Defaults to #0066cc."
     },
+    "density": {
+      "enum": ["regular", "compact"],
+      "description": "Spacing of the page. compact tightens the space between sections, entries and lines so a fuller resume fits one page; type sizes stay the same. Defaults to regular."
+    },
+    "footnote": {
+      "$ref": "#/$defs/inlineText",
+      "description": "Small closing line after the last section, such as a data-processing consent."
+    },
     "contact": {
       "type": "array",
       "maxItems": 4,

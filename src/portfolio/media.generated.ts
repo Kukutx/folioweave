@@ -68,15 +68,7 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2048,
     "height": 1536
   },
-  "/portfolio/photography/photo-12.jpg": {
-    "width": 1440,
-    "height": 2560
-  },
   "/portfolio/photography/photo-13.jpg": {
-    "width": 2560,
-    "height": 1920
-  },
-  "/portfolio/photography/photo-14.jpg": {
     "width": 2560,
     "height": 1920
   },
@@ -96,9 +88,17 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2560,
     "height": 1440
   },
+  "/portfolio/photography/photo-19.webp": {
+    "width": 2048,
+    "height": 1536
+  },
   "/portfolio/photography/photo-20.jpg": {
     "width": 1536,
     "height": 2048
+  },
+  "/portfolio/photography/photo-20.webp": {
+    "width": 2048,
+    "height": 1536
   },
   "/portfolio/profile/apple-touch-icon.png": {
     "width": 180,
@@ -112,37 +112,57 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 675,
     "height": 900
   },
-  "/portfolio/profile/social-preview.png": {
-    "width": 675,
-    "height": 900
+  "/portfolio/profile/social-preview.jpg": {
+    "width": 1200,
+    "height": 630
   },
-  "/portfolio/projects/crew/crew-main-mobile.png": {
-    "width": 2000,
-    "height": 1744
+  "/portfolio/projects/crew/crew-app-store.webp": {
+    "width": 1878,
+    "height": 568
   },
-  "/portfolio/projects/crew/crew-main.png": {
-    "width": 2000,
-    "height": 1206
+  "/portfolio/projects/crew/crew-event.webp": {
+    "width": 900,
+    "height": 1955
   },
-  "/portfolio/projects/crew/crew-play-store.png": {
-    "width": 2400,
-    "height": 657
+  "/portfolio/projects/crew/crew-host.webp": {
+    "width": 900,
+    "height": 1955
   },
-  "/portfolio/projects/crew/icon.png": {
+  "/portfolio/projects/crew/crew-icon.png": {
     "width": 512,
     "height": 512
   },
-  "/portfolio/projects/devmate/devmate-main.png": {
-    "width": 2538,
-    "height": 1367
+  "/portfolio/projects/crew/crew-moment.webp": {
+    "width": 900,
+    "height": 1955
   },
-  "/portfolio/projects/devmate/devmate-obsidian.png": {
-    "width": 2555,
-    "height": 1376
+  "/portfolio/projects/devmate/devmate-agents.webp": {
+    "width": 1365,
+    "height": 853
   },
-  "/portfolio/projects/devmate/icon.png": {
-    "width": 128,
-    "height": 128
+  "/portfolio/projects/devmate/devmate-icon.png": {
+    "width": 256,
+    "height": 256
+  },
+  "/portfolio/projects/devmate/devmate-workbench.webp": {
+    "width": 2000,
+    "height": 1250
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-dashboard.webp": {
+    "width": 900,
+    "height": 1950
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-icon.png": {
+    "width": 256,
+    "height": 256
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-order.webp": {
+    "width": 900,
+    "height": 1950
+  },
+  "/portfolio/projects/tradepilot212/tradepilot-performance.webp": {
+    "width": 900,
+    "height": 1950
   },
   "/portfolio/resume/liu-zhong-li-cv.png": {
     "width": 1240,

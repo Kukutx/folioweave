@@ -36,16 +36,50 @@ export function FloatingHomeButton({
     return `#${channel}${channel}${channel}`;
   });
 
-  const updateVisibility = useCallback((position: number) => {
-    const threshold = Math.max(420, window.innerHeight * 0.72);
-    const next = position > threshold;
-    if (next === visibleRef.current) return;
-    visibleRef.current = next;
-    setVisible(next);
+  // On a phone the floating controls sit over the text column. They step
+  // aside while the reader scrolls down and return on the first scroll up or
+  // at the end of the page. Floating plugins follow the same root signal.
+  const [tucked, setTucked] = useState(false);
+  const tuckedRef = useRef(false);
+  const lastY = useRef(0);
+  const setTuck = useCallback((next: boolean) => {
+    if (next === tuckedRef.current) return;
+    tuckedRef.current = next;
+    setTucked(next);
+    if (next) document.documentElement.dataset.fwFloating = "tucked";
+    else delete document.documentElement.dataset.fwFloating;
   }, []);
 
+  const updateVisibility = useCallback(
+    (position: number) => {
+      const threshold = Math.max(420, window.innerHeight * 0.72);
+      const next = position > threshold;
+      const delta = position - lastY.current;
+      if (Math.abs(delta) >= 8) {
+        lastY.current = position;
+        // Only phones tuck; wider screens skip the layout read.
+        const narrow = window.innerWidth < 768;
+        setTuck(
+          narrow &&
+            next &&
+            delta > 0 &&
+            position + window.innerHeight <
+              document.documentElement.scrollHeight - 24,
+        );
+      }
+      if (next === visibleRef.current) return;
+      visibleRef.current = next;
+      setVisible(next);
+    },
+    [setTuck],
+  );
+
   useEffect(() => {
+    lastY.current = window.scrollY;
     updateVisibility(window.scrollY);
+    return () => {
+      delete document.documentElement.dataset.fwFloating;
+    };
   }, [updateVisibility]);
 
   useMotionValueEvent(scrollY, "change", updateVisibility);
@@ -59,7 +93,7 @@ export function FloatingHomeButton({
 
   return (
     <AnimatePresence initial={false}>
-      {visible && (
+      {visible && !tucked && (
         <motion.button
           type="button"
           data-floating-home

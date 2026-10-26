@@ -40,6 +40,21 @@ Add an item to `portfolio.json > projects`:
 
 For multiple images use `media.kind: "carousel"`. Use a `mobile` image only when it is genuinely different artwork, not merely a smaller copy.
 
+For an app, use the store screenshots directly rather than composing them into one image:
+
+```json
+"media": {
+  "kind": "screens",
+  "screens": [
+    { "src": "/portfolio/projects/my-app/event.webp", "alt": "Event details with the route and who is going" },
+    { "src": "/portfolio/projects/my-app/post.webp", "alt": "A post with photos and comments" },
+    { "src": "/portfolio/projects/my-app/profile.webp", "alt": "A host profile with past events" }
+  ]
+}
+```
+
+Keep the store's order and give each screen its own alt text describing what it shows.
+
 ## Add photography
 
 Put originals under `content/assets/portfolio/photography/`, then append to `portfolio.json > photography.images`:

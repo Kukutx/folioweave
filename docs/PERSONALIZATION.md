@@ -63,8 +63,15 @@ Image dimensions are measured automatically; do not supply manual size fields.
 ## Projects
 
 Each project has a unique `id`, `enabled`, name/copy and discriminated
-`media.kind` (`image` or `carousel`). `mobileTreatment` controls its mobile
-presentation. An optional `story` can accompany either media kind.
+`media.kind` (`image`, `carousel` or `screens`). `mobileTreatment` controls its
+mobile presentation. An optional `story` can accompany any media kind.
+
+Use `screens` for an app: list the screenshots exactly as the store shows them,
+one plain screenshot per entry, not a composite. Every width shows the same
+screens in the same order — three side by side where there is room, two on a
+phone with the rest a swipe away. `frame` is `phone` (default) to draw a phone
+around each screenshot, or `none` when the screenshots already include their
+device or window.
 
 Use `media.image.mobile` or a carousel slide's `mobile` for genuine alternate
 artwork. Omit it when the same image works at every width. Actions link to HTTPS

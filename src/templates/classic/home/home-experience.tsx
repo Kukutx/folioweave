@@ -96,12 +96,12 @@ export function HomeExperience({ children }: { children: ReactNode }) {
       .padStart(2, "0");
     return `#${channel}${channel}${channel}`;
   });
-  const color = useTransform(themeProgress, (value) => {
-    const channel = Math.round(17 + 238 * value)
-      .toString(16)
-      .padStart(2, "0");
-    return `#${channel}${channel}${channel}`;
-  });
+  // Text switches from dark to light where the background passes mid-grey,
+  // instead of fading alongside it through the same grey, so copy stays
+  // readable wherever the reader stops; ThemeScope eases the switch.
+  const color = useTransform(themeProgress, (value): string =>
+    value < 0.5 ? "#111111" : "#ffffff",
+  );
   return (
     <MotionConfig reducedMotion="user">
       <motion.div

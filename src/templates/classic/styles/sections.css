@@ -98,7 +98,7 @@
 }
 .bird-container-one {
   animation-duration: 15s;
-  animation-delay: 0;
+  animation-delay: 0s;
 }
 .bird-container-two {
   animation-duration: 16s;
@@ -450,13 +450,17 @@
   text-align: left;
   text-decoration: none;
   color: inherit;
-  transition: opacity 0.2s ease;
 }
-.work-item:hover {
-  opacity: 1;
-}
-.work-carousel-enabled .work-content {
+/* Every card fills the column whatever its media. Sized by its content, an
+   image card stayed narrow until its lazy image arrived, then reflowed and
+   pushed the rest of the page down. */
+.work-content {
   width: 100%;
+}
+/* Screens bring their own frames; the panel behind them stays clear so the
+   row reads the same on the light and the dark theme. */
+.work-screens-enabled .work-image-container {
+  background: transparent;
 }
 .work-body {
   display: flex;
@@ -472,6 +476,11 @@
   justify-content: center;
   gap: 0.1rem;
   padding-top: 0;
+}
+/* A badge keeps its own width instead of stretching across the column. */
+.work-text-side > .award-badge,
+.work-text-side > .award-badge-blue {
+  align-self: flex-start;
 }
 .work-text-company {
   font-size: clamp(1.2rem, 2.2vw, 1.45rem);
@@ -503,6 +512,33 @@
 }
 .work-text-side > div:last-child {
   margin-top: 1rem;
+}
+.work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+.work-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.work-action--accent {
+  border-bottom-color: transparent;
+  color: var(--color-accent);
+}
+.work-action--accent:hover,
+.work-action--accent:focus-visible {
+  border-bottom-color: var(--color-accent);
 }
 .work-text-side p {
   margin: 0;
@@ -542,7 +578,6 @@
 }
 .work-image-container img,
 .work-image-container video {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   display: block;
   width: 100%;
   height: auto;
@@ -563,8 +598,19 @@
   justify-content: center;
   aspect-ratio: auto;
 }
-.work-item:hover .work-image-container img,
-.work-item:hover .work-image-container video {
+/* The card's media zooms a little under the pointer. A carousel slide is
+   moved by Motion and the screens of a row by the row, so neither takes a
+   transform of its own here: one owner per property. */
+.work-image-container img:not(.media-carousel-image, .screen-row img),
+.work-image-container video,
+.work-image-container .screen-row {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.work-item:hover
+  .work-image-container
+  img:not(.media-carousel-image, .screen-row img),
+.work-item:hover .work-image-container video,
+.work-item:hover .work-image-container .screen-row {
   transform: scale(1.03);
 }
 .work-meta {
@@ -1570,8 +1616,9 @@
   .mobile-work-clipt .work-text-side > div:last-child {
     margin-top: 0 !important;
   }
-  .mobile-work-clipt .work-text-side > div:last-child a + a {
-    margin-left: 1.25rem !important;
+  .work-actions {
+    justify-content: center;
+    column-gap: 1.25rem;
   }
   .work-text-side {
     width: 100%;

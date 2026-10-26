@@ -42,7 +42,8 @@ await page.addInitScript(() => {
 });
 
 await page.goto(`${base}/`, { waitUntil: "domcontentloaded" });
-if (!loadQaProfile().features.resume) {
+const profile = loadQaProfile();
+if (!profile.features.resume) {
   try {
     assert.equal(await page.locator(".resume-printer").count(), 0);
     console.log("PASS disabled resume is absent");
@@ -53,10 +54,9 @@ if (!loadQaProfile().features.resume) {
 }
 await page.waitForTimeout(2500);
 
-await page.evaluate(async () => {
-  const source =
-    document.querySelector(".resume-paper img")?.getAttribute("src") ||
-    "/assets/demo/example-resume.svg";
+// The sheet is not part of the page load; warm it the way a visitor's hover
+// does, so the measured print timings exclude the network.
+await page.evaluate(async (source) => {
   const image = new Image();
   image.src = source;
   if (!image.complete || image.naturalWidth === 0) {
@@ -82,7 +82,7 @@ await page.evaluate(async () => {
   const observer = new MutationObserver(record);
   observer.observe(printer, { attributes: true, attributeFilter: ["class"] });
   window.__resumeObserver = observer;
-});
+}, profile.site.resume.image);
 
 await page.locator(".resume-print-button").click({ force: true });
 await page.locator(".resume-printer.is-ready").waitFor({

@@ -26,7 +26,13 @@ export function ThemeScope({ children }: { children: ReactNode }) {
     return theme.on("change", update);
   }, [active, color, theme]);
   return (
-    <motion.div ref={ref} data-theme-scope style={{ color }}>
+    <motion.div
+      ref={ref}
+      data-theme-scope
+      // The theme flips text between dark and light; a short fade softens
+      // the flip (reduced motion turns transitions off globally).
+      style={{ color, transition: "color 0.35s ease" }}
+    >
       {children}
     </motion.div>
   );

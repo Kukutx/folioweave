@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { CSSProperties, ReactNode } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useRef, type CSSProperties } from "react";
+import { usePrefersReducedMotion } from "@/hooks/use-media-query";
+import { useOpening } from "@/hooks/use-opening";
+import { useViewReveal } from "@/hooks/use-view-reveal";
+import styles from "./motion-text.module.css";
 
 const settle = {
   type: "spring" as const,
@@ -11,38 +14,43 @@ const settle = {
   mass: 0.7,
 };
 
+const lineStyle: CSSProperties = {
+  overflow: "hidden",
+  display: "inline-block",
+  paddingBottom: "0.15em",
+  marginBottom: "-0.15em",
+  verticalAlign: "bottom",
+};
+const charStyle: CSSProperties = { display: "inline-block", whiteSpace: "pre" };
+
+// Text plays its reveal each time it scrolls into view; the server still
+// renders it readable.
+const textReveal = { once: false, rootMargin: "-10% 0px" };
+
+/** Text whose words rise one after another as it scrolls into view. */
 export function WordReveal({
   children,
   className = "",
   delay = 0,
   color,
   style,
-  trigger,
 }: {
   children: string;
   className?: string;
   delay?: number;
   color?: string;
   style?: CSSProperties;
-  trigger?: boolean;
 }) {
   const words = children.split(" ");
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const viewProps = reducedMotion
-    ? { animate: "visible" }
-    : typeof trigger === "boolean"
-      ? { animate: trigger ? "visible" : "hidden" }
-      : { whileInView: "visible", viewport: { once: false, margin: "-10%" } };
+  const reducedMotion = usePrefersReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const reveal = useViewReveal(ref, textReveal);
   return (
     <motion.span
       style={{
-        overflow: "hidden",
-        display: "inline-block",
+        ...lineStyle,
         width: "fit-content",
         color,
-        paddingBottom: "0.15em",
-        marginBottom: "-0.15em",
-        verticalAlign: "bottom",
         ...style,
       }}
       variants={{
@@ -56,7 +64,8 @@ export function WordReveal({
         },
       }}
       initial={false}
-      {...viewProps}
+      animate={reveal}
+      ref={ref}
       className={className}
     >
       {words.map((word, index) => (
@@ -83,33 +92,33 @@ export function WordReveal({
   );
 }
 
+/**
+ * Text whose characters rise out of a blur one after another, each time it
+ * scrolls into view. With `intro` they play once as the page opens instead,
+ * for text that is on screen at load: the intro is CSS, so it starts with the
+ * first paint, and the markup is the same on the server and the client.
+ */
 export function CharReveal({
   children,
   className = "",
   delay = 0,
-  trigger,
+  intro = false,
 }: {
   children: string;
   className?: string;
   delay?: number;
-  trigger?: boolean;
+  intro?: boolean;
 }) {
   const chars = Array.from(children);
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const viewProps = reducedMotion
-    ? { animate: "visible" }
-    : typeof trigger === "boolean"
-      ? { animate: trigger ? "visible" : "hidden" }
-      : { whileInView: "visible", viewport: { once: false, margin: "-10%" } };
+  const reducedMotion = usePrefersReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const reveal = useViewReveal(ref, { ...textReveal, disabled: intro });
+  if (intro) {
+    return <IntroChars chars={chars} className={className} delay={delay} />;
+  }
   return (
     <motion.span
-      style={{
-        overflow: "hidden",
-        display: "inline-block",
-        paddingBottom: "0.15em",
-        marginBottom: "-0.15em",
-        verticalAlign: "bottom",
-      }}
+      style={lineStyle}
       variants={{
         hidden: { opacity: 0 },
         visible: {
@@ -121,7 +130,8 @@ export function CharReveal({
         },
       }}
       initial={false}
-      {...viewProps}
+      animate={reveal}
+      ref={ref}
       className={className}
     >
       {chars.map((char, index) => (
@@ -141,7 +151,7 @@ export function CharReveal({
               transition: reducedMotion ? { duration: 0 } : settle,
             },
           }}
-          style={{ display: "inline-block", whiteSpace: "pre" }}
+          style={charStyle}
         >
           {char}
         </motion.span>
@@ -150,27 +160,34 @@ export function CharReveal({
   );
 }
 
-export function FadeIn({
-  children,
+function IntroChars({
+  chars,
   className,
-  delay = 0,
-  style,
+  delay,
 }: {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  style?: CSSProperties;
+  chars: string[];
+  className: string;
+  delay: number;
 }) {
+  // The intro class goes once the characters have landed, or as soon as the
+  // pointer arrives (a hover animates the characters itself).
+  const ref = useRef<HTMLSpanElement>(null);
+  const [playing, end] = useOpening(ref);
   return (
-    <motion.div
-      className={className}
-      style={style}
-      initial={false}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
+    <span
+      ref={ref}
+      className={playing ? `${className} ${styles.intro}` : className}
+      style={{ ...lineStyle, "--intro-delay": `${delay}s` } as CSSProperties}
+      onPointerEnter={playing ? end : undefined}
     >
-      {children}
-    </motion.div>
+      {chars.map((char, index) => (
+        <span
+          key={index}
+          style={{ ...charStyle, "--char": index } as CSSProperties}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
   );
 }
