@@ -88,6 +88,12 @@ that one resume in three formats:
 - the DOCX and the Markdown are conversions of `resume.json`, with the same
   text, links and order.
 
+To offer the Word copy on the site as well, copy that DOCX to an author asset and
+point `site.resume.docx` at it (for example `/portfolio/resume/resume.docx`).
+The preview then shows Download DOCX next to Download PDF, saved under
+`downloadName` with a `.docx` extension. Replace it whenever a new version is
+archived, so it stays the same resume as the PDF.
+
 To change the text, edit `resume.json`, rebuild, then archive the new build.
 Versions from a finished year move to `history/archive/`.
 

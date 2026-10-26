@@ -73,6 +73,11 @@ export type ProjectMedia =
     };
 /**
  * This interface was referenced by `PortfolioConfig`'s JSON-Schema
+ * via the `definition` "localDocx".
+ */
+export type LocalDocx = LocalPath;
+/**
+ * This interface was referenced by `PortfolioConfig`'s JSON-Schema
  * via the `definition` "localIcon".
  */
 export type LocalIcon = LocalPath;
@@ -148,6 +153,10 @@ export interface PortfolioConfig {
       image: LocalImage;
       pdf: LocalPdf;
       downloadName: string;
+      /**
+       * Optional Word copy of the same resume, offered next to the PDF in the preview and saved under downloadName with a .docx extension.
+       */
+      docx?: LocalPath;
     };
     assets: {
       /**

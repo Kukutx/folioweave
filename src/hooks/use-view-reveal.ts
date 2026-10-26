@@ -8,6 +8,31 @@ import {
 } from "@/hooks/use-media-query";
 
 /**
+ * A CSS-shorthand root margin in pixels for the current viewport. The observer
+ * resolves percentages against the root's width on every side, so a vertical
+ * percentage would follow the screen's width; here it follows the height. Each
+ * inset stays under half the viewport, so a short window keeps a root to
+ * intersect with.
+ */
+export function viewportMargin(margin: string) {
+  const parts = margin.trim().split(/\s+/);
+  const [top, right = top, bottom = top, left = right] = parts;
+  const resolve = (value: string, size: number) => {
+    const number = Number.parseFloat(value) || 0;
+    const px = value.endsWith("%") ? (number / 100) * size : number;
+    return `${Math.round(Math.max(px, -size * 0.45))}px`;
+  };
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+  return [
+    resolve(top, height),
+    resolve(right, width),
+    resolve(bottom, height),
+    resolve(left, width),
+  ].join(" ");
+}
+
+/**
  * Reveal-on-scroll that keeps server HTML readable. The server renders the
  * content in its final, visible state. Once the page is interactive, content
  * on screen stays as it is, and content above or below the viewport is set to
@@ -71,7 +96,7 @@ export function useViewReveal(
           void controls.start("hidden");
         }
       },
-      { rootMargin },
+      { rootMargin: viewportMargin(rootMargin) },
     );
     observer.observe(node);
     node.addEventListener("focusin", show);
