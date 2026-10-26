@@ -342,21 +342,26 @@
     display: none;
   }
 }
-/* The scroll cue at the foot of the first screen (see ScrollHint). Its
-   colours follow the hero's theme through currentColor. */
+/* The scroll cue at the foot of the first screen (see ScrollHint): one row
+   on the same line as the floating Home button, which takes its place once
+   the page scrolls. Its colours follow the hero's theme through
+   currentColor. */
 .hero-scroll-indicator {
+  --cue-height: 44px;
   position: absolute;
-  top: calc(100svh - 9rem);
+  top: calc(
+    100svh - max(1rem, env(safe-area-inset-bottom)) - var(--cue-height)
+  );
   left: 50%;
   translate: -50% 0;
   z-index: 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.5rem 0.75rem;
+  height: var(--cue-height);
+  padding: 0 0.9rem;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-pill, 999px);
   background: none;
   color: inherit;
   font-family: var(--font-main);
@@ -364,27 +369,29 @@
 }
 .hero-scroll-mouse {
   position: relative;
-  width: 22px;
-  height: 34px;
+  flex: none;
+  width: 18px;
+  height: 28px;
   border: 1.5px solid currentColor;
-  border-radius: 11px;
+  border-radius: 9px;
   opacity: 0.45;
 }
 .hero-scroll-wheel {
   position: absolute;
-  top: 6px;
+  top: 5px;
   left: 50%;
-  width: 3px;
-  height: 7px;
-  margin-left: -1.5px;
+  width: 2px;
+  height: 6px;
+  margin-left: -1px;
   border-radius: 2px;
   background: currentColor;
   animation: hero-scroll-wheel 2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 .hero-scroll-label {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
   opacity: 0.45;
 }
 .hero-scroll-indicator:hover .hero-scroll-mouse,
@@ -410,7 +417,7 @@
     opacity: 0;
   }
   100% {
-    transform: translateY(12px);
+    transform: translateY(9px);
     opacity: 0;
   }
 }

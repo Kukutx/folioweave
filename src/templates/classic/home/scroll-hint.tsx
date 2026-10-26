@@ -12,9 +12,10 @@ const DESKTOP = "(hover: hover) and (pointer: fine) and (min-width: 768px)";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 /**
- * A quiet "scroll" cue at the foot of the hero. It is not there at first: it
- * appears only when a desktop visitor has stayed at the top for a few
- * seconds, and leaves for good with the first scroll. A click scrolls down.
+ * A quiet "scroll" cue at the foot of the hero, on the line where the
+ * floating Home button later sits. It is not there at first: it appears only
+ * when a desktop visitor has stayed at the top for a few seconds, and leaves
+ * for good with the first scroll. A click scrolls down.
  * Phones get none: people swipe without being told, and the foot of a phone
  * screen belongs to the floating controls.
  */
@@ -30,13 +31,14 @@ export function ScrollHint({ blocked }: { blocked: boolean }) {
     };
     const timer = window.setTimeout(() => {
       if (scrolled() || !window.matchMedia(DESKTOP).matches) return;
-      // Only where the hero leaves room for it above the fold.
+      // Only where the hero leaves room for it above the fold: the cue's
+      // row (1rem from the bottom, 44px tall) and a clear gap.
       const content = document.querySelector(".hero-content");
       const bottom = content?.getBoundingClientRect().bottom ?? 0;
       const rem = parseFloat(
         getComputedStyle(document.documentElement).fontSize,
       );
-      if (bottom > window.innerHeight - 9 * rem - 12) return;
+      if (bottom > window.innerHeight - rem - 44 - 2 * rem) return;
       setShown(true);
     }, IDLE_MS);
     window.addEventListener("scroll", onScroll, { passive: true });

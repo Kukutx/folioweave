@@ -302,6 +302,9 @@ export function Hero() {
                   aria-label={`Show next portrait. Photo ${portrait + 1} of ${portraitImages.length}.`}
                   initial={false}
                   animate={{ opacity: 1, scale: 1, rotate: 6, y: 0 }}
+                  // As on the original site, hover and its return settle
+                  // after a short pause, so a pointer passing by leaves the
+                  // card alone.
                   transition={{
                     type: "spring",
                     stiffness: 140,
