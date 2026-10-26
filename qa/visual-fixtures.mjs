@@ -167,7 +167,12 @@ try {
         const list = document.querySelector("#fixture-screens .screen-row__list");
         return list.scrollLeft + list.clientWidth >= list.scrollWidth - 1;
       });
-      assert.equal(await row.locator(".screen-row__dot:visible").last().getAttribute("aria-current"), "true");
+      // The dots re-measure on the next frame after the scroll ends.
+      await page.waitForFunction(() => {
+        const dots = [...document.querySelectorAll("#fixture-screens .screen-row__dot")]
+          .filter((dot) => dot.getBoundingClientRect().width > 0);
+        return dots.at(-1)?.getAttribute("aria-current") === "true";
+      }, undefined, { timeout: 3000 });
       await row.locator(".screen-row__list").evaluate((node) => node.scrollTo({ left: 0, behavior: "instant" }));
     }
     await page.locator("#fixture-screens").screenshot({ path: path.join(screens, `${width}-screens.png`) });
@@ -191,7 +196,11 @@ try {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.waitForFunction(() => {
         const root = document.querySelector(".story-photo-wrapper");
-        const tilt = root?.firstElementChild?.firstElementChild;
+        // The card sets the perspective; its first child carries the tilt.
+        const card = [...(root?.querySelectorAll("div") ?? [])].find(
+          (node) => node.style.perspective,
+        );
+        const tilt = card?.firstElementChild;
         const tiltTransform = tilt?.style.transform;
         return (
           root?.querySelector("img")?.style.transform === "none" &&
