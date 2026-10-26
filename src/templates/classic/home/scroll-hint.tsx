@@ -31,14 +31,14 @@ export function ScrollHint({ blocked }: { blocked: boolean }) {
     };
     const timer = window.setTimeout(() => {
       if (scrolled() || !window.matchMedia(DESKTOP).matches) return;
-      // Only where the hero leaves room for it above the fold: the cue's
-      // row (1rem from the bottom, 44px tall) and a clear gap.
+      // Only where the hero leaves room for it above the fold: the cue
+      // (1rem from the bottom, 72px tall) and a clear gap.
       const content = document.querySelector(".hero-content");
       const bottom = content?.getBoundingClientRect().bottom ?? 0;
       const rem = parseFloat(
         getComputedStyle(document.documentElement).fontSize,
       );
-      if (bottom > window.innerHeight - rem - 44 - 2 * rem) return;
+      if (bottom > window.innerHeight - rem - 72 - 2 * rem) return;
       setShown(true);
     }, IDLE_MS);
     window.addEventListener("scroll", onScroll, { passive: true });
