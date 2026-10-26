@@ -75,7 +75,7 @@ const portfolio = {
     "resume": {
       "image": "/portfolio/resume/liu-zhong-li-cv.png",
       "pdf": "/portfolio/resume/liu-zhong-li-cv.pdf",
-      "downloadName": "Liu-Zhong-Li-CV.pdf",
+      "downloadName": "liu-zhong-li-cv.pdf",
       "docx": "/portfolio/resume/liu-zhong-li-cv.docx"
     },
     "assets": {
