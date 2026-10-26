@@ -686,6 +686,10 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* A slim bar in the player's own colours instead of the system's. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--secondary) 45%, transparent)
+    transparent;
 }
 .queue button {
   width: 100%;
@@ -921,6 +925,45 @@
   border-top: 1px solid var(--edge);
   margin-top: 8px;
 }
+/* "Colored notes" is a small switch drawn in the player's colours. */
 .music .notes-option input {
-  accent-color: var(--accent);
+  position: relative;
+  flex: none;
+  width: 26px;
+  height: 15px;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--edge);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.music .notes-option input::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--secondary);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease;
+}
+.music .notes-option input:checked {
+  background: var(--accent);
+}
+.music .notes-option input:checked::before {
+  background: var(--surface);
+  transform: translateX(11px);
+}
+.music .notes-option input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.music .notes-option {
+  cursor: pointer;
 }
