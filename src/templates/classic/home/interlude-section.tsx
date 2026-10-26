@@ -28,6 +28,15 @@ const NIGHT_STAR_LAYOUT = (() => {
   }));
 })();
 
+const underlineVariants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: {
+    pathLength: 1,
+    opacity: 0.4,
+    transition: { duration: 1.2, delay: 1.2 },
+  },
+};
+
 export function InterludeSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const { active, reducedMotion } = useMotionActivity(sectionRef);
@@ -37,8 +46,9 @@ export function InterludeSection() {
   const mountain = useRef<HTMLDivElement>(null);
   const nightCopy = useRef<HTMLDivElement>(null);
   const returnCopy = useRef<HTMLDivElement>(null);
-  const nightReveal = useViewReveal(nightCopy);
-  const returnReveal = useViewReveal(returnCopy);
+  // The copy reveals as soon as it enters, as on the original site.
+  const nightReveal = useViewReveal(nightCopy, { rootMargin: "0px" });
+  const returnReveal = useViewReveal(returnCopy, { rootMargin: "0px" });
   const mobile = useMobileViewport();
   const { scrollYProgress } = useScroll({
     target: mountain,
@@ -156,10 +166,10 @@ export function InterludeSection() {
                       stroke="var(--color-highlight)"
                       strokeWidth="12"
                       strokeLinecap="round"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      whileInView={{ pathLength: 1, opacity: 0.4 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.2, delay: 1.2 }}
+                      // Drawn by the copy's reveal; the server renders it
+                      // drawn.
+                      variants={underlineVariants}
+                      style={{ opacity: 0.4 }}
                     />
                   </svg>
                 </span>

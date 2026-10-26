@@ -32,11 +32,11 @@
     },
     "density": {
       "enum": ["regular", "compact"],
-      "description": "Spacing of the page. compact tightens margins, heading space and line height so a fuller resume fits one page; type sizes stay the same. Defaults to regular."
+      "description": "Spacing of the page. compact tightens the space between sections, entries and lines so a fuller resume fits one page; type sizes stay the same. Defaults to regular."
     },
     "footnote": {
       "$ref": "#/$defs/inlineText",
-      "description": "Small closing line at the end of the page, such as a data-processing consent."
+      "description": "Small closing line after the last section, such as a data-processing consent."
     },
     "contact": {
       "type": "array",

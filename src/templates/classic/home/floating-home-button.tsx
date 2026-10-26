@@ -57,11 +57,15 @@ export function FloatingHomeButton({
       const delta = position - lastY.current;
       if (Math.abs(delta) >= 8) {
         lastY.current = position;
+        // Only phones tuck; wider screens skip the layout read.
         const narrow = window.innerWidth < 768;
-        const atEnd =
-          position + window.innerHeight >=
-          document.documentElement.scrollHeight - 24;
-        setTuck(narrow && next && delta > 0 && !atEnd);
+        setTuck(
+          narrow &&
+            next &&
+            delta > 0 &&
+            position + window.innerHeight <
+              document.documentElement.scrollHeight - 24,
+        );
       }
       if (next === visibleRef.current) return;
       visibleRef.current = next;

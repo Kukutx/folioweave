@@ -45,7 +45,7 @@ function RevealPolaroid({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reveal = useViewReveal(ref);
+  const reveal = useViewReveal(ref, { rootMargin: "0px" });
   return (
     <motion.div
       ref={ref}

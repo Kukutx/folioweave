@@ -63,9 +63,9 @@ through the `$schema` line. In short:
 - Text accepts two inline marks: `**bold**` and `[label](https://…)`. Write `\*`
   for a literal asterisk. Links must be `https`, `http`, `mailto` or `tel`.
 - Optional `density`: `regular` (the default) or `compact`, which tightens the
-  page margins, the space around headings and the line height so a fuller
-  resume still fits one page. The type stays the same.
-- Optional `footnote`: a small closing line at the foot of the page, such as
+  space between sections, entries and lines so a fuller resume still fits one
+  page. Type sizes stay the same, and the bottom margin stays printable.
+- Optional `footnote`: a small closing line after the last section, such as
   the data-processing consent an Italian CV carries.
 
 The source must be named exactly `resume.json`. A differently cased name, or a

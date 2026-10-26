@@ -8,7 +8,7 @@
   overflow: hidden;
   border-radius: 16px;
   background: #f5f5f5;
-  aspect-ratio: 2000 / 1206;
+  aspect-ratio: var(--frame-ratio, 2000 / 1206);
 }
 .media-carousel-image {
   position: absolute;
@@ -92,7 +92,7 @@
 }
 @media (max-width: 768px) {
   .media-carousel-container {
-    aspect-ratio: 2000 / 1744;
+    aspect-ratio: var(--frame-ratio, 2000 / 1744);
   }
   .media-carousel-btn {
     width: 36px;
@@ -126,5 +126,12 @@
   .media-carousel *::before,
   .media-carousel *::after {
     transition: none !important;
+  }
+}
+
+/* Phones: the same breakpoint as the mobile art. */
+@media (max-width: 767px) {
+  .media-carousel-container {
+    aspect-ratio: var(--frame-ratio-mobile, var(--frame-ratio, 2000 / 1744));
   }
 }

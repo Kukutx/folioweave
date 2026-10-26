@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePrefersReducedMotion } from "@/hooks/use-media-query";
 import { useViewReveal } from "@/hooks/use-view-reveal";
 import { mediaDimensions } from "@/portfolio/media";
 import type { PortfolioMediaAsset } from "@/portfolio/schema";
@@ -99,7 +100,7 @@ export function ScreenRow({
   const list = useRef<HTMLUListElement>(null);
   const { scrollable, index } = useRowScroll(list);
   const reveal = useViewReveal(list);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = usePrefersReducedMotion();
   const show = useCallback(
     (position: number) => {
       const node = list.current;

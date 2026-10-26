@@ -37,27 +37,43 @@
   position: relative;
   z-index: 2;
 }
-/* The opening: the hero rises in, the name follows letter by letter (see
-   CharReveal), the portrait drops into place and the bio comes last. CSS, so
-   it plays from the first paint; the server HTML is the final state, and
-   without JavaScript or with reduced motion everything is simply there. */
+/* The opening: the hero rises in with its greeting, the name follows letter
+   by letter (see CharReveal), the portrait settles into place and the bio
+   comes last. CSS, so it plays from the first paint; the server HTML is the
+   final state, and without JavaScript or with reduced motion everything is
+   simply there. The section drops `data-opening` once it has played, so a
+   later change of preference or a print never replays it. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .hero-content {
+  .hero-section[data-opening] .hero-content {
     animation: hero-intro-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
-  .hero-image-side {
-    animation: hero-intro-portrait 0.9s cubic-bezier(0.34, 1.36, 0.64, 1) 0.5s
+  .hero-section[data-opening] .hero-greeting > span {
+    animation: hero-intro-greeting 0.5s ease-in-out backwards;
+  }
+  .hero-section[data-opening] .hero-image-side {
+    animation: hero-intro-portrait 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s
       backwards;
   }
-  .hero-bio {
+  .hero-section[data-opening] .hero-bio {
     animation: hero-intro-bio 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.75s
       backwards;
+  }
+  @supports (animation-timing-function: linear(0, 1)) {
+    .hero-section[data-opening] .hero-image-side {
+      animation-timing-function: var(--motion-settle);
+    }
   }
 }
 @keyframes hero-intro-rise {
   from {
     opacity: 0;
     transform: translateY(18px);
+  }
+}
+@keyframes hero-intro-greeting {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 }
 @keyframes hero-intro-portrait {
@@ -73,9 +89,10 @@
   }
 }
 @media print {
-  .hero-content,
-  .hero-image-side,
-  .hero-bio {
+  .hero-section[data-opening] .hero-content,
+  .hero-section[data-opening] .hero-greeting > span,
+  .hero-section[data-opening] .hero-image-side,
+  .hero-section[data-opening] .hero-bio {
     animation: none;
   }
 }

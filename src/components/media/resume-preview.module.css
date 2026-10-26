@@ -12,15 +12,26 @@
   padding: 0;
   border: 0;
   color: #fff;
-  background: rgba(16, 16, 17, 0.78);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: transparent;
   z-index: 20001;
   overflow: hidden;
 }
 .dialog[open] {
   display: flex;
   flex-direction: column;
+  will-change: opacity;
+}
+/* The static veil owns the blur; the moving, scrolling sheet must not share
+   its filter node. */
+.dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(16, 16, 17, 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 .dialog::backdrop {
   background: transparent;
@@ -91,6 +102,11 @@
   padding: 0.5rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
   overflow-y: auto;
   overscroll-behavior: contain;
+  outline: none;
+}
+.scroller:focus-visible .sheet {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
 }
 .sheet {
   display: block;

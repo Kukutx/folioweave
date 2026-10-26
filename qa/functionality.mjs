@@ -345,6 +345,16 @@ async function runHomeCore() {
         ),
         "focus did not move into the preview",
       );
+      // The keyboard reads a sheet taller than the screen.
+      const scroller = await sheet.evaluateHandle((image) => image.parentElement);
+      if (
+        await scroller.evaluate((node) => node.scrollHeight > node.clientHeight + 1)
+      ) {
+        await page.keyboard.press("PageDown");
+        await page.waitForFunction((node) => node.scrollTop > 0, scroller, {
+          timeout: 3000,
+        });
+      }
       const [download] = await Promise.all([
         page.waitForEvent("download", { timeout: 5000 }),
         viewer.getByRole("link", { name: "Download PDF" }).click(),
@@ -358,6 +368,17 @@ async function runHomeCore() {
           document.activeElement?.classList.contains("resume-preview-button"),
         ),
         "focus did not return to Preview",
+      );
+      // Opened from the sheet itself, focus still comes back to Preview.
+      await page.locator(".resume-paper").click();
+      await viewer.waitFor({ state: "visible", timeout: 3000 });
+      await page.keyboard.press("Escape");
+      await viewer.waitFor({ state: "detached", timeout: 3000 });
+      assert(
+        await page.evaluate(() =>
+          document.activeElement?.classList.contains("resume-preview-button"),
+        ),
+        "focus did not return to Preview after opening from the sheet",
       );
       // Feed the sheet back in so later checks start from the plain hero.
       await page.locator("button.resume-discard-button").click();

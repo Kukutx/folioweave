@@ -40,7 +40,7 @@ const PhotographyContent = memo(function PhotographyContent({
         >
           {homeContent.photographyIntro}
         </motion.p>
-        <div className="captures-grid">
+        <motion.div variants={sectionChildVariants} className="captures-grid">
           {photographyImages.map((image, i) => (
             <PhotoCard
               key={`${image.src}-${i}`}
@@ -53,7 +53,7 @@ const PhotographyContent = memo(function PhotographyContent({
               onClick={() => onSelect(i)}
             />
           ))}
-        </div>
+        </motion.div>
       </motion.div>
     </section>
   );

@@ -166,7 +166,7 @@ test("density and footnote change only the resumes that ask for them", async () 
 
   const compact = renderResumeHtml({ ...example, density: "compact" });
   assert.ok(compact.startsWith(plain.slice(0, plain.indexOf("</style>"))));
-  assert.match(compact, /\.page \{ padding: 13\.8mm 18mm 3\.5mm; \}/);
+  assert.match(compact, /\.page \{ padding: 13\.8mm 18mm 8mm; \}/);
 
   const noted = renderResumeHtml({
     ...example,

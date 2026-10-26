@@ -5,6 +5,7 @@ import { Eye, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/config/site";
 import { useManagedTimeouts } from "@/hooks/use-managed-timeouts";
+import { usePrefersReducedMotion } from "@/hooks/use-media-query";
 import { ResumePreview } from "./resume-preview";
 
 export type ResumeState =
@@ -38,10 +39,6 @@ function ResumeFileIcon({ size = 15 }: { size?: number }) {
   );
 }
 
-const reduced = () =>
-  typeof window !== "undefined" &&
-  matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 /**
  * Prints the resume: the button turns into a printer and feeds out the sheet.
  * Once it is out, Preview (or a click on the sheet) opens it at reading size,
@@ -60,9 +57,13 @@ export function ResumePrinter({
   const closing = state === "closing";
   const collapsing = state === "collapsing";
   const active = morphing || printing || ready || closing || collapsing;
-  const reducedMotion = reduced();
+  const reducedMotion = usePrefersReducedMotion();
   const paperRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const previewButtonRef = useRef<HTMLButtonElement>(null);
+  // One print at a time: the sheet's preload is awaited before the state
+  // leaves idle, and a second click must not start another run meanwhile.
+  const starting = useRef(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   // The sheet image is fetched once someone heads for the button, not with
   // the page.
@@ -145,12 +146,14 @@ export function ResumePrinter({
   }, [printing, ready, printDelay]);
 
   const start = async (event?: React.MouseEvent<HTMLButtonElement>) => {
-    if (state !== "idle") return;
+    if (state !== "idle" || starting.current) return;
+    starting.current = true;
     event?.currentTarget.blur();
     setSheetWanted(true);
     try {
       await preloadImage(siteConfig.resume.image);
     } catch {}
+    starting.current = false;
     setState("morphing");
     scheduleTimeout(
       () => {
@@ -278,6 +281,7 @@ export function ResumePrinter({
             style={{ willChange: "transform, opacity" }}
           >
             <button
+              ref={previewButtonRef}
               type="button"
               className="resume-preview-button"
               onClick={openPreview}
@@ -297,7 +301,12 @@ export function ResumePrinter({
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {previewOpen && <ResumePreview onClose={() => setPreviewOpen(false)} />}
+        {previewOpen && (
+          <ResumePreview
+            onClose={() => setPreviewOpen(false)}
+            returnFocus={previewButtonRef}
+          />
+        )}
       </AnimatePresence>
     </motion.div>
   );

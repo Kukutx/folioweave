@@ -11,6 +11,7 @@ import {
   type CSSProperties,
 } from "react";
 import { useMotionActivity } from "@/hooks/use-motion-activity";
+import { useOpening } from "@/hooks/use-opening";
 import { AboutSection } from "../about-section";
 import { ScrollHint } from "./scroll-hint";
 import { CharReveal } from "@/components/motion-text";
@@ -183,6 +184,7 @@ function RichText({
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const { active, reducedMotion } = useMotionActivity(heroRef);
+  const [opening] = useOpening(heroRef, "hero-intro-");
   const mobile = useMobileViewport(),
     [portrait, setPortrait] = useState(0),
     // The white flash marks a change of portrait, so the first one has none.
@@ -223,6 +225,7 @@ export function Hero() {
       ref={heroRef}
       id="home"
       className="hero-section"
+      data-opening={opening ? "" : undefined}
       style={{ "--mouse-x": "50%", "--mouse-y": "50%" } as CSSProperties}
     >
       <ScrollHint blocked={resume !== "idle"} />
@@ -230,9 +233,9 @@ export function Hero() {
         <div
           className={`hero-wrapper ${resume !== "idle" && resume !== "collapsing" && resume !== "morphing" ? "is-resume-active" : ""}`}
         >
-          {/* The opening (content rising, name, bio, portrait) is CSS in
-              hero.css, so it plays from the first paint and the server HTML
-              is the final state. */}
+          {/* The opening (content and greeting rising, name, bio, portrait)
+              is CSS in hero.css, so it plays from the first paint and the
+              server HTML is the final state. */}
           <div className="hero-content">
             <div className="hero-grid">
               <div className="hero-text-side">
