@@ -195,7 +195,11 @@ and pending frames. The optional notes and media progress do not trigger layout.
 Only registered controls participate; arbitrary external widgets are not scanned
 or modified. When the viewport cannot fit all controls, `data-floating-crowded`
 is `true` on the affected surface. Plugin authors should offer compact controls
-or hide optional controls in that case. This is an opt-in coexistence contract,
+or hide optional controls in that case. While a reader scrolls down on a screen
+narrower than 768px, Classic sets `data-fw-floating="tucked"` on the root element
+and hides its Home button; floating plugins should fade their collapsed controls
+out and make them inert until the attribute is removed (music does this for its
+collapsed record). This is an opt-in coexistence contract,
 not an unlimited-space guarantee or a substitute for a template's navigation
 safe areas.
 

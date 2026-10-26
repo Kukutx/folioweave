@@ -50,6 +50,26 @@ export type ProjectMedia =
        * @minItems 1
        */
       images: [ProjectCarouselImage, ...ProjectCarouselImage[]];
+    }
+  | {
+      kind: "screens";
+      /**
+       * App screenshots in display order, one image per screen. Every width shows the same screens in the same order: three side by side where there is room, two in a narrow column, and any further screens scroll in sideways.
+       *
+       * @minItems 1
+       * @maxItems 6
+       */
+      screens:
+        | [MediaAsset]
+        | [MediaAsset, MediaAsset]
+        | [MediaAsset, MediaAsset, MediaAsset]
+        | [MediaAsset, MediaAsset, MediaAsset, MediaAsset]
+        | [MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset]
+        | [MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset];
+      /**
+       * Frame drawn around each screenshot: a phone bezel, or none for screenshots that already include their device or window.
+       */
+      frame?: "phone" | "none";
     };
 /**
  * This interface was referenced by `PortfolioConfig`'s JSON-Schema
@@ -318,7 +338,7 @@ export interface Project {
   description: string;
   icon?: LocalImage;
   /**
-   * Discriminated image or carousel media. Legacy image/carouselImages fields are intentionally unsupported.
+   * Discriminated image, carousel or screens media. Legacy image/carouselImages fields are intentionally unsupported.
    */
   media:
     | {
@@ -331,6 +351,26 @@ export interface Project {
          * @minItems 1
          */
         images: [ProjectCarouselImage, ...ProjectCarouselImage[]];
+      }
+    | {
+        kind: "screens";
+        /**
+         * App screenshots in display order, one image per screen. Every width shows the same screens in the same order: three side by side where there is room, two in a narrow column, and any further screens scroll in sideways.
+         *
+         * @minItems 1
+         * @maxItems 6
+         */
+        screens:
+          | [MediaAsset]
+          | [MediaAsset, MediaAsset]
+          | [MediaAsset, MediaAsset, MediaAsset]
+          | [MediaAsset, MediaAsset, MediaAsset, MediaAsset]
+          | [MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset]
+          | [MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset, MediaAsset];
+        /**
+         * Frame drawn around each screenshot: a phone bezel, or none for screenshots that already include their device or window.
+         */
+        frame?: "phone" | "none";
       };
   badge?: ProjectBadge;
   /**

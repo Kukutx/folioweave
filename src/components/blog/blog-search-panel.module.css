@@ -115,6 +115,8 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #c8c8ce transparent;
 }
 .results li + li {
   border-top: 1px solid #ededf0;

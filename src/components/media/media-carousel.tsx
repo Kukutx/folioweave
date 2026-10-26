@@ -3,18 +3,44 @@
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { useViewportActivity } from "@/hooks/use-viewport-activity";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import type { PortfolioMediaAsset } from "@/portfolio/schema";
+import {
+  useMobileViewport,
+  usePrefersReducedMotion,
+} from "@/hooks/use-media-query";
+import { mediaDimensions } from "@/portfolio/media";
+import type { PortfolioProjectCarouselImage } from "@/portfolio/schema";
 import "./media-carousel.css";
 
 const MotionImage = motion.create(Image);
 
+/**
+ * The frame takes the first slide's own shape, so artwork of any proportion
+ * fills it without bars; on a phone, the shape of its mobile art when it has
+ * one. Both ratios go to CSS, so the server already lays the frame out at its
+ * final size. Images outside the publication manifest (fixtures) keep the
+ * stylesheet's ratio.
+ */
+function slideRatio(src: string): string | undefined {
+  try {
+    const { width, height } = mediaDimensions(src);
+    return `${width} / ${height}`;
+  } catch {
+    return undefined;
+  }
+}
+
 export function MediaCarousel({
   images,
 }: {
-  images: readonly PortfolioMediaAsset[];
+  images: readonly PortfolioProjectCarouselImage[];
 }) {
   // Mount the observed root with its hooks. Empty-to-populated updates must not
   // leave an observer permanently attached to an absent element.
@@ -24,12 +50,17 @@ export function MediaCarousel({
 function CarouselContent({
   images,
 }: {
-  images: readonly PortfolioMediaAsset[];
+  images: readonly PortfolioProjectCarouselImage[];
 }) {
-  const slides = images;
+  // Phones show a slide's mobile art when it has some.
+  const mobile = useMobileViewport();
+  const slides = images.map((slide) => ({
+    src: mobile ? (slide.mobile ?? slide.src) : slide.src,
+    alt: slide.alt,
+  }));
   const rootRef = useRef<HTMLDivElement>(null);
   const active = useViewportActivity(rootRef, "300px 0px");
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const reducedMotion = usePrefersReducedMotion();
   const [focused, setFocused] = useState(false);
   const [index, setIndex] = useState(0),
     [direction, setDirection] = useState(1),
@@ -49,6 +80,12 @@ function CarouselContent({
     return () => window.clearInterval(id);
   }, [active, hover, focused, next, reducedMotion, slides.length]);
   const currentIndex = index % slides.length;
+  const frame = {
+    "--frame-ratio": slideRatio(images[0].src),
+    "--frame-ratio-mobile": images[0].mobile
+      ? slideRatio(images[0].mobile)
+      : undefined,
+  } as CSSProperties;
 
   return (
     <div
@@ -62,7 +99,10 @@ function CarouselContent({
           setFocused(false);
       }}
     >
-      <div className="media-carousel-container">
+      <div
+        className="media-carousel-container"
+        style={frame}
+      >
         <AnimatePresence initial={false} custom={direction}>
           <MotionImage
             key={currentIndex}

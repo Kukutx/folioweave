@@ -93,7 +93,7 @@ Verify:
 - `/` loads without console errors;
 - navigation anchors and mobile menu work;
 - photography opens/closes and restores focus;
-- resume download works when enabled;
+- the resume prints, opens in its preview and downloads when enabled;
 - `robots.txt`, `sitemap.xml`, and `manifest.webmanifest` return 200;
 - disabled demo routes return 404 on a personal profile;
 - the production URL and social preview metadata use the intended domain.

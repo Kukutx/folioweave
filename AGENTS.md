@@ -19,4 +19,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `public/portfolio/` is generated, ignored publication output, not an authoring/source boundary.
 - `npm run content:build` enforces the branch/profile publication boundary. Do not bypass that guard to make a check pass.
 - `personal` is the protected production branch. Change it through a pull request and merge only when `validate` and `visual-regression` pass; never push around a failing check.
-- When `content/resume/resume.json` exists it is the only source of the resume. After editing it run `npm run resume:build` and commit the source, lock, PDF and preview together; never hand-edit the generated PDF or preview.
+- When `content/resume/resume.json` exists it is the only source of the resume (see `content/resume/README.md`). After editing it run `npm run resume:build` and commit the source, lock, PDF and preview together; never hand-edit the generated PDF or preview.
+
+## Motion
+
+- Scroll reveals use `useViewReveal` and on-screen openings use CSS keyframes with `useOpening` (`docs/ARCHITECTURE.md`).
+- Visual baselines are captured with reduced motion. Check a motion change in a browser with motion enabled, over time (sample opacity and transform while scrolling and hovering, or record), plus reduced motion and JavaScript disabled.

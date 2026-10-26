@@ -161,6 +161,36 @@
               }
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "screens"
+          ],
+          "properties": {
+            "kind": {
+              "const": "screens"
+            },
+            "screens": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "$ref": "#/$defs/mediaAsset"
+              },
+              "description": "App screenshots in display order, one image per screen. Every width shows the same screens in the same order: three side by side where there is room, two in a narrow column, and any further screens scroll in sideways."
+            },
+            "frame": {
+              "enum": [
+                "phone",
+                "none"
+              ],
+              "default": "phone",
+              "description": "Frame drawn around each screenshot: a phone bezel, or none for screenshots that already include their device or window."
+            }
+          }
         }
       ]
     },
@@ -300,7 +330,7 @@
         },
         "media": {
           "$ref": "#/$defs/projectMedia",
-          "description": "Discriminated image or carousel media. Legacy image/carouselImages fields are intentionally unsupported."
+          "description": "Discriminated image, carousel or screens media. Legacy image/carouselImages fields are intentionally unsupported."
         },
         "badge": {
           "$ref": "#/$defs/projectBadge",

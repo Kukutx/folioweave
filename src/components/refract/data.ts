@@ -80,7 +80,9 @@ export function createRefractData(context: TemplateContext) {
     const artwork =
       project.media.kind === "image"
         ? project.media.image
-        : project.media.images[0];
+        : project.media.kind === "carousel"
+          ? project.media.images[0]
+          : project.media.screens[0];
     researchFigures[project.id] = options.researchFigures?.[project.id] ?? {
       source: artwork.src,
       ...mediaDimensions(artwork.src),

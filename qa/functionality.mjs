@@ -17,6 +17,9 @@ const enabledProjects = (portfolio.projects ?? []).filter(
 const carouselProjects = enabledProjects.filter(
   (project) => project.media?.kind === "carousel",
 );
+const screensProjects = enabledProjects.filter(
+  (project) => project.media?.kind === "screens",
+);
 const mobileProject = enabledProjects.find(
   (project) =>
     (project.media?.kind === "carousel"
@@ -60,6 +63,112 @@ async function launch(extraArgs = []) {
     headless: true,
     args: [...commonArgs, ...extraArgs],
   });
+}
+
+// Every screens project shows its screens in content order, aligned, with
+// `visible` of them in view and the rest reachable by scrolling the row.
+async function checkScreenRows(page, visible) {
+  const rows = page.locator(".work-item .screen-row__list");
+  assert(
+    (await rows.count()) === screensProjects.length,
+    `expected ${screensProjects.length} screen rows`,
+  );
+  const checked = [];
+  for (let index = 0; index < screensProjects.length; index++) {
+    const project = screensProjects[index];
+    const row = rows.nth(index);
+    await row.scrollIntoViewIfNeeded();
+    await row
+      .locator("img")
+      .evaluateAll((nodes) => Promise.all(nodes.map((img) => img.decode())));
+    const state = await row.evaluate((list) => {
+      const box = list.getBoundingClientRect();
+      const nodes = [...list.children];
+      const items = nodes.map((item) => item.getBoundingClientRect());
+      const dots = [
+        ...(list.parentElement?.querySelectorAll(".screen-row__dot") ?? []),
+      ].filter((dot) => dot.getBoundingClientRect().width > 0);
+      // Layout positions: the entrance animation moves screens vertically
+      // with a transform until each one has come into view.
+      return {
+        alts: [...list.querySelectorAll("img")].map((img) => img.alt),
+        inView: items.filter(
+          (item) => item.left >= box.left - 1 && item.right <= box.right + 1,
+        ).length,
+        tops: new Set(nodes.map((item) => item.offsetTop)).size,
+        heights: new Set(nodes.map((item) => item.offsetHeight)).size,
+        scrollable: list.scrollWidth > list.clientWidth + 1,
+        dots: dots.length,
+      };
+    });
+    const screens = project.media.screens;
+    assert(
+      state.alts.join("|") === screens.map((screen) => screen.alt).join("|"),
+      `${project.id}: screens out of order`,
+    );
+    assert(state.tops === 1 && state.heights === 1, `${project.id}: screens misaligned`);
+    const expected = Math.min(visible, screens.length);
+    assert(state.inView === expected, `${project.id}: ${state.inView}/${expected} screens in view`);
+    assert(
+      state.scrollable === screens.length > visible,
+      `${project.id}: scrollable ${state.scrollable} with ${screens.length} screens`,
+    );
+    const positions = state.scrollable ? screens.length - visible + 1 : 0;
+    assert(
+      state.dots === positions,
+      `${project.id}: ${state.dots} dots for ${positions} positions`,
+    );
+    const container = page.locator(".work-item .screen-row").nth(index);
+    if (state.scrollable) {
+      // A dot moves the row, the screen it reveals rises in, and the dot
+      // follows the row.
+      const dots = container.locator(".screen-row__dot:visible");
+      await dots.last().click();
+      await page.waitForFunction(
+        (rowIndex) => {
+          const list = document.querySelectorAll(
+            ".work-item .screen-row__list",
+          )[rowIndex];
+          const box = list.getBoundingClientRect();
+          const last = list.lastElementChild;
+          const rect = last.getBoundingClientRect();
+          return (
+            rect.left >= box.left - 1 &&
+            rect.right <= box.right + 1 &&
+            getComputedStyle(last).opacity === "1"
+          );
+        },
+        index,
+        { timeout: 5000 },
+      );
+      assert(
+        (await dots.last().getAttribute("aria-current")) === "true",
+        `${project.id}: dots did not follow the row`,
+      );
+      await row.evaluate((list) => list.scrollTo({ left: 0 }));
+    } else {
+      // The card's media zooms under the pointer like every other card.
+      await row.hover();
+      await page.waitForFunction(
+        (rowIndex) => {
+          const element = document.querySelectorAll(".work-item .screen-row")[
+            rowIndex
+          ];
+          return new DOMMatrix(getComputedStyle(element).transform).a > 1.02;
+        },
+        index,
+        { timeout: 3000 },
+      );
+      await page.mouse.move(0, 0);
+    }
+    checked.push({
+      project: project.id,
+      inView: state.inView,
+      scrollable: state.scrollable,
+      dots: state.dots,
+    });
+  }
+  return checked;
 }
 
 async function waitForHydratedElement(page, selector) {
@@ -204,18 +313,82 @@ async function runHomeCore() {
       return { firstTitle: timelineFirstTitle };
     });
 
-    await test("resume printer reaches ready and downloads PDF", async () => {
+    await test("resume printer previews the sheet and downloads PDF", async () => {
       if (!portfolio.features.resume) return absent(page, ".resume-printer");
+      // The sheet is fetched on demand, never with the page.
+      assert(
+        (await page.locator(".resume-paper img").count()) === 0,
+        "the resume sheet loads with the page",
+      );
       await page.evaluate(() => scrollTo(0, 0));
       await page.locator("button.resume-print-button").click();
-      const downloadButton = page.locator("button.resume-download-button");
-      await downloadButton.waitFor({ state: "visible", timeout: 7000 });
+      const previewButton = page.locator("button.resume-preview-button");
+      await previewButton.waitFor({ state: "visible", timeout: 7000 });
+      await previewButton.click();
+      const viewer = page.getByRole("dialog", { name: "Resume preview" });
+      await viewer.waitFor({ state: "visible", timeout: 3000 });
+      const sheet = viewer.locator("img");
+      await page.waitForFunction(
+        (element) => element?.complete && element.naturalWidth > 0,
+        await sheet.elementHandle(),
+        { timeout: 5000 },
+      );
+      assert(
+        (await sheet.getAttribute("src")) === portfolio.site.resume.image,
+        "the preview shows another sheet",
+      );
+      assert(
+        await page.evaluate(() =>
+          document
+            .querySelector("dialog[open]")
+            ?.contains(document.activeElement),
+        ),
+        "focus did not move into the preview",
+      );
+      // The keyboard reads a sheet taller than the screen.
+      const scroller = await sheet.evaluateHandle((image) => image.parentElement);
+      if (
+        await scroller.evaluate((node) => node.scrollHeight > node.clientHeight + 1)
+      ) {
+        await page.keyboard.press("PageDown");
+        await page.waitForFunction((node) => node.scrollTop > 0, scroller, {
+          timeout: 3000,
+        });
+      }
       const [download] = await Promise.all([
         page.waitForEvent("download", { timeout: 5000 }),
-        downloadButton.click(),
+        viewer.getByRole("link", { name: "Download PDF" }).click(),
       ]);
       const name = download.suggestedFilename();
       assert(name.toLowerCase().endsWith(".pdf"), `unexpected file ${name}`);
+      await page.keyboard.press("Escape");
+      await viewer.waitFor({ state: "detached", timeout: 3000 });
+      assert(
+        await page.evaluate(() =>
+          document.activeElement?.classList.contains("resume-preview-button"),
+        ),
+        "focus did not return to Preview",
+      );
+      // Opened from the sheet itself, focus still comes back to Preview.
+      await page.locator(".resume-paper").click();
+      await viewer.waitFor({ state: "visible", timeout: 3000 });
+      await page.keyboard.press("Escape");
+      await viewer.waitFor({ state: "detached", timeout: 3000 });
+      assert(
+        await page.evaluate(() =>
+          document.activeElement?.classList.contains("resume-preview-button"),
+        ),
+        "focus did not return to Preview after opening from the sheet",
+      );
+      // Feed the sheet back in so later checks start from the plain hero.
+      await page.locator("button.resume-discard-button").click();
+      await page.waitForFunction(
+        () =>
+          document.querySelector(".resume-printer")?.className.trim() ===
+          "resume-printer",
+        undefined,
+        { timeout: 8000 },
+      );
       return { filename: name };
     });
 
@@ -370,6 +543,11 @@ async function runHomeMedia() {
         tested.push({ project: project.id, first, second });
       }
       return tested;
+    });
+
+    await test("screens projects show three aligned screens", async () => {
+      if (!screensProjects.length) return { skipped: true };
+      return checkScreenRows(page, 3);
     });
 
     await test("photography cards reveal on demand without stalled loaders", async () => {
@@ -689,6 +867,11 @@ async function runMobile() {
       // enters the viewport, making currentSrc stay empty indefinitely.
       await page.waitForFunction(() => !window.__lenis?.isScrolling);
       return true;
+    });
+
+    await test("mobile screens projects show two and scroll to the rest", async () => {
+      if (!screensProjects.length) return { skipped: true };
+      return checkScreenRows(page, 2);
     });
 
     await test("mobile uses configured art-directed work image", async () => {
