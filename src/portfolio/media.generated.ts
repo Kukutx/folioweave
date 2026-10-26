@@ -88,9 +88,17 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2560,
     "height": 1440
   },
+  "/portfolio/photography/photo-19.webp": {
+    "width": 2048,
+    "height": 1536
+  },
   "/portfolio/photography/photo-20.jpg": {
     "width": 1536,
     "height": 2048
+  },
+  "/portfolio/photography/photo-20.webp": {
+    "width": 2048,
+    "height": 1536
   },
   "/portfolio/profile/apple-touch-icon.png": {
     "width": 180,
@@ -127,6 +135,10 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
   "/portfolio/projects/crew/crew-moment.webp": {
     "width": 900,
     "height": 1955
+  },
+  "/portfolio/projects/devmate/devmate-agents.webp": {
+    "width": 1365,
+    "height": 853
   },
   "/portfolio/projects/devmate/devmate-icon.png": {
     "width": 256,

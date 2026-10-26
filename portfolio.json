@@ -312,11 +312,17 @@
       "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
       "icon": "/portfolio/projects/devmate/devmate-icon.png",
       "media": {
-        "kind": "image",
-        "image": {
-          "src": "/portfolio/projects/devmate/devmate-workbench.webp",
-          "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
-        }
+        "kind": "carousel",
+        "images": [
+          {
+            "src": "/portfolio/projects/devmate/devmate-workbench.webp",
+            "alt": "The DevMate workbench showing a project's uncommitted changes and their diff"
+          },
+          {
+            "src": "/portfolio/projects/devmate/devmate-agents.webp",
+            "alt": "DevMate handing a task to a local agent: Codex, Claude, Gemini or Grok, each in its own session"
+          }
+        ]
       },
       "badge": {
         "text": "Open source · MIT",
@@ -380,8 +386,16 @@
         "alt": "A lake among mountains seen from above, with an island"
       },
       {
+        "src": "/portfolio/photography/photo-19.webp",
+        "alt": "A bay full of small boats below steep green cliffs, seen from above"
+      },
+      {
         "src": "/portfolio/photography/photo-13.jpg",
         "alt": "A red church spire over a riverside park in autumn"
+      },
+      {
+        "src": "/portfolio/photography/photo-20.webp",
+        "alt": "A baroque fountain with marble statues, lit at night"
       },
       {
         "src": "/portfolio/photography/photo-15.jpg",
@@ -479,7 +493,7 @@
         "position": "right",
         "theme": "graphite",
         "initialExpanded": false,
-        "autoplay": true,
+        "autoplay": false,
         "volume": 0.7,
         "notes": {
           "enabled": true
