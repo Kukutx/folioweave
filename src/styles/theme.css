@@ -38,3 +38,10 @@
   --figma-blue: #18a0fb;
   --figma-selection-bg: rgba(24, 160, 251, 0.2);
 }
+
+/* The page scrollbar: thin and translucent over a clear track, so it reads on
+   the light and the dark sections alike without a solid gutter. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.45) transparent;
+}

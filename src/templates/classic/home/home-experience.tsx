@@ -96,6 +96,19 @@ export function HomeExperience({ children }: { children: ReactNode }) {
       .padStart(2, "0");
     return `#${channel}${channel}${channel}`;
   });
+  // The page behind follows the same shade, so the clear scrollbar track and
+  // any overscroll match the section on screen instead of staying white.
+  useLayoutEffect(() => {
+    const page = document.documentElement;
+    page.style.backgroundColor = backgroundColor.get();
+    const stop = backgroundColor.on("change", (value) => {
+      page.style.backgroundColor = value;
+    });
+    return () => {
+      stop();
+      page.style.removeProperty("background-color");
+    };
+  }, [backgroundColor]);
   // Text switches from dark to light where the background passes mid-grey,
   // instead of fading alongside it through the same grey, so copy stays
   // readable wherever the reader stops; ThemeScope eases the switch.
