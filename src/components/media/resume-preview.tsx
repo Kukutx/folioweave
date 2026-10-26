@@ -35,7 +35,8 @@ const SCROLL_KEYS: Record<string, (page: number) => ScrollToOptions> = {
  * The printed resume opened at reading size over the page. The page behind is
  * locked and inert; Escape, the close button or a click outside the sheet
  * closes it and focus returns to `returnFocus`. The sheet scrolls with the
- * wheel, touch, and the arrow and page keys. The PDF stays one tap away.
+ * wheel, touch, and the arrow and page keys. The PDF (and the Word copy, when
+ * the profile has one) stays one tap away.
  * Mount it inside AnimatePresence so it can fade out.
  */
 export function ResumePreview({
@@ -49,9 +50,26 @@ export function ResumePreview({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   // A short "Saved" confirms the download, as the printer always did.
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<string | null>(null);
   const { scheduleTimeout } = useManagedTimeouts();
-  const { image, pdf, downloadName } = siteConfig.resume;
+  const { image, pdf, downloadName, docx } = siteConfig.resume as {
+    image: string;
+    pdf: string;
+    downloadName: string;
+    docx?: string;
+  };
+  const downloads = [
+    { format: "PDF", href: pdf, name: downloadName },
+    ...(docx
+      ? [
+          {
+            format: "DOCX",
+            href: docx,
+            name: downloadName.replace(/\.pdf$/i, ".docx"),
+          },
+        ]
+      : []),
+  ];
   const size = sheetSize(image);
   const { keyboardClosing, dialogProps } = useModalDialog({
     onClose,
@@ -83,26 +101,48 @@ export function ResumePreview({
       exit={{ opacity: keyboardClosing ? 1 : 0 }}
       transition={{ duration: quick ? 0 : 0.3, ease }}
     >
-      <div className={styles.bar} onClick={(event) => event.stopPropagation()}>
+      <div
+        className={styles.bar}
+        data-formats={downloads.length > 1 ? "" : undefined}
+        onClick={(event) => event.stopPropagation()}
+      >
         <span className={styles.title}>{siteConfig.identity.name}</span>
-        <a
-          className={styles.download}
-          href={pdf}
-          download={downloadName}
-          aria-label={saved ? "PDF saved" : "Download PDF"}
-          data-saved={saved || undefined}
-          onClick={() => {
-            setSaved(true);
-            scheduleTimeout(() => setSaved(false), 1600);
-          }}
-        >
-          {saved ? (
-            <Check size={16} aria-hidden />
-          ) : (
-            <Download size={16} aria-hidden />
-          )}
-          <span>{saved ? "Saved" : "Download PDF"}</span>
-        </a>
+        {downloads.map(({ format, href, name }) => {
+          const done = saved === format;
+          return (
+            <a
+              key={format}
+              className={styles.download}
+              href={href}
+              download={name}
+              aria-label={done ? `${format} saved` : `Download ${format}`}
+              data-saved={done || undefined}
+              onClick={() => {
+                setSaved(format);
+                scheduleTimeout(
+                  () => setSaved((current) => (current === format ? null : current)),
+                  1600,
+                );
+              }}
+            >
+              {done ? (
+                <Check size={16} aria-hidden />
+              ) : (
+                <Download size={16} aria-hidden />
+              )}
+              <span className={styles.label}>
+                {done ? (
+                  "Saved"
+                ) : (
+                  <>
+                    <span className={styles.verb}>Download </span>
+                    {format}
+                  </>
+                )}
+              </span>
+            </a>
+          );
+        })}
         <button
           ref={closeRef}
           type="button"

@@ -24,7 +24,7 @@ export function localAssetPath(value) {
   ) {
     throw new Error(`Unsafe asset path: ${value}`);
   }
-  return /\.(?:avif|gif|jpe?g|png|webp|svg|ico|pdf|mp4|webm|mp3|m4a|ogg|wav|aac|flac|woff2?)$/i.test(
+  return /\.(?:avif|gif|jpe?g|png|webp|svg|ico|pdf|docx|mp4|webm|mp3|m4a|ogg|wav|aac|flac|woff2?)$/i.test(
     clean,
   )
     ? clean

@@ -77,10 +77,18 @@ export function FloatingHomeButton({
   useEffect(() => {
     lastY.current = window.scrollY;
     updateVisibility(window.scrollY);
+    // Widening past phone width brings the controls back without waiting for
+    // the next scroll.
+    const wide = window.matchMedia("(min-width: 768px)");
+    const untuck = () => {
+      if (wide.matches) setTuck(false);
+    };
+    wide.addEventListener("change", untuck);
     return () => {
+      wide.removeEventListener("change", untuck);
       delete document.documentElement.dataset.fwFloating;
     };
-  }, [updateVisibility]);
+  }, [updateVisibility, setTuck]);
 
   useMotionValueEvent(scrollY, "change", updateVisibility);
 

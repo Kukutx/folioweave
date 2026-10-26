@@ -141,11 +141,17 @@
 }
 
 @media (max-width: 480px) {
-  .download span {
+  .bar:not([data-formats]) .download .label {
     display: none;
   }
-  .download {
+  .bar:not([data-formats]) .download {
     width: 2.5rem;
     padding: 0;
+  }
+  .bar[data-formats] .download {
+    padding: 0 0.85rem;
+  }
+  .bar[data-formats] .verb {
+    display: none;
   }
 }
