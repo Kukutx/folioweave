@@ -249,10 +249,10 @@ when the row comes into view, the row zooms with its card on hover, and a
 screen lifts under the pointer; with reduced motion all of it stays still.
 
 `ResumePrinter` prints the resume sheet; its image is fetched only once someone
-heads for the button. When the sheet is out, Preview (or a click on the sheet)
-opens `ResumePreview` with the sheet at reading width, readable with the
-wheel, touch or the keyboard, and the PDF download; on close focus returns to
-Preview.
+heads for the button. When the sheet is out, Download saves the PDF and a
+click on the sheet (or Enter on it) opens `ResumePreview` with the sheet at
+reading width, readable with the wheel, touch or the keyboard; on close focus
+returns to the sheet.
 
 `MediaCarousel` is the generic carousel. Image intrinsic dimensions come from the
 generated media manifest, not manual `size`, `mobileSize` or `imageSize` fields.
