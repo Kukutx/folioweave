@@ -40,8 +40,10 @@
 }
 
 /* The page scrollbar: thin and translucent over a clear track, so it reads on
-   the light and the dark sections alike without a solid gutter. */
+   the light and the dark sections alike without a solid gutter. A template can
+   shade the page behind it through --fw-page-shade (unset: no background). */
 html {
+  background-color: var(--fw-page-shade);
   scrollbar-width: thin;
   scrollbar-color: rgba(128, 128, 128, 0.45) transparent;
 }

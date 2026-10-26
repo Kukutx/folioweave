@@ -97,16 +97,18 @@ export function HomeExperience({ children }: { children: ReactNode }) {
     return `#${channel}${channel}${channel}`;
   });
   // The page behind follows the same shade, so the clear scrollbar track and
-  // any overscroll match the section on screen instead of staying white.
+  // any overscroll match the section on screen instead of staying white. It
+  // goes through a custom property: the root's own background stays free for
+  // a modal painting its gutter, and for whatever set it before.
   useLayoutEffect(() => {
     const page = document.documentElement;
-    page.style.backgroundColor = backgroundColor.get();
+    page.style.setProperty("--fw-page-shade", backgroundColor.get());
     const stop = backgroundColor.on("change", (value) => {
-      page.style.backgroundColor = value;
+      page.style.setProperty("--fw-page-shade", value);
     });
     return () => {
       stop();
-      page.style.removeProperty("background-color");
+      page.style.removeProperty("--fw-page-shade");
     };
   }, [backgroundColor]);
   // Text switches from dark to light where the background passes mid-grey,
