@@ -251,8 +251,9 @@ screen lifts under the pointer; with reduced motion all of it stays still.
 `ResumePrinter` prints the resume sheet; its image is fetched only once someone
 heads for the button. When the sheet is out, Download saves the PDF and a
 click on the sheet (or Enter on it) opens `ResumePreview` with the sheet at
-reading width, readable with the wheel, touch or the keyboard; on close focus
-returns to the sheet.
+reading width, readable with the wheel, touch or the keyboard, with Download
+PDF (and Download DOCX when `site.resume.docx` is set); on close focus returns
+to the sheet.
 
 `MediaCarousel` is the generic carousel. Image intrinsic dimensions come from the
 generated media manifest, not manual `size`, `mobileSize` or `imageSize` fields.

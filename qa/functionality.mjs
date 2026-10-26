@@ -368,6 +368,18 @@ async function runHomeCore() {
       // The keyboard opens it from the sheet too.
       await page.keyboard.press("Enter");
       await viewer.waitFor({ state: "visible", timeout: 3000 });
+      // A profile with a Word copy offers it next to the PDF.
+      const docxLink = viewer.getByRole("link", { name: "Download DOCX" });
+      if (portfolio.site.resume.docx) {
+        const [docx] = await Promise.all([
+          page.waitForEvent("download", { timeout: 5000 }),
+          docxLink.click(),
+        ]);
+        const docxName = docx.suggestedFilename();
+        assert(docxName.toLowerCase().endsWith(".docx"), `unexpected file ${docxName}`);
+      } else {
+        assert((await docxLink.count()) === 0, "a DOCX link without a DOCX");
+      }
       await page.keyboard.press("Escape");
       await viewer.waitFor({ state: "detached", timeout: 3000 });
       const [download] = await Promise.all([
