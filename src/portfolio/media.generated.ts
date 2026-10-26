@@ -68,15 +68,7 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 2048,
     "height": 1536
   },
-  "/portfolio/photography/photo-12.jpg": {
-    "width": 1440,
-    "height": 2560
-  },
   "/portfolio/photography/photo-13.jpg": {
-    "width": 2560,
-    "height": 1920
-  },
-  "/portfolio/photography/photo-14.jpg": {
     "width": 2560,
     "height": 1920
   },

@@ -140,8 +140,8 @@ const portfolio = {
       },
       {
         "year": "2026",
-        "title": "Crew released + DevMate",
-        "desc": "Released Crew on Google Play and the App Store, and started DevMate, an open-source bridge between ChatGPT, Claude and local development tools.",
+        "title": "Crew released, DevMate and TradePilot 212",
+        "desc": "Released Crew on Google Play and the App Store, and started two open-source MCP projects: DevMate, a bridge between ChatGPT, Claude and local development tools, and TradePilot 212, which connects them to a Trading 212 account.",
         "current": true
       }
     ],
@@ -202,19 +202,19 @@ const portfolio = {
     "galleryImages": [
       {
         "src": "/portfolio/photography/about-01.jpg",
-        "alt": "A personal moment from Liu's life in Milan"
+        "alt": "Liu at a lakeside balustrade, with an island and mountains behind"
       },
       {
         "src": "/portfolio/photography/about-02.jpg",
-        "alt": "A second personal moment from Liu's life in Milan"
+        "alt": "Liu leaning in a stone window above a river and a bridge"
       },
       {
         "src": "/portfolio/photography/about-03.jpg",
-        "alt": "A third personal moment from Liu's life in Milan"
+        "alt": "Liu in sunglasses by a lake, with a rocky mountain behind"
       },
       {
         "src": "/portfolio/photography/about-04.jpg",
-        "alt": "A fourth personal moment from Liu's life in Milan"
+        "alt": "Liu in a cap under the arch of a glass-roofed gallery"
       }
     ]
   },
@@ -341,75 +341,67 @@ const portfolio = {
     "images": [
       {
         "src": "/portfolio/photography/photo-01.jpg",
-        "alt": "Photograph 1 by Liu Zhong Li"
+        "alt": "Leaves against a blue sky and clouds, seen from below"
       },
       {
         "src": "/portfolio/photography/photo-02.jpg",
-        "alt": "Photograph 2 by Liu Zhong Li"
+        "alt": "A small reindeer made of logs on a cobbled street"
       },
       {
         "src": "/portfolio/photography/photo-03.jpg",
-        "alt": "Photograph 3 by Liu Zhong Li"
+        "alt": "An equestrian monument lit at dusk under a deep blue sky"
       },
       {
         "src": "/portfolio/photography/photo-04.webp",
-        "alt": "Photograph 4 by Liu Zhong Li"
+        "alt": "A lakeside town under a rocky mountain on a sunny day"
       },
       {
         "src": "/portfolio/photography/photo-05.webp",
-        "alt": "Photograph 5 by Liu Zhong Li"
+        "alt": "Boats on a lake at sunset, with a couple on the shore"
       },
       {
         "src": "/portfolio/photography/photo-06.webp",
-        "alt": "Photograph 6 by Liu Zhong Li"
+        "alt": "Small boats crowded with visitors on a deep blue sea"
       },
       {
         "src": "/portfolio/photography/photo-07.webp",
-        "alt": "Photograph 7 by Liu Zhong Li"
+        "alt": "A small chapel on a snowy mountain top under a clear sky"
       },
       {
         "src": "/portfolio/photography/photo-08.jpg",
-        "alt": "Photograph 8 by Liu Zhong Li"
+        "alt": "A domed church beside a street at dusk"
       },
       {
         "src": "/portfolio/photography/photo-09.jpg",
-        "alt": "Photograph 9 by Liu Zhong Li"
+        "alt": "A grilled sandwich with tortilla chips on a plate"
       },
       {
         "src": "/portfolio/photography/photo-10.jpg",
-        "alt": "Photograph 10 by Liu Zhong Li"
+        "alt": "A framed black-and-white photograph of a snowy ridge"
       },
       {
         "src": "/portfolio/photography/photo-11.jpg",
-        "alt": "Photograph 11 by Liu Zhong Li"
-      },
-      {
-        "src": "/portfolio/photography/photo-12.jpg",
-        "alt": "Photograph 12 by Liu Zhong Li"
+        "alt": "A lake among mountains seen from above, with an island"
       },
       {
         "src": "/portfolio/photography/photo-13.jpg",
-        "alt": "Photograph 13 by Liu Zhong Li"
-      },
-      {
-        "src": "/portfolio/photography/photo-14.jpg",
-        "alt": "Photograph 14 by Liu Zhong Li"
+        "alt": "A red church spire over a riverside park in autumn"
       },
       {
         "src": "/portfolio/photography/photo-15.jpg",
-        "alt": "Photograph 15 by Liu Zhong Li"
+        "alt": "Rowing boats waiting on an open blue sea"
       },
       {
         "src": "/portfolio/photography/photo-16.jpg",
-        "alt": "Photograph 16 by Liu Zhong Li"
+        "alt": "A rowing boat in a sea cave lit electric blue"
       },
       {
         "src": "/portfolio/photography/photo-17.jpg",
-        "alt": "Photograph 17 by Liu Zhong Li"
+        "alt": "A lakeside town under a rocky mountain, wind on the water"
       },
       {
         "src": "/portfolio/photography/photo-18.jpg",
-        "alt": "Photograph 18 by Liu Zhong Li"
+        "alt": "People on a lakeside wall at sunset between mountains"
       }
     ]
   },
