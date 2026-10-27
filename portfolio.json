@@ -111,12 +111,28 @@
     ],
     "summary": [
       {
-        "text": "Based in Milan, I build web and mobile products, usually end to end: from the first screen to the backend behind it."
+        "text": "Based in Milan, I build web and mobile apps across the interface, the backend and the cloud. I built "
+      },
+      {
+        "brand": {
+          "name": "Crew",
+          "icon": "/portfolio/projects/crew/crew-icon.png",
+          "project": "crew"
+        }
+      },
+      {
+        "text": " on my own and released it on Google Play and the App Store."
       }
     ]
   },
   "about": {
     "timeline": [
+      {
+        "year": "2022",
+        "title": "ITS Incom",
+        "desc": "Trained as a cloud developer: full-stack apps with ASP.NET and Angular or Flutter, Azure, databases and Docker.",
+        "current": false
+      },
       {
         "year": "2023",
         "title": "Reti S.p.A.",
@@ -126,7 +142,7 @@
       {
         "year": "2024",
         "title": "Gruppo Maggioli + Hinge 16",
-        "desc": "Broadened my stack — Drupal/PHP, WordPress, Vue and .NET/Blazor MAUI — through client work, e-commerce and maintenance.",
+        "desc": "Drupal and PHP on a public administration portal at Maggioli, then .NET, Blazor MAUI, Vue and WordPress for Hinge 16's clients, from long-term maintenance to sites delivered on my own.",
         "current": false
       },
       {
@@ -137,8 +153,8 @@
       },
       {
         "year": "2026",
-        "title": "Crew released, DevMate and TradePilot 212",
-        "desc": "Released Crew on Google Play and the App Store, and started two open-source MCP projects: DevMate, a bridge between ChatGPT, Claude and local development tools, and TradePilot 212, which connects them to a Trading 212 account.",
+        "title": "Crew released",
+        "desc": "Released Crew on Google Play and the App Store.",
         "current": true
       }
     ],
@@ -146,53 +162,49 @@
       [
         {
           "tone": "strong",
-          "text": "I'm Liu Zhong Li, a full-stack software developer based in Milan. "
+          "text": "It all started with a computer class in my last year of high school. "
         },
         {
           "tone": "muted",
-          "text": "I started professionally on the frontend, then grew curious about everything that happens beyond the screen."
+          "text": "From the very first lesson, I wanted to understand how the software I used every day was actually built."
         }
       ],
       [
-        {
-          "tone": "muted",
-          "text": "That curiosity took me from Angular, WordPress and Drupal into "
-        },
         {
           "tone": "strong",
-          "text": ".NET backends, React/Next.js, Flutter and PostgreSQL"
+          "text": "I learned by building things myself, one layer at a time. "
         },
         {
           "tone": "muted",
-          "text": ". I like following a product across those boundaries instead of stopping at a single layer."
+          "text": "First the page, then the data behind it, then the server that runs it."
         }
       ],
       [
         {
-          "tone": "muted",
-          "text": "The project that really changed how I work is "
+          "tone": "strong",
+          "text": "Then came real teams and real clients. "
         },
+        {
+          "tone": "muted",
+          "text": "I trained as a cloud developer at ITS Incom, then worked on Angular, Drupal, .NET, Vue and WordPress projects, from a public administration portal to client websites, mostly improving systems that people already relied on."
+        }
+      ],
+      [
         {
           "tone": "highlight",
           "text": "Crew"
         },
         {
-          "tone": "muted",
-          "text": ". Building it independently meant owning the product decisions, UI, app, backend, data, cloud and releases — and learning whatever the next problem required."
-        }
-      ],
-      [
+          "tone": "strong",
+          "text": " was the first product I built entirely on my own. "
+        },
         {
           "tone": "muted",
-          "text": "Then came "
+          "text": "Product decisions, the Flutter app, the .NET backend, payments, cloud and store releases: every part of it was mine to work out. "
         },
         {
           "tone": "strong",
-          "text": "DevMate"
-        },
-        {
-          "tone": "muted",
-          "text": ". I wanted ChatGPT to work with my real local projects instead of snippets pasted into a chat, so I built the bridge I wanted to use myself."
+          "text": "What I enjoy most is owning a product as a whole, not just one layer of it."
         }
       ]
     ],
@@ -222,7 +234,7 @@
       "mobileTreatment": "standard",
       "name": "Crew",
       "date": "Dec 2025 — Present",
-      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join an event or start one of your own — at a meeting spot or along a route with a few stops — and use the group chat to sort out the details. I build the whole thing myself, from the app and backend to payments, cloud and releases.",
+      "description": "Crew is an app for sharing your interests and making plans around them: post what you've been up to, explore posts and events on the map, then join an event or start one of your own — at a meeting spot or along a route with a few stops — and use the group chat to sort out the details. I built the whole thing myself, from the app and backend to payments, cloud and releases.",
       "icon": "/portfolio/projects/crew/crew-icon.png",
       "media": {
         "kind": "screens",
@@ -272,7 +284,7 @@
       "mobileTreatment": "standard",
       "name": "TradePilot 212",
       "date": "Sep 2026 — Present",
-      "description": "TradePilot 212 is a self-hosted MCP app that connects a Trading 212 account to ChatGPT and Claude: a portfolio dashboard, analytics and order preparation right in the chat. Demo and Live stay separate, and every Live order waits for an explicit confirmation.",
+      "description": "TradePilot 212 is a self-hosted MCP app that connects a Trading 212 account to ChatGPT and Claude: a portfolio dashboard, analytics, rebalancing, price alerts and order preparation right in the chat. Demo and Live stay separate, and every Live order waits for an explicit confirmation.",
       "icon": "/portfolio/projects/tradepilot212/tradepilot-icon.png",
       "media": {
         "kind": "screens",
@@ -310,7 +322,7 @@
       "mobileTreatment": "featured",
       "name": "DevMate",
       "date": "Jun 2026 — Present",
-      "description": "DevMate is a local-first MCP gateway I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
+      "description": "DevMate is a local-first MCP runtime I built so ChatGPT can work with the projects and tools on my machine instead of pasted snippets. It connects ChatGPT and Claude to VS Code, Obsidian, the CLI and local coding agents such as Codex and Claude Code.",
       "icon": "/portfolio/projects/devmate/devmate-icon.png",
       "media": {
         "kind": "carousel",
