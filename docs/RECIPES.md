@@ -159,6 +159,8 @@ The build never overwrites a file it did not produce. If `site.resume` already p
 
 **Bring your own files.** Put a preview image and PDF under `content/assets/portfolio/resume/` and leave `content/resume/resume.json` out. Keeping the two in sync is then up to you.
 
+**Offer a Word copy.** Add `"docx": "/portfolio/resume/resume.docx"` to `site.resume` and put a `.docx` of the same resume there. The preview (opened by clicking the printed sheet) then shows Download DOCX beside Download PDF; it saves under `downloadName` with a `.docx` extension. Replace it whenever the resume changes.
+
 ## Disable a section without deleting its author content
 
 Set the corresponding `features` flag to `false`. Disabled content stays in the source profile but is stripped from the published runtime configuration and unused author assets are not copied to `public/portfolio/`.
