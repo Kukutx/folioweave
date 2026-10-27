@@ -281,6 +281,14 @@ html {
   color: var(--ui-text-primary);
   white-space: nowrap;
 }
+a.hero-brand-inline {
+  text-decoration: none;
+}
+a.hero-brand-inline:hover,
+a.hero-brand-inline:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .hero-brand-inline img {
   width: 1.05em;
   height: 1.05em;
