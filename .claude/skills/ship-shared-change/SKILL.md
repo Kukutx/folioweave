@@ -22,7 +22,10 @@ Shared paths: `src/`, `scripts/`, `qa/` (except `qa/baselines/personal/`),
    active on `develop`), open every replaced image and keep only the intended
    ones, then `npm run qa:visual-compare`.
 5. PR into `develop`; when green, PR `develop` → `main` (`validate` and
-   `visual-regression` must pass).
+   `visual-regression` must pass). That merge is a release: its
+   `CHANGELOG.md` entry and `package.json` version land on `develop` first,
+   and `main` is tagged and released after it (docs/REPOSITORY-MODEL.md,
+   "Releases").
 6. Bring `main` into `personal`: branch from `personal`, merge `origin/main`,
    `npm run content:build`, `npm run check`, recapture the personal baselines
    that changed on Windows, PR into `personal`.
