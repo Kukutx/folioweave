@@ -112,6 +112,23 @@ For reusable code, documentation, schema, QA, or design-system changes:
 Do not merge the entire `personal` branch into `main`; that would make the author
 profile the starter default.
 
+## Releases
+
+A merge of `develop` into `main` is a release. Before it, add the release's
+entry to `CHANGELOG.md` (on `develop`, with the shared change) and bump
+`version` in `package.json`: major for a schema or contract change that needs
+a migration, minor for features, patch for fixes. After it, tag `main` and
+publish the notes:
+
+```bash
+git fetch origin
+git tag -a v1.2.0 origin/main -m "v1.2.0"
+git push origin v1.2.0
+gh release create v1.2.0 --notes "<that version's CHANGELOG entry>"
+```
+
+Forks upgrade from one tag to the next with [docs/UPGRADING.md](UPGRADING.md).
+
 ## Personal content workflow
 
 Personal content is intentionally publishable in this repository. Edit the

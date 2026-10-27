@@ -34,7 +34,7 @@ Do not edit `public/portfolio/` or `src/portfolio/*.generated.ts`. They are gene
 
 ## 3. Choose a template and start development
 
-List the available designs, then select one:
+`npm run personalize` already asked for a template. To see the designs or switch later:
 
 ```bash
 npm run folio -- templates
