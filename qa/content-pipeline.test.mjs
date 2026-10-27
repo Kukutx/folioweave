@@ -357,6 +357,34 @@ test("the site origin and contact email are canonical before they are published"
   );
 });
 
+test("a hero brand links only to an enabled project", () => {
+  const config = structuredClone(personal);
+  const project = config.projects.find((item) => item.enabled !== false);
+  config.hero.summary = [
+    { text: "Building " },
+    { brand: { name: "Product", icon: "/media/icon.png", project: project.id } },
+  ];
+  // Other checks in this policy may still object to the fixture; only the
+  // brand rule is under test here.
+  const brandProblem = () => {
+    try {
+      validatePublicationLinks(config);
+      return null;
+    } catch (error) {
+      return /Hero brand/.test(error.message) ? error.message : null;
+    }
+  };
+  assert.equal(brandProblem(), null);
+  config.hero.summary[1].brand.project = "missing";
+  assert.throws(
+    () => validatePublicationLinks(config),
+    /Hero brand Product links to project "missing"/,
+  );
+  config.hero.summary[1].brand.project = project.id;
+  project.enabled = false;
+  assert.throws(() => validatePublicationLinks(config), /not an enabled project/);
+});
+
 test("a missing referenced asset names the file and how it is produced", async () => {
   const config = structuredClone(personal);
   config.site.resume.pdf = "/portfolio/resume/not-built-yet.pdf";

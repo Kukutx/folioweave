@@ -236,6 +236,42 @@ async function runHomeCore() {
       return { cursor: "You", nativeCursor: "none" };
     });
 
+    // A brand with a project is a link that brings that Work card into view.
+    const linkedBrands = [
+      ...(portfolio.hero.roleLine ?? []),
+      ...(portfolio.hero.summary ?? []),
+    ].filter(
+      (segment) =>
+        segment.brand?.project &&
+        enabledProjects.some((project) => project.id === segment.brand.project),
+    );
+    await test("hero brands scroll to their project", async () => {
+      const links = page.locator("a.hero-brand-inline");
+      assert(
+        (await links.count()) === linkedBrands.length,
+        `expected ${linkedBrands.length} linked brands, found ${await links.count()}`,
+      );
+      if (!linkedBrands.length) return { linked: 0 };
+      const anchor = `work-${linkedBrands[0].brand.project}`;
+      await links.first().click();
+      await page.waitForFunction(
+        (id) => {
+          const box = document.getElementById(id)?.getBoundingClientRect();
+          return Boolean(box) && box.top >= 0 && box.top < innerHeight / 2;
+        },
+        anchor,
+        { timeout: 6000 },
+      );
+      assert(new URL(page.url()).hash === `#${anchor}`, "the address does not name the project");
+      await page.evaluate(() => {
+        window.__lenis?.scrollTo(0, { immediate: true, force: true });
+        window.scrollTo(0, 0);
+        history.replaceState(null, "", location.pathname);
+      });
+      await page.waitForTimeout(500);
+      return { linked: linkedBrands.length, project: anchor };
+    });
+
     await test("hero greeting cycles", async () => {
       const first = (await page.locator(".hero-greeting").innerText()).trim();
       if (new Set(portfolio.hero.greetings).size === 1) {

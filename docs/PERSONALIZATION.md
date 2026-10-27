@@ -42,7 +42,9 @@ Development and production builds invoke this pipeline automatically. `npm run d
 - `site`: identity, origin, locale, location/time zone, contact, social links,
   navigation, resume and site icons.
 - `features`: weather, about, work, photography, resume and demoRoutes switches.
-- `hero`: greetings, portraits, and rich-text role/summary segments.
+- `hero`: greetings, portraits, and rich-text role/summary segments. A brand
+  segment with `project` set to a Work project id scrolls to that project when
+  clicked.
 - `about`: story paragraphs, gallery images and timeline items. Set
   `current: true` on at most one timeline item; the year is display content.
 - `interlude`: transition headings, descriptions and mountain artwork. Used by

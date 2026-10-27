@@ -66,3 +66,9 @@ For author content only; shared code, schema, QA or docs follow
 - Every visible line is the author's own and every fact comes from their
   material. Text left from the demo profile (the interlude, the footer note,
   greetings) is replaced by the author.
+- Write copy that stays true after the next update: past dates are fine, but no
+  "now" or "currently", no present status, and nothing that names what a
+  gallery or repository happens to contain.
+- The About story's `strong` segments are its TL;DR: each one a full sentence
+  that ends with a period and reads on its own, together a short summary. Keep
+  colons, "so" and other links to the muted text out of them.
