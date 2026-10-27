@@ -453,6 +453,7 @@ const ProjectCard = memo(function ProjectCard({
   return (
     <motion.div
       ref={card}
+      id={`work-${project.id}`}
       variants={sectionChildVariants}
       initial={false}
       animate={reveal}
