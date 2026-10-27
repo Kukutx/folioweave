@@ -6,6 +6,11 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.1.2 — 2026-10-27
+
+- Tests: the extension browser check drops hero brand links when it removes
+  the projects, so a profile whose hero links to a Work project passes it.
+
 ## 1.1.1 — 2026-10-27
 
 - Tests: the disabled-content test drops hero brand links along with the
