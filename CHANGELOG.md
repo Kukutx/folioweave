@@ -6,6 +6,12 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.1.1 — 2026-10-27
+
+- Tests: the disabled-content test drops hero brand links along with the
+  projects, so a profile whose hero links to a Work project passes
+  `npm run check`.
+
 ## 1.1.0 — 2026-10-27
 
 - Hero brand segments accept `project`: the brand becomes a link that scrolls
