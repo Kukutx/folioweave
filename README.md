@@ -257,6 +257,7 @@ Start with the group that matches what you are doing; [docs/README.md](docs/READ
 - [Repository model and branch boundaries](docs/REPOSITORY-MODEL.md)
 - [Visual QA](docs/VISUAL-QA.md)
 - [Asset policy](docs/ASSETS.md)
+- [Changelog and releases](CHANGELOG.md)
 
 ## Demo routes and media
 
