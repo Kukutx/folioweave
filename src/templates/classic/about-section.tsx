@@ -262,7 +262,8 @@ function StoryHighlight({
   tldr: boolean;
   children: ReactNode;
 }) {
-  return <span className={tldr ? "" : "highlight-yellow"}>{children}</span>;
+  if (tldr) return <StoryStrong tldr>{children}</StoryStrong>;
+  return <span className="highlight-yellow">{children}</span>;
 }
 
 function Story({ tldr }: { tldr: boolean }) {

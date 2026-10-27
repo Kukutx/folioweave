@@ -175,6 +175,18 @@ export function validatePublicationLinks(
     throw new Error("Project ids must be unique.");
   if (config.about.timeline.filter((item) => item.current).length > 1)
     throw new Error("Only one timeline item can be current.");
+  for (const segment of [
+    ...(config.hero?.roleLine ?? []),
+    ...(config.hero?.summary ?? []),
+  ]) {
+    const target = segment.brand?.project;
+    if (!target) continue;
+    const project = config.projects.find((item) => item.id === target);
+    if (!project || project.enabled === false)
+      throw new Error(
+        `Hero brand ${segment.brand.name} links to project "${target}", which is not an enabled project.`,
+      );
+  }
   const routes = new Set(
     resolvePublishedRoutes({
       demoRoutesEnabled: config.features.demoRoutes,

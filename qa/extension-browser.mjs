@@ -138,6 +138,10 @@ try {
   profile.site.identity.locale = "zh-Hant-HK";
   profile.features.work = false;
   profile.projects = [];
+  // A hero brand may link to a project; with no projects it must not.
+  profile.hero.summary.forEach((part) => {
+    if (part.brand) delete part.brand.project;
+  });
   await fs.writeFile(profilePath, JSON.stringify(profile, null, 2));
   const post = (title, id) =>
     `---\nid: ${id}\ntitle: ${title}\ndate: 2026-10-08\ncover: ${profile.hero.portraits[0]}\ndescription: Plugin integration fixture\n---\n\n## Body\n\nReadable article content.\n\n## Body\n\n| Feature | Status |\n| --- | --- |\n| Shared content | Ready |\n\n[External](https://example.com)`;

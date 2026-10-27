@@ -287,6 +287,10 @@ test("disabled content is retained in source but stripped from payload and publi
   config.projects.forEach((project) => {
     project.enabled = false;
   });
+  // A hero brand may link to a project; with every project off it must not.
+  config.hero.summary.forEach((part) => {
+    if (part.brand) delete part.brand.project;
+  });
   Object.assign(config.features, {
     about: false,
     photography: false,
@@ -355,6 +359,36 @@ test("the site origin and contact email are canonical before they are published"
     () => validatePublicationLinks(config),
     /site\.contact\.email is not an email address/,
   );
+});
+
+test("a hero brand links only to an enabled project", () => {
+  // The demo contract always has an enabled project; an author's may not.
+  const config = structuredClone(demo);
+  config.features.work = true;
+  const project = config.projects.find((item) => item.enabled !== false);
+  config.hero.summary = [
+    { text: "Building " },
+    { brand: { name: "Product", icon: "/media/icon.png", project: project.id } },
+  ];
+  // Other checks in this policy may still object to the fixture; only the
+  // brand rule is under test here.
+  const brandProblem = () => {
+    try {
+      validatePublicationLinks(config);
+      return null;
+    } catch (error) {
+      return /Hero brand/.test(error.message) ? error.message : null;
+    }
+  };
+  assert.equal(brandProblem(), null);
+  config.hero.summary[1].brand.project = "missing";
+  assert.throws(
+    () => validatePublicationLinks(config),
+    /Hero brand Product links to project "missing"/,
+  );
+  config.hero.summary[1].brand.project = project.id;
+  project.enabled = false;
+  assert.throws(() => validatePublicationLinks(config), /not an enabled project/);
 });
 
 test("a missing referenced asset names the file and how it is produced", async () => {
