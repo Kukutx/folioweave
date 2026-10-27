@@ -17,6 +17,8 @@ import { ScrollHint } from "./scroll-hint";
 import { CharReveal } from "@/components/motion-text";
 import { ResumePrinter, type ResumeState } from "@/components/media/resume-printer";
 import { homeContent } from "@/content/home";
+import { workProjects } from "@/content/work";
+import { scrollToElement } from "@/lib/scroll";
 import { portraitImages } from "@/content/media";
 import { useMobileViewport } from "@/hooks/use-media-query";
 import { mailto, siteConfig } from "@/config/site";
@@ -161,24 +163,53 @@ const PortraitImage = memo(function PortraitImage({
   );
 });
 
+function projectAnchor(id: string | undefined) {
+  if (!id || !siteConfig.features.work) return null;
+  return workProjects.some((project) => project.id === id) ? `work-${id}` : null;
+}
+
+function goToProject(event: React.MouseEvent<HTMLAnchorElement>, anchor: string) {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
+    return;
+  const target = document.getElementById(anchor);
+  if (!target) return;
+  event.preventDefault();
+  const nav = document.querySelector<HTMLElement>(".nav");
+  const offset = nav ? nav.getBoundingClientRect().bottom + 24 : 98;
+  window.history.pushState(null, "", `#${anchor}`);
+  scrollToElement(target, { offset: -offset, duration: 1.2, force: true });
+}
+
 function RichText({
   segments,
 }: {
   segments: readonly PortfolioRichTextSegment[];
 }) {
-  return segments.map((segment, index) =>
-    "text" in segment ? (
-      <Fragment key={index}>{segment.text}</Fragment>
-    ) : (
-      <span
-        className="hero-brand-inline"
-        key={`${segment.brand.name}-${index}`}
-      >
+  return segments.map((segment, index) => {
+    if ("text" in segment) return <Fragment key={index}>{segment.text}</Fragment>;
+    const key = `${segment.brand.name}-${index}`;
+    const content = (
+      <>
         <img src={segment.brand.icon} alt={segment.brand.name} />{" "}
         {segment.brand.name}
+      </>
+    );
+    const anchor = projectAnchor(segment.brand.project);
+    return anchor ? (
+      <a
+        className="hero-brand-inline"
+        key={key}
+        href={`#${anchor}`}
+        onClick={(event) => goToProject(event, anchor)}
+      >
+        {content}
+      </a>
+    ) : (
+      <span className="hero-brand-inline" key={key}>
+        {content}
       </span>
-    ),
-  );
+    );
+  });
 }
 
 export function Hero() {

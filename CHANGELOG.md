@@ -6,6 +6,16 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.1.0 — 2026-10-27
+
+- Hero brand segments accept `project`: the brand becomes a link that scrolls
+  to that Work project (Classic). A brand pointing at a missing or disabled
+  project fails the content build.
+- TL;DR: a highlighted word reads like the rest of the summary instead of
+  turning grey.
+- Authoring guidance: copy that stays true after the next update, and About
+  story `strong` sentences that work as the TL;DR on their own.
+
 ## 1.0.0 — 2026-10-27
 
 The first tagged release.

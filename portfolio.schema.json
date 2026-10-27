@@ -74,6 +74,11 @@
                 },
                 "icon": {
                   "$ref": "#/$defs/localImage"
+                },
+                "project": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Optional id of a Work project. The brand becomes a link that scrolls to that project."
                 }
               }
             }

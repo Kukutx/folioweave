@@ -33,6 +33,10 @@ export type RichTextSegment =
       brand: {
         name: string;
         icon: LocalImage;
+        /**
+         * Optional id of a Work project. The brand becomes a link that scrolls to that project.
+         */
+        project?: string;
       };
     };
 /**
