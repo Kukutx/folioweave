@@ -358,7 +358,9 @@ test("the site origin and contact email are canonical before they are published"
 });
 
 test("a hero brand links only to an enabled project", () => {
-  const config = structuredClone(personal);
+  // The demo contract always has an enabled project; an author's may not.
+  const config = structuredClone(demo);
+  config.features.work = true;
   const project = config.projects.find((item) => item.enabled !== false);
   config.hero.summary = [
     { text: "Building " },
