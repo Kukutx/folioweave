@@ -287,6 +287,10 @@ test("disabled content is retained in source but stripped from payload and publi
   config.projects.forEach((project) => {
     project.enabled = false;
   });
+  // A hero brand may link to a project; with every project off it must not.
+  config.hero.summary.forEach((part) => {
+    if (part.brand) delete part.brand.project;
+  });
   Object.assign(config.features, {
     about: false,
     photography: false,
