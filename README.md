@@ -18,6 +18,8 @@ FolioWeave brings three portfolio designs into one application: Classic, Refract
 
 Refract Light and Refract Dark are separate build-time choices. The published site has no style switcher. They share scene geometry and interaction code so fixes apply consistently to both designs. Read the [Refract guide](docs/REFRACT.md) for content mapping, settings, and asset credits.
 
+To build your own design, `npm run folio -- template create <id>` scaffolds a template that already implements the shared contracts; [Template integration](docs/TEMPLATES.md) walks through it.
+
 |                                                                      Classic                                                                       |                                                                     Refract Light                                                                      |                                                                       Refract Dark                                                                        |
 | :------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | [![Classic desktop preview with an editorial opening and a tilted portrait print](docs/images/classic.png)](https://folioweave-classic.vercel.app) | [![Refract Light desktop preview with a white canvas and geometric globe](docs/images/refract-light.png)](https://folioweave-refract-light.vercel.app) | [![Refract Dark desktop preview with a warm dark canvas and illuminated globe](docs/images/refract-dark.png)](https://folioweave-refract-dark.vercel.app) |
@@ -30,14 +32,12 @@ Requirements: Node.js 24 and npm.
 npm ci
 git switch -c personal
 npm run personalize
-npm run folio -- templates
-npm run folio -- template use refract-light
 npm run dev
 ```
 
 `main` and `develop` keep the canonical demo, so your own profile lives on the `personal` branch.
 
-Use `classic` or `refract-dark` in the selection command to choose either of the other templates. Classic remains the default for profiles without a template selection.
+`npm run personalize` asks for your identity, links and location, the template (`classic`, `refract-light` or `refract-dark`) and the plugins. Switch template later with `npm run folio -- template use <id>`; your content and settings are kept. Classic remains the default for profiles without a template selection.
 
 Open `http://localhost:3000`.
 
@@ -72,10 +72,10 @@ While `npm run dev` is running, valid changes to profile content, assets, Markdo
 - Independent music and comments plugins, configured through the CLI and mounted through template slots
 - Responsive portfolio for desktop, tablet, and mobile
 - Data-driven projects, photography, About content, resume, links, and feature switches
-- One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order
+- One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order, with an optional Word copy to download
 - Markdown Blog with automatic routes, index, tag pages, reading time, metadata, sitemap, and drafts
 - Article outline, linkable section headings, and copyable code blocks
-- Classic's editorial sections, camera, gallery/lightbox, and resume printer
+- Classic's editorial sections, camera, gallery/lightbox, and a resume printer whose printed sheet opens a reading preview
 - Refract's Canvas globe, scroll-driven scene changes, chapter timeline, and light/dark design variants
 - Server-first composition with focused client interaction islands
 - Accessibility-minded keyboard/focus behavior and live reduced-motion support
@@ -129,7 +129,7 @@ Point `portfolio.json > site.resume` at two files under `/portfolio/resume/`, co
 npm run resume:build
 ```
 
-That writes the PDF and preview `site.resume` references. The build fails if they ever fall behind the source, so the published resume is always the current one. [content/resume/README.md](content/resume/README.md) has the details.
+That writes the PDF and preview `site.resume` references. The build fails if they ever fall behind the source, so the published resume is always the current one. To offer a Word copy as well, point `site.resume.docx` at a `.docx` of the same resume; the preview then shows Download DOCX beside Download PDF. [content/resume/README.md](content/resume/README.md) has the details.
 
 See [docs/RECIPES.md](docs/RECIPES.md) for copyable examples.
 
