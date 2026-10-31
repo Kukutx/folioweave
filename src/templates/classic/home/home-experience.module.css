@@ -50,12 +50,19 @@
   transform: translateY(-0.01em);
 }
 
+/* Icon-only on narrower screens: the same 56px circle as the collapsed music
+   record above it, on the same right edge, so the two stack as one column. */
 @media (max-width: 900px) {
   .floatingHome {
     right: 1rem;
-    width: 44px;
-    min-height: 44px;
+    width: 56px;
+    min-height: 56px;
     padding: 0;
+  }
+
+  .floatingHome svg {
+    width: 20px;
+    height: 20px;
   }
 
   .floatingHomeLabel {
