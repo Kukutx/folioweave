@@ -6,6 +6,12 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.1.3 — 2026-10-31
+
+- Classic: on screens up to 900px the floating Home button is a 56px circle,
+  the same size as the collapsed music record and on the same right edge, with
+  a 12px gap between them.
+
 ## 1.1.2 — 2026-10-27
 
 - Tests: the extension browser check drops hero brand links when it removes

@@ -50,5 +50,9 @@ body {
 @media (max-width: 900px) {
   :root[data-template="classic"] {
     --fw-floating-right: 1rem;
+    /* 56px Home circle plus a 12px gap. */
+    --fw-floating-bottom-right: calc(
+      max(1rem, env(safe-area-inset-bottom)) + 68px
+    );
   }
 }
