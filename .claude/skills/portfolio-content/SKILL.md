@@ -66,9 +66,12 @@ For author content only; shared code, schema, QA or docs follow
 - Every visible line is the author's own and every fact comes from their
   material. Text left from the demo profile (the interlude, the footer note,
   greetings) is replaced by the author.
-- Write copy that stays true after the next update: past dates are fine, but no
-  "now" or "currently", no present status, and nothing that names what a
-  gallery or repository happens to contain.
+- Write copy that stays true after the next update: past dates are fine, and
+  nothing names what a gallery or repository happens to contain. Present status
+  is decided by the content and how it is shown: a badge, a "— Present" date
+  range or a store link may state what is true today; intro and story prose
+  prefers wording that does not depend on today. Leave the author's existing
+  status text as it is unless they ask.
 - The About story's `strong` segments are its TL;DR: each one a full sentence
   that ends with a period and reads on its own, together a short summary. Keep
   colons, "so" and other links to the muted text out of them.
