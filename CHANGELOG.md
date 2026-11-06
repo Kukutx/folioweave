@@ -6,6 +6,11 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.1.4 — 2026-11-06
+
+- Classic: on screens up to 768px the About view toggle spans the text column
+  as three equal segments instead of sitting against the right edge.
+
 ## 1.1.3 — 2026-10-31
 
 - Classic: on screens up to 900px the floating Home button is a 56px circle,
