@@ -287,8 +287,16 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
   }
+  /* On phones the toggle spans the text column as three equal segments, so it
+     lines up with both edges of the story below instead of floating right. */
   .profile-about-section-header .profile-inline-toggle {
-    align-self: flex-end;
+    display: flex;
+    width: 100%;
+  }
+  .profile-about-section-header .profile-inline-toggle .about-toggle-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
   }
 }
 .hero-badges {
