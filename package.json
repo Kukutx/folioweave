@@ -1,6 +1,6 @@
 {
   "name": "folioweave",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "type": "module",
   "description": "A Next.js portfolio framework with selectable templates, shared plugins, and a validated content pipeline.",
@@ -121,5 +121,10 @@
     "pngjs": "7.0.0",
     "prettier": "3.9.10",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.5"
+    }
   }
 }
