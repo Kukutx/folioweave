@@ -6,6 +6,15 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.2.1 — 2026-11-20
+
+- Tool launcher: its links no longer prefetch while the fan is closed; the
+  pages load when the fan opens. A tool page's fonts and code (EmojiCut brings
+  about 100 KB of CJK font rules) stay off every page that shows the launcher.
+- Tests: the plugin check turns off every plugin the profile has on before it
+  expects a page without plugins, so an author's profile with more plugins
+  passes it.
+
 ## 1.2.0 — 2026-11-20
 
 - Templates: Stack, Pond, Ticket Club and the store template Bottega, driven

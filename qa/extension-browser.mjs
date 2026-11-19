@@ -685,9 +685,10 @@ try {
   }
   stop();
   const before = JSON.parse(await fs.readFile(profilePath, "utf8"));
-  await run(cli, ["plugin", "disable", "music"]);
-  await run(cli, ["plugin", "disable", "comments"]);
-  await run(cli, ["plugin", "disable", "fixture-failure"]);
+  // Every plugin the profile has on, not only the ones this check turned on:
+  // an author's profile may enable others (a launcher, a badge).
+  for (const [id, entry] of Object.entries(before.plugins ?? {}))
+    if (entry.enabled) await run(cli, ["plugin", "disable", id]);
   await run(cli, ["template", "use", ownTemplate]);
   const after = JSON.parse(await fs.readFile(profilePath, "utf8"));
   assert.deepEqual(after.site, before.site);
@@ -710,7 +711,7 @@ try {
   );
   await run(cli, ["doctor", "--json"]);
   console.log(
-    `Building the profile's own template (${ownTemplate}) again with both plugins disabled…`,
+    `Building the profile's own template (${ownTemplate}) again with every plugin disabled…`,
   );
   await build();
   base = await start();
