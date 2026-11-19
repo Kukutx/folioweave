@@ -8,8 +8,9 @@ import {
 } from "framer-motion";
 import { Moon, RefreshCw, Sun, Sunset, Wifi, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { mailto, siteConfig } from "@/config/site";
+import { contactOf, mailto, siteConfig } from "@/config/site";
 import { useMotionActivity } from "@/hooks/use-motion-activity";
+import { fetchWeather } from "@/lib/weather-client";
 
 type Weather = { icon: string; temperature: number | null };
 
@@ -128,7 +129,7 @@ export function TimeWeatherWidget() {
         typeof AbortSignal.any === "function"
           ? AbortSignal.any([controller.signal, AbortSignal.timeout(6000)])
           : controller.signal;
-      fetch("/api/weather", { signal })
+      fetchWeather(signal)
         .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((data) => {
           if (data.status !== "fresh" || !Number.isFinite(data.temperature))
@@ -254,7 +255,7 @@ export function ContactCycleButton({ compact = false }: { compact?: boolean }) {
       }}
     >
       <a
-        href={mailto(siteConfig.contact.email, siteConfig.contact.helloSubject)}
+        href={mailto(contactOf(siteConfig).email, contactOf(siteConfig).helloSubject)}
         className={`cycle-btn ${compact ? "cycle-btn-compact" : ""} ${buttonStyles[index][0]}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => {

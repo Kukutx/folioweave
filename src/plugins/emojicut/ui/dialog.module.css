@@ -1,0 +1,273 @@
+/* Modal dialogs: the help card and the crop view. */
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dialog:modal {
+  display: grid;
+  place-items: center;
+}
+
+.dialog::backdrop {
+  background: transparent;
+}
+
+/* ---------- Help ---------- */
+
+.light {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 28px 28px 24px;
+  background: var(--ec-white);
+  border: 3px solid var(--ec-lavender);
+  border-radius: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--ec-text);
+}
+
+.close:hover {
+  background: var(--ec-pink-soft);
+}
+
+.title {
+  margin-bottom: 16px;
+  padding-right: 40px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 1.4em;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ec-muted);
+}
+
+.steps li::marker {
+  font-weight: 700;
+  color: var(--ec-pink-dark);
+}
+
+.section {
+  margin-top: 20px;
+}
+
+.heading {
+  margin-bottom: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.body {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ec-muted);
+}
+
+.prompt {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--ec-note);
+  border: 2px solid var(--ec-note-line);
+  border-radius: 12px;
+}
+
+.promptText {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ec-muted);
+  white-space: pre-wrap;
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: var(--ec-white);
+  border: 2px solid var(--ec-pink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.copy:hover {
+  background: var(--ec-pink-soft);
+}
+
+.credit {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--ec-lavender);
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--ec-faint);
+}
+
+/* ---------- Crop ---------- */
+
+.dark {
+  background: var(--ec-crop-overlay);
+  color: var(--ec-white);
+}
+
+.crop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.cropHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 56rem;
+}
+
+.cropTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.cropHint {
+  font-size: 0.875rem;
+  color: var(--ec-crop-hint);
+}
+
+.cropClose {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.cropClose:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+
+.frame {
+  position: relative;
+  max-width: 100%;
+  border: 1px solid var(--ec-crop-frame-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--ec-crop-frame);
+  background-image:
+    linear-gradient(45deg, rgb(0 0 0 / 0.12) 25%, transparent 25%),
+    linear-gradient(-45deg, rgb(0 0 0 / 0.12) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgb(0 0 0 / 0.12) 75%),
+    linear-gradient(-45deg, transparent 75%, rgb(0 0 0 / 0.12) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+  touch-action: none;
+}
+
+.frame:focus-visible {
+  outline-offset: 3px;
+}
+
+.cropImage {
+  max-width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: crosshair;
+}
+
+.selection {
+  position: absolute;
+  border: 2px solid var(--ec-crop-select);
+  background-color: rgb(59 130 246 / 0.2);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.cropActions {
+  display: flex;
+  gap: 12px;
+}
+
+.cropCancel,
+.cropAdd {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.cropCancel {
+  border: 1px solid var(--ec-crop-button-line);
+  color: var(--ec-crop-text);
+}
+
+.cropCancel:hover {
+  background-color: var(--ec-crop-frame);
+}
+
+.cropAdd {
+  background-color: var(--ec-crop-action);
+  color: var(--ec-white);
+}
+
+.cropAdd:hover:not(:disabled) {
+  background-color: var(--ec-crop-action-hover);
+}
+
+.cropAdd:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

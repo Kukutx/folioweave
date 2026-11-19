@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="studio-token" content="__STUDIO_TOKEN__" />
+    <title>FolioWeave Studio</title>
+    <link rel="stylesheet" href="/studio.css" />
+    <script type="module" src="/studio.js"></script>
+  </head>
+  <body>
+    <main class="main">
+      <header class="head">
+        <h1 data-text="title">FolioWeave Studio</h1>
+        <p data-text="intro">
+          Choose how your site looks. Previews use your own content and change
+          nothing until you apply a template.
+        </p>
+      </header>
+
+      <nav class="tabs" role="tablist" aria-label="Kinds of site">
+        <button role="tab" id="tab-personal" aria-selected="true" aria-controls="grid" data-category="personal">
+          <span data-text="personal">Personal sites</span> <span class="count"></span>
+        </button>
+        <button role="tab" id="tab-store" aria-selected="false" aria-controls="grid" data-category="store">
+          <span data-text="store">Stores</span> <span class="count"></span>
+        </button>
+      </nav>
+
+      <ul class="grid" id="grid" role="tabpanel" aria-labelledby="tab-personal"></ul>
+
+      <section class="plugins" aria-labelledby="plugins-title">
+        <h2 id="plugins-title" data-text="plugins">Plugins</h2>
+        <ul class="plugin-list" id="plugins"></ul>
+      </section>
+    </main>
+
+    <div class="status" id="status" role="status" aria-live="polite" hidden></div>
+
+    <template id="card">
+      <li class="card">
+        <div class="thumb"><span class="placeholder"></span></div>
+        <div class="meta">
+          <span class="idx"></span>
+          <span class="name"></span>
+          <span class="current" data-text="current">Current</span>
+        </div>
+        <p class="tag"></p>
+        <p class="needs"></p>
+        <div class="actions">
+          <button class="button secondary preview" type="button" data-text="preview">Preview with my content</button>
+          <button class="button use" type="button" data-text="use">Use this template</button>
+        </div>
+      </li>
+    </template>
+
+    <template id="plugin">
+      <li class="plugin">
+        <div class="plugin-text">
+          <span class="plugin-name"></span>
+          <span class="plugin-description"></span>
+        </div>
+        <button class="switch" type="button" role="switch"><span class="knob"></span></button>
+      </li>
+    </template>
+  </body>
+</html>

@@ -46,3 +46,11 @@ next-env.d.ts
 # generated QA artifacts
 /qa/*-report.json
 /qa/screens/
+
+# Cloudflare adapter output (npm run deploy -- cloudflare)
+.open-next/
+.wrangler/
+wrangler.generated.json
+firebase.generated.json
+# Static export for static hosts
+/out/

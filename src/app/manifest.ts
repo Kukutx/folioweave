@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
 import { portfolioSeo } from "@/portfolio";
 
+/** Built once from the profile, so static hosts can serve it as a file. */
+export const dynamic = "force-static";
+
 function mediaType(src: string) {
   if (src.endsWith(".svg")) return "image/svg+xml";
   if (src.endsWith(".webp")) return "image/webp";

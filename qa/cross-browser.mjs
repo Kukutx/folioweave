@@ -3,6 +3,9 @@ import fs from "node:fs/promises";
 import { chromium, firefox, webkit } from "playwright-core";
 import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
+import { qaTemplate } from "./template.mjs";
+
+const { menuToggle } = qaTemplate();
 
 const screenshots = "qa/screens/browsers";
 const keepScreenshots = process.env.KEEP_QA_SCREENSHOTS === "1";
@@ -37,7 +40,7 @@ try {
           "error overlay",
         );
         if (width < 768) {
-          const menu = page.locator(".mobile-menu-toggle");
+          const menu = page.locator(menuToggle).first();
           await menu.click();
           assert.equal(await menu.getAttribute("aria-expanded"), "true");
           await page.keyboard.press("Escape");
@@ -117,7 +120,9 @@ try {
             );
           }
         }
-        const link = page.locator('a[href="#contact"]').first();
+        const link = page
+          .locator('a[href="#contact"]:visible, a[href="/#contact"]:visible')
+          .first();
         if ((await link.count()) && (await link.isVisible())) {
           await link.click();
           await page.waitForFunction(() => location.hash === "#contact");

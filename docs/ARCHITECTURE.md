@@ -112,7 +112,9 @@ belongs to this registry, not to a second blog metadata flag.
 
 The same policy feeds navigation filtering, link checks, sitemap, custom article
 publication and browser test targets. Markdown routes are derived from published
-posts, so they do not need manual registration. Optional sections stay in source
+posts, so they do not need manual registration. Plugin pages under
+`/tools/<path>` are derived from enabled plugins the same way (see
+[PLUGINS.md](PLUGINS.md#plugin-pages)). Optional sections stay in source
 navigation and become visible when their feature is enabled.
 
 ### Demo implementation boundary

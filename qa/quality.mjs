@@ -6,10 +6,16 @@ import {
   disabledDemoRoutes as resolveDisabledDemoRoutes,
   publicationRoutes,
 } from "./blog-routes.mjs";
+import { qaTemplate } from "./template.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
 const routes = await publicationRoutes();
+const template = qaTemplate();
+// Classic's hero and gallery keep a scroll model of their own, and its 404
+// carries its own sentence; other templates are held to the shared contract.
+const homeScrollModelOk = (item) =>
+  template.classic ? item.homeScrollModel?.ok === true : true;
 const disabledRoutes = await resolveDisabledDemoRoutes();
 const demoRoutesEnabled = disabledRoutes.length === 0;
 const viewports = [
@@ -179,7 +185,7 @@ for (const viewport of viewports) {
       !item.horizontalOverflow &&
       (route !== "/" ||
         (item.nestedVerticalScrollContainers.length === 0 &&
-          item.homeScrollModel?.ok === true)) &&
+          homeScrollModelOk(item))) &&
       item.canonical.length > 0 &&
       item.description.length > 0 &&
       item.manifest.length > 0 &&
@@ -213,7 +219,7 @@ const notFound = await fetch(base + "/__quality_missing_route__");
 const notFoundHtml = await notFound.text();
 const notFoundOk =
   notFound.status === 404 &&
-  notFoundHtml.includes("This page wandered off.") &&
+  (!template.classic || notFoundHtml.includes("This page wandered off.")) &&
   notFoundHtml.includes("noindex");
 const disabledDemoRouteStatuses = demoRoutesEnabled
   ? {}
@@ -253,7 +259,7 @@ const failures = report.filter(
     item.legacyRuntimeCount ||
     item.horizontalOverflow ||
     (item.route === "/" &&
-      (item.nestedVerticalScrollContainers.length || !item.homeScrollModel?.ok)) ||
+      (item.nestedVerticalScrollContainers.length || !homeScrollModelOk(item))) ||
     !item.canonical ||
     !item.description ||
     !item.manifest ||

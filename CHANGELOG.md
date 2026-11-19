@@ -6,6 +6,30 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.2.0 — 2026-11-20
+
+- Templates: Stack, Pond, Ticket Club and the store template Bottega, driven
+  by the profile. A template may bring its own 404 view and its own pages,
+  published only when their data exists; Refract Light and Dark get the
+  carrier 404.
+- Profile: an optional `store` block for shops (locations, hours, catalog,
+  services); `site.contact` is optional and the resume is required only while
+  it is shown; template `requires` may name a dotted path such as
+  `site.contact`; `seo.title` may replace the generated title.
+- Plugins: EmojiCut (sticker cutting, and AI design with the visitor's own
+  key), the tool launcher that fans out to plugin pages, and the work badge,
+  a 3D lanyard with one or more cards that can each be taken, swung and
+  flipped. A plugin may add a page under `/tools` or an action opened in place.
+- Hosting: the profile's `deployment` block lists Vercel, Cloudflare (OpenNext
+  Workers) and Firebase (static export) side by side, built with
+  `npm run deploy -- <provider> [--apply]`; `deployment.redirects` keeps a
+  replaced site's old addresses working on every host. Live route handlers
+  are `route.server.ts` and are left out of static exports.
+- Tooling: `preview:template` runs any template on any profile in a sandbox,
+  Studio shows the templates as a gallery, and QA follows the selected
+  template instead of assuming Classic.
+- Dependencies: Next.js 16.4.6, fast-xml-parser 5.12.1, prettier 3.10.1.
+
 ## 1.1.5 — 2026-11-06
 
 - Tooling: the lint toolchain's `minimatch` is pinned to 11.0.5, which fixes

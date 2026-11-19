@@ -2,10 +2,11 @@ import type { Viewport } from "next";
 import { rootMetadata, personJsonLd } from "@/config/seo";
 import { siteConfig } from "@/config/site";
 import { serializeJsonLd } from "@/lib/json-ld";
-import { templateId } from "@/portfolio/template.generated";
+import { templateCategory, templateId } from "@/portfolio/template.generated";
 import TemplateLayout from "@/portfolio/template-layout.generated";
 import FooterPlugins from "@/portfolio/plugins-site-footer.generated";
 import FloatingPlugins from "@/portfolio/plugins-site-floating.generated";
+import { pluginPageLinks } from "@/portfolio/plugin-page-links.generated";
 import { templateContext } from "@/core/template-context";
 
 export const metadata = rootMetadata;
@@ -32,17 +33,23 @@ export default function RootLayout({
             ),
             floating: (
               <FloatingPlugins
-                context={{ locale: siteConfig.identity.locale }}
+                context={{
+                  locale: siteConfig.identity.locale,
+                  pages: pluginPageLinks,
+                }}
               />
             ),
           }}
         >
           {children}
         </TemplateLayout>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
-        />
+        {/* Store templates publish their own business data instead. */}
+        {templateCategory !== "store" && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(personJsonLd) }}
+          />
+        )}
       </body>
     </html>
   );
