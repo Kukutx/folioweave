@@ -13,6 +13,7 @@
   "apiVersion": 1,
   "entry": "launcher.tsx",
   "slots": ["site.floating"],
+  "budget": { "jsGzipBytes": 14000, "cssGzipBytes": 2000 },
   "optionsSchema": {
     "type": "object",
     "additionalProperties": false,
