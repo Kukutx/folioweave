@@ -87,11 +87,18 @@ test("everything the app answers can be exported for a static host", async () =>
   const fs = await import("node:fs");
   const path = await import("node:path");
   const app = path.resolve(import.meta.dirname, "../src/app");
-  const files = fs.readdirSync(app, { recursive: true }).map(String);
+  // One separator on every system, so files in folders are seen on Windows too.
+  const files = fs
+    .readdirSync(app, { recursive: true })
+    .map((file) => String(file).split(path.sep).join("/"));
   // A live handler is named route.server.ts and is left out of static exports;
   // any other handler or metadata route must be marked static.
   const handlers = files.filter((file) =>
-    /(?:^|[\/])(?:route\.[jt]sx?|(?:manifest|robots|sitemap)\.[jt]s)$/.test(file),
+    /(?:^|\/)(?:route\.[jt]sx?|(?:manifest|robots|sitemap)\.[jt]s)$/.test(file),
+  );
+  assert.ok(
+    files.some((file) => file.endsWith("/route.server.ts")),
+    "files inside folders are seen",
   );
   assert.ok(handlers.length > 0);
   for (const file of handlers) {
