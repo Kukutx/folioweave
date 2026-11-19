@@ -13,6 +13,7 @@
   "apiVersion": 1,
   "entry": "badge.tsx",
   "slots": ["site.floating"],
+  "budget": { "jsGzipBytes": 9000, "cssGzipBytes": 2000 },
   "action": {
     "hash": "badge",
     "title": "Badge",

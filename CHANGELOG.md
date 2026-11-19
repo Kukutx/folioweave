@@ -6,6 +6,20 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.2.1 — 2026-11-20
+
+- Tool launcher: its links no longer prefetch while the fan is closed; the
+  pages load when the fan opens. A tool page's fonts and code (EmojiCut brings
+  about 100 KB of CJK font rules) stay off every page that shows the launcher.
+- Plugins may declare a `budget` (gzip bytes of JS and CSS they add to each
+  page). The page bundle budget grows by the budgets of the plugins a profile
+  enables, and a new test holds every plugin to its own. Music (24,000 / 8,000,
+  as before), the launcher (14,000 / 2,000) and the badge (9,000 / 2,000)
+  declare theirs.
+- Tests: the plugin check turns off every plugin the profile has on before it
+  expects a page without plugins, so an author's profile with more plugins
+  passes it.
+
 ## 1.2.0 — 2026-11-20
 
 - Templates: Stack, Pond, Ticket Club and the store template Bottega, driven
