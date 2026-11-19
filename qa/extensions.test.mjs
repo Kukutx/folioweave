@@ -403,6 +403,45 @@ test("a plugin page must name an existing entry and a lowercase path, and paths 
   }
 });
 
+test("a plugin budget is whole gzip bytes of JS and CSS for a slot entry", async (t) => {
+  const sandbox = await fs.mkdtemp(path.join(qaTempRoot, "plugin-budget-"));
+  t.after(() => fs.rm(sandbox, { recursive: true, force: true }));
+  await fs.cp(
+    path.join(root, "src/templates/classic"),
+    path.join(sandbox, "src/templates/classic"),
+    { recursive: true },
+  );
+  const directory = path.join(sandbox, "src/plugins", "widget");
+  await fs.mkdir(directory, { recursive: true });
+  await fs.writeFile(path.join(directory, "widget.tsx"), "export default 0;");
+  const plugin = (extra) =>
+    fs.writeFile(
+      path.join(directory, "manifest.json"),
+      JSON.stringify({
+        id: "widget",
+        name: "Widget",
+        version: "1.0.0",
+        apiVersion: 1,
+        entry: "widget.tsx",
+        slots: ["site.floating"],
+        optionsSchema: { type: "object", additionalProperties: false },
+        ...extra,
+      }),
+    );
+  await plugin({ budget: { jsGzipBytes: 4000, cssGzipBytes: 1000 } });
+  loadCatalog(sandbox);
+  for (const budget of [
+    { jsGzipBytes: 4000 },
+    { jsGzipBytes: 4000, cssGzipBytes: 0 },
+    { jsGzipBytes: 1.5, cssGzipBytes: 1000 },
+    { jsGzipBytes: 4000, cssGzipBytes: 1000, imagesGzipBytes: 1 },
+    [],
+  ]) {
+    await plugin({ budget });
+    assert.throws(() => loadCatalog(sandbox), /budget/, JSON.stringify(budget));
+  }
+});
+
 test("audio follows the same authored and published resource boundary", async () => {
   const sandbox = await fs.mkdtemp(path.join(qaTempRoot, "audio-"));
   try {

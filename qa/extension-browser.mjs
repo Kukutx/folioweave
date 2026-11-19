@@ -668,7 +668,13 @@ try {
     );
     musicReport.method =
       "Same template, profile and QA bridge; only music toggled. Unique loaded JS/CSS decoded bodies; gzip sizes estimated locally. CDP timing is diagnostic, three 1200ms samples per state.";
-    musicReport.budgets = { jsGzipBytes: 24000, cssGzipBytes: 8000 };
+    // The same budget the music manifest declares for the bundle budget.
+    musicReport.budgets = JSON.parse(
+      await fs.readFile(
+        path.join(root, "src/plugins/music/manifest.json"),
+        "utf8",
+      ),
+    ).budget;
     await fs.writeFile(
       path.join(root, "qa/music-quality-report.json"),
       JSON.stringify(musicReport, null, 2) + "\n",
