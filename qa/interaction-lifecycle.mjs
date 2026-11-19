@@ -2,6 +2,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { chromium } from "playwright-core";
 import { resolveChromePath } from "./chrome.mjs";
+import { onlyFor, qaTemplate } from "./template.mjs";
+
+// Classic's navigation, hero decoration, interlude and section reveals.
+const template = qaTemplate();
+if (onlyFor(template, template.classic, "Classic interaction lifecycle"))
+  process.exit(0);
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const browser = await chromium.launch({

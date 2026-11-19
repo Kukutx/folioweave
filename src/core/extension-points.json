@@ -10,5 +10,8 @@
     "BlogIndex": "blog-index",
     "BlogPost": "blog-post",
     "BlogTag": "blog-tag"
+  },
+  "optionalViews": {
+    "NotFound": "not-found"
   }
 }

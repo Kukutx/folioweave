@@ -1,6 +1,6 @@
 {
   "name": "folioweave",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "A Next.js portfolio framework with selectable templates, shared plugins, and a validated content pipeline.",
@@ -60,14 +60,14 @@
     "audit:prod": "npm audit --omit=dev",
     "qa:visual-compare": "node qa/run-with-server.mjs qa:regression-check",
     "personalize": "node scripts/personalize.mjs",
-    "content:test": "node --test qa/content-core.test.mjs qa/taxonomy.test.mjs qa/blog-search.test.mjs qa/publication-policy.test.mjs qa/content-pipeline.test.mjs qa/audio-artwork.test.mjs qa/route-contract.test.mjs qa/weather.test.mjs qa/visual-contract.test.mjs qa/resume-core.test.mjs qa/extensions.test.mjs qa/platform.test.mjs qa/comments-service.test.mjs",
+    "content:test": "node --test qa/content-core.test.mjs qa/taxonomy.test.mjs qa/blog-search.test.mjs qa/publication-policy.test.mjs qa/content-pipeline.test.mjs qa/audio-artwork.test.mjs qa/route-contract.test.mjs qa/weather.test.mjs qa/visual-contract.test.mjs qa/resume-core.test.mjs qa/extensions.test.mjs qa/platform.test.mjs qa/comments-service.test.mjs qa/emojicut.test.mjs qa/badge.test.mjs qa/unbound-content.test.mjs qa/deploy.test.mjs",
     "content:check": "node scripts/portfolio-check.mjs",
     "content:build": "node scripts/content-build.mjs",
     "resume:build": "node scripts/resume-build.mjs",
     "prebuild": "npm run plugins:check && npm run content:build && npm run content:check",
     "qa:visual-baseline": "node qa/run-with-server.mjs qa:regression-capture",
     "qa:ownership": "node qa/browser-ownership.mjs",
-    "qa:profiles": "node qa/visual-fixtures.mjs --minimal-home",
+    "qa:profiles": "node qa/visual-fixtures.mjs --minimal-home && node qa/template-samples.mjs",
     "qa:weather": "node qa/weather-states.mjs",
     "qa:gallery-loading": "node qa/gallery-loading.mjs",
     "qa:upstream": "node qa/run-with-server.mjs qa:upstream-check",
@@ -81,13 +81,17 @@
     "qa:comments": "node --test qa/comments-service.test.mjs && node qa/comments-browser.mjs",
     "qa:refract": "node --test qa/refract-contracts.test.mjs qa/refract-scene.test.mjs && node qa/refract-browser.mjs",
     "preview:comments": "node qa/comments-preview.mjs",
+    "preview:template": "node scripts/template-preview.mjs",
+    "studio": "node scripts/studio.mjs",
+    "templates:previews": "node scripts/template-previews.mjs",
     "qa:extension-browser": "node qa/extension-browser.mjs",
     "qa:music-concept": "node qa/music-player-concept.mjs",
     "qa:music": "node --test qa/music-controller.test.mjs qa/music-options.test.mjs qa/plugin-contracts.test.mjs qa/floating-layout.test.mjs qa/floating-lifecycle.test.mjs",
     "qa:route-loading": "node qa/route-loading.mjs",
     "plugins:generate": "node scripts/plugin-contracts.mjs --write",
     "plugins:check": "node scripts/plugin-contracts.mjs",
-    "qa:music-quality": "npm run qa:music && npm run qa:music-concept && node qa/extension-browser.mjs --music-quality"
+    "qa:music-quality": "npm run qa:music && npm run qa:music-concept && node qa/extension-browser.mjs --music-quality",
+    "deploy": "node scripts/deploy.mjs"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",
@@ -106,12 +110,15 @@
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "sharp": "0.35.5",
+    "three": "0.187.0",
     "unified": "11.0.5"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.17",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@types/three": "0.187.0",
     "ajv": "8.20.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.6",
@@ -120,7 +127,8 @@
     "playwright-core": "1.62.1",
     "pngjs": "7.0.0",
     "prettier": "3.10.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "wrangler": "4.160.1"
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {

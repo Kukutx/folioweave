@@ -3,11 +3,13 @@ import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
 import { loadQaProfile } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
+import { onlyFor, qaTemplate } from "./template.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
 const results = [];
 const portfolio = loadQaProfile();
+const template = qaTemplate(portfolio);
 const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
 const timelineFirstTitle = portfolio.about?.timeline?.[0]?.title;
 const expectedPhotoCount = portfolio.features.photography ? portfolio.photography.images.length : 0;
@@ -959,22 +961,30 @@ async function runMobile() {
   }
 }
 
-await runHomeCore();
-await runHomeMedia();
-await runCamera();
-await runCasePages();
-await runMobile();
+// A shop's checks follow its store block; everything above is Classic's.
+if (template.store) {
+  await import("./store-functionality.mjs");
+} else if (!onlyFor(template, template.classic, "Classic functionality")) {
+  await runHomeCore();
+  await runHomeMedia();
+  await runCamera();
+  await runCasePages();
+  await runMobile();
+  await writeReport();
+}
 
-const failed = results.filter((result) => !result.ok);
-const summary = {
-  total: results.length,
-  passed: results.length - failed.length,
-  failed: failed.length,
-  failures: failed,
-};
-await fs.writeFile(
-  "qa/functionality-report.json",
-  JSON.stringify({ base, summary, results }, null, 2),
-);
-console.log("\nSUMMARY", JSON.stringify(summary, null, 2));
-process.exitCode = failed.length ? 1 : 0;
+async function writeReport() {
+  const failed = results.filter((result) => !result.ok);
+  const summary = {
+    total: results.length,
+    passed: results.length - failed.length,
+    failed: failed.length,
+    failures: failed,
+  };
+  await fs.writeFile(
+    "qa/functionality-report.json",
+    JSON.stringify({ base, summary, results }, null, 2),
+  );
+  console.log("\nSUMMARY", JSON.stringify(summary, null, 2));
+  process.exitCode = failed.length ? 1 : 0;
+}

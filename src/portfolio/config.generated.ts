@@ -583,6 +583,9 @@ const portfolio = {
     "handwrittenTitle": "And keep it simple.",
     "returnDescription": "Good solutions don't ask for attention. They just work—quietly and effectively.",
     "image": "/media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp"
+  },
+  "store": {
+    "locations": []
   }
 } satisfies PortfolioConfig;
 

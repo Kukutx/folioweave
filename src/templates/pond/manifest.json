@@ -1,0 +1,148 @@
+{
+  "id": "pond",
+  "name": "Pond",
+  "description": "A one-screen personal page over an ASCII koi pond: a small mono navigation, a short intro and links, an ink drop at the water's edge, food to drop for the koi and a light/dark switch.",
+  "translations": {
+    "zh": {
+      "description": "ASCII 锦鲤池塘上的单屏个人页：小号等宽导航、简短介绍和链接，水边的墨水滴，可以喂鱼，还能切换深浅色。"
+    }
+  },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx",
+    "NotFound": "not-found.tsx"
+  },
+  "pages": [
+    {
+      "id": "projects",
+      "entry": "projects.tsx",
+      "path": "projects",
+      "pathOption": "projectsPath",
+      "requires": "projects"
+    },
+    {
+      "id": "gallery",
+      "entry": "gallery.tsx",
+      "path": "gallery",
+      "pathOption": "galleryPath",
+      "requires": "photography.images"
+    }
+  ],
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": ["home", "work", "photography"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "motto": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 3,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "description": "Short lines above the intro, in the softer ink, ending in a blinking caret; omitted by default."
+      },
+      "projectsPath": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{0,39}$",
+        "default": "projects",
+        "description": "Address of the projects page."
+      },
+      "galleryPath": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{0,39}$",
+        "default": "gallery",
+        "description": "Address of the photography page."
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Interface wording, in the original's words by default.",
+        "properties": {
+          "home": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "pond"
+          },
+          "projects": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "projects"
+          },
+          "gallery": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "gallery"
+          },
+          "blog": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "blog"
+          },
+          "light": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "light"
+          },
+          "dark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "dark"
+          },
+          "greeting": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "default": "{hello}, I'm {name}.",
+            "description": "The first line of the intro; {hello} is the first of the profile's greetings and {name} its first name."
+          },
+          "pond": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "default": "Koi pond"
+          },
+          "minutes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "default": "min"
+          },
+          "allTopics": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "all"
+          },
+          "back": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "back to the pond"
+          },
+          "notFound": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "default": "This page wandered off."
+          }
+        }
+      }
+    }
+  },
+  "preview": "preview.webp"
+}

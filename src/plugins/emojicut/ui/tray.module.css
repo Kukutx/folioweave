@@ -1,0 +1,181 @@
+/* The results: one row of actions and a grid of sticker cards. */
+
+.tray {
+  width: 100%;
+  margin-top: 28px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.count {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+  gap: 18px;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--ec-white);
+  border: 2px solid var(--ec-pink);
+  border-radius: 20px;
+  box-shadow: 0 4px 0 var(--ec-pink-edge);
+}
+
+/* Out of the printer's slot: a short drop, staggered, only while opening. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .card[data-opening] {
+    animation: drop 0.42s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    animation-delay: calc(min(var(--order, 0), 12) * 45ms);
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-36px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.art {
+  position: relative;
+  aspect-ratio: 1;
+  background-color: var(--ec-white);
+  background-image: conic-gradient(
+    var(--ec-hinge) 25%,
+    transparent 0 50%,
+    var(--ec-hinge) 0 75%,
+    transparent 0
+  );
+  background-size: 16px 16px;
+}
+
+.art img {
+  position: absolute;
+  inset: 14px;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 8px 8px 10px;
+  border-top: 2px solid var(--ec-pink-soft);
+}
+
+.name,
+.nameInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  padding: 4px 6px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ec-text);
+  text-align: left;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+}
+
+.name:hover {
+  background: var(--ec-pink-soft);
+}
+
+.name[data-naming] {
+  color: var(--ec-faint);
+}
+
+.nameInput {
+  border: 2px solid var(--ec-pink);
+  background: var(--ec-white);
+}
+
+.nameInput:focus {
+  outline: none;
+}
+
+.download {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ec-pink-soft);
+  border: 2px solid var(--ec-pink);
+  color: var(--ec-text);
+}
+
+.download:hover {
+  background: var(--ec-pink);
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .count {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Download all on its own row, the two lesser actions side by side under it,
+     so the row never breaks with one button left alone. */
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .buttons > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .buttons > :first-child {
+    grid-column: 1 / -1;
+  }
+}

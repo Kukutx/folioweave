@@ -7,9 +7,18 @@ import { chromium } from "playwright-core";
 import { resolveChromePath } from "./chrome.mjs";
 import { publishedPortfolio } from "../src/portfolio/content-policy.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
+import { loadQaProfile } from "./profile.mjs";
+import { onlyFor, qaTemplate } from "./template.mjs";
 
 const root = process.cwd();
 const minimalHome = process.argv.includes("--minimal-home");
+// The reusable fixtures render Classic's components (its About gallery,
+// carousels, screen rows and article page) with the profile's own media; a
+// profile on another template renders none of them. The minimal profile runs
+// for every template.
+const template = qaTemplate(loadQaProfile());
+if (!minimalHome && onlyFor(template, template.classic, "Classic visual fixtures"))
+  process.exit(0);
 // Keep disposable QA state inside the one FolioWeave project directory.
 const sandboxRoot = path.join(root, ".generated", "qa-sandboxes");
 // Each run owns only its own directory; another QA process may still be active.

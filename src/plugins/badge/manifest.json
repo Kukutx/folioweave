@@ -1,0 +1,307 @@
+{
+  "id": "badge",
+  "name": "Work badge",
+  "description": "A small badge hangs from the top of the page; opening it brings in a 3D lanyard whose cards the visitor can drag, throw and flip.",
+  "translations": {
+    "zh": {
+      "name": "工牌",
+      "description": "页面顶部垂下一个小工牌，点开后是一条立体挂绳和工牌，访客可以拖动、甩动、点一下翻面。"
+    }
+  },
+  "setupHelp": "Give each card its front and back images in options.cards (see docs/PLUGINS.md).",
+  "version": "2.0.0",
+  "apiVersion": 1,
+  "entry": "badge.tsx",
+  "slots": ["site.floating"],
+  "action": {
+    "hash": "badge",
+    "title": "Badge",
+    "description": "Open the work badge.",
+    "icon": "icon.tsx"
+  },
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "label": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Accessible name of the open badge; defaults to a localised “Badge”."
+      },
+      "cards": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 6,
+        "default": [{}],
+        "description": "The cards on the hook, front to back: pictures (frontImage, backImage), or a face drawn from logo, title, kicker and description.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "frontImage": {
+              "$ref": "#/$defs/image",
+              "description": "Picture printed on the front, drawn over cardColor."
+            },
+            "backImage": {
+              "$ref": "#/$defs/image",
+              "description": "Picture printed on the back; the front's picture when omitted."
+            },
+            "alt": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "What the card says, read to screen readers."
+            },
+            "theme": {
+              "enum": ["light", "dark"],
+              "default": "light",
+              "description": "Colours of a face drawn from text, and the card's colour unless cardColor is set."
+            },
+            "logo": {
+              "$ref": "#/$defs/image",
+              "description": "Mark in the roundel of a face drawn from text."
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 40,
+              "description": "Without a frontImage, the face is drawn: a roundel with the logo over a grid, then title, kicker and description."
+            },
+            "kicker": {
+              "type": "string",
+              "maxLength": 40,
+              "description": "Short line in monospace capitals under the title."
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "imageFit": {
+              "enum": ["cover", "contain"],
+              "default": "cover"
+            },
+            "cardColor": {
+              "$ref": "#/$defs/color",
+              "description": "The card's colour; white, or near black for the dark theme, when omitted."
+            },
+            "finish": {
+              "enum": ["glossy", "matte", "holographic", "metallic"],
+              "default": "glossy"
+            }
+          },
+          "title": "BadgeCard"
+        }
+      },
+      "orientation": {
+        "enum": ["portrait", "landscape"],
+        "default": "portrait"
+      },
+      "cornerRadius": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.155,
+        "description": "Roundness of the card's corners, 0 to 1."
+      },
+      "size": {
+        "type": "number",
+        "minimum": 0.15,
+        "maximum": 0.9,
+        "default": 0.4,
+        "description": "Card height as a share of the view's height."
+      },
+      "anchor": {
+        "enum": ["left", "center", "right"],
+        "default": "center",
+        "description": "Where the strap hangs from across the view."
+      },
+      "strapLength": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 1,
+        "description": "How far down the card hangs, 0 to 1."
+      },
+      "strapImage": {
+        "$ref": "#/$defs/image",
+        "description": "Picture printed along the strap, repeated."
+      },
+      "strapColor": {
+        "$ref": "#/$defs/color",
+        "default": "#6d6d6d"
+      },
+      "strapWidth": {
+        "type": "number",
+        "minimum": 0.4,
+        "maximum": 2,
+        "default": 0.65
+      },
+      "strapStyle": {
+        "enum": ["v", "single"],
+        "default": "v",
+        "description": "v: two bands that meet at the sleeve, as worn round the neck. single: one band."
+      },
+      "strapSpread": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.23,
+        "description": "How fast the two bands of a v part above the sleeve."
+      },
+      "hardware": {
+        "enum": ["clasp", "ring"],
+        "default": "clasp",
+        "description": "clasp: sleeve, D-ring and lobster clasp through a round hole. ring: clamp and ring through a slot."
+      },
+      "metal": {
+        "enum": ["silver", "gold", "graphite"],
+        "default": "silver",
+        "description": "The sleeve's metal; the clasp is a darker cast of it."
+      },
+      "gravity": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 3,
+        "default": 1
+      },
+      "damping": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.5,
+        "description": "How quickly the swing settles."
+      },
+      "elasticity": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.5,
+        "description": "How much the strap stretches."
+      },
+      "breeze": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.5,
+        "description": "A slow drift of air; off for visitors who ask for less motion."
+      },
+      "interactive": {
+        "type": "boolean",
+        "default": true,
+        "description": "Cards can be dragged, thrown and tapped to flip."
+      },
+      "intro": {
+        "type": "boolean",
+        "default": true,
+        "description": "The cards swing in from the side when the badge opens."
+      },
+      "introFrom": {
+        "enum": ["left", "right"],
+        "default": "left"
+      },
+      "shadow": {
+        "type": "boolean",
+        "default": true,
+        "description": "A soft shadow behind the strap and cards."
+      },
+      "trigger": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "show": {
+            "enum": ["home", "all", "none"],
+            "default": "home",
+            "description": "Pages that show the small badge hanging from the top edge; #badge links open the badge on every page."
+          },
+          "side": {
+            "enum": ["right", "left"],
+            "default": "right"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Accessible name of the small badge; defaults to a localised “Open badge”."
+          },
+          "offsetTop": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 400,
+            "description": "Extra strap length in pixels, to hang the small badge lower."
+          }
+        },
+        "default": {}
+      },
+      "backdrop": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "$ref": "#/$defs/color",
+            "default": "#dbe6f7"
+          },
+          "opacity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.8
+          },
+          "blur": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 40,
+            "default": 14,
+            "description": "Blur of the page behind, in pixels."
+          }
+        },
+        "default": {}
+      },
+      "copy": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Replaces the built-in English or Chinese wording.",
+        "properties": {
+          "open": {
+            "type": "string",
+            "minLength": 1
+          },
+          "close": {
+            "type": "string",
+            "minLength": 1
+          },
+          "hint": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "$defs": {
+      "color": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      },
+      "image": {
+        "type": "string",
+        "anyOf": [
+          {
+            "pattern": "^/portfolio/(?!.*(?:\\.\\.|//|[\\\\%?#\\s:]))[a-zA-Z0-9_./-]+\\.(avif|gif|jpg|jpeg|png|webp|svg)$",
+            "type": "string"
+          },
+          {
+            "format": "https-url",
+            "type": "string"
+          }
+        ],
+        "tsType": "string"
+      }
+    },
+    "title": "BadgeOptions"
+  },
+  "networkOptions": {
+    "img-src": [
+      "cards.*.frontImage",
+      "cards.*.backImage",
+      "cards.*.logo",
+      "strapImage"
+    ]
+  },
+  "generateOptions": true
+}

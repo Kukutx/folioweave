@@ -1,6 +1,6 @@
 # Templates and the integration contract
 
-FolioWeave selects one template per build. The available templates are `classic`,
+FolioWeave selects one template per build. The bundled templates include `classic`,
 `refract-light`, and `refract-dark`.
 Profiles without a `template` field use `classic` and do not enable plugins.
 Template selection, source content and plugin settings are independent.
@@ -83,7 +83,9 @@ the root layout: that also pulls page-specific client code into other routes.
 | `BlogTag`   | `tag`, `context`                  | Filtered articles and tag navigation                               |
 
 `context` supplies published site identity, introduction, biography, projects,
-photography, writing settings, feature switches and this template's options.
+photography, writing settings, feature switches, the shop block (`store`), the
+closing quote (`closingQuote`, from `footerBook`; empty strings when absent) and
+this template's options.
 It does not expose another template's options. The first API retains the existing
 author schema, with one exception: `photography`, `footerBook` and `interlude`
 are optional in a profile. A template that renders one lists it under
@@ -138,6 +140,73 @@ owns GFM, stable heading anchors, image geometry and external-link behavior; its
 BlogPosting JSON-LD exactly once. Use `context.capabilities.writing` to omit a
 Writing link when the published site has no articles. The scaffold demonstrates
 these contracts, including feature-aware work sections.
+
+### Optional views, extra pages and stores
+
+A template may bring its own 404 page: add `"NotFound": "not-found.tsx"` to its
+`entries`. The view receives `{ context }` and renders inside the template's
+layout; templates without one use the core's page.
+
+A template may also add pages of its own, served at `/<path>`:
+
+```json
+"pages": [
+  { "id": "catalog", "entry": "catalog.tsx", "path": "products", "pathOption": "catalogPath" }
+]
+```
+
+The entry default-exports a component taking `{ context }` and exports
+`describe(context)` returning `{ title, description? }` for the page's metadata.
+`pathOption` names a string option in the template's own `optionsSchema`, so an
+author can give the page an address in their language (`"prodotti"`). Paths are
+lowercase single segments; `api`, `blogs`, `tools` and registered routes are
+reserved. Only the selected template's pages exist; they join the sitemap.
+
+`store` is an optional profile block for a shop or small business: its locations
+and opening hours, contact channels (phone, WhatsApp, email, other links), a
+catalog of product kinds and a services price list (see `portfolio.schema.json`).
+A store template lists `"requires": ["store"]`; other templates receive an empty
+block (`{ "locations": [] }`) and may ignore it. Beyond the essentials the block
+carries what a real shop's site needs: a location's photo with `imageAlt` and
+an `imageCredit` its source requires ("Foto: Google Maps"), a sentence per page
+in `notes.catalog` and `notes.services`, the catalog's and services' shorter
+`cardTitle` and `cardText` for the home page and an `imageLabel` on their
+pictures ("Immagine illustrativa"), and `hoursSummary`, one footer line when
+every location keeps the same hours. `seo.title` replaces the generated page
+title.
+
+`requires` may also name an inner block by its dotted path. Templates that show
+an email address list `"site.contact"`, so a shop's profile without one is
+accepted by templates that do not need it and refused, with the reason, by
+those that do.
+
+For the gallery, a manifest may set `"category"` (`personal`, the default, or
+`store`), `"preview"`, a `.webp`, `.png` or `.jpg` picture of the template in
+its directory (`npm run templates:previews` captures them from the demo
+profile), and `"translations"`, such as
+`{ "zh": { "description": "…" } }`, which Studio shows in that browser language.
+Plugin manifests accept the same `translations`. An optional `sample.json` beside the manifest holds data the
+template needs that an ordinary profile may lack (a store block, the template's
+own settings); previews use it to fill only what the profile does not have.
+
+## Preview and choose templates
+
+```sh
+npm run studio
+npm run preview:template -- <template-id> [--profile author|demo|file.json] [--fill file.json] [--merge file.json] [--port 3210]
+```
+
+`studio` opens a local page (127.0.0.1 only) that shows every template as a
+gallery card, previews any of them with the author's own content, switches the
+template and turns plugins on and off through the same validated profile update
+as the CLI. Restart `npm run dev` after a change.
+
+`preview:template` serves one template from a disposable sandbox in
+`.generated/template-preview-<id>/`. The sandbox copies the source and keeps it in
+step with your edits, owns its own generated files and published assets, and
+never writes the real profile; `--clean <id>` removes a sandbox left behind by an
+interrupted run. `--fill` adds only what the profile lacks; `--merge` overlays a
+file over it. Each preview is a full development server, so run one at a time.
 
 ## Styles and interaction
 

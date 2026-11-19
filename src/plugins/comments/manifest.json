@@ -2,6 +2,12 @@
   "id": "comments",
   "name": "Comments",
   "description": "Independent, customizable guest comments through Waline, with optional login and a Giscus adapter.",
+  "translations": {
+    "zh": {
+      "name": "评论",
+      "description": "访客无需登录即可评论，基于 Waline，可选登录，也可改用 Giscus。"
+    }
+  },
   "setupHelp": "For guest comments, set provider to waline and serverURL to your HTTPS Waline service. Giscus configuration remains supported. See docs/PLUGINS.md.",
   "version": "1.1.0",
   "generateOptions": true,

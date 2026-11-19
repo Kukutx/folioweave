@@ -1,6 +1,7 @@
 import { resolveChromePath } from "./chrome.mjs";
 import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
+import { qaTemplate } from "./template.mjs";
 const FONT_SENTINEL_ROUTES = Object.freeze(["/district", "/clipt"]);
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
@@ -8,7 +9,16 @@ const portfolio = JSON.parse(
   await fs.readFile(new URL("../portfolio.json", import.meta.url), "utf8"),
 );
 const demoRoutesEnabled = portfolio.features?.demoRoutes !== false;
-const routes = ["/", ...(demoRoutesEnabled ? FONT_SENTINEL_ROUTES : [])];
+const template = qaTemplate();
+const routes = [
+  "/",
+  ...(demoRoutesEnabled ? FONT_SENTINEL_ROUTES : []),
+  ...template.pages.map((page) => page.href),
+];
+// Classic's own families; any other template's web fonts are all of its faces.
+const webFamily = template.classic
+  ? /Google Sans|Inter|Newsreader|Instrument|Satoshi|Caveat/
+  : /./;
 const browser = await chromium.launch({
   executablePath: resolveChromePath(),
   headless: true,
@@ -23,9 +33,8 @@ async function scan(route, blockFonts = false) {
   });
 
   if (blockFonts) {
-    await context.route(/\/fonts\/.*\.woff2?(?:\?|$)/, (request) =>
-      request.abort(),
-    );
+    // Every web font, whether served from /fonts or bundled under /_next.
+    await context.route(/\.woff2?(?:\?|$)/, (request) => request.abort());
   }
 
   const page = await context.newPage();
@@ -34,7 +43,7 @@ async function scan(route, blockFonts = false) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1500);
 
-  const data = await page.evaluate(() => {
+  const data = await page.evaluate((families) => {
     const block = [...document.querySelectorAll("h3")]
       .find((element) => element.textContent?.includes("Blockbuster Tuesdays"))
       ?.parentElement?.querySelector("p");
@@ -53,11 +62,9 @@ async function scan(route, blockFonts = false) {
           weight: font.weight,
           style: font.style,
         }))
-        .filter((font) =>
-          /Google Sans|Inter|Newsreader|Instrument|Satoshi|Caveat/.test(font.family),
-        ),
+        .filter((font) => new RegExp(families).test(font.family)),
     };
-  });
+  }, webFamily.source);
 
   const item = { route, blocked: blockFonts, ...data };
   results.push(item);

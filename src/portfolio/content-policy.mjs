@@ -141,6 +141,7 @@ export function publishedPortfolio(config, sections = HOME_SECTIONS) {
       returnDescription: "",
       image: "",
     },
+    store: config.store ?? { locations: [] },
   };
 }
 
@@ -166,10 +167,9 @@ export function validatePublicationLinks(
     throw new Error(
       `site.origin must be a canonical origin without a path or trailing slash${canonical ? `, such as ${canonical}` : " such as https://example.com"}; received ${origin}`,
     );
-  if (!isEmailAddress(config.site.contact.email))
-    throw new Error(
-      `site.contact.email is not an email address: ${config.site.contact.email}`,
-    );
+  const email = config.site.contact?.email;
+  if (email !== undefined && !isEmailAddress(email))
+    throw new Error(`site.contact.email is not an email address: ${email}`);
   const ids = config.projects.map((project) => project.id);
   if (new Set(ids).size !== ids.length)
     throw new Error("Project ids must be unique.");

@@ -4,6 +4,23 @@
   "description": "Single-source content and personalization configuration for FolioWeave.",
   "type": "object",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "The resume's files are required while the resume is shown.",
+      "if": {
+        "required": ["features"],
+        "properties": {
+          "features": {
+            "required": ["resume"],
+            "properties": { "resume": { "const": true } }
+          }
+        }
+      },
+      "then": {
+        "properties": { "site": { "required": ["resume"] } }
+      }
+    }
+  ],
   "required": [
     "site",
     "features",
@@ -14,6 +31,12 @@
     "seo"
   ],
   "$defs": {
+    "hostingOrigin": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^/]+$",
+      "description": "The site's address on this host, used for canonical links, the sitemap and social cards in builds for it; site.origin when omitted."
+    },
     "localPath": {
       "type": "string",
       "pattern": "^/(?!/)(?!.*//)[^\\\\\\s?#%:]*$"
@@ -393,6 +416,24 @@
           "pattern": "\\.(avif|gif|jpe?g|png|webp|svg|ico)$"
         }
       ]
+    },
+    "storeLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "href"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "href": {
+          "type": "string",
+          "pattern": "^(https://|mailto:|tel:|/(?!/))[^\\s\\\\]*$"
+        }
+      }
     }
   },
   "properties": {
@@ -407,11 +448,9 @@
         "origin",
         "themeColor",
         "copyrightYear",
-        "contact",
         "socialLinks",
         "navigation",
         "location",
-        "resume",
         "assets"
       ],
       "properties": {
@@ -472,6 +511,7 @@
         },
         "contact": {
           "type": "object",
+          "description": "An email address for templates that show one; they list site.contact under requires. A shop with no email leaves it out.",
           "additionalProperties": false,
           "required": [
             "email",
@@ -905,6 +945,12 @@
         "caseStudiesDescription"
       ],
       "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "The home page's title in search results and shared links. Built from the name and role when omitted."
+        },
         "description": {
           "type": "string",
           "minLength": 1,
@@ -973,6 +1019,345 @@
         }
       }
     },
+    "store": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locations"
+      ],
+      "description": "A shop or small business: its locations, how to reach it, what it sells and its service prices. Optional; store templates require it and personal templates ignore it.",
+      "properties": {
+        "tagline": {
+          "type": "string",
+          "description": "One line under the brand name, such as what the shop is."
+        },
+        "hoursSummary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The hours on one line for the footer when every location keeps the same ones, such as Lun–sab 09:00–13:00 e 14:30–19:30, domenica chiuso. Built from the hours when omitted."
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "phone": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$",
+              "description": "Main phone for calls."
+            },
+            "displayPhone": {
+              "type": "string",
+              "description": "The phone as visitors read it, such as 300 123 4567."
+            },
+            "whatsapp": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$",
+              "description": "WhatsApp number; visitors open a chat with it, optionally with a message already written."
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/storeLink"
+              },
+              "description": "Other channels such as TikTok, Instagram or a map."
+            }
+          }
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "city"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "tagline": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string",
+                "description": "One sentence about this location for pages that list every location, such as the catalog."
+              },
+              "notes": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "A sentence for one page alone, in place of note there: what this location offers for the catalog, or for the services.",
+                "properties": {
+                  "catalog": { "type": "string", "minLength": 1 },
+                  "services": { "type": "string", "minLength": 1 }
+                }
+              },
+              "street": {
+                "type": "string",
+                "description": "Street and number. Leave empty while unknown: pages then invite visitors to ask, and no map link is made."
+              },
+              "postalCode": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1
+              },
+              "region": {
+                "type": "string",
+                "description": "Province, state or region code."
+              },
+              "country": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$",
+                "description": "ISO 3166-1 alpha-2 code, such as IT."
+              },
+              "hours": {
+                "type": "string",
+                "description": "Opening hours as visitors read them."
+              },
+              "openingHours": {
+                "type": "array",
+                "description": "Opening hours in a form machines can read: lets a template say whether the shop is open now and publish them in structured data. Times use the site time zone (site.location.timeZone); several entries per day describe a lunch break.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "days",
+                    "opens",
+                    "closes"
+                  ],
+                  "properties": {
+                    "days": {
+                      "type": "array",
+                      "minItems": 1,
+                      "uniqueItems": true,
+                      "items": {
+                        "enum": [
+                          "mo",
+                          "tu",
+                          "we",
+                          "th",
+                          "fr",
+                          "sa",
+                          "su"
+                        ]
+                      }
+                    },
+                    "opens": {
+                      "type": "string",
+                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                    },
+                    "closes": {
+                      "type": "string",
+                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                    }
+                  }
+                }
+              },
+              "phone": {
+                "type": "string",
+                "pattern": "^\\+[1-9][0-9]{6,14}$",
+                "description": "This location's own phone, if it publishes one."
+              },
+              "primary": {
+                "type": "boolean",
+                "description": "The location visitors contact first."
+              },
+              "highlights": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": "What a visitor finds here, in plain words."
+              },
+              "image": {
+                "$ref": "#/$defs/localImage"
+              },
+              "imageAlt": {
+                "type": "string",
+                "description": "What the photo shows, for screen readers."
+              },
+              "imageCredit": {
+                "type": "string",
+                "description": "Credit shown on the photo when its source requires one, such as Foto: Google Maps."
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/storeLink"
+                }
+              },
+              "mapName": {
+                "type": "string",
+                "description": "The name this location goes by on maps, when it differs from its name here."
+              }
+            }
+          }
+        },
+        "catalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "categories"
+          ],
+          "description": "Kinds of products, without prices or stock. A store template may give it its own page.",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "intro": {
+              "type": "string"
+            },
+            "image": {
+              "$ref": "#/$defs/localImage"
+            },
+            "imageAlt": {
+              "type": "string"
+            },
+            "cardTitle": {
+              "type": "string",
+              "description": "Shorter title for this page's card on the home page; the title when omitted."
+            },
+            "cardText": {
+              "type": "string",
+              "description": "Shorter text for this page's card on the home page; the intro when omitted."
+            },
+            "imageLabel": {
+              "type": "string",
+              "description": "A short label shown on the picture, such as that it is illustrative."
+            },
+            "note": {
+              "type": "string"
+            },
+            "categories": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "$ref": "#/$defs/localImage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "services": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "groups"
+          ],
+          "description": "Services with reference prices, such as a tailoring price list. A store template may give it its own page.",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "intro": {
+              "type": "string"
+            },
+            "image": {
+              "$ref": "#/$defs/localImage"
+            },
+            "imageAlt": {
+              "type": "string"
+            },
+            "cardTitle": {
+              "type": "string",
+              "description": "Shorter title for this page's card on the home page; the title when omitted."
+            },
+            "cardText": {
+              "type": "string",
+              "description": "Shorter text for this page's card on the home page; the intro when omitted."
+            },
+            "imageLabel": {
+              "type": "string",
+              "description": "A short label shown on the picture, such as that it is illustrative."
+            },
+            "note": {
+              "type": "string",
+              "description": "Shown with the prices, such as that they are indicative."
+            },
+            "groups": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "name",
+                  "items"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name",
+                        "price"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "price": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "note": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "template": {
       "type": "object",
       "additionalProperties": false,
@@ -989,6 +1374,100 @@
           "additionalProperties": {
             "type": "object",
             "additionalProperties": true
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Where the site is hosted. `provider` is the default target of `npm run deploy`; each provider keeps its own settings side by side, so switching is one word. See docs/DEPLOYMENT.md.",
+      "required": ["provider", "providers"],
+      "properties": {
+        "provider": {
+          "enum": ["vercel", "cloudflare", "firebase"]
+        },
+        "providers": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "vercel": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "project": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9._-]*$"
+                },
+                "origin": {
+                  "$ref": "#/$defs/hostingOrigin"
+                }
+              }
+            },
+            "cloudflare": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["accountId", "worker"],
+              "properties": {
+                "accountId": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{32}$"
+                },
+                "worker": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]{0,62}$",
+                  "description": "The Worker's name; it serves at https://<worker>.<account subdomain>.workers.dev."
+                },
+                "origin": {
+                  "$ref": "#/$defs/hostingOrigin"
+                }
+              }
+            },
+            "firebase": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["projectId"],
+              "properties": {
+                "projectId": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+                },
+                "site": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$",
+                  "description": "Hosting site; the project's default site when omitted."
+                },
+                "origin": {
+                  "$ref": "#/$defs/hostingOrigin"
+                }
+              }
+            }
+          }
+        },
+        "redirects": {
+          "type": "array",
+          "description": "Old addresses that move permanently to new ones on every host, so links and search results that still point at them keep working.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^/[^/\\\\\\s?#%:*]+(?:/[^/\\\\\\s?#%:*]+)*$",
+                "description": "The old path, without a trailing slash; not the home page."
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^/(?!/)[^\\\\\\s?%:*]*$",
+                "description": "Where it now lives on this site; may end in a #section."
+              },
+              "subpaths": {
+                "type": "boolean",
+                "description": "Also move every address under `from` to `to`."
+              }
+            }
           }
         }
       }

@@ -5,6 +5,7 @@ import standaloneCode from "ajv/dist/standalone/index.js";
 import { publishedPortfolio } from "../src/portfolio/content-policy.mjs";
 import { compile } from "json-schema-to-typescript";
 import { resolveExtensions } from "../src/core/extensions.mjs";
+import { profileRedirects } from "../src/config/redirects.mjs";
 import { createProjectContext } from "./project-context.mjs";
 
 const projectRoot = path.resolve(
@@ -26,6 +27,12 @@ export async function prepareContract(
     "src",
     "portfolio",
     "config.generated.ts",
+  );
+  const redirectsPath = path.join(
+    root,
+    "src",
+    "portfolio",
+    "redirects.generated.json",
   );
   const validatorPath = path.join(
     root,
@@ -63,6 +70,11 @@ export async function prepareContract(
   const outputs = [
     [typePath, generatedTypes],
     [configOutputPath, generatedConfig],
+    // next.config.ts reads the moved addresses from here (src/config/redirects.mjs).
+    [
+      redirectsPath,
+      `${JSON.stringify(profileRedirects(portfolio), null, 2)}\n`,
+    ],
     [validatorPath, generatedValidator],
     [declarationPath, generatedDeclaration],
   ];

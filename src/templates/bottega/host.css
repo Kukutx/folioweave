@@ -1,0 +1,78 @@
+/* Document-level settings for Bottega only; everything else lives in
+   bottega.module.css. Plugin roots sit outside the template's shell and read
+   the --fw-* tokens from here. */
+
+/* Fallbacks sized like Inter and Cormorant Garamond, so text keeps its place
+   while the fonts load (see fonts.ts). The overrides are the ones next/font
+   computes for these files against Arial; the sources are Arial and the
+   fonts that share its metrics. */
+@font-face {
+  font-family: "Bottega Sans Fallback";
+  src:
+    local("Arial"), local("ArialMT"), local("Liberation Sans"),
+    local("LiberationSans"), local("Arimo"), local("Helvetica");
+  ascent-override: 89.79%;
+  descent-override: 22.36%;
+  line-gap-override: 0%;
+  size-adjust: 107.89%;
+}
+@font-face {
+  font-family: "Bottega Serif Fallback";
+  src:
+    local("Arial"), local("ArialMT"), local("Liberation Sans"),
+    local("LiberationSans"), local("Arimo"), local("Helvetica");
+  ascent-override: 105.47%;
+  descent-override: 32.76%;
+  line-gap-override: 0%;
+  size-adjust: 87.6%;
+}
+html[data-template="bottega"] {
+  --fw-font: "BottegaSans", system-ui, sans-serif;
+  --fw-surface: #ffffff;
+  --fw-text: #050505;
+  --fw-border: rgb(0 0 0 / 0.15);
+  --fw-accent: #050505;
+  --fw-on-accent: #ffffff;
+  --fw-radius: 0px;
+  background: #ffffff;
+  color-scheme: light;
+  scroll-behavior: smooth;
+  /* Thin monochrome scrollbar that is still easy to grab. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(0 0 0 / 0.25) transparent;
+}
+html[data-template="bottega"] body {
+  margin: 0;
+  overflow-x: hidden;
+}
+html[data-template="bottega"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html[data-template="bottega"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+html[data-template="bottega"] ::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.2);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+html[data-template="bottega"] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(0 0 0 / 0.35);
+}
+/* Floating plugins clear the phone contact bar (4rem plus the safe area). */
+@media (max-width: 47.99rem) {
+  html[data-template="bottega"]:has([data-bottega-bar]) {
+    --fw-floating-right: 16px;
+    --fw-floating-bottom-right: calc(4rem + 16px + env(safe-area-inset-bottom));
+    --fw-floating-bottom-center: calc(
+      4rem + 16px + env(safe-area-inset-bottom)
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-template="bottega"] {
+    scroll-behavior: auto;
+  }
+}

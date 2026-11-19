@@ -1,0 +1,256 @@
+/* The pink printer: body, screen, progress and output slot. */
+
+.printer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  max-width: 380px;
+  padding: 28px 24px 36px;
+  background: var(--ec-white);
+  border: 6px solid var(--ec-pink);
+  border-radius: 60px;
+  box-shadow:
+    0 15px 0 var(--ec-pink-edge),
+    0 30px 40px rgba(0, 0, 0, 0.15),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.slot {
+  position: absolute;
+  bottom: -15px;
+  left: 20%;
+  width: 60%;
+  height: 12px;
+  border-radius: 8px;
+  background: var(--ec-slot);
+  box-shadow: 0 4px 0 var(--ec-slot-edge);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+/* ---------- Screen ---------- */
+
+.screen {
+  --screen: var(--ec-cut-screen);
+  --screen-line: var(--ec-cut-line);
+  --screen-text: var(--ec-cut-text);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 180px;
+  padding: 16px;
+  border: 4px dashed var(--screen-line);
+  border-radius: 30px;
+  background: var(--screen);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  overflow: hidden;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.screen[data-mode="ai"] {
+  --screen: var(--ec-ai-screen);
+  --screen-line: var(--ec-ai-line);
+  --screen-text: var(--ec-ai-text);
+}
+
+.drop {
+  cursor: pointer;
+}
+
+.drop:hover,
+.drop[data-over] {
+  background: var(--ec-screen-hover);
+  border-color: var(--ec-screen-hover-line);
+}
+
+.drop:focus-visible {
+  outline-offset: 4px;
+}
+
+.screenIcon {
+  color: var(--screen-text);
+  opacity: 0.6;
+}
+
+.screenTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--screen-text);
+}
+
+.screenHint {
+  max-width: 260px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--ec-muted);
+}
+
+/* The key form fills the screen with ordinary text. */
+.screen.form {
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 10px;
+  text-align: left;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+}
+
+.formRow .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.formRow button {
+  flex: none;
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+/* ---------- Reference image ---------- */
+
+.reference {
+  padding: 8px;
+  cursor: default;
+}
+
+.referenceImage {
+  width: 100%;
+  height: 156px;
+  object-fit: contain;
+  border-radius: 18px;
+}
+
+.remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ec-white);
+  border: 2px solid var(--ec-pink);
+  color: var(--ec-text);
+}
+
+.remove:hover {
+  background: var(--ec-pink-soft);
+}
+
+/* ---------- Controls under the screen ---------- */
+
+.controls {
+  display: flex;
+  justify-content: center;
+}
+
+.controls > button {
+  min-width: 180px;
+}
+
+.keyLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 6px;
+  margin-top: -4px;
+  font-size: 0.8rem;
+  color: var(--ec-muted);
+  text-align: center;
+}
+
+.keyLine > span {
+  flex-basis: 100%;
+}
+
+/* ---------- Progress ---------- */
+
+.status {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--screen-text);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  max-width: 220px;
+  height: 12px;
+  border: 2px solid var(--ec-pink-200);
+  border-radius: 999px;
+  background: var(--ec-white);
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--ec-pink-300);
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+  transition: transform 0.25s ease-out;
+}
+
+.bar[data-indeterminate] {
+  width: 35%;
+  transform: none;
+  transition: none;
+  animation: sweep 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes sweep {
+  from {
+    translate: 0;
+  }
+
+  to {
+    translate: calc(100% / 0.35 - 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar[data-indeterminate] {
+    width: 100%;
+    opacity: 0.45;
+    animation: none;
+  }
+
+  .bar {
+    transition: none;
+  }
+}
+
+/* Narrow phones: the same printer with less inner padding. */
+@media (max-width: 400px) {
+  .printer {
+    padding: 36px 18px 32px;
+    border-radius: 48px;
+  }
+
+  .screen {
+    border-radius: 26px;
+  }
+}
