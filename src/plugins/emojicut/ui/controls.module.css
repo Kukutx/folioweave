@@ -1,0 +1,183 @@
+/* Buttons, fields and the mode switch, shared by the printer, tray and dialogs. */
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    background-color 0.15s;
+}
+
+.primary {
+  background: var(--ec-button);
+  color: var(--ec-white);
+  box-shadow: 0 4px 0 var(--ec-button-edge);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--ec-button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--ec-button-edge);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--ec-button-edge);
+}
+
+.secondary {
+  background: var(--ec-white);
+  color: var(--ec-text);
+  border: 2px solid var(--ec-pink);
+  box-shadow: 0 4px 0 var(--ec-pink-edge);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--ec-pink-soft);
+}
+
+.secondary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--ec-pink-edge);
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* A quiet action that reads as text. */
+.text {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ec-text);
+  text-decoration: underline;
+  text-decoration-color: var(--ec-pink-dark);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.text:hover {
+  background: var(--ec-pink-soft);
+}
+
+.link {
+  color: var(--ec-pink-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Mode switch ---------- */
+
+.modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  background: var(--ec-pink-soft);
+  border: 2px solid var(--ec-pink);
+  border-radius: 999px;
+}
+
+.mode {
+  min-height: 40px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ec-text);
+  transition: background-color 0.15s;
+}
+
+.mode:hover:not([aria-selected="true"]):not(:disabled) {
+  background: var(--ec-white);
+}
+
+.mode[aria-selected="true"] {
+  background: var(--ec-pink);
+  font-weight: 700;
+  box-shadow: 0 2px 0 var(--ec-pink-edge);
+}
+
+.mode:disabled:not([aria-selected="true"]) {
+  opacity: 0.5;
+}
+
+/* ---------- Fields ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ec-text);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 2px solid var(--ec-lavender);
+  border-radius: 16px;
+  background: var(--ec-white);
+  font-size: 0.9rem;
+  color: var(--ec-ink);
+  transition: border-color 0.2s;
+}
+
+.input:focus,
+.input:focus-visible {
+  outline: none;
+  border-color: var(--ec-pink-400);
+}
+
+textarea.input {
+  resize: none;
+  background: var(--ec-pink-soft);
+  line-height: 1.5;
+}
+
+/* ---------- Messages ---------- */
+
+.error {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--ec-error-bg);
+  color: var(--ec-error);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.note {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ec-muted);
+}

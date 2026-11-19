@@ -353,12 +353,30 @@ test("the site origin and contact email are canonical before they are published"
     () => validatePublicationLinks(messy),
     /such as https:\/\/example\.com; received https:\/\/Example\.com:443\/me/,
   );
+  // A profile may have no email address (a shop); one it has must be valid.
   const config = structuredClone(personal);
-  config.site.contact.email = "me at example";
+  config.site.contact = {
+    helloSubject: "Hello",
+    hiSubject: "Hi",
+    ...config.site.contact,
+    email: "me at example",
+  };
   assert.throws(
     () => validatePublicationLinks(config),
     /site\.contact\.email is not an email address/,
   );
+  // Leaving the contact out adds no error of its own, whatever else the
+  // active profile links to.
+  const outcome = (profile) => {
+    try {
+      validatePublicationLinks(profile);
+      return null;
+    } catch (error) {
+      return error.message;
+    }
+  };
+  delete config.site.contact;
+  assert.equal(outcome(config), outcome(structuredClone(personal)));
 });
 
 test("a hero brand links only to an enabled project", () => {
@@ -393,7 +411,15 @@ test("a hero brand links only to an enabled project", () => {
 
 test("a missing referenced asset names the file and how it is produced", async () => {
   const config = structuredClone(personal);
-  config.site.resume.pdf = "/portfolio/resume/not-built-yet.pdf";
+  // The resume is checked while it is shown; a profile without one (a shop)
+  // shows it here with the social preview as its picture.
+  config.features.resume = true;
+  config.site.resume = {
+    image: config.site.assets.socialPreview,
+    downloadName: "Resume.pdf",
+    ...config.site.resume,
+    pdf: "/portfolio/resume/not-built-yet.pdf",
+  };
   await assert.rejects(prepareContent(root, config), {
     code: "ENOENT",
     message:

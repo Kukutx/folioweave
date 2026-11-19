@@ -11,6 +11,8 @@ import {
   resolveExtensions,
   extensionOutputs,
   extensionSources,
+  pluginPageRoutes,
+  templatePages,
 } from "../src/core/extensions.mjs";
 import {
   collectAssets,
@@ -143,7 +145,7 @@ test("invalid ids, incompatible slots, options and API versions fail before publ
     /options/,
   );
   const catalog = loadCatalog();
-  catalog.templates[0].slots = [];
+  catalog.templates.find((template) => template.id === "classic").slots = [];
   assert.throws(
     () => resolveExtensions({ ...demo, plugins: { comments } }, catalog),
     /not supported/,
@@ -182,6 +184,223 @@ test("enabled comments have scoped network policy and a stable article slot", ()
   assert.match(code, /function PluginSlot/);
   assert.match(code, /@\/plugins\/comments\/comments/);
   assert.doesNotMatch(code, /@\/plugins\/music/);
+});
+
+test("plugin pages are generated only for enabled plugins and menus never import page code", () => {
+  const none = extensionOutputs(resolveExtensions(demo));
+  const pagesOf = (outputs, name) =>
+    outputs.find((item) => item.target.endsWith(name)).contents;
+  assert.match(
+    pagesOf(none, "plugin-pages.generated.tsx"),
+    /pluginPages: PluginPageEntry\[\] = \[\];/,
+  );
+  assert.doesNotMatch(
+    pagesOf(none, "plugin-page-links.generated.tsx"),
+    /@\/plugins/,
+  );
+  const profile = {
+    ...demo,
+    plugins: { emojicut: { enabled: true }, launcher: { enabled: true } },
+  };
+  const resolved = resolveExtensions(profile);
+  assert.deepEqual(pluginPageRoutes(resolved), ["/tools/emojicut"]);
+  // A page-only plugin occupies no slot.
+  assert.equal(
+    resolved.plugins.find((plugin) => plugin.id === "emojicut").slot,
+    null,
+  );
+  const outputs = extensionOutputs(resolved);
+  const pages = pagesOf(outputs, "plugin-pages.generated.tsx");
+  assert.match(pages, /import Page0 from "@\/plugins\/emojicut\/page";/);
+  assert.match(pages, /href: "\/tools\/emojicut"/);
+  const links = pagesOf(outputs, "plugin-page-links.generated.tsx");
+  assert.match(links, /import Icon0 from "@\/plugins\/emojicut\/icon";/);
+  assert.doesNotMatch(links, /emojicut\/page/);
+  for (const slot of ["site-footer", "article-after"])
+    assert.doesNotMatch(
+      pagesOf(outputs, `plugins-${slot}.generated.tsx`),
+      /emojicut/,
+    );
+  assert.throws(
+    () =>
+      resolveExtensions({
+        ...demo,
+        plugins: { emojicut: { enabled: true, slot: "site.floating" } },
+      }),
+    /slot/,
+  );
+});
+
+test("a template may add a 404 view and pages; the core 404 stands in otherwise", async (t) => {
+  const outputsOf = (resolved, name) =>
+    extensionOutputs(resolved).find((item) => item.target.endsWith(name))
+      .contents;
+  const classic = resolveExtensions(demo);
+  assert.match(
+    outputsOf(classic, "template-not-found.generated.ts"),
+    /@\/components\/system\/not-found-view/,
+  );
+  assert.match(
+    outputsOf(classic, "template-pages.generated.tsx"),
+    /templatePages: TemplatePageEntry\[\] = \[\];/,
+  );
+
+  const sandbox = await fs.mkdtemp(path.join(qaTempRoot, "template-extras-"));
+  t.after(() => fs.rm(sandbox, { recursive: true, force: true }));
+  const directory = path.join(sandbox, "src/templates/shop");
+  await fs.cp(path.join(root, "src/templates/classic"), directory, {
+    recursive: true,
+  });
+  for (const file of ["not-found.tsx", "catalog.tsx", "preview.webp"])
+    await fs.writeFile(path.join(directory, file), "");
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(directory, "manifest.json"), "utf8"),
+  );
+  const write = (changes) =>
+    fs.writeFile(
+      path.join(directory, "manifest.json"),
+      JSON.stringify({ ...manifest, id: "shop", ...changes }),
+    );
+  const extras = {
+    category: "store",
+    preview: "preview.webp",
+    requires: [],
+    entries: { ...manifest.entries, NotFound: "not-found.tsx" },
+    pages: [
+      {
+        id: "catalog",
+        entry: "catalog.tsx",
+        path: "products",
+        pathOption: "catalogPath",
+      },
+    ],
+    optionsSchema: {
+      type: "object",
+      additionalProperties: false,
+      properties: { catalogPath: { type: "string" } },
+    },
+  };
+  await write(extras);
+  const catalog = loadCatalog(sandbox);
+  const profile = { ...demo, template: { id: "shop" } };
+  const shop = resolveExtensions(profile, catalog);
+  assert.deepEqual(
+    templatePages(shop).map((page) => page.href),
+    ["/products"],
+  );
+  assert.match(
+    outputsOf(shop, "template-not-found.generated.ts"),
+    /@\/templates\/shop\/not-found/,
+  );
+  assert.match(
+    outputsOf(shop, "template-pages.generated.tsx"),
+    /import Page0, \{ describe as describe0 \} from "@\/templates\/shop\/catalog";/,
+  );
+  // An author renames the page through the option the manifest names.
+  const renamed = resolveExtensions(
+    {
+      ...demo,
+      template: { id: "shop", settings: { shop: { catalogPath: "prodotti" } } },
+    },
+    catalog,
+  );
+  assert.deepEqual(
+    templatePages(renamed).map((page) => page.href),
+    ["/prodotti"],
+  );
+  for (const bad of ["blogs", "Bad Path"])
+    assert.throws(
+      () =>
+        templatePages(
+          resolveExtensions(
+            {
+              ...demo,
+              template: {
+                id: "shop",
+                settings: { shop: { catalogPath: bad } },
+              },
+            },
+            catalog,
+          ),
+        ),
+      /cannot use the path/,
+    );
+  for (const broken of [
+    { category: "museum" },
+    { preview: "missing.webp" },
+    { translations: { zh: { title: "名字" } } },
+    { translations: { chinese: { name: "名字" } } },
+    { entries: { ...extras.entries, NotFound: "missing.tsx" } },
+    { entries: { ...extras.entries, Sidebar: "catalog.tsx" } },
+    { pages: [{ id: "catalog", entry: "catalog.tsx", path: "tools" }] },
+    { pages: [{ id: "catalog", entry: "missing.tsx", path: "products" }] },
+  ]) {
+    await write({ ...extras, ...broken });
+    assert.throws(() => loadCatalog(sandbox), /shop:/, JSON.stringify(broken));
+  }
+});
+
+test("store templates require the store block; others publish an empty one", () => {
+  assert.deepEqual(publishedPortfolio(demo).store, { locations: [] });
+  const store = {
+    locations: [{ id: "main", name: "Shop", city: "Milano" }],
+  };
+  assert.deepEqual(publishedPortfolio({ ...demo, store }).store, store);
+});
+
+test("a plugin page must name an existing entry and a lowercase path, and paths are unique", async (t) => {
+  const sandbox = await fs.mkdtemp(path.join(qaTempRoot, "plugin-page-"));
+  t.after(() => fs.rm(sandbox, { recursive: true, force: true }));
+  await fs.cp(
+    path.join(root, "src/templates/classic"),
+    path.join(sandbox, "src/templates/classic"),
+    { recursive: true },
+  );
+  const plugin = async (id, page) => {
+    const directory = path.join(sandbox, "src/plugins", id);
+    await fs.mkdir(directory, { recursive: true });
+    await fs.writeFile(path.join(directory, "page.tsx"), "export default 0;");
+    await fs.writeFile(
+      path.join(directory, "manifest.json"),
+      JSON.stringify({
+        id,
+        name: id,
+        version: "1.0.0",
+        apiVersion: 1,
+        slots: [],
+        page,
+        optionsSchema: { type: "object", additionalProperties: false },
+      }),
+    );
+  };
+  await plugin("first", { entry: "page.tsx", path: "shared", title: "First" });
+  await plugin("second", { entry: "page.tsx", path: "shared", title: "Two" });
+  const catalog = loadCatalog(sandbox);
+  assert.throws(
+    () =>
+      resolveExtensions(
+        {
+          ...demo,
+          plugins: { first: { enabled: true }, second: { enabled: true } },
+        },
+        catalog,
+      ),
+    /already used by first/,
+  );
+  for (const page of [
+    { entry: "missing.tsx", path: "ok", title: "Missing" },
+    { entry: "page.tsx", path: "Upper", title: "Upper" },
+    { entry: "page.tsx", path: "ok", title: " " },
+    { entry: "page.tsx", path: "ok", title: "Extra", script: "x" },
+    undefined,
+  ]) {
+    await plugin("second", page);
+    assert.throws(
+      () => loadCatalog(sandbox),
+      /page|slot/,
+      JSON.stringify(page),
+    );
+  }
 });
 
 test("audio follows the same authored and published resource boundary", async () => {

@@ -1,0 +1,7 @@
+Sample assets for the Bottega template preview (src/templates/bottega/sample.json).
+
+assortment.jpg - illustrative composite of four Unsplash photos (Unsplash License):
+  clothing photo-1573612664822-d7d347da7b80, kitchen photo-1556911220-bff31c812dba,
+  stationery photo-1513542789411-b6a5d4f31634, toys photo-1566576912321-d58ddd7a6088.
+  It does not show any real shop or its stock.
+services.svg - neutral placeholder drawing made for this template.

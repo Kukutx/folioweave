@@ -3,12 +3,15 @@ import path from "node:path";
 import ts from "typescript";
 
 // These routes own their publication rules (home, blog index, generated
-// posts, and the tag pages derived from them).
+// posts, the tag pages derived from them, the pages of enabled plugins and
+// the extra pages of the selected template).
 const contentRoutes = new Set([
   "/",
   "/blogs",
   "/blogs/[slug]",
   "/blogs/tag/[tag]",
+  "/tools/[tool]",
+  "/[page]",
 ]);
 
 export function pageRoute(filename) {

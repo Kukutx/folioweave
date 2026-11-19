@@ -1,0 +1,130 @@
+/* The open badge: a native modal dialog over the whole viewport. The dialog
+   itself is the dimmed, blurred backdrop; the lanyard fills it. */
+.dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  color: var(--badge-ink);
+  background: var(--badge-backdrop);
+  -webkit-backdrop-filter: blur(var(--badge-blur)) saturate(1.08);
+  backdrop-filter: blur(var(--badge-blur)) saturate(1.08);
+  overscroll-behavior: contain;
+  font-family: var(--fw-font, system-ui, sans-serif);
+  animation: badge-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.dialog::backdrop {
+  background: transparent;
+}
+.dialog:focus {
+  outline: none;
+}
+.dialog[data-leaving] {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+@keyframes badge-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  outline: none;
+}
+.stage:focus-visible[data-keys] {
+  outline: 3px solid var(--badge-ink);
+  outline-offset: -6px;
+}
+
+.close {
+  position: absolute;
+  z-index: 1;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--badge-ink);
+  background: color-mix(in srgb, var(--badge-surface) 72%, transparent);
+  box-shadow:
+    0 1px 2px rgb(20 30 60 / 0.12),
+    inset 0 0 0 1px color-mix(in srgb, var(--badge-ink) 10%, transparent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.close:hover {
+  background: color-mix(in srgb, var(--badge-surface) 92%, transparent);
+}
+.close:active {
+  transform: scale(0.94);
+}
+.close:focus-visible {
+  outline: 3px solid var(--badge-ink);
+  outline-offset: 2px;
+}
+.close svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.hint {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  translate: -50% 0;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-align: center;
+  color: color-mix(in srgb, var(--badge-ink) 64%, transparent);
+  pointer-events: none;
+  animation: badge-hint 600ms 900ms ease both;
+}
+@keyframes badge-hint {
+  from {
+    opacity: 0;
+    translate: -50% 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    animation-duration: 160ms;
+  }
+  .hint {
+    animation: none;
+  }
+  .close {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .close {
+    border: 1px solid ButtonText;
+  }
+}

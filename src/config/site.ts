@@ -1,1 +1,1 @@
-export { mailto, siteConfig, siteCopyright } from "@/portfolio";
+export { contactOf, mailto, siteConfig, siteCopyright } from "@/portfolio";

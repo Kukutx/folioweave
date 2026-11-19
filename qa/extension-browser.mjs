@@ -134,6 +134,8 @@ try {
   );
   const profilePath = path.join(sandbox, "portfolio.json");
   const profile = JSON.parse(await fs.readFile(profilePath, "utf8"));
+  // The fixture switches back to the profile's own template at the end.
+  const ownTemplate = profile.template?.id ?? "classic";
   profile.features.demoRoutes = false;
   profile.site.identity.locale = "zh-Hant-HK";
   profile.features.work = false;
@@ -686,7 +688,7 @@ try {
   await run(cli, ["plugin", "disable", "music"]);
   await run(cli, ["plugin", "disable", "comments"]);
   await run(cli, ["plugin", "disable", "fixture-failure"]);
-  await run(cli, ["template", "use", "classic"]);
+  await run(cli, ["template", "use", ownTemplate]);
   const after = JSON.parse(await fs.readFile(profilePath, "utf8"));
   assert.deepEqual(after.site, before.site);
   assert.deepEqual(after.projects, before.projects);
@@ -707,7 +709,9 @@ try {
     false,
   );
   await run(cli, ["doctor", "--json"]);
-  console.log("Building Classic again with both plugins disabled…");
+  console.log(
+    `Building the profile's own template (${ownTemplate}) again with both plugins disabled…`,
+  );
   await build();
   base = await start();
   const disabledPage = await browser.newPage();
@@ -721,8 +725,33 @@ try {
   assert.equal(await disabledPage.locator("[data-plugin]").count(), 0);
   assert.equal(
     await disabledPage.locator("html").getAttribute("data-template"),
-    "classic",
+    ownTemplate,
   );
+  report.push(
+    "CLI switching preserves content/settings; disabling removes UI, published audio and external CSP sources.",
+  );
+  // Classic's article page, blog tools and photography reveal; another
+  // template renders its own views, which its own suites check.
+  if (ownTemplate === "classic") await checkClassicViews(disabledPage, base);
+  else
+    console.log(
+      `SKIP Classic article, blog tools and photography checks: the profile uses ${ownTemplate}.`,
+    );
+  console.log(report.join("\n"));
+} finally {
+  await browser?.close();
+  stop();
+  // Check the resolved path before recursively removing only this owned sandbox.
+  if (
+    path.dirname(sandbox) !== path.join(root, ".generated") ||
+    !path.basename(sandbox).startsWith("extension-qa-")
+  )
+    throw new Error("Unsafe sandbox cleanup");
+  await fs.rm(sandbox, { recursive: true, force: true });
+}
+
+/** A direct article visit, the blog tools and the photography reveal. */
+async function checkClassicViews(disabledPage, base) {
   await disabledPage.goto(base + "/blogs/first", { waitUntil: "networkidle" });
   const cover = disabledPage.locator(".blog-post-hero-image");
   await cover.evaluate((image) => image.decode());
@@ -749,20 +778,6 @@ try {
       ),
     1,
   );
-  report.push(
-    "CLI switching preserves content/settings; disabling removes UI, published audio and external CSP sources.",
-  );
   await checkBlogTools(disabledPage, base);
   await checkPhotographyReveal(disabledPage, base);
-  console.log(report.join("\n"));
-} finally {
-  await browser?.close();
-  stop();
-  // Check the resolved path before recursively removing only this owned sandbox.
-  if (
-    path.dirname(sandbox) !== path.join(root, ".generated") ||
-    !path.basename(sandbox).startsWith("extension-qa-")
-  )
-    throw new Error("Unsafe sandbox cleanup");
-  await fs.rm(sandbox, { recursive: true, force: true });
 }

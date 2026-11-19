@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { nextRedirects } from "./src/config/redirects.mjs";
+import { securityHeaders as sharedSecurityHeaders } from "./src/config/security-headers.mjs";
+import movedAddresses from "./src/portfolio/redirects.generated.json";
 import extensionNetwork from "./src/portfolio/security.generated.json";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -11,48 +14,25 @@ const buildWorkers = Number.isFinite(parsedBuildWorkers)
   ? Math.max(1, Math.min(parsedBuildWorkers, 16))
   : 4;
 
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self' data:",
-  `connect-src 'self'${isDevelopment ? " ws: wss:" : ""}`,
-  "media-src 'self' blob:",
-  "worker-src 'self' blob:",
-].map((directive) => {
-  const name = directive.split(" ")[0];
-  const sources = (extensionNetwork as Record<string, string[]>)[name] ?? [];
-  return sources.length ? `${directive} ${sources.join(" ")}` : directive;
-}).concat(
-  Object.entries(extensionNetwork as Record<string, string[]>)
-    .filter(([name]) => name === "frame-src")
-    .map(([name, sources]) => `${name} 'self' ${sources.join(" ")}`),
-).join("; ");
+const securityHeaders = sharedSecurityHeaders({
+  development: isDevelopment,
+  network: extensionNetwork as Record<string, string[]>,
+});
 
-const securityHeaders = [
-  { key: "Content-Security-Policy", value: contentSecurityPolicy },
-  { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
-  {
-    key: "Permissions-Policy",
-    value:
-      "camera=(self), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), browsing-topics=()",
-  },
-  {
-    key: "Strict-Transport-Security",
-    value: "max-age=63072000; includeSubDomains; preload",
-  },
-];
+/** Static hosts (npm run deploy -- firebase) get the site as files; their
+ * own configuration serves the headers. */
+const staticExport = process.env.FOLIO_HOSTING === "firebase";
+
+/** The profile's old addresses (deployment.redirects, written by content:build);
+ * a static export gets them from its host's configuration instead. */
+const redirects = nextRedirects(movedAddresses);
 
 const nextConfig: NextConfig = {
+  // Route handlers that answer live (`route.server.ts`, such as the weather)
+  // exist only where a server runs; a static export leaves them out.
+  pageExtensions: staticExport
+    ? ["tsx", "ts", "jsx", "js"]
+    : ["tsx", "ts", "jsx", "js", "server.ts"],
   allowedDevOrigins: ["127.0.0.1"],
   reactStrictMode: true,
   poweredByHeader: false,
@@ -62,14 +42,25 @@ const nextConfig: NextConfig = {
     // NEXT_BUILD_WORKERS keeps the setting portable for larger build hosts.
     cpus: buildWorkers,
   },
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-    ];
-  },
+  ...(staticExport
+    ? { output: "export", images: { unoptimized: true } }
+    : {
+        ...(redirects.length > 0
+          ? {
+              async redirects() {
+                return redirects;
+              },
+            }
+          : {}),
+        async headers() {
+          return [
+            {
+              source: "/:path*",
+              headers: securityHeaders,
+            },
+          ];
+        },
+      }),
 };
 
 export default nextConfig;

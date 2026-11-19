@@ -44,7 +44,7 @@ function WritingShell({
         <span>
           © {context.site.copyrightYear} {context.site.identity.name}
         </span>
-        <a href={`mailto:${context.site.contact.email}`}>{copy.getInTouch} ↗</a>
+        <a href={`mailto:${context.site.contact?.email ?? ""}`}>{copy.getInTouch} ↗</a>
       </footer>
     </div>
   );

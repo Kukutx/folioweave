@@ -1,0 +1,209 @@
+/* Letter stack: sheets of paper stacked on one grid cell (the tallest sets the height). */
+.stack {
+  --stack-paper: linear-gradient(
+    180deg,
+    var(--letter-paper-hi, rgb(240, 240, 228)) 0,
+    var(--letter-paper-hi, rgb(240, 240, 228)) 6%,
+    rgb(237, 238, 224) 15%,
+    var(--letter-paper-lo, rgb(236, 237, 223)) 30%
+  );
+  --stack-crease: rgba(110, 100, 70, 0.07);
+  position: relative;
+  width: min(662px, 100%);
+  margin: 0 auto;
+  padding: 64px 0 74px;
+  color: var(--ink, rgb(52, 52, 48));
+}
+.deck {
+  display: grid;
+}
+/* each sheet is its own layer (moved, turned and faded without repainting). The hint is opacity only, so
+   that the sheet is rastered at the scale it is shown at (a host may scale the stack down) and stays crisp */
+.sheet {
+  grid-area: 1 / 1;
+  position: relative;
+  will-change: opacity;
+  min-height: 781.8px;
+  transform-origin: 50% 50%;
+}
+/* writing paper as recorded: a little lighter at the head of the sheet */
+.paper {
+  background: var(--letter-paper, var(--stack-paper));
+  box-shadow:
+    0 0 0 0.8px rgba(70, 60, 30, 0.13),
+    -1px 1px 8px rgba(0, 0, 0, 0.05);
+}
+/* the three panels of the folded sheet share one sheet of paper; the creases stay faintly visible */
+.p0,
+.p1,
+.p2 {
+  background-size: 100% 300%;
+  box-shadow: none;
+}
+.p0 {
+  background-position: 0 0;
+}
+.p1 {
+  background-position: 0 50%;
+  box-shadow:
+    inset 0 1px 0 var(--stack-crease),
+    inset 0 -1px 0 var(--stack-crease);
+}
+.p2 {
+  background-position: 0 100%;
+}
+.sheet.bare {
+  background: none;
+  box-shadow: none;
+}
+/* the shadow under the stack: its own layer behind the sheets, moved and faded with the bottom sheet */
+.lift {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 0;
+  box-shadow: 0 24px 40px -12px rgba(0, 0, 0, 0.36);
+  transform-origin: 50% 50%;
+  will-change: opacity;
+  pointer-events: none;
+}
+/* the first page folds: three panels over an invisible copy that gives the sheet its height */
+.fold {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  perspective: 1500px;
+}
+/* open: one flat sheet again (the panels give way to the whole letter), its two creases still showing */
+.flat {
+  transform-style: flat;
+  perspective: none;
+  background:
+    linear-gradient(
+      transparent calc(100% / 3 - 1px),
+      var(--stack-crease) 0,
+      var(--stack-crease) calc(100% / 3),
+      transparent 0
+    ),
+    linear-gradient(
+      transparent calc(200% / 3 - 1px),
+      var(--stack-crease) 0,
+      var(--stack-crease) calc(200% / 3),
+      transparent 0
+    ),
+    var(--letter-paper, var(--stack-paper));
+  box-shadow:
+    0 0 0 0.8px rgba(70, 60, 30, 0.13),
+    -1px 1px 8px rgba(0, 0, 0, 0.05);
+}
+.flat .panel {
+  display: none;
+}
+.flat .measure {
+  visibility: visible;
+}
+.sheet:first-child {
+  background: none;
+  box-shadow: none;
+}
+.measure {
+  visibility: hidden;
+  min-height: 781.8px;
+}
+.panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: calc(100% / 3);
+  transform-style: preserve-3d;
+}
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.faceBack {
+  transform: rotateX(180deg);
+}
+.copy {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 300%;
+}
+.copy > * {
+  min-height: 100%;
+}
+.sh {
+  position: absolute;
+  inset: 0;
+  background: rgb(30, 26, 10);
+  opacity: 0;
+  pointer-events: none;
+}
+.chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 50%;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.btn svg {
+  display: block;
+  max-width: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.btn:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.close {
+  position: absolute;
+  right: -7.8px;
+  top: 0;
+}
+.nav {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: flex;
+  gap: 33.3px;
+  transform: translateX(-50%);
+}
+@media (max-width: 600px) {
+  .sheet,
+  .measure {
+    min-height: 0;
+  }
+  .stack {
+    padding: 56px 0 66px;
+  }
+  .close {
+    right: -4px;
+  }
+}

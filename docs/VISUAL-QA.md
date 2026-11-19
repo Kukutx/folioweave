@@ -26,6 +26,33 @@ shared application behavior; profile content and artwork remain separate.
   testing alone cannot establish which element is painted on top of another inert
   element.
 
+## Checks follow the selected template
+
+The suites read the template the profile selects, its manifest `category` and
+its pages (`qa/template.mjs`), never one profile's shape:
+
+- A `store` template is held to `qa/store-functionality.mjs`, written against
+  the profile's `store` block: every location with its address, photo and
+  directions; chat and call links that lead only to the shop's own numbers and
+  open safely; the quick questions with their messages; the products and
+  services pages with every category, price and step; a 404 that answers 404,
+  is not indexed and leads back; and the small-screen menu.
+- Classic's own suites (its functionality, interaction lifecycle, raster
+  warm-up and the reusable component fixtures) run where Classic renders and
+  print `SKIP` with the reason elsewhere, so a skipped suite never reads as a
+  pass.
+- Route-wide suites (`qa:quality`, `qa:media`, `qa:bundle`, `qa:fonts`,
+  `qa:route-loading`) cover the template's own pages, such as a shop's
+  `/prodotti`, beside the core routes.
+- Visual regression photographs the hero, the sections the template's manifest
+  lists (Classic keeps its reviewed About, Work, Photography and Contact) and
+  the top of each page the template adds (`<width>-page-<id>.png`), against the
+  baselines captured for the profile under test.
+- `qa:profiles` also serves each store template that carries a `sample.json`
+  in a disposable preview sandbox, with the demo profile filled from the
+  sample, and runs the functionality and quality suites there: a change to
+  shared code is checked against a shop even on a portfolio's branch.
+
 Install the lockfile-pinned browsers with
 `node node_modules/playwright-core/cli.js install chromium firefox webkit`.
 Run `npm run qa:visual-compare` after building. It compares against **tracked**

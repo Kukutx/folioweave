@@ -1,0 +1,185 @@
+/* Writing pages: the home page's column, labels and rows; the article in the page's text sizes. */
+.main {
+  display: block;
+  margin-top: 103px;
+}
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.head > :global(*) + :global(*) {
+  margin-top: 6px;
+}
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 23px;
+  color: var(--dark);
+}
+.subtitle {
+  color: var(--dark);
+}
+.meta {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.mins {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 11px;
+  margin-top: 23px;
+  font:
+    11px/16px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+  color: #8e8e8e;
+}
+.tags a {
+  transition: color 0.2s;
+}
+.tags a:hover,
+.tags a[aria-current="page"] {
+  color: var(--dark);
+}
+.list {
+  margin-top: 37px;
+}
+.body {
+  margin-top: 37px;
+  overflow-wrap: anywhere;
+}
+.body > :global(*) + :global(*) {
+  margin-top: 16px;
+}
+.body :global(:is(h2, h3)) {
+  margin-top: 37px;
+  scroll-margin-top: 24px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 23px;
+  color: var(--dark);
+}
+.body :global(h2) {
+  font:
+    400 11px/16px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+  color: var(--label);
+  text-transform: uppercase;
+}
+.body :global(.heading-anchor) {
+  margin-left: 6px;
+  color: #b2b2b2;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.body :global(:is(h2, h3)):hover > :global(.heading-anchor),
+.body :global(.heading-anchor):focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .body :global(.heading-anchor) {
+    opacity: 0.6;
+  }
+}
+.body :global(strong) {
+  font-weight: 400;
+  color: var(--dark);
+}
+.body :global(a) {
+  color: var(--dark);
+  text-decoration: underline;
+  text-decoration-color: #d4d4d4;
+  text-underline-offset: 3px;
+}
+.body :global(:is(ul, ol)) {
+  padding-left: 20px;
+}
+.body :global(ul) {
+  list-style: disc;
+}
+.body :global(ol) {
+  list-style: decimal;
+}
+.body :global(li + li) {
+  margin-top: 6px;
+}
+.body :global(img) {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.body :global(blockquote) {
+  padding-left: 14px;
+  border-left: 2px solid #ececec;
+}
+.body :global(:is(pre, code)) {
+  font-family: var(--f-mono), monospace;
+  font-size: 13px;
+}
+.body :global(pre) {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  overflow-x: auto;
+  line-height: 20px;
+  color: var(--dark);
+}
+.body :global(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.body :global(:is(th, td)) {
+  padding: 6px 10px;
+  border: 1px solid #ececec;
+  text-align: left;
+}
+.body :global(hr) {
+  border: 0;
+  border-top: 1px solid #ececec;
+}
+.after:has(> :global(*)) {
+  margin-top: 40px;
+}
+.back {
+  margin-top: 40px;
+  font:
+    11px/16px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+}
+.back a {
+  color: #8e8e8e;
+  transition: color 0.2s;
+}
+.back a:hover {
+  color: var(--dark);
+}
+.foot {
+  margin-top: 80px;
+  gap: 12px;
+}
+.footLink {
+  overflow-wrap: anywhere;
+  transition: color 0.2s;
+}
+.footLink:hover {
+  color: var(--dark);
+}
+@media (max-width: 640px) {
+  .main {
+    margin-top: 64px;
+  }
+}

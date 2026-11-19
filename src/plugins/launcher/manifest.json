@@ -1,0 +1,96 @@
+{
+  "id": "launcher",
+  "name": "Tool launcher",
+  "description": "A floating ink-drop character that opens a fan of shortcuts to plugin pages and any links you add.",
+  "translations": {
+    "zh": {
+      "name": "工具入口",
+      "description": "悬浮的墨水滴，点开后扇形展开插件页面和你添加的链接。"
+    }
+  },
+  "setupHelp": "Pages of enabled plugins appear automatically; add other destinations under items (see docs/PLUGINS.md).",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entry": "launcher.tsx",
+  "slots": ["site.floating"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "label": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Accessible name of the launcher button; defaults to a localised “Tools”."
+      },
+      "position": {
+        "enum": ["right", "left"],
+        "default": "right",
+        "description": "Bottom corner the launcher docks to."
+      },
+      "size": {
+        "type": "integer",
+        "minimum": 48,
+        "maximum": 120,
+        "default": 88,
+        "description": "Width of the ink drop in CSS pixels."
+      },
+      "pages": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show the pages of enabled plugins."
+      },
+      "home": {
+        "type": "boolean",
+        "default": true,
+        "description": "Offer a way back to the home page while on another page."
+      },
+      "items": {
+        "type": "array",
+        "default": [],
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "href"],
+          "properties": {
+            "label": { "type": "string", "minLength": 1 },
+            "href": {
+              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^/(?!/)[^\\s\\\\]*$"
+                },
+                { "type": "string", "format": "https-url" },
+                { "type": "string", "pattern": "^mailto:[^\\s]+$" }
+              ],
+              "tsType": "string"
+            },
+            "icon": {
+              "enum": [
+                "link",
+                "home",
+                "article",
+                "image",
+                "mail",
+                "user",
+                "code",
+                "music",
+                "star"
+              ],
+              "default": "link"
+            }
+          },
+          "title": "LauncherItem"
+        }
+      },
+      "offsetBottom": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 240,
+        "description": "Bottom spacing in pixels, allowing the launcher to clear existing site controls without moving them."
+      }
+    },
+    "title": "LauncherOptions"
+  },
+  "generateOptions": true
+}

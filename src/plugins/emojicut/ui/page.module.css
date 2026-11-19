@@ -1,0 +1,160 @@
+/*
+ * The page root: colour tokens, the polka-dot paper, a small reset scoped to
+ * the page, and the centred column. Every colour the page uses is a token
+ * here; the values are the original EmojiCut port's.
+ */
+
+.root {
+  /* Replaced inline with the self-hosted families (see fonts.ts). */
+  --ec-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --ec-pink: #ffc0cb;
+  --ec-pink-dark: #ff99a4;
+  --ec-pink-edge: #ffb7b2;
+  --ec-pink-soft: #fff5f7;
+  --ec-pink-200: rgb(251 207 232);
+  --ec-pink-300: rgb(249 168 212);
+  --ec-pink-400: rgb(244 114 182);
+  --ec-lavender: #e6e6fa;
+  --ec-text: #6b4c4c;
+  --ec-muted: #666;
+  --ec-faint: #999;
+  --ec-placeholder: #bbb;
+  --ec-white: #fff;
+  --ec-page: rgb(248 250 252);
+  --ec-ink: rgb(15 23 42);
+
+  --ec-button: #ff9aaa;
+  --ec-button-hover: #ffa5b5;
+  --ec-button-edge: #e57a8a;
+
+  --ec-hinge: #f0f0f0;
+  --ec-slot: #37474f;
+  --ec-slot-edge: #263238;
+
+  --ec-cut-screen: #edfaff;
+  --ec-cut-line: #bee3f8;
+  --ec-cut-text: #4299e1;
+  --ec-ai-screen: #f8fdff;
+  --ec-ai-line: #b2ebf2;
+  --ec-ai-text: #00838f;
+  --ec-screen-hover: #e0f7fa;
+  --ec-screen-hover-line: #4dd0e1;
+
+  --ec-error: rgb(248 113 113);
+  --ec-error-bg: rgb(254 242 242);
+  --ec-note: #f8f9fa;
+  --ec-note-line: #eee;
+
+  --ec-crop-overlay: rgb(15 23 42 / 0.9);
+  --ec-crop-frame: rgb(30 41 59);
+  --ec-crop-frame-line: rgb(51 65 85);
+  --ec-crop-button-line: rgb(71 85 105);
+  --ec-crop-text: rgb(226 232 240);
+  --ec-crop-hint: rgb(203 213 225);
+  --ec-crop-select: rgb(59 130 246);
+  --ec-crop-action: rgb(37 99 235);
+  --ec-crop-action-hover: rgb(29 78 216);
+
+  display: block;
+  min-height: 100vh;
+  font-family: var(--ec-font);
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: left;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--ec-text);
+  background-color: var(--ec-page);
+  background-image: radial-gradient(var(--ec-pink-dark) 2px, transparent 2px);
+  background-size: 30px 30px;
+}
+
+/* A reset limited to this page, at element-level specificity. */
+:where(.root) *,
+:where(.root) ::before,
+:where(.root) ::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+}
+
+:where(.root) :is(button, input, textarea) {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+:where(.root) button {
+  background: none;
+  cursor: pointer;
+  text-transform: none;
+}
+
+:where(.root) :disabled {
+  cursor: default;
+}
+
+:where(.root) :is(h1, h2, h3, p, ol, ul) {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+:where(.root) a {
+  color: inherit;
+}
+
+:where(.root) :is(img, svg) {
+  display: block;
+}
+
+:where(.root) :is(input, textarea)::placeholder {
+  opacity: 1;
+  color: var(--ec-placeholder);
+}
+
+.root :focus-visible {
+  outline: 3px solid var(--ec-pink-400);
+  outline-offset: 2px;
+}
+
+/* ---------- Layout ---------- */
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  /* Room below for the site's floating controls. */
+  padding: 48px 16px 128px;
+}
+
+.help {
+  margin-top: 36px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@media (max-width: 480px) {
+  .column {
+    padding-top: 32px;
+  }
+}
