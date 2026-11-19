@@ -19,7 +19,7 @@ export async function scaffoldTemplate(root, id) {
   <h1>{String(context.options.heading ?? context.site.identity.name)}</h1>
   <p>{context.site.identity.role}</p>
   {context.features.work && <section id="work"><h2>Selected work</h2>{context.projects.map((project) => <h3 key={project.id}>{project.name}</h3>)}</section>}
-  <section id="contact"><h2>Contact</h2><a href={"mailto:" + context.site.contact.email}>{context.site.contact.email}</a></section>
+  {context.site.contact && <section id="contact"><h2>Contact</h2><a href={"mailto:" + context.site.contact.email}>{context.site.contact.email}</a></section>}
 </main>`,
     BlogIndex: `({ posts, context }) => <main><h1>{context.writing.title}</h1>
   <ul>{posts.map((post) => <li key={post.slug}><Link href={post.href}>{post.title}</Link></li>)}</ul>

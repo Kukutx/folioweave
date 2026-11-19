@@ -21,7 +21,7 @@ import { workProjects } from "@/content/work";
 import { scrollToElement } from "@/lib/scroll";
 import { portraitImages } from "@/content/media";
 import { useMobileViewport } from "@/hooks/use-media-query";
-import { mailto, siteConfig } from "@/config/site";
+import { contactOf, mailto, siteConfig } from "@/config/site";
 import { mediaDimensions } from "@/portfolio/media";
 import type { PortfolioRichTextSegment } from "@/portfolio/schema";
 
@@ -300,8 +300,8 @@ export function Hero() {
                           layout
                           className="say-hi-button"
                           href={mailto(
-                            siteConfig.contact.email,
-                            siteConfig.contact.hiSubject,
+                            contactOf(siteConfig).email,
+                            contactOf(siteConfig).hiSubject,
                           )}
                           initial={{ opacity: 0, scale: 0.96 }}
                           animate={{ opacity: 1, scale: 1 }}

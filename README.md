@@ -4,15 +4,19 @@
 
 A **Next.js 16 portfolio framework** with selectable templates, shared plugins, and a content workflow for personal websites.
 
-FolioWeave brings three portfolio designs into one application: Classic, Refract Light, and Refract Dark. Choose a template through the CLI, keep your profile and Markdown articles, and enable music or comments independently. Layout, motion, content publication, and extension contracts live in the reusable code; personal information and media stay in the authoring layer.
+FolioWeave brings several site designs into one application: the Classic and Refract portfolios, the one-page Stack, Pond and Ticket Club, and Bottega for a small shop. Choose a template through the CLI, keep your profile and Markdown articles, and enable plugins such as music, comments or the work badge independently. Layout, motion, content publication, and extension contracts live in the reusable code; personal information and media stay in the authoring layer.
 
 ## Templates
 
-| Template      | CLI id          | Design                                                                                         | Demo                                                     |
-| ------------- | --------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                     | [Open demo](https://folioweave-classic.vercel.app)       |
-| Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms | [Open demo](https://folioweave-refract-light.vercel.app) |
-| Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette    | [Open demo](https://folioweave-refract-dark.vercel.app)  |
+| Template      | CLI id          | Design                                                                                             | Demo                                                     |
+| ------------- | --------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                         | [Open demo](https://folioweave-classic.vercel.app)       |
+| Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms     | [Open demo](https://folioweave-refract-light.vercel.app) |
+| Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette        | [Open demo](https://folioweave-refract-dark.vercel.app)  |
+| Stack         | `stack`         | One column: an avatar with a pile of portraits, experience, a fan of work and a chat-style contact | `npm run preview:template -- stack`                      |
+| Pond          | `pond`          | One screen over an ASCII koi pond with a short intro, links and a light/dark switch                | `npm run preview:template -- pond`                       |
+| Ticket Club   | `ticket-club`   | Links hang as tickets on a washing line; tear one off to copy it, and open a sealed letter         | `npm run preview:template -- ticket-club`                |
+| Bottega       | `bottega`       | A small local shop: one-tap WhatsApp and call, locations, products and a services price list       | `npm run preview:template -- bottega`                    |
 
 **In production:** [kukutx.vercel.app](https://kukutx.vercel.app) is the author's own portfolio, built with Classic from this repository's `personal` branch. The demos above use placeholder content; that site shows the template carrying real work.
 
@@ -37,7 +41,7 @@ npm run dev
 
 `main` and `develop` keep the canonical demo, so your own profile lives on the `personal` branch.
 
-`npm run personalize` asks for your identity, links and location, the template (`classic`, `refract-light` or `refract-dark`) and the plugins. Switch template later with `npm run folio -- template use <id>`; your content and settings are kept. Classic remains the default for profiles without a template selection.
+`npm run personalize` asks for your identity, links and location, the template (any id from `npm run folio -- templates`) and the plugins. Switch template later with `npm run folio -- template use <id>`; your content and settings are kept. Classic remains the default for profiles without a template selection.
 
 Open `http://localhost:3000`.
 
@@ -68,8 +72,8 @@ While `npm run dev` is running, valid changes to profile content, assets, Markdo
 
 ## Highlights
 
-- Three CLI-selectable templates sharing one profile schema and publication pipeline
-- Independent music and comments plugins, configured through the CLI and mounted through template slots
+- Seven CLI-selectable templates sharing one profile schema and publication pipeline; a template may bring its own pages and 404 view, published only when their data exists
+- Independent plugins configured through the CLI: music, comments, the EmojiCut sticker page, a tool launcher and a 3D work badge; a plugin may add a page under `/tools`
 - Responsive portfolio for desktop, tablet, and mobile
 - Data-driven projects, photography, About content, resume, links, and feature switches
 - One-source resume: a JSON file rendered to the printer preview and a tagged PDF whose text extracts in reading order, with an optional Word copy to download
@@ -213,7 +217,7 @@ npm run qa:refract
 
 ## Deployment
 
-FolioWeave uses standard Next.js deployment conventions. Vercel can use the normal Next.js preset; other platforms that support the current Next.js runtime can use their standard adapter.
+FolioWeave uses standard Next.js deployment conventions. The profile's `deployment` block lists Vercel, Cloudflare (OpenNext Workers) and Firebase (static export) side by side; `npm run deploy -- <provider>` builds for one of them with its own address, and `--apply` publishes. `deployment.redirects` keeps a replaced site's old addresses working on every host.
 
 Set `site.origin` in `portfolio.json` to the canonical production URL before release, and validate the production build.
 

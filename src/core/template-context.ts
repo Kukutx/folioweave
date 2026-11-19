@@ -12,6 +12,9 @@ export const templateContext: TemplateContext = {
   photography: portfolio.photography,
   writing: portfolio.blog,
   features: portfolio.features,
+  // Publication fills an absent block; the fallback keeps the type honest.
+  store: portfolio.store ?? { locations: [] },
+  closingQuote: portfolio.footerBook ?? { title: "", quote: "", author: "" },
   options: templateOptions,
   capabilities: { writing: getBlogIndexPosts().length > 0 },
 };

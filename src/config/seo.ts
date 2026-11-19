@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
 import { siteConfig } from "./site";
-import { blogContent, portfolioSeo } from "@/portfolio";
+import { blogContent, portfolio, portfolioSeo } from "@/portfolio";
+import { templateCategory } from "@/portfolio/template.generated";
 
 const { identity, origin, socialLinks, assets } = siteConfig;
 
 const rootDescription = portfolioSeo.description;
 const rootKeywords = portfolioSeo.keywords;
-const rootTitle = `${identity.name} | ${identity.role} in ${identity.country}${
-  identity.company ? ` | ${identity.company}` : ""
-}`;
+/** A store site speaks as its business, not as a person's portfolio. */
+const isStore = templateCategory === "store";
+const rootTitle =
+  portfolioSeo.title ??
+  (isStore
+    ? `${identity.name} | ${identity.role || portfolio.store?.tagline}`
+    : `${identity.name} | ${identity.role} in ${identity.country}${
+        identity.company ? ` | ${identity.company}` : ""
+      }`);
 const openGraphLocale = identity.locale.replaceAll("-", "_");
 
 export const rootMetadata: Metadata = {
@@ -28,7 +35,7 @@ export const rootMetadata: Metadata = {
     url: origin,
     title: rootTitle,
     description: rootDescription,
-    siteName: `${identity.name} Portfolio`,
+    siteName: isStore ? identity.name : `${identity.name} Portfolio`,
     locale: openGraphLocale,
     images: [
       {

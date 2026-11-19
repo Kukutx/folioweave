@@ -182,11 +182,13 @@ export function HeroText({
           </span>
         )}
       </p>
-      <p className="intro-position">
-        {[profile.role, profile.affiliationShort ?? profile.affiliation]
-          .filter(Boolean)
-          .join(", ")}
-      </p>
+      {!profile.positionRepeatsTagline && (
+        <p className="intro-position">
+          {[profile.role, profile.affiliationShort ?? profile.affiliation]
+            .filter(Boolean)
+            .join(", ")}
+        </p>
+      )}
       <span className="sr-only">
         {copy.basedIn} {profile.location}
       </span>

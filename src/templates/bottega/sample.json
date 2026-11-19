@@ -1,0 +1,312 @@
+{
+  "site": {
+    "identity": {
+      "name": "CASA LUNARI",
+      "firstName": "Lunari",
+      "initials": "CL",
+      "role": "Merceria, casa e sartoria di quartiere",
+      "company": "",
+      "locale": "it-IT"
+    },
+    "location": {
+      "timeZone": "Europe/Rome",
+      "timeZoneLabel": "CET"
+    }
+  },
+  "hero": {
+    "roleLine": [
+      {
+        "text": "Merceria, casa e sartoria di quartiere"
+      }
+    ],
+    "summary": [
+      {
+        "text": "Il tuo negozio di quartiere: merceria, articoli per la casa e riparazioni sartoriali. Scrivici o chiamaci, ti rispondiamo noi."
+      }
+    ]
+  },
+  "store": {
+    "tagline": "Merceria e sartoria per la tua casa",
+    "contact": {
+      "phone": "+390000000000",
+      "displayPhone": "000 000 0000",
+      "whatsapp": "+390000000000",
+      "links": [
+        {
+          "label": "Seguici su Instagram",
+          "href": "https://example.com/casalunari"
+        }
+      ]
+    },
+    "locations": [
+      {
+        "id": "centro",
+        "name": "Casa Lunari",
+        "tagline": "Il negozio del centro, piccolo e vicino a casa",
+        "mapName": "Merceria Lunari",
+        "note": "Negozio piccolo: soprattutto merceria e biancheria, con piccoli articoli per la casa.",
+        "street": "Via dei Tigli, 12",
+        "postalCode": "12345",
+        "city": "Valfiorita",
+        "region": "VF",
+        "country": "IT",
+        "hours": "Dal lunedì al sabato\n09:00–13:00\n15:00–19:30\nDomenica chiuso",
+        "openingHours": [
+          {
+            "days": [
+              "mo",
+              "tu",
+              "we",
+              "th",
+              "fr",
+              "sa"
+            ],
+            "opens": "09:00",
+            "closes": "13:00"
+          },
+          {
+            "days": [
+              "mo",
+              "tu",
+              "we",
+              "th",
+              "fr",
+              "sa"
+            ],
+            "opens": "15:00",
+            "closes": "19:30"
+          }
+        ],
+        "primary": true,
+        "highlights": [
+          "Merceria, bottoni, filati e nastri",
+          "Biancheria per la casa e piccoli articoli utili",
+          "Orli e piccole riparazioni"
+        ],
+        "links": [
+          {
+            "label": "Instagram @casalunari",
+            "href": "https://example.com/casalunari"
+          }
+        ]
+      },
+      {
+        "id": "borgo",
+        "name": "Lunari Sartoria",
+        "tagline": "Il laboratorio storico, da oltre trent’anni",
+        "note": "Il laboratorio: riparazioni e modifiche anche più impegnative, tende e lavori su misura.",
+        "city": "Pieve Alta",
+        "region": "VF",
+        "country": "IT",
+        "hours": "Dal lunedì al sabato\n09:00–13:00\n15:00–19:30\nDomenica chiuso",
+        "openingHours": [
+          {
+            "days": [
+              "mo",
+              "tu",
+              "we",
+              "th",
+              "fr",
+              "sa"
+            ],
+            "opens": "09:00",
+            "closes": "13:00"
+          },
+          {
+            "days": [
+              "mo",
+              "tu",
+              "we",
+              "th",
+              "fr",
+              "sa"
+            ],
+            "opens": "15:00",
+            "closes": "19:30"
+          }
+        ],
+        "highlights": [
+          "Laboratorio di sartoria per riparazioni e modifiche",
+          "Tende, tovaglie e lavori su misura",
+          "Tessuti e accessori per il cucito"
+        ]
+      }
+    ],
+    "catalog": {
+      "title": "Tutto per la casa e la famiglia",
+      "intro": "Dalla merceria alla biancheria, dalla cucina alla scuola: un assortimento di articoli utili e piccoli regali per tutta la famiglia.",
+      "image": "/templates/bottega/sample/assortment.jpg",
+      "imageAlt": "Assortimento illustrativo: abbigliamento e accessori, casa e cucina, cartoleria e giocattoli",
+      "categories": [
+        {
+          "name": "Merceria",
+          "description": "Bottoni, cerniere, filati, nastri e tutto il necessario per il cucito."
+        },
+        {
+          "name": "Biancheria per la casa",
+          "description": "Lenzuola, asciugamani, tovaglie e tende."
+        },
+        {
+          "name": "Cucina e tavola",
+          "description": "Utensili, stoviglie e accessori per cucinare e apparecchiare."
+        },
+        {
+          "name": "Casa e pulizia",
+          "description": "Contenitori, piccoli attrezzi e accessori per le faccende di ogni giorno."
+        },
+        {
+          "name": "Scuola e cartoleria",
+          "description": "Quaderni, penne e materiale scolastico."
+        },
+        {
+          "name": "Abbigliamento",
+          "description": "Capi semplici per tutti i giorni, calze e intimo."
+        },
+        {
+          "name": "Cura della persona",
+          "description": "Piccoli accessori e prodotti per la cura di sé."
+        },
+        {
+          "name": "Regali e giochi",
+          "description": "Piccoli regali, giochi e articoli per il tempo libero."
+        }
+      ]
+    },
+    "services": {
+      "title": "Riparazioni e modifiche",
+      "intro": "Orli, riparazioni e piccoli lavori di sartoria. Qui trovi un riferimento ai prezzi per i servizi più richiesti.",
+      "image": "/templates/bottega/sample/services.svg",
+      "imageAlt": "",
+      "note": "Sono prezzi indicativi: il costo può cambiare in base al tessuto e al lavoro necessario. Ti diciamo sempre il prezzo prima di iniziare.",
+      "groups": [
+        {
+          "id": "pantaloni",
+          "name": "Pantaloni e jeans",
+          "items": [
+            {
+              "name": "Orlo a macchina",
+              "price": "€ 5,00"
+            },
+            {
+              "name": "Orlo invisibile",
+              "price": "€ 6,00"
+            },
+            {
+              "name": "Orlo jeans originale",
+              "price": "€ 7,00"
+            },
+            {
+              "name": "Stringere la vita",
+              "price": "€ 7,00"
+            },
+            {
+              "name": "Allargare la vita",
+              "price": "€ 8,00 – 14,00",
+              "note": "Dipende dal margine di tessuto disponibile"
+            },
+            {
+              "name": "Cambiare la cerniera",
+              "price": "€ 8,00"
+            }
+          ]
+        },
+        {
+          "id": "camicie",
+          "name": "Camicie",
+          "items": [
+            {
+              "name": "Accorciare le maniche",
+              "price": "€ 6,00"
+            },
+            {
+              "name": "Orlo",
+              "price": "€ 5,00"
+            },
+            {
+              "name": "Stringere i fianchi",
+              "price": "€ 6,00"
+            },
+            {
+              "name": "Cambiare i bottoni",
+              "price": "€ 3,00"
+            }
+          ]
+        },
+        {
+          "id": "gonne",
+          "name": "Gonne e vestiti",
+          "items": [
+            {
+              "name": "Orlo gonna",
+              "price": "€ 5,00"
+            },
+            {
+              "name": "Orlo invisibile",
+              "price": "€ 7,00"
+            },
+            {
+              "name": "Cambiare la cerniera",
+              "price": "€ 6,00"
+            },
+            {
+              "name": "Stringere i fianchi",
+              "price": "€ 8,00"
+            },
+            {
+              "name": "Stringere la vita",
+              "price": "€ 10,00 – 15,00"
+            }
+          ]
+        },
+        {
+          "id": "giacche",
+          "name": "Giacche e cappotti",
+          "items": [
+            {
+              "name": "Accorciare le maniche",
+              "price": "€ 8,00 – 14,00"
+            },
+            {
+              "name": "Orlo",
+              "price": "€ 8,00 – 15,00"
+            },
+            {
+              "name": "Cambiare la fodera",
+              "price": "€ 20,00 – 30,00"
+            },
+            {
+              "name": "Cambiare la cerniera",
+              "price": "€ 12,00 – 18,00"
+            }
+          ]
+        },
+        {
+          "id": "altri",
+          "name": "Altri lavori",
+          "items": [
+            {
+              "name": "Orlo tende",
+              "price": "€ 4,00 al metro"
+            },
+            {
+              "name": "Riparazione tende",
+              "price": "Su preventivo"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "template": {
+    "settings": {
+      "bottega": {
+        "catalogPath": "prodotti",
+        "servicesPath": "sartoria",
+        "labels": {
+          "storesIntro": "Due negozi di famiglia, aperti dal lunedì al sabato. Un solo numero per tutti e due: 000 000 0000."
+        },
+        "separateGroup": "altri"
+      }
+    }
+  }
+}

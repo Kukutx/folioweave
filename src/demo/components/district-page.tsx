@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { Award, TrendingUp } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { mailto, siteConfig } from "@/config/site";
+import { contactOf, mailto, siteConfig } from "@/config/site";
 
 const reveal = {
   hidden: { opacity: 0, y: 30 },
@@ -449,7 +449,7 @@ export function DistrictPage() {
                 variants={reveal}
               >
                 <a
-                  href={mailto(siteConfig.contact.email, siteConfig.contact.helloSubject)}
+                  href={mailto(contactOf(siteConfig).email, contactOf(siteConfig).helloSubject)}
                   className={`contact-btn ${contactVariants[contactIndex][0]}`}
                 >
                   {contactVariants[contactIndex][1]}

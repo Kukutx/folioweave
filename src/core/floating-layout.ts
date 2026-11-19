@@ -49,15 +49,21 @@ export function layoutFloating(
       ys.add(fitY(rect.y - item.height - gap));
       ys.add(fitY(rect.y + rect.height + gap));
     }
+    const distance = (rect: FloatingRect) =>
+      Math.hypot(rect.x - item.x, rect.y - item.y);
+    // Moves that differ by under a pixel are equal: sub-pixel rounding must
+    // not decide between them. Among equals, stay in the anchor's column, so
+    // controls docked to one edge stack along it.
     const candidates = [...xs]
       .flatMap((x) =>
         [...ys].map((y) => ({ x, y, width: item.width, height: item.height })),
       )
       .sort(
         (a, b) =>
-          (a.x - item.x) ** 2 +
-          (a.y - item.y) ** 2 -
-          ((b.x - item.x) ** 2 + (b.y - item.y) ** 2),
+          (Math.abs(distance(a) - distance(b)) < 1
+            ? 0
+            : distance(a) - distance(b)) ||
+          Math.abs(a.x - item.x) - Math.abs(b.x - item.x),
       );
     const chosen = candidates.find(
       (candidate) => !placed.some((rect) => overlaps(candidate, rect, gap)),

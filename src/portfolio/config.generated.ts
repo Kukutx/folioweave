@@ -501,6 +501,20 @@ const portfolio = {
     "returnDescription": "Good solutions don't ask for attention. They just work — quietly and effectively.",
     "image": "/media/5c0589_8d8640a87e5a4209b0cb5e6ba984ddc8~mv2.webp"
   },
+  "deployment": {
+    "provider": "vercel",
+    "providers": {
+      "vercel": {
+        "project": "kukutx",
+        "origin": "https://kukutx.vercel.app"
+      },
+      "cloudflare": {
+        "accountId": "055f054087ae67958826268f493946d5",
+        "worker": "portfolio",
+        "origin": "https://portfolio.liuzhongli.workers.dev"
+      }
+    }
+  },
   "plugins": {
     "music": {
       "enabled": true,
@@ -543,7 +557,39 @@ const portfolio = {
           }
         ]
       }
+    },
+    "emojicut": {
+      "enabled": true
+    },
+    "launcher": {
+      "enabled": true
+    },
+    "badge": {
+      "enabled": true,
+      "options": {
+        "cards": [
+          {
+            "theme": "light",
+            "logo": "/portfolio/badge/proxima-lab.webp",
+            "title": "Liu Zhong Li",
+            "kicker": "Proxima Lab",
+            "description": "Full-Stack Software Developer",
+            "alt": "Liu Zhong Li, Full-Stack Software Developer, Proxima Lab"
+          },
+          {
+            "theme": "dark",
+            "logo": "/portfolio/projects/crew/crew-icon.png",
+            "title": "Crew",
+            "kicker": "Liu Zhong Li",
+            "description": "An app for sharing your interests and making plans around them.",
+            "alt": "Crew, an app by Liu Zhong Li for sharing your interests and making plans around them"
+          }
+        ]
+      }
     }
+  },
+  "store": {
+    "locations": []
   }
 } satisfies PortfolioConfig;
 

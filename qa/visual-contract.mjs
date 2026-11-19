@@ -12,8 +12,9 @@ const PIXEL_BUDGET = 0.002;
 // An update keeps a reviewed image only while the new capture uses at most
 // half the regression budget, so a kept region still has headroom in CI.
 const RETENTION_BUDGET = PIXEL_BUDGET / 2;
-const REGION_FILE =
-  /^\d+-(hero|about|work|photography|contact|lightbox(?:-next|-portrait)?)\.png$/;
+// Every capture except the full-page home is a region: the hero, the home
+// sections the template lists, the lightbox and the template's own pages.
+const REGION_FILE = /^\d+-(?!home\.png$)[a-z0-9]+(?:-[a-z0-9]+)*\.png$/;
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const percent = (ratio) => `${(ratio * 100).toFixed(3)}%`;
 
@@ -59,6 +60,9 @@ export function compareGeometry(previous, current) {
     ...geometry.sections,
     ...Object.fromEntries(geometry.work.map((box, i) => [`work-${i}`, box])),
     ...Object.fromEntries(geometry.photos.map((box, i) => [`photo-${i}`, box])),
+    ...Object.fromEntries(
+      Object.entries(geometry.pages ?? {}).map(([id, box]) => [`page-${id}`, box]),
+    ),
   });
   for (let i = 0; i < current.length; i++) {
     const before = boxes(previous[i]),

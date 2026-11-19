@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
 import { resolveChromePath } from "./chrome.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
+import { onlyFor, qaTemplate } from "./template.mjs";
 
 // Classic paints every section once, out of sight, while the page is idle, so
 // the GPU programs exist before a first scroll needs them. This holds it to its
 // promises: nobody can see, reach or address the copy, it never loads what the
 // page has not loaded, it yields to the visitor, and it leaves nothing behind.
+const template = qaTemplate();
+if (onlyFor(template, template.classic, "Classic raster warm-up")) process.exit(0);
 const browser = await chromium.launch({
   executablePath: resolveChromePath(),
   headless: true,

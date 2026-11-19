@@ -2,6 +2,12 @@
   "id": "music",
   "name": "Music player",
   "description": "A persistent player, started by the visitor or on arrival, with configurable skins, docking, covers and optional notes.",
+  "translations": {
+    "zh": {
+      "name": "音乐播放器",
+      "description": "常驻的播放器，访客点播或进站自动播放，可换外观、停靠位置、封面和音符动效。"
+    }
+  },
   "setupHelp": "Configure local audio or HTTPS direct URLs in a JSON options file (see docs/PLUGINS.md).",
   "version": "1.3.0",
   "apiVersion": 1,

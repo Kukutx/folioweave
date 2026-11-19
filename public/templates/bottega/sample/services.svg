@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <title>Sample placeholder: needle, thread and scissors</title>
+  <rect width="1200" height="900" fill="#f5f5f5"/>
+  <g fill="none" stroke="#050505" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- spool -->
+    <rect x="300" y="300" width="200" height="40" rx="6"/>
+    <rect x="300" y="560" width="200" height="40" rx="6"/>
+    <path d="M330 340v220M470 340v220"/>
+    <path d="M330 370h140M330 400h140M330 430h140M330 460h140M330 490h140M330 520h140" stroke-width="3" opacity="0.55"/>
+    <!-- thread to the needle -->
+    <path d="M470 380c120 -40 170 120 290 60s60 -170 110 -150" stroke-width="3"/>
+    <path d="M870 290l-120 330" />
+    <ellipse cx="866" cy="300" rx="6" ry="16" transform="rotate(20 866 300)" stroke-width="3"/>
+    <!-- scissors -->
+    <circle cx="690" cy="660" r="42"/>
+    <circle cx="790" cy="660" r="42"/>
+    <path d="M720 630l140 -170M760 630l-60 -190"/>
+  </g>
+</svg>

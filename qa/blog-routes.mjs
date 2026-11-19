@@ -13,6 +13,7 @@ import {
   resolvePublishedRoutes,
 } from "../src/portfolio/publication-policy.mjs";
 import { taxonomyRoutes } from "../src/blog/taxonomy.mjs";
+import { qaTemplate } from "./template.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const blogsDir = path.join(root, "content", "blogs");
@@ -52,13 +53,16 @@ export async function publishedBlogRoutes() {
   return [...new Set([...markdown, ...custom, ...derived])].sort();
 }
 
+/** Every page the site publishes, the selected template's own pages included. */
 export async function publicationRoutes() {
   const portfolio = loadQaProfile();
   const blogRoutes = await publishedBlogRoutes();
-  return resolvePublishedRoutes({
+  const routes = resolvePublishedRoutes({
     demoRoutesEnabled: portfolio.features?.demoRoutes === true,
     blogRoutes,
   });
+  const templateRoutes = qaTemplate(portfolio).pages.map((page) => page.href);
+  return [...new Set([...routes, ...templateRoutes])];
 }
 
 export async function disabledDemoRoutes() {

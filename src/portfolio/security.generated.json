@@ -1,5 +1,8 @@
 {
   "media-src": [
     "https://upload.wikimedia.org"
+  ],
+  "connect-src": [
+    "https://generativelanguage.googleapis.com"
   ]
 }

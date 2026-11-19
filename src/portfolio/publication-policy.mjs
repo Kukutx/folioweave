@@ -30,10 +30,11 @@ export function resolveNavigation(navigation, features, sections = undefined) {
   });
 }
 
-/** @param {{ demoRoutesEnabled: boolean, blogRoutes?: string[] }} options */
+/** @param {{ demoRoutesEnabled: boolean, blogRoutes?: string[], pluginRoutes?: string[] }} options */
 export function resolvePublishedRoutes({
   demoRoutesEnabled,
   blogRoutes = [],
+  pluginRoutes = [],
   definitions = routeDefinitions,
 }) {
   return [
@@ -48,6 +49,7 @@ export function resolvePublishedRoutes({
             .map((route) => route.path)
         : []),
       ...(blogRoutes.length ? ["/blogs", ...blogRoutes] : []),
+      ...pluginRoutes,
     ]),
   ];
 }

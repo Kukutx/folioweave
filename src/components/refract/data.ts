@@ -2,6 +2,25 @@ import type { TemplateContext } from "@/core/contracts";
 import { mediaDimensions } from "@/portfolio/media";
 import { refractCopy, type RefractCopy } from "./copy";
 
+/** Whether two lines say the same thing, ignoring case, punctuation and the
+ * linking words between a role and a company ("at", "@", ","). */
+function sameWords(a: string, b: string) {
+  const words = (text: string) =>
+    new Set(
+      text
+        .toLocaleLowerCase()
+        .split(/[^\p{L}\p{N}+#.-]+/u)
+        .filter((word) => word && !["at", "@", "for", "with"].includes(word)),
+    );
+  const left = words(a);
+  const right = words(b);
+  return (
+    left.size > 0 &&
+    left.size === right.size &&
+    [...left].every((word) => right.has(word))
+  );
+}
+
 export type ResearchFigureConfig = {
   source: string;
   animatedSource?: string;
@@ -99,7 +118,8 @@ export function createRefractData(context: TemplateContext) {
       linkLabel: action?.label ?? copy.viewProject,
     };
   });
-  const email = context.site.contact.email;
+  // Refract lists site.contact under requires, so publication guarantees it.
+  const email = context.site.contact?.email ?? "";
   const profile = {
     name: identity.name,
     role: identity.role,
@@ -114,6 +134,14 @@ export function createRefractData(context: TemplateContext) {
     },
     email,
     tagline: options.tagline ?? plain(context.introduction.roleLine),
+    // The tagline falls back to the hero role line, which often already says
+    // "role at company"; the position line would then repeat it.
+    positionRepeatsTagline:
+      options.tagline === undefined &&
+      sameWords(
+        plain(context.introduction.roleLine),
+        `${identity.role} ${identity.company}`,
+      ),
     summary: plain(context.introduction.summary),
     bio: context.biography.story.map((paragraph) =>
       paragraph.map((segment) => segment.text).join(""),

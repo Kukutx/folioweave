@@ -209,9 +209,11 @@ test("a profile may omit the blocks only Classic renders, and Classic insists on
     "photography",
     "footerBook",
     "interlude",
+    "site.contact",
   ]);
   const lean = await refractDemoProfile("dark");
-  for (const block of classic.requires)
+  // Refract shows the email address too; the other blocks are Classic's own.
+  for (const block of classic.requires.filter((name) => !name.includes(".")))
     assert.equal(
       block in lean,
       false,
@@ -238,6 +240,13 @@ test("a profile may omit the blocks only Classic renders, and Classic insists on
     /classic needs "interlude" in portfolio\.json\. Add that block/,
   );
   requireProfileBlocks(lean, selected.template);
+  // A profile without an email address is fine until a template shows one.
+  const noEmail = structuredClone(lean);
+  delete noEmail.site.contact;
+  assert.throws(
+    () => requireProfileBlocks(noEmail, selected.template),
+    /needs "site\.contact" in portfolio\.json/,
+  );
 });
 
 test("every mark the hero tile's option accepts is drawn, and the pane's foot follows the tile", async () => {

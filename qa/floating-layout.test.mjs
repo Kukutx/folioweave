@@ -65,6 +65,27 @@ test("capsule, chat and home controls fit without overlap across viewport sizes"
   }
 });
 
+test("equal moves stack along the docked edge whatever the sub-pixel rounding", () => {
+  const viewport = { x: 8, y: 8, width: 1264, height: 704 };
+  for (const shift of [0, 0.3, -0.3, 0.7]) {
+    const music = { x: 1194, y: 584, width: 56, height: 56, priority: 10 };
+    // Anchored at the same corner; moving up or left costs the same.
+    const other = {
+      x: 1250 - 64 + shift,
+      y: 640 - 61.7 - shift,
+      width: 64,
+      height: 61.7,
+      priority: 5,
+    };
+    const [, placed] = layoutFloating([music, other], viewport);
+    assert.equal(placed.x, other.x, `shift ${shift}`);
+    assert.ok(
+      placed.y + placed.height + 10 <= music.y + 0.01,
+      `shift ${shift}`,
+    );
+  }
+});
+
 test("visual viewport offsets are respected and impossible packing is reported", () => {
   const viewport = { x: 80, y: 100, width: 90, height: 90 };
   const results = layoutFloating(

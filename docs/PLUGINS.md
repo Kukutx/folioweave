@@ -1,8 +1,9 @@
 # Shared plugins
 
 Plugins are trusted source modules under `src/plugins/<id>/`, selected at build
-time. Both shipped plugins are disabled by default. They work through public
-configuration and semantic slots rather than a template's DOM structure.
+time. Every shipped plugin is disabled by default. They work through public
+configuration, semantic slots and their own pages rather than a template's DOM
+structure.
 
 ```sh
 npm run folio -- plugins
@@ -384,12 +385,195 @@ article routes can import the default slot component from
 `PluginContext` with an explicit stable article identity; the core does not guess
 identities for arbitrary demo pages.
 
+## Plugin pages
+
+A plugin may contribute one page of its own, served at `/tools/<path>`. Its
+manifest declares it under `page`:
+
+```json
+"slots": [],
+"page": {
+  "entry": "page.tsx",
+  "path": "emojicut",
+  "title": "EmojiCut",
+  "description": "Shown in search results and link previews.",
+  "icon": "icon.tsx"
+}
+```
+
+`entry` renders the page and receives `PluginPageProps<YourOptions>` (the same
+`options` and `context` as a slot component) inside the template's layout, so
+site-wide floating plugins stay available on it. `icon` is an optional component
+without state that draws a 24 × 24 `currentColor` SVG; menus show it. `path` is
+lowercase and unique among enabled plugins. A plugin may have a slot, a page or
+both; a page-only plugin lists no slots and no top-level `entry`.
+
+Only enabled plugins have pages. One dynamic route, `src/app/tools/[tool]`,
+serves them all from `src/portfolio/plugin-pages.generated.tsx`; unknown paths
+are 404s, and enabled pages join the sitemap and the published route list. Menus
+read titles and icons from `src/portfolio/plugin-page-links.generated.tsx`, which
+imports no page code, and site-wide slots receive the same list as
+`context.pages`. Both files follow the profile, like the slot entries.
+
+## Plugin actions
+
+A plugin that opens something in place (an overlay) rather than a page declares
+one `action`:
+
+```json
+"slots": ["site.floating"],
+"action": { "hash": "badge", "title": "Badge", "description": "…", "icon": "icon.tsx" }
+```
+
+The plugin provides its own way in (the launcher lists pages only); links to `#badge` open it.
+The plugin, mounted in one of its slots, opens when the address carries that
+hash (so `https://example.com/#badge` can be shared) and removes the hash when it
+closes. An action needs at least one slot to live in. `context.pages` carries
+both kinds; each entry has `kind: "page"` or `kind: "action"`, and only pages
+join the sitemap.
+
+### EmojiCut
+
+`emojicut` publishes `/tools/emojicut`: a sticker printer that cuts a sticker
+sheet into separate transparent PNGs with a white outline, entirely in the
+visitor's browser, and can have AI design the sheet from a character picture.
+AI design uses the visitor's own Gemini API key, which stays in their browser and
+goes only to `generativelanguage.googleapis.com`; the site holds no key and pays
+for nothing. Set `ai: false` to offer cutting only. It is based on
+[EmojiCut by Rayinf](https://github.com/Rayinf/EmojiCut).
+
+## Tool launcher
+
+`launcher` puts a floating ink-drop character on every page. Pressing it opens a
+fan of shortcuts: the pages of enabled plugins, a way home while on another page,
+and any destinations listed under `items`.
+
+```json
+{
+  "position": "right",
+  "size": 88,
+  "items": [
+    { "label": "Writing", "href": "/blogs", "icon": "article" },
+    { "label": "GitHub", "href": "https://github.com/you", "icon": "code" }
+  ]
+}
+```
+
+| Option         | Values / default                                                  |
+| -------------- | ----------------------------------------------------------------- |
+| `label`        | Accessible name of the button; defaults to a localised “Tools”    |
+| `position`     | `right` (bottom-right, default), `left`                           |
+| `size`         | Width of the drop, 48–120 CSS pixels, default 88                  |
+| `pages`        | `true` by default: show enabled plugin pages                      |
+| `home`         | `true` by default: offer Home while on another page               |
+| `items`        | `label`, `href` (site path, HTTPS URL or `mailto:`) and an `icon` |
+| `offsetBottom` | 0–240 CSS pixels, like music                                      |
+
+Item icons are `link`, `home`, `article`, `image`, `mail`, `user`, `code`, `music`
+and `star`. HTTPS links open in a new tab. The launcher hides itself when it has
+nothing to offer.
+
+The launcher's footprint is the 56px column the site's round floating controls
+share, and it registers with priority 5, below music, so it stacks above the
+record. The fan opens toward the roomier side of the viewport on quarter-circle
+rings and shrinks to fit small screens. Names show on hover and keyboard focus,
+and always on touch screens. Enter or Space opens it with focus on the first
+item; arrows, Home and End move between items; Escape, a press outside, opening
+another floating panel or navigating closes it. The drop is drawn in the shade's
+opposite: it reads `--fw-page-shade` (else `--fw-surface`) and turns near-white
+on dark sections. It runs a 30 fps canvas only while visible, holds still under
+reduced motion, and fades out with the other controls while a phone reader
+scrolls down. The character is the Ink Bot from the replicas kit.
+
+The launcher keeps the same place and size on every page. A template that draws
+the same ink drop as decoration (Pond) hides its own while the launcher is on.
+
+## Work badge
+
+`badge` hangs a small badge on a lanyard from the top edge of the home page.
+Clicking it, pressing Enter or Space on it, or pulling it down opens the badge
+over the dimmed page: a 3D lanyard whose cards swing in from the side and come
+to rest. Visitors drag and throw the cards on the stretchy woven strap and tap
+to turn them over; Enter or Space turns them from the keyboard, Escape, the
+close button or a tap beside the cards closes. The plugin declares the action
+`#badge`, so `https://example.com/#badge` opens it on any page; closing removes
+the hash. The launcher does not list it.
+
+The scene is `three` (no other 3D library). It loads only when the badge is
+first about to open (hover, focus or press on the small badge, or `#badge`),
+draws only while something moves, stops while the page or the badge is off
+screen, and is disposed when the badge closes.
+
+Each card is either pictures or a face drawn from text:
+
+```json
+{
+  "cards": [
+    {
+      "logo": "/portfolio/badge/company.webp",
+      "title": "Your Name",
+      "kicker": "Company",
+      "description": "Role",
+      "alt": "Your Name, Role, Company"
+    },
+    { "theme": "dark", "frontImage": "/portfolio/badge/side-project.webp" }
+  ]
+}
+```
+
+A drawn face uses the page's own font: a light or dark card (`theme`) with a
+dashed grid behind a hexagonal roundel holding `logo`, then `title`, `kicker`
+in monospace capitals and up to four lines of `description`. With
+`frontImage` (and optionally `backImage`) the card prints those pictures
+instead, `cover` or `contain` (`imageFit`) on `cardColor`. A card with neither
+is plain `cardColor`. `alt` is what screen readers hear. Pictures are local
+`/portfolio/` files, published like other profile images, or HTTPS URLs, whose
+origins are added to `img-src`.
+
+| Option | Values / default |
+| --- | --- |
+| `cards` | Front to back, 1–6; default one plain white card |
+| card `theme` | `light` (default) or `dark`; also the card's colour unless `cardColor` is set |
+| card `finish` | `glossy` (default), `matte`, `holographic`, `metallic` |
+| `orientation` | `portrait` (default) or `landscape` |
+| `cornerRadius` | 0–1, default 0.155 |
+| `size` | Card height as a share of the view, 0.15–0.9, default 0.4 |
+| `anchor` | `center` (default), `left`, `right`: where the strap hangs from |
+| `strapLength` | 0–1, default 1: how far down the cards hang |
+| `strapStyle` | `v` (default, two bands meeting at the sleeve) or `single` |
+| `strapSpread` | 0–1, default 0.23: how fast a V's bands part |
+| `strapColor`, `strapWidth`, `strapImage` | Default `#6d6d6d`, 0.65; a picture repeats along the strap |
+| `hardware` | `clasp` (default: sleeve, D-ring, lobster clasp through a round hole) or `ring` (clamp and ring through a slot) |
+| `metal` | `silver` (default), `gold`, `graphite`; the clasp is a darker cast of it |
+| `gravity`, `damping`, `elasticity`, `breeze` | 0–3 / 0–1, defaults 1, 0.5, 0.5, 0.5 |
+| `interactive`, `intro`, `shadow` | Default `true`; `introFrom` `left` (default) or `right` |
+| `trigger.show` | `home` (default), `all`, `none`; `#badge` links work everywhere |
+| `trigger.side`, `trigger.label`, `trigger.offsetTop` | `right` (default) or `left`; accessible name; 0–400 extra pixels of strap |
+| `backdrop` | `color` (`#dbe6f7`), `opacity` 0–1 (0.8), `blur` 0–40 px (14) |
+| `label`, `copy` | Accessible name of the open badge; `open`, `close`, `hint` replace the English or Chinese wording |
+
+The small badge shows the front card's face and never covers a template's
+header or navigation. It looks at what the page shows near the top (text,
+links, buttons, pictures, painted surfaces, and header or navigation bars
+narrower than 70% of the width) and hangs in the first free column from its
+side, as high as it can; its strap must cross nothing either. On phones (560 px
+and narrower) it is drawn at 0.72 times its size so it fits beside a header
+pill, and it looks again once passing notices have gone. Where no column is
+free it does not show. It retracts while the page is scrolled, while the badge
+is open and while Classic tucks the floating controls away.
+
+Visitors who ask for less motion get no breeze and no swing-in; the cards
+still respond to dragging and tapping. Without WebGL the badge opens to the
+dimmed page with its close button. `node --test qa/badge.test.mjs` covers the
+options and placement; check the scene in a browser with motion on.
+
 ## Create another plugin
 
 A plugin directory contains a `manifest.json`, a component entry and local styles.
 Use the music/comments implementations as complete examples. The manifest declares
 `id`, `name`, `description`, `version`, `apiVersion: 1`, `entry`, supported `slots`
-and an object `optionsSchema`. Unknown options should be rejected. A plugin
+and an object `optionsSchema`, and optionally a `page` (see
+[Plugin pages](#plugin-pages)). Unknown options should be rejected. A plugin
 mounts in the first slot its manifest lists; `plugins.<id>.slot` in
 `portfolio.json` picks another of them. A plugin's
 component accepts `PluginProps<YourOptions>` from `src/core/contracts.ts`.

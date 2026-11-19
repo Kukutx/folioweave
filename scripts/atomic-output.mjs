@@ -76,6 +76,7 @@ export async function commitGeneratedOutputs(
         relative === "public/portfolio" ||
         relative === ".generated/publication.json" ||
         relative === "src/portfolio/security.generated.json" ||
+        relative === "src/portfolio/redirects.generated.json" ||
         /^src\/blog\/[\w-]+\.generated\.ts$/.test(relative) ||
         /^src\/portfolio\/(?:[\w-]+\.generated\.tsx?|portfolio-validator\.(?:cjs|d\.cts))$/.test(
           relative,

@@ -4,6 +4,10 @@ export const mediaManifest: Record<string, { width: number; height: number }> = 
     "width": 1920,
     "height": 765
   },
+  "/portfolio/badge/proxima-lab.webp": {
+    "width": 484,
+    "height": 485
+  },
   "/portfolio/covers/time-is-broken.webp": {
     "width": 640,
     "height": 640

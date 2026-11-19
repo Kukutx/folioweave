@@ -6,6 +6,7 @@ import { PNG } from "pngjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
 import { verifyVisualBaseline } from "./visual-contract.mjs";
 import { firstPhotograph } from "./profile.mjs";
+import { qaTemplate } from "./template.mjs";
 
 // Capture real content, including lazy images. No images or sections are masked.
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
@@ -20,6 +21,13 @@ const directory = regression
 await fs.rm(directory, { recursive: true, force: true });
 await fs.mkdir(directory, { recursive: true });
 const report = [];
+const template = qaTemplate();
+// The home sections photographed in view: Classic's reviewed set, else the
+// sections the template's manifest lists (its first, the hero, is the
+// viewport capture). Pages the template adds are photographed at their top.
+const sectionRegions = template.classic
+  ? ["about", "work", "photography", "contact"]
+  : template.sections.filter((id) => id !== "home");
 const browser = await chromium.launch({
   executablePath: regression ? undefined : resolveChromePath(),
   headless: true,
@@ -110,7 +118,7 @@ try {
       });
     // Text reveals intentionally reset offscreen. Inspect sections in-view too,
     // rather than treating a stitched full-page screenshot as their only proof.
-    for (const id of ["about", "work", "photography", "contact"]) {
+    for (const id of sectionRegions) {
       const section = page.locator(`#${id}`);
       if (!(await section.count())) continue;
       await section.evaluate((el) =>
@@ -252,6 +260,55 @@ try {
           );
         }
       }
+    }
+    // Each page the template adds is checked whole for broken images and
+    // overflow, measured, and photographed at its top as a region.
+    if (template.pages.length) geometry.pages = {};
+    for (const target of template.pages) {
+      await page.goto(base + target.href, { waitUntil: "networkidle" });
+      await page.evaluate(() => document.fonts.ready);
+      for (
+        let y = 0;
+        y < (await page.evaluate(() => document.body.scrollHeight));
+        y += 650
+      ) {
+        await page.evaluate((top) => window.scrollTo(0, top), y);
+        await page.waitForTimeout(100);
+      }
+      await page.evaluate(() =>
+        Promise.race([
+          Promise.all(
+            [...document.images]
+              .filter((img) => img.getClientRects().length)
+              .map((img) => img.decode().catch(() => {})),
+          ),
+          new Promise((resolve) => setTimeout(resolve, 10000)),
+        ]),
+      );
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(1200);
+      const state = await page.evaluate(() => ({
+        box: {
+          x: 0,
+          y: 0,
+          width: document.documentElement.scrollWidth,
+          height: document.documentElement.scrollHeight,
+        },
+        overflow: document.documentElement.scrollWidth > innerWidth + 1,
+        broken: [...document.images]
+          .filter(
+            (img) =>
+              img.getClientRects().length &&
+              (!img.complete || !img.naturalWidth),
+          )
+          .map((img) => img.src),
+      }));
+      geometry.pages[target.id] = state.box;
+      geometry.overflow ||= state.overflow;
+      geometry.broken.push(...state.broken);
+      await page.screenshot({
+        path: `${directory}/${width}-page-${target.id}.png`,
+      });
     }
     const item = { width, geometry, lightbox, errors };
     report.push(item);
