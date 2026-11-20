@@ -1,7 +1,13 @@
 // npm run deploy: provider selection and the per-host configuration it writes.
 import assert from "node:assert/strict";
 import test from "node:test";
-import { firebaseConfig, removeUnpublished, target, wranglerConfig } from "../scripts/deploy.mjs";
+import {
+  cloudflareAssetHeaders,
+  firebaseConfig,
+  removeUnpublished,
+  target,
+  wranglerConfig,
+} from "../scripts/deploy.mjs";
 import { nextRedirects, profileRedirects } from "../src/config/redirects.mjs";
 
 const profile = {
@@ -150,4 +156,11 @@ test("a static export keeps only what the site publishes", async () => {
   } finally {
     fs.rmSync(out, { recursive: true, force: true });
   }
+});
+
+test("Cloudflare caches Next's hashed build output for good", () => {
+  assert.equal(
+    cloudflareAssetHeaders(),
+    "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n",
+  );
 });

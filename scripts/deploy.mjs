@@ -68,6 +68,13 @@ export function target(profile, requested) {
   };
 }
 
+/** Workers serve static assets with `max-age=0, must-revalidate` unless the
+ * assets folder holds a `_headers` file. Next's build output is
+ * content-hashed, so it is cached for good, as Vercel and Firebase do. */
+export function cloudflareAssetHeaders() {
+  return "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n";
+}
+
 /** Wrangler configuration for the Next adapter, from the profile. */
 export function wranglerConfig(settings) {
   return {
@@ -184,6 +191,7 @@ const steps = {
     fs.writeFileSync(config, `${JSON.stringify(wranglerConfig(settings), null, 2)}\n`);
     const env = { NEXT_PUBLIC_SITE_ORIGIN: origin, FOLIO_HOSTING: "cloudflare" };
     run("npx", ["opennextjs-cloudflare", "build", "--config", config], env);
+    fs.writeFileSync(path.join(root, ".open-next/assets/_headers"), cloudflareAssetHeaders());
     if (apply) run("npx", ["opennextjs-cloudflare", "deploy", "--config", config], env);
     else console.log(`\nBuilt for Cloudflare (${settings.worker}). Add --apply to publish.`);
   },
