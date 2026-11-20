@@ -181,6 +181,30 @@ function validatePluginAction(manifest, directory) {
     );
 }
 
+/** What a plugin mounted in a slot may add to every page it appears on, in
+ * gzip bytes. The bundle budget grants it on top of the template's own, and
+ * qa/plugin-budget.test.mjs holds the plugin's client code to it. */
+function validatePluginBudget(manifest) {
+  const budget = manifest.budget;
+  if (budget === undefined) return;
+  const bytes = (value) => Number.isInteger(value) && value > 0;
+  if (
+    !budget ||
+    typeof budget !== "object" ||
+    Array.isArray(budget) ||
+    Object.keys(budget).some(
+      (key) => !["jsGzipBytes", "cssGzipBytes"].includes(key),
+    ) ||
+    !bytes(budget.jsGzipBytes) ||
+    !bytes(budget.cssGzipBytes) ||
+    !manifest.slots?.length ||
+    !manifest.entry
+  )
+    throw new Error(
+      `${manifest.id}: budget needs positive whole jsGzipBytes and cssGzipBytes, and a slot entry it applies to`,
+    );
+}
+
 /** Kinds of site a template makes, for the gallery; `personal` by default. */
 export const TEMPLATE_CATEGORIES = Object.freeze(["personal", "store"]);
 
@@ -355,6 +379,7 @@ export function loadCatalog(root = implementationRoot) {
         if (kind === "plugins") {
           validatePluginPage(manifest, directory);
           validatePluginAction(manifest, directory);
+          validatePluginBudget(manifest);
         } else validateTemplateExtras(manifest, directory);
         const entries =
           kind === "templates"

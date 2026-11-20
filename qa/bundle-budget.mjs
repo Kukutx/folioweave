@@ -5,9 +5,43 @@ import { publicationRoutes } from "./blog-routes.mjs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:4181";
 const chrome = resolveChromePath();
-const maxJsBytes = Number(process.env.MAX_JS_KB || 260) * 1024;
-const maxCssBytes = Number(process.env.MAX_CSS_KB || 30) * 1024;
+// The template and core get the base budget; every plugin the profile turns
+// on adds the budget its manifest declares (qa/plugin-budget.test.mjs holds
+// each plugin to its own), so a profile pays only for what it enables.
+const allowances = await pluginAllowances();
+const maxJsBytes =
+  Number(process.env.MAX_JS_KB || 260) * 1024 +
+  allowances.reduce((total, item) => total + item.jsGzipBytes, 0);
+const maxCssBytes =
+  Number(process.env.MAX_CSS_KB || 30) * 1024 +
+  allowances.reduce((total, item) => total + item.cssGzipBytes, 0);
+if (allowances.length)
+  console.log(
+    `Plugin allowances: ${allowances
+      .map(
+        (item) =>
+          `${item.id} +${(item.jsGzipBytes / 1024).toFixed(1)} KB JS, +${(item.cssGzipBytes / 1024).toFixed(1)} KB CSS`,
+      )
+      .join("; ")}`,
+  );
 const routes = await publicationRoutes();
+
+async function pluginAllowances() {
+  const profile = JSON.parse(await fs.readFile("portfolio.json", "utf8"));
+  const enabled = Object.entries(profile.plugins ?? {}).filter(
+    ([, entry]) => entry?.enabled,
+  );
+  const list = [];
+  for (const [id] of enabled) {
+    const manifest = JSON.parse(
+      await fs
+        .readFile(`src/plugins/${id}/manifest.json`, "utf8")
+        .catch(() => "{}"),
+    );
+    if (manifest.budget) list.push({ id, ...manifest.budget });
+  }
+  return list;
+}
 
 const browser = await chromium.launch({ executablePath: chrome, headless: true });
 const report = [];

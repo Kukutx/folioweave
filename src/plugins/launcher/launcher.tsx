@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -68,6 +68,7 @@ function Launcher({ options, context }: PluginProps<LauncherOptions>) {
   const text = launcherCopy(context.locale);
   const name = label ?? text.label;
   const pathname = usePathname();
+  const router = useRouter();
   const menuId = useId();
   const pluginPages = context.pages;
   const locale = context.locale;
@@ -116,6 +117,15 @@ function Launcher({ options, context }: PluginProps<LauncherOptions>) {
     (next: boolean) => setOpenOn(next ? pathname : null),
     [pathname],
   );
+  // The fan's pages load when it opens, not with every page that shows the
+  // launcher: a tool page can bring fonts and code the page itself never
+  // needs. Its links therefore never prefetch on sight.
+  useEffect(() => {
+    if (!open) return;
+    for (const entry of entries)
+      if (!entry.external && !entry.current && localPath(entry.href))
+        router.prefetch(entry.href);
+  }, [open, entries, router]);
   const [react, setReact] = useState(0);
   const [fan, setFan] = useState<FanLayout | null>(null);
   const root = useRef<HTMLDivElement | null>(null);
@@ -300,6 +310,7 @@ function Launcher({ options, context }: PluginProps<LauncherOptions>) {
                   }}
                   className={styles.item}
                   href={entry.href}
+                  prefetch={false}
                   aria-current={entry.current ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >
