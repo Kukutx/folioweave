@@ -175,12 +175,12 @@ export function Strip({
     };
   };
 
-  /** A click, Enter or Space: the stub is pulled for you, then gives. */
-  const tear = (i: number) => {
-    if (dragged.current) {
-      dragged.current = false;
-      return;
-    }
+  /** A click, Enter or Space: the stub is pulled for you, then gives. A pointer's click that ends a
+   * drag is not one: the drag has already done (or undone) the tear. */
+  const tear = (i: number, pointer = false) => {
+    const afterDrag = dragged.current;
+    dragged.current = false;
+    if (afterDrag && pointer) return;
     if (busy.current[i] || torn[i]) return;
     busy.current[i] = true;
     take(i);
@@ -327,7 +327,7 @@ export function Strip({
                     onPointerUp={onUp}
                     onPointerCancel={onUp}
                     onKeyDown={onKey}
-                    onClick={() => tear(i)}
+                    onClick={(e) => tear(i, e.detail > 0)}
                   >
                     <span className={t.stubHead} aria-hidden>
                       {ticket.stub}
