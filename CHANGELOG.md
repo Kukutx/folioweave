@@ -6,6 +6,28 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.3.1 — 2026-11-20
+
+- Cloudflare: Next's content-hashed build output (`/_next/static/`) is cached
+  for a year, as on Vercel and Firebase. Workers served it with
+  `max-age=0, must-revalidate`, so every visit asked again for every script
+  and stylesheet.
+- Stack: small typed labels that fell under the 4.5:1 contrast WCAG AA asks
+  for are one ink darker: the dates and numbers in the deck's index and the
+  footer on the bare desk, the place on the calling card and the numbers on
+  the contents sheet. The "Now" stamp is printed at full ink.
+- Pond: the links under the pond are 24px high to a finger (WCAG 2.5.8)
+  without moving their text.
+- Ticket Club: each stub's spoken name starts with the words it shows, so
+  voice control finds it by them (WCAG 2.5.3).
+- Classic: the portrait button's name starts with the caption it shows, the
+  brand icon beside its name is decorative, the weather in the menu bar is
+  read with its city, and the photo strip is a named region the keyboard can
+  reach and scroll, with the cards' focus ring.
+- Dependencies: the copy of `minimatch` that `glob` brought in is 11.0.5,
+  which closes its denial-of-service advisory (pattern
+  amplification).
+
 ## 1.3.0 — 2026-11-20
 
 - Stack, rebuilt: one person's pile of paper on a desk. A calling card with

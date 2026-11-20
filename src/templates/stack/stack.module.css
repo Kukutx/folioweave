@@ -177,7 +177,8 @@
   z-index: 1;
 }
 .tabNumber {
-  color: var(--ink-3);
+  /* ink-2: ink-3 falls under 4.5:1 on the tab tints */
+  color: var(--ink-2);
 }
 
 /* Typed labels: dates, places, small print. */
@@ -298,6 +299,8 @@ a.brand:hover {
   margin-top: clamp(96px, 12vw, 152px);
   padding: 22px 0 40px;
   border-top: 1px solid var(--desk-line);
+  /* ink-2: on the bare desk ink-3 falls under 4.5:1 */
+  color: var(--ink-2);
 }
 .foot a {
   color: inherit;
