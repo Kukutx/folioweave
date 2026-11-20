@@ -1,0 +1,265 @@
+/* Tear-open envelope. Paper colours are the recorded ones (theme them with the variables below); text
+   around the envelope follows the host theme. The paper's grain is a fractal noise tile
+   (grain.ts).
+   --envelope-paper-hi / --envelope-paper-lo  front gradient      --envelope-inside  the inside of the back
+   --envelope-ink / --envelope-ink-soft        address / date      --muted  hint      --accent  tag */
+.root {
+  --env-grain: none; /* set to the grain bitmap (grain.ts) */
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: var(--env-min-h, 470px);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* what is inside: a layer that is painted even while it is not seen yet (opacity 0), so that it is ready
+   when the envelope shows it */
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+.isOpen .content {
+  transform: none !important;
+  will-change: auto;
+}
+.layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 720px;
+  height: 470px;
+  transform-origin: 0 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.body {
+  position: absolute;
+  border-radius: 1px;
+}
+/* the front: a soft diagonal fall-off of light over grained paper */
+.face {
+  background:
+    var(--env-grain) 0 0 / 240px 240px,
+    linear-gradient(
+      168deg,
+      var(--envelope-paper-hi, rgb(238, 235.5, 223)),
+      var(--envelope-paper-lo, rgb(224, 221, 200))
+    );
+}
+/* the back: its inside shows above the front once the strip is gone; it casts the envelope's shadow */
+.back {
+  background:
+    var(--env-grain) 0 0 / 240px 240px,
+    var(--envelope-inside, rgb(201, 199, 178));
+  box-shadow:
+    0 14px 32px -8px rgba(60, 50, 30, 0.32),
+    0 1.5px 1px rgba(60, 50, 30, 0.2);
+}
+.front {
+  cursor: pointer;
+  outline: none;
+}
+.front > * {
+  pointer-events: auto;
+}
+.front:focus-visible .face {
+  outline: 3px solid var(--accent, rgb(165, 48, 78));
+  outline-offset: 3px;
+}
+.opened .front,
+.opened .front * {
+  pointer-events: none !important;
+  cursor: auto;
+}
+.flaps {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.flapLine {
+  fill: none;
+  stroke: rgba(120, 108, 70, 0.13);
+  stroke-width: 1.2;
+}
+/* the front's torn top edge catches the light */
+.seam {
+  fill: none;
+  stroke: rgba(255, 255, 248, 0.75);
+  stroke-width: 1;
+}
+.stamps {
+  position: absolute;
+  width: 201px;
+  height: 158px;
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+}
+.to,
+.date,
+.hint {
+  position: absolute;
+  white-space: nowrap;
+  line-height: normal;
+}
+.to {
+  font-family: var(--font-hand, "Caveat Brush", cursive);
+  font-size: 39.5px;
+  color: var(--envelope-ink, rgb(30, 29, 22));
+}
+.date {
+  font-family: var(--font-script, "Caveat", cursive);
+  font-size: 25.2px;
+  font-weight: 600;
+  color: var(--envelope-ink-soft, rgb(88, 85, 72));
+}
+.hint {
+  left: 0;
+  width: 720px;
+  text-align: center;
+  will-change: opacity;
+  font-family: var(--font-script, "Caveat", cursive);
+  font-size: 24.2px;
+  font-weight: 500;
+  color: var(--muted, rgb(100, 98, 90));
+}
+/* tear strip: the band above the serrated line. Each part is a fixed piece of paper moved only by
+   transforms; the clipping boxes slide over it (no per-frame clip changes). */
+.strip {
+  position: absolute;
+}
+.clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+}
+.paper {
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 100%;
+  height: 38px;
+}
+.attached {
+  background:
+    var(--env-grain) 0 0 / 240px 240px,
+    linear-gradient(
+      to bottom,
+      rgba(120, 108, 72, 0.22),
+      rgba(120, 108, 72, 0) 1.2px
+    ),
+    linear-gradient(
+      to bottom,
+      rgb(241, 239, 226) 2px,
+      rgb(237, 236, 223) 8px,
+      rgb(236, 234, 219) 12px,
+      rgb(234, 231, 215) 16px,
+      rgb(232, 229, 212) 20px,
+      rgb(232, 229, 212) 31px,
+      rgb(227, 224, 209) 35.5px
+    );
+}
+/* the torn part shows the strip's underside */
+.under {
+  background:
+    var(--env-grain) 0 0 / 240px 240px,
+    linear-gradient(
+      to top,
+      rgb(237, 236, 221) 1px,
+      rgb(236, 234, 219) 8px,
+      rgb(229, 226, 208) 15px,
+      rgb(224, 221, 202) 22px,
+      rgb(224, 221, 202) 33px,
+      rgb(229, 225, 208) 36px
+    );
+}
+.armShadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 8px;
+  height: 10px;
+  background: linear-gradient(
+    to top,
+    rgba(70, 58, 30, 0.2),
+    rgba(70, 58, 30, 0)
+  );
+  filter: blur(2px);
+}
+.arm {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+}
+.clip,
+.slide,
+.curl {
+  will-change: transform;
+}
+.curl {
+  position: absolute;
+  left: 0;
+  border-radius: 0 16px 16px 0 / 0 26px 26px 0;
+  background:
+    var(--env-grain) 0 0 / 240px 240px,
+    linear-gradient(
+      90deg,
+      rgb(190, 186, 170) 0,
+      rgb(222, 218, 202) 3px,
+      rgb(236, 233, 216) 9px,
+      rgb(247, 245, 232) 16px,
+      rgb(248, 246, 234) 20px,
+      rgb(236, 233, 219) 25px,
+      rgb(226, 223, 209) 30px
+    );
+  box-shadow: 1.5px 1px 2px rgba(60, 50, 30, 0.2);
+  pointer-events: none;
+}
+.hit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.dragging,
+.dragging * {
+  cursor: grabbing !important;
+}
+/* where the strip is taken: a ring opens and fades */
+.ring {
+  position: absolute;
+  left: -46px;
+  top: -46px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(214, 120, 140, 0.9);
+  background: rgba(255, 255, 255, 0.28);
+  will-change: transform, opacity;
+}
+.tag {
+  position: absolute;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgb(237, 234, 216);
+  box-shadow:
+    0 0 0 1px rgba(120, 110, 80, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+  font-family: var(--font-hand, "Caveat Brush", cursive);
+  font-size: 23px;
+  line-height: 1;
+  color: var(--accent, rgb(165, 48, 78));
+  pointer-events: none !important;
+}

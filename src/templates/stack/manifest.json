@@ -1,13 +1,13 @@
 {
   "id": "stack",
   "name": "Stack",
-  "description": "One person's pile of paper on a desk: a calling card with a pile of portraits, the story on a ruled card, the years as index cards, the work as a deck of boards to deal and turn over, a contents sheet, loose prints to spread out and calling cards to take.",
+  "description": "A minimal one-column personal page: an avatar with a pile of portraits, experience, a perspective fan of work, link previews, prints, art and a chat-style contact.",
   "translations": {
     "zh": {
-      "description": "一个人摊在桌上的一叠纸：带一叠头像照片的名片、写在横线卡上的自我介绍、按年份排的索引卡、可以翻牌和翻面的作品板、一页文章目录、可以摊开的照片，和能拿走一张的名片。"
+      "description": "极简的单栏个人页：叠放的头像、经历、扇形展开的作品、链接预览、相片和聊天式联系。"
     }
   },
-  "version": "2.0.0",
+  "version": "1.0.0",
   "apiVersion": 1,
   "entries": {
     "Layout": "layout.tsx",
@@ -18,211 +18,303 @@
     "NotFound": "not-found.tsx"
   },
   "slots": ["site.floating", "site.footer", "article.after"],
-  "sections": ["about", "work", "writing", "photography", "contact"],
+  "sections": ["about", "work", "thoughts", "photography", "contact"],
   "optionsSchema": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
+      "established": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "description": "The year after EST. in the navigation; defaults to the earliest year of the timeline (omitted without one)."
+      },
       "labels": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Interface wording; everything else on the page comes from the profile.",
+        "description": "Interface wording, in the original's words by default.",
         "properties": {
-          "about": {
+          "est": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "About",
-            "description": "The tab of the about section (the story and the timeline)."
+            "default": "EST."
           },
-          "work": {
+          "navHome": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Work",
-            "description": "The tab of the deck of projects."
+            "default": "/HOME"
           },
-          "writing": {
+          "navAbout": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Writing",
-            "description": "The tab of the latest articles, also the writing pages' tab."
+            "default": "/ABOUT"
           },
-          "photography": {
+          "navWork": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Photos",
-            "description": "The tab of the prints."
+            "default": "/WORK"
           },
-          "contact": {
+          "navThoughts": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Contact",
-            "description": "The tab of the calling cards."
+            "default": "/THOUGHTS"
           },
-          "sections": {
+          "navContact": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Sections",
-            "description": "The accessible name of the row of tabs."
+            "default": "/CONTACT"
+          },
+          "experience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "EXPERIENCE"
           },
           "now": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Now",
-            "description": "The stamp on the timeline's current card."
+            "default": "NOW"
           },
-          "previous": {
+          "stuff": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Previous",
-            "description": "The deck's button that lays the bottom board on top."
+            "default": "STUFF I DO"
           },
-          "next": {
+          "stack": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Next",
-            "description": "The deck's button that tucks the top board under."
+            "default": "STACK"
           },
-          "turnOver": {
+          "ventures": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Turn over",
-            "description": "The deck's button that shows a board's back."
+            "default": "VENTURES"
           },
-          "turnBack": {
+          "writing": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Turn back",
-            "description": "The same button while the back is showing."
-          },
-          "nextPortrait": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Next photo",
-            "description": "The accessible name of the pile of portraits."
-          },
-          "spread": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Spread them out",
-            "description": "The button that lays the prints out as a contact sheet."
-          },
-          "gather": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Pile them up",
-            "description": "The button that piles the prints up again."
-          },
-          "shotWith": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Shot with",
-            "description": "Put before the camera under the prints."
-          },
-          "morePhotos": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "More photos",
-            "description": "The link to the profile's Instagram under the prints."
-          },
-          "write": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Write",
-            "description": "The calling cards' e-mail button."
-          },
-          "copy": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Copy address",
-            "description": "The button that copies the e-mail address."
-          },
-          "copied": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Copied",
-            "description": "Shown once the address is copied."
-          },
-          "resume": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Résumé",
-            "description": "The résumé link on the calling card."
+            "default": "WRITING"
           },
           "minutes": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "min",
-            "description": "After an article's reading time."
+            "default": "m"
+          },
+          "personal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PERSONAL"
+          },
+          "shotWith": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Shot with"
+          },
+          "seeMore": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "See more on IG"
+          },
+          "copy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Copy"
+          },
+          "submit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Submit"
+          },
+          "namePlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "John Doe"
+          },
+          "emailPlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "john@doe.com"
+          },
+          "messagePlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Enter your message"
+          },
+          "endingNote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Ending on a note I try to live by"
+          },
+          "showPhotos": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Show photos of"
+          },
+          "hidePhotos": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Hide photos of"
+          },
+          "selectedWork": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Selected work"
+          },
+          "contact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Contact"
           },
           "allWriting": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "All writing",
-            "description": "The link to every article."
+            "default": "All writing"
           },
           "home": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Home",
-            "description": "The writing pages' tab back to the home page."
-          },
-          "backToTop": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Back to top",
-            "description": "The footer's link."
+            "default": "Home"
           },
           "notFoundTitle": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Nothing here.",
-            "description": "The 404 card's title."
+            "default": "Nothing here."
           },
           "notFoundText": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "The link may be outdated, or the page has moved.",
-            "description": "The 404 card's text."
+            "default": "The link may be outdated, or the page has moved."
           }
         }
+      },
+      "chat": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The lines of the contact conversation around the e-mail, the form and the links.",
+        "properties": {
+          "greeting": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "hey, how do i actually reach you?"
+          },
+          "emailReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "fastest way is to email me. keep it short."
+          },
+          "messageAsk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "hmm too lazy to email tho"
+          },
+          "formReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "fair. just use the form below, lands in the same inbox."
+          },
+          "elsewhereAsk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "also where else are you online?"
+          },
+          "linksReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "you can find me here too."
+          },
+          "thanks": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "nice. i’ll connect."
+          },
+          "goodbye": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "always down to chat, swap ideas, or hear what you’re building."
+          }
+        }
+      },
+      "tools": {
+        "type": "array",
+        "maxItems": 12,
+        "description": "The STACK line: tools with a local square icon; omitted when empty.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "icon"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "icon": {
+              "type": "string",
+              "pattern": "^/(?!/)",
+              "maxLength": 300
+            }
+          }
+        },
+        "default": []
       },
       "camera": {
         "type": "string",
         "minLength": 1,
         "maxLength": 80,
-        "description": "What the photographs were taken with, shown under the prints after the shotWith label."
+        "description": "What the photos were taken with, shown under the prints."
+      },
+      "art": {
+        "type": "boolean",
+        "default": false,
+        "description": "The pocket of digital art and the floating stamps under the photos. Off by default: its caption presents the art as the author's own work."
+      },
+      "shuffle": {
+        "type": "boolean",
+        "default": true,
+        "description": "The shuffle stack of the projects' landscape pictures under the fan."
       },
       "ending": {
         "type": "object",
         "additionalProperties": false,
         "required": ["quote"],
-        "description": "The quote on the slip of paper beside the calling cards. Defaults to the profile's footerBook quote; omitted when neither exists.",
+        "description": "The closing quote under the conversation, after the endingNote label. Defaults to the profile's footerBook quote; omitted when neither exists.",
         "properties": {
           "quote": {
             "type": "string",
@@ -233,6 +325,31 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 80
+          }
+        }
+      },
+      "pocketLabel": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The caption printed on the art pocket.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "digital art"
+          },
+          "tool": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "tool: procreate"
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "sep 2024"
           }
         }
       }

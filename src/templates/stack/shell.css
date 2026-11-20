@@ -1,43 +1,15 @@
-/* The desk under every page, also past the ends of the scroll. Plugin tokens
-   live on the shell (stack.module.css), where the fonts are defined. */
+/* The page sits on white edge to edge, also past the ends of the scroll; plugins read these tokens. */
 :root[data-template="stack"],
 :root[data-template="stack"] body {
   margin: 0;
-  background: #d9d4c9;
-  color-scheme: light;
+  background: #fff;
 }
-
-/* Fallbacks sized like the three families, so text keeps its place while the
-   fonts load (see fonts.ts). The overrides are the ones next/font computes for
-   these files; the sources are Times New Roman and Courier New and the fonts
-   that share their metrics. */
-@font-face {
-  font-family: "Stack Display Fallback";
-  src:
-    local("Times New Roman"), local("TimesNewRomanPSMT"),
-    local("Liberation Serif"), local("LiberationSerif"), local("Tinos");
-  ascent-override: 117.87%;
-  descent-override: 36.91%;
-  line-gap-override: 0%;
-  size-adjust: 83.99%;
-}
-@font-face {
-  font-family: "Stack Text Fallback";
-  src:
-    local("Times New Roman"), local("TimesNewRomanPSMT"),
-    local("Liberation Serif"), local("LiberationSerif"), local("Tinos");
-  ascent-override: 89.45%;
-  descent-override: 28.93%;
-  line-gap-override: 0%;
-  size-adjust: 115.81%;
-}
-@font-face {
-  font-family: "Stack Mono Fallback";
-  src:
-    local("Courier New"), local("CourierNewPSMT"), local("Liberation Mono"),
-    local("LiberationMono"), local("Cousine");
-  ascent-override: 100.5%;
-  descent-override: 29.49%;
-  line-gap-override: 0%;
-  size-adjust: 100%;
+:root[data-template="stack"] {
+  --fw-surface: #ffffff;
+  --fw-text: #1a1a1a;
+  --fw-border: rgba(0, 0, 0, 0.08);
+  --fw-accent: #1a9cf0;
+  --fw-on-accent: #ffffff;
+  --fw-radius: 10px;
+  --fw-plugin-layer: 18000;
 }
