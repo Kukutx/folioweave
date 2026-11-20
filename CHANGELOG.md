@@ -6,6 +6,14 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## Unreleased
+
+- Stack, Pond and Ticket Club are the author's templates again, exactly as
+  they were in 1.2.0. The 1.3.0 rebuilds replaced them with designs nobody
+  asked for (a pile of paper, a garden pond, a box office) and are removed.
+- Refract Light and Dark have their aircraft-carrier 404 page back, as the
+  author asked; 1.3.0 had removed it.
+
 ## 1.3.2 — 2026-11-20
 
 - Cloudflare: optimised images (`/_next/image`) are cached as Next caches
