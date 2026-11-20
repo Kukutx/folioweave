@@ -36,25 +36,6 @@ export function NorthEastIcon(props: Props) {
   );
 }
 
-export function GlobeIcon(props: Props) {
-  return (
-    <svg
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-      aria-hidden="true"
-      {...props}
-    >
-      <circle cx="16" cy="16" r="13" />
-      <ellipse cx="16" cy="16" rx="6.5" ry="13" />
-      <path d="M3 16h26M5.5 8.5h21M5.5 23.5h21" />
-    </svg>
-  );
-}
-
 export function PlaybackIcon({
   paused,
   ...props

@@ -32,37 +32,47 @@ import {
 export function usePortfolioScene(stylePreset: StylePreset) {
   const { copy, profile, researchProjects, siteConfig, tools } =
     useRefractData();
-  const { chapterLabels, figures, bounds, toolsIndex, continentalDrift } =
-    useMemo(() => {
-      const bounds = chapterRanges(researchProjects.length);
-      const { enabled, chapters, ...drift } =
-        siteConfig.effects.continentalDrift;
-      const projectRanges = bounds.slice(2, 2 + researchProjects.length);
-      return {
-        chapterLabels: [
-          copy.home,
-          siteConfig.projectHeading,
-          ...researchProjects.map((project) => project.title),
-          tools.length ? siteConfig.toolsHeading : copy.transition,
-          copy.contact,
-        ],
-        figures: researchProjects.map(
-          (project) => siteConfig.researchFigures[project.id],
-        ),
-        bounds,
-        toolsIndex: researchProjects.length + 2,
-        continentalDrift:
-          enabled && projectRanges.length
-            ? {
-                ...drift,
-                ranges:
-                  chapters === "first"
-                    ? projectRanges.slice(0, 1)
-                    : projectRanges,
-              }
-            : (false as const),
-      };
-    }, [copy, researchProjects, siteConfig, tools.length]);
+  const {
+    chapterLabels,
+    projectHeading,
+    figures,
+    bounds,
+    toolsIndex,
+    continentalDrift,
+  } = useMemo(() => {
+    // The work chapter's heading, which the timeline names it by too.
+    const projectHeading = researchProjects.length
+      ? siteConfig.projectHeading
+      : copy.overview;
+    const bounds = chapterRanges(researchProjects.length);
+    const { enabled, chapters, ...drift } = siteConfig.effects.continentalDrift;
+    const projectRanges = bounds.slice(2, 2 + researchProjects.length);
+    return {
+      chapterLabels: [
+        copy.home,
+        projectHeading,
+        ...researchProjects.map((project) => project.title),
+        tools.length ? siteConfig.toolsHeading : copy.transition,
+        copy.contact,
+      ],
+      figures: researchProjects.map(
+        (project) => siteConfig.researchFigures[project.id],
+      ),
+      projectHeading,
+      bounds,
+      toolsIndex: researchProjects.length + 2,
+      continentalDrift:
+        enabled && projectRanges.length
+          ? {
+              ...drift,
+              ranges:
+                chapters === "first"
+                  ? projectRanges.slice(0, 1)
+                  : projectRanges,
+            }
+          : (false as const),
+    };
+  }, [copy, researchProjects, siteConfig, tools.length]);
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const earth = useRef<EarthRenderer | null>(null);
@@ -455,8 +465,6 @@ export function usePortfolioScene(stylePreset: StylePreset) {
       if (previousChapter !== visibleIndex) {
         previousChapter = visibleIndex;
         setChapter(visibleIndex);
-        container.dataset.inResearch = next >= 0 ? "true" : "false";
-        container.dataset.chapter = String(visibleIndex);
       }
       let mobileStage = 1;
       mobilePanels.forEach((panels, sectionIndex) =>
@@ -839,6 +847,7 @@ export function usePortfolioScene(stylePreset: StylePreset) {
     seekPosition,
     refreshScene,
     chapterLabels,
+    projectHeading,
     figures,
   };
 }
