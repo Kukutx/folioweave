@@ -26,6 +26,20 @@ track that names no `cover` shows the cover embedded in its MP3, FLAC or M4A
 file, if it has one; a track that already names a `cover` is unchanged.
 Existing options need no change.
 
+Ticket Club 2.0.0 is a new design: a box office printed on warm paper, the
+links on a roll of tickets, the letter in a sealed envelope and the projects
+and articles as the programme. `editionPath` and the labels that still name a
+part of the page keep their meaning. `tickets` now takes up to six and no
+longer has `icon` or `light`; the card's colour is the `stock` option. Without
+a `tickets` list the roll holds the profile's social links and then the e-mail
+address. The labels of parts that are gone are no longer accepted: remove
+`brandTop`, `brandBottom`, `edition`, `tagline`, `titleTop`, `titleBottom`,
+`subLead`, `subTail`, `edit`, `fresh`, `pass`, `club`, `year`, `hintPull`,
+`clipboard`, `clipboardFoot`, `keys`, `envelopeOpening`, `envelopeTag`,
+`close`, `previous`, `next`, `stampCity`, `stampCaption`, `stampRainy`,
+`stampPost`, `stampWithLove` and `readPost` from
+`template.settings["ticket-club"].labels`; the build names any that remain.
+
 ## Same repository: update `personal` from `main`
 
 In the maintained FolioWeave repository, shared implementation lands on `main`
