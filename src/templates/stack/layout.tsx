@@ -5,7 +5,7 @@ import "./shell.css";
 
 const Layout: TemplateModule["Layout"] = ({ children, slots }) => (
   <div className={`${s.shell} ${fontVariables}`}>
-    <div className={s.page}>{children}</div>
+    {children}
     {slots.footer}
     {slots.floating}
   </div>
