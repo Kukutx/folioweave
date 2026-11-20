@@ -374,7 +374,11 @@ export function AboutSection() {
       <motion.div
         variants={childVariant}
         className="story-gallery"
+        // A named region a keyboard can reach and scroll: narrower screens
+        // scroll the strip sideways with its scrollbar hidden.
+        role="region"
         aria-label="Personal photos"
+        tabIndex={0}
       >
         {storyGalleryImages.map((image, index) => {
           const styles = [

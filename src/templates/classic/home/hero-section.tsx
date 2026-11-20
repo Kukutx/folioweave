@@ -190,7 +190,8 @@ function RichText({
     const key = `${segment.brand.name}-${index}`;
     const content = (
       <>
-        <img src={segment.brand.icon} alt={segment.brand.name} />{" "}
+        {/* The name follows as text, so the icon is decorative. */}
+        <img src={segment.brand.icon} alt="" />{" "}
         {segment.brand.name}
       </>
     );
@@ -330,7 +331,8 @@ export function Hero() {
                   className="card-polaroid"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Show next portrait. Photo ${portrait + 1} of ${portraitImages.length}.`}
+                  // The name starts with the caption the card shows (WCAG 2.5.3).
+                  aria-label={`me_0${portrait + 1}.jpeg. Show next portrait, photo ${portrait + 1} of ${portraitImages.length}.`}
                   initial={false}
                   animate={{ opacity: 1, scale: 1, rotate: 6, y: 0 }}
                   // As on the original site, hover and its return settle

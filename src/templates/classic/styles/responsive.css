@@ -189,6 +189,11 @@ body {
 .story-gallery::-webkit-scrollbar {
   display: none;
 }
+/* The strip spans the viewport: the ring sits inside it, as the cards' does. */
+.story-gallery:focus-visible {
+  outline: 2px solid rgba(0, 113, 227, 0.62);
+  outline-offset: -4px;
+}
 @media (max-width: 1200px) {
   .story-gallery {
     margin-top: clamp(4.5rem, 10vw, 6rem);
