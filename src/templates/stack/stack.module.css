@@ -1,345 +1,1020 @@
-/* Stack: one person's pile of paper on a desk. The shell holds the palette,
-   the page grid and the pieces every view shares: the divider tabs, the
-   paper, the typed labels, the buttons and the landing motion. */
+/* Stack — after the replicas project "portfolio" (one centred 580 px column on white). The values are
+   the original's, measured from its recording; see the notes beside each block. */
 
-.shell {
-  /* the desk and its papers */
-  --desk: #d9d4c9;
-  --desk-line: rgb(60 50 35 / 0.12);
-  --paper: #fcfbf7;
-  --paper-warm: #f8f3e8;
-  --board: #fefdfa;
-  /* divider tints, one per section, as in a set of index dividers */
-  --tint-about: #eadcbf;
-  --tint-work: #d5dee2;
-  --tint-writing: #e9d4cc;
-  --tint-photography: #d8dfca;
-  --tint-contact: #ece0ae;
-  /* inks */
-  --ink: #1c1b19;
-  --ink-2: #47443e;
-  --ink-3: #736e65;
-  --ink-4: #9d978c;
-  --blue: #2841b8;
-  --stamp: #c4412b;
-  --marker: #f2e270;
-  --rule: rgb(70 106 182 / 0.28);
-  --rule-red: rgb(204 76 60 / 0.6);
-  /* light from the top left, paper a fraction of a millimetre thick */
-  --shadow-1:
-    0 1px 1px rgb(52 40 22 / 0.1), 0 2px 5px -2px rgb(52 40 22 / 0.16);
-  --shadow-2:
-    0 1px 1px rgb(52 40 22 / 0.08), 0 3px 8px -3px rgb(52 40 22 / 0.18),
-    0 18px 34px -16px rgb(52 40 22 / 0.34);
-  --shadow-3:
-    0 2px 2px rgb(52 40 22 / 0.06), 0 10px 20px -8px rgb(52 40 22 / 0.24),
-    0 34px 60px -24px rgb(52 40 22 / 0.42);
-  --ease: cubic-bezier(0.22, 0.7, 0.22, 1);
-  --ease-settle: cubic-bezier(0.25, 1.25, 0.4, 1);
-  --display: var(--st-display-ext), var(--st-display);
-  --text: var(--st-text-ext), var(--st-text);
-  --mono: var(--st-mono);
-  --col: 720px;
-  --wide: 1040px;
-  --gutter: 16px;
-
-  /* plugins read these */
-  --fw-font: var(--st-text-ext), var(--st-text);
-  --fw-surface: #fcfbf7;
-  --fw-text: #1c1b19;
-  --fw-border: rgb(28 27 25 / 0.14);
-  --fw-accent: #2841b8;
-  --fw-on-accent: #ffffff;
-  --fw-radius: 4px;
-  --fw-plugin-layer: 18000;
-
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--desk);
-  color: var(--ink);
-  font-family: var(--text);
-  font-size: 18px;
-  line-height: 1.6;
-  font-optical-sizing: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  overflow-x: clip;
-}
-@media (min-width: 720px) {
-  .shell {
-    --gutter: 32px;
-  }
-}
-/* Resets inside the template only, at zero specificity so every rule below wins. */
-:where(.shell) :where(*, ::before, ::after) {
+/* the base styles the original was built against, scoped to the page at zero specificity */
+:where(.page),
+:where(.page) *,
+:where(.page) *::before,
+:where(.page) *::after {
   box-sizing: border-box;
-}
-:where(.shell) :where(h1, h2, h3, p, ol, ul, figure, blockquote) {
   margin: 0;
-}
-:where(.shell) :where(ol, ul) {
   padding: 0;
-  list-style: none;
 }
-:where(.shell) :where(a) {
-  color: inherit;
-}
-:where(.shell) :where(img) {
+:where(.page) :where(img, svg, video, canvas) {
   display: block;
   max-width: 100%;
 }
-:where(.shell) :where(button) {
+:where(.page) :where(button, input, textarea, select) {
   font: inherit;
   color: inherit;
+  background: none;
+  border: none;
+  outline: none;
 }
-.shell :focus-visible {
-  outline: 2px solid var(--blue);
-  outline-offset: 3px;
-  border-radius: 2px;
-}
-.shell ::selection {
-  background: var(--marker);
-  color: var(--ink);
-}
-
-/* One column with room to break out: col for reading, wide for the deck and the prints. */
-.page {
-  display: grid;
-  grid-template-columns:
-    [full-start] minmax(var(--gutter), 1fr)
-    [wide-start] minmax(0, calc((var(--wide) - var(--col)) / 2))
-    [col-start] min(100% - 2 * var(--gutter), var(--col))
-    [col-end] minmax(0, calc((var(--wide) - var(--col)) / 2))
-    [wide-end] minmax(var(--gutter), 1fr) [full-end];
-  padding-block: 28px 0;
-}
-.page > * {
-  grid-column: col;
-}
-.section {
-  grid-column: full;
-  display: grid;
-  grid-template-columns: subgrid;
-  margin-top: clamp(96px, 14vw, 168px);
-  scroll-margin-top: 24px;
-}
-.section > * {
-  grid-column: col;
-}
-.section > .wide,
-.page > .wide {
-  grid-column: wide;
-}
-
-/* A divider's top edge with its tab: the section's title, at the same place
-   along the edge as its tab in the stack at the top of the page. */
-.divider {
-  display: flex;
-  align-items: flex-end;
-  margin-bottom: clamp(28px, 4vw, 44px);
-}
-.divider::before,
-.divider::after {
-  content: "";
-  height: 12px;
-  background: var(--tint);
-  box-shadow: var(--shadow-1);
-}
-.divider::before {
-  flex: var(--before) 1 0;
-  border-radius: 2px 0 0 2px;
-}
-.divider::after {
-  flex: var(--after) 1 0;
-  border-radius: 0 2px 2px 0;
-}
-.tab {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  gap: 0.7em;
-  flex: none;
-  /* as wide as its tab in the row at the top of the page, so it sits right under it */
-  min-width: calc((100% - (var(--slots) - 1) * 6px - 4px) / var(--slots));
-  padding: 9px 16px 21px;
-  margin-bottom: -12px;
-  background: var(--tint);
-  border-radius: 8px 8px 0 0;
-  box-shadow: var(--shadow-1);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-  z-index: 1;
-}
-.tabNumber {
-  /* ink-2: ink-3 falls under 4.5:1 on the tab tints */
-  color: var(--ink-2);
-}
-
-/* Typed labels: dates, places, small print. */
-.label {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.brand {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.28em;
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-.brand img {
-  align-self: center;
-  width: 0.95em;
-  height: 0.95em;
-  border-radius: 22%;
-  object-fit: cover;
-  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12);
-}
-a.brand {
-  text-decoration: underline;
-  text-decoration-color: rgb(40 65 184 / 0.35);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-  transition: text-decoration-color 0.2s var(--ease);
-}
-a.brand:hover {
-  text-decoration-color: var(--blue);
-}
-
-/* Ink links: underlined in blue ballpoint. */
-.ink {
-  color: var(--blue);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
-  text-decoration-color: rgb(40 65 184 / 0.4);
-  transition: text-decoration-color 0.2s var(--ease);
-}
-.ink:hover {
-  text-decoration-color: currentColor;
-}
-
-/* Paper buttons: small slips of card with a typed label. */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6em;
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 3px;
-  background: var(--paper);
-  box-shadow: var(--shadow-1);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
+:where(.page) :where(button) {
   cursor: pointer;
-  transition:
-    translate 0.25s var(--ease),
-    box-shadow 0.25s var(--ease);
 }
-.button:hover {
-  translate: 0 -2px;
-  box-shadow: var(--shadow-2);
-}
-.button:active {
-  translate: 0 0;
-  box-shadow: var(--shadow-1);
-}
-.button svg {
-  width: 14px;
-  height: 14px;
-  flex: none;
-}
-.button[disabled] {
-  opacity: 0.45;
-  cursor: default;
-  translate: none;
-  box-shadow: var(--shadow-1);
+:where(.page) :where(ul, ol) {
+  list-style: none;
 }
 
-.visuallyHidden {
+.page {
+  --grey: #868686;
+  --dark: #1a1a1a;
+  --label: #b2b2b2;
+  --blue: #1a9cf0;
+  --ease: cubic-bezier(0.6, 0, 0.2, 1);
+  --spring: cubic-bezier(0.3, 1.25, 0.5, 1);
+  min-height: 100vh;
+  background: #fff;
+  color: var(--grey);
+  font-family: var(--f-body), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 23px;
+  letter-spacing: 0.1px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+.page img {
+  display: block;
+}
+.page :focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.srOnly {
   position: absolute;
   width: 1px;
   height: 1px;
-  margin: -1px;
-  padding: 0;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-  border: 0;
+}
+.wrap {
+  position: relative;
+  width: 580px;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
+  padding-bottom: 40px;
 }
 
-/* The desk's far edge: small print and the plugins' footer. */
-.foot {
-  grid-column: col;
+/* nav */
+.nav {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 12px 24px;
-  margin-top: clamp(96px, 12vw, 152px);
-  padding: 22px 0 40px;
-  border-top: 1px solid var(--desk-line);
-  /* ink-2: on the bare desk ink-3 falls under 4.5:1 */
-  color: var(--ink-2);
+  padding-top: 38px;
+  font:
+    11px/16px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+  color: #8e8e8e;
 }
-.foot a {
-  color: inherit;
-  text-decoration: none;
+.navLinks {
+  display: flex;
+  gap: 11px;
 }
-.foot a:hover {
-  color: var(--ink);
+.navLinks a {
+  transition: color 0.2s;
 }
-
-/* Landing: an object below the fold is set down on the pile as it comes into
-   view, lifted a little and then settled (see parts/landing.tsx). Nothing is
-   hidden before the script runs, with reduced motion or in print. */
-@media (prefers-reduced-motion: no-preference) {
-  .shell [data-landing="wait"] {
-    opacity: 0;
-    translate: 0 36px;
-    scale: 1.025;
-  }
-  .shell [data-landing="in"] {
-    transition:
-      opacity 0.5s var(--ease),
-      translate 0.9s var(--ease),
-      scale 0.9s var(--ease);
-    transition-delay: var(--land-delay, 0s);
-  }
-}
-@media print {
-  .shell [data-landing] {
-    opacity: 1 !important;
-    translate: none !important;
-    scale: none !important;
-  }
+.navLinks a:hover {
+  color: var(--dark);
 }
 
-.main {
-  grid-column: full;
+/* ---------------------------------------------------------------- hero
+   The avatar with four photos tucked behind it. Hover fans the photos out; click docks the avatar
+   beside the name and lays the photos out in a row (same elements, so they fly from the fan into
+   the row). The block keeps one height in both states, so nothing below it moves. */
+.hero {
+  position: relative;
+  height: 132px;
+  margin-top: 103px;
+}
+.avatar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: none;
+  cursor: pointer;
+  transition:
+    width 0.45s var(--ease),
+    height 0.45s var(--ease),
+    border-radius 0.45s var(--ease),
+    transform 0.45s var(--ease);
+}
+.hero[data-open="true"] .avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 9px;
+  transform: translateY(-8px);
+}
+.face {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s var(--ease);
+}
+.hero[data-hover="true"] .face {
+  transform: scale(1.04);
+}
+.idText {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  transform: translate(0, 84px);
+  transition: transform 0.45s var(--ease);
+}
+.hero[data-open="true"] .idText {
+  transform: translate(58px, -9px);
+}
+.idText h1 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--dark);
+}
+.idText p {
+  margin: 5px 0 0;
+}
+.photosRow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+.mePhoto {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 70px;
+  max-width: none;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 11px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+  pointer-events: none;
+  transition:
+    transform 0.5s var(--spring),
+    border-radius 0.3s,
+    box-shadow 0.3s;
+}
+.hero[data-open="true"] .mePhoto {
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  pointer-events: auto;
+  transition:
+    transform 0.5s var(--spring) calc(var(--i) * 0.03s),
+    border-radius 0.3s,
+    box-shadow 0.3s;
+}
+.hero[data-open="true"] .photosRow:hover .mePhoto {
+  transition:
+    transform 0.32s var(--spring),
+    box-shadow 0.3s;
+}
+
+.bio {
+  max-width: 545px;
+  margin: 23px 0 0;
+}
+.page .strong {
+  display: inline-flex;
+  align-items: center;
+  color: var(--dark);
+}
+.inlineLogo {
+  margin: 0 2px 0 6px;
+  transition: transform 0.3s var(--ease);
+}
+.strong:hover .inlineLogo {
+  transform: rotate(-12deg) scale(1.12);
+}
+
+/* ---------------------------------------------------------------- sections */
+.section {
+  margin-top: 37px;
+}
+.label {
+  margin: 0 0 14px;
+  font:
+    400 11px/16px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+  color: var(--label);
+}
+.text {
+  margin: 0;
+}
+
+.exp {
+  list-style: none;
+  margin: 31px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 31px;
+}
+.page .expRow {
+  display: flex;
+  cursor: default;
+}
+.expRow .when {
+  position: relative;
+  top: -3px;
+}
+.when {
+  flex: 0 0 139px;
+  font:
+    11px/23px var(--f-mono),
+    monospace;
+  letter-spacing: 0.6px;
+  color: var(--label);
+}
+.expBody {
+  display: block;
+  min-width: 0;
+}
+.expTitle {
+  display: flex;
+  align-items: center;
+  margin: 0 0 3px;
+  color: var(--dark);
+}
+.expBody .text {
+  display: block;
+}
+.coLogo {
+  margin: 0 6px 0 7px;
+  border-radius: 5px;
+}
+
+/* stuff I do: a word lights up when its card in the fan is hovered and stays lit until another one is */
+.stuff {
+  margin: -5px 0 0;
+}
+.stuffLine {
+  display: block;
+}
+.word {
+  transition: color 0.3s ease-out 0.12s;
+}
+.word[data-lit="true"] {
+  color: var(--dark);
+  transition: none;
+}
+
+/* the fan of work */
+.fanBox {
+  position: relative;
+  margin-top: 62px;
+}
+.fanInner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 580px;
+  transform-origin: 0 0;
+}
+.stack {
+  position: relative;
+  height: 419px;
+}
+.slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  outline: none;
+  transition: translate 0.2s ease;
+}
+.slot[data-hover="true"] {
+  /* hovering slides a card up-left, out of the fan */
+  translate: -20px -11px;
+}
+.slot .fanCard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+  transform-origin: 0 0;
+  border-radius: 6px;
+  background: #f4f4f4;
+}
+.slot:focus-visible .fanCard {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* stack */
+.stackSection {
+  margin-top: 14px;
+}
+.tools {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 22px;
+}
+.tools li {
+  position: relative;
+  border-radius: 10px;
+}
+.toolLogo {
+  display: block;
+  width: 38px;
+  height: 38px;
+}
+.tip {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  z-index: 3;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #222;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -2px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.tools li:hover .tip,
+.tools li:focus-visible .tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* rows that light a full-width band on hover (ventures, writing) */
+.page .band {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: -1;
+  background: #f8f8f8;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.band:hover::before,
+.band:focus-visible::before {
+  opacity: 1;
+}
+
+.venturesSection {
+  margin-top: 39px;
+}
+.ventures,
+.writing {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ventures .band {
+  gap: 15px;
+  height: 68px;
+}
+.ventureLogo {
+  flex: none;
+  width: 38px;
+  height: 38px;
+}
+.ventureText {
+  flex: 1;
+  min-width: 0;
+}
+.ventureText b {
+  display: block;
+  font-weight: 400;
+  color: var(--dark);
+}
+.ventureText small {
+  display: block;
+  font-size: 15px;
+}
+.arrow {
+  flex: none;
+  color: #8a8a8a;
+}
+
+.writingSection {
+  margin-top: 40px;
+}
+.writing {
+  margin-top: 1px;
+}
+.post {
+  height: 38px;
+}
+.post .when {
+  font-size: 12px;
+  line-height: 38px;
+  color: #8c8c8c;
+}
+.postTitle {
+  flex: 1;
+  min-width: 0;
+  color: var(--dark);
+}
+.mins {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font:
+    12px/1 var(--f-mono),
+    monospace;
+  color: #8a8a8a;
+  white-space: nowrap;
+}
+
+/* personal */
+.personalSection {
+  margin-top: 39px;
+}
+.photosBox {
+  position: relative;
+  margin-top: 40px;
+}
+.photos {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 580px;
+  height: 247px;
+  transform-origin: 0 0;
+}
+.photos figure {
+  position: absolute;
+  left: var(--x);
+  top: 0;
+  width: 162px;
+  height: 226px;
+  margin: 0;
+  padding: 4px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.13);
+  transform: translateY(var(--y)) rotate(var(--r));
+  transition:
+    transform 0.35s var(--ease),
+    box-shadow 0.35s;
+}
+.photos figure:hover {
+  z-index: 9 !important;
+  transform: translateY(var(--y)) rotate(0deg) scale(1.12);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+.photos img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.photoFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  font-size: 12px;
+  line-height: 18px;
+  color: #8a8a8a;
+}
+.photoFoot span,
+.photoFoot a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.photoFoot svg {
+  color: #9a9a9a;
+}
+.page .photoFoot a:hover {
+  color: var(--dark);
+}
+
+/* ---------------------------------------------------------------- the contact conversation */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 38px;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.group[data-me="true"] {
+  align-items: flex-end;
+}
+.me,
+.them {
+  max-width: 290px;
+}
+.me span {
+  display: inline-block;
+  padding: 5.5px 11px;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+}
+.them > span,
+.card {
+  display: inline-block;
+  padding: 5.5px 11px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  color: var(--dark);
+}
+.card {
+  width: 290px;
+  max-width: 100%;
+  padding: 7px 8px 8px;
+}
+.card p {
+  margin: 0 3px 8px;
+}
+.page .action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 34px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font: inherit;
+  font-size: 14px;
+  color: var(--dark);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+}
+.page .action:hover {
+  background: #fdfdfd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.page .action:active {
+  transform: scale(0.98);
+}
+.page .action svg {
+  color: #8a8a8a;
+}
+/* copy / submit confirmation: the icon turns into a check for a moment */
+.swap {
+  position: relative;
+  display: inline-grid;
+  width: 15px;
+  height: 15px;
+}
+.swap svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.2s,
+    transform 0.25s var(--spring);
+}
+.iconB {
+  opacity: 0;
+  transform: scale(0.5);
+}
+.page .action[data-done="true"] .iconA {
+  opacity: 0;
+  transform: scale(0.5);
+}
+.page .action[data-done="true"] .iconB {
+  opacity: 1;
+  transform: none;
+  color: #2a9d4b;
+}
+.swap[data-solo="true"] {
+  width: 0;
+  margin-right: -6px;
+  transition:
+    width 0.25s var(--ease),
+    margin 0.25s var(--ease);
+}
+.page .action[data-done="true"] .swap[data-solo="true"] {
+  width: 15px;
+  margin-right: 0;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+.form .action {
+  height: 32px;
+  margin-top: 1px;
+}
+.form input,
+.form textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  background: #f2f2f2;
+  padding: 9px 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--dark);
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #9a9a9a;
+}
+.form input:focus,
+.form textarea:focus {
+  box-shadow: 0 0 0 1.5px var(--blue);
+}
+.form textarea {
+  display: block;
+  height: 189px;
+  resize: vertical;
+}
+
+/* ---------------------------------------------------------------- ending */
+.note,
+.quote {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+}
+.note {
+  margin-top: 32px;
+  color: #9a9a9a;
+}
+.quote {
+  margin-top: 6px;
+  color: var(--dark);
+}
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  font:
+    11px/1 var(--f-mono),
+    monospace;
+  letter-spacing: 0.8px;
+  color: #8a8a8a;
+}
+.foot span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.foot img {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.foot time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- floating site preview
+   A frosted pane appears at the cursor, the screenshot settles into it a moment later, and on leave
+   the screenshot goes first while the pane lingers. The card is the macOS-style wallpaper frame the
+   recording shows around every screenshot. */
+.preview {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  pointer-events: none;
+  will-change: transform;
+}
+.preview[data-phase="off"] {
+  visibility: hidden;
+}
+.previewCard {
+  position: relative;
+  width: 237px;
+  padding: 17px 17px 16px 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  background: rgba(255, 255, 255, 0.12);
+  transition: opacity 0.4s ease-out;
+}
+/* the frosted pane stays a moment after the screenshot has gone, then fades */
+.preview[data-phase="leaving"] .previewCard {
+  opacity: 0;
+  transition: opacity 0.3s ease-out 0.35s;
+}
+.wallpaper,
+.previewShot {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.preview[data-phase="shown"] .wallpaper,
+.preview[data-phase="shown"] .previewShot {
+  opacity: 1;
+}
+.wallpaper {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 55% at 0% 100%, #03228f 0%, rgba(3, 34, 143, 0) 100%),
+    radial-gradient(40% 45% at 100% 0%, #1f86cf 0%, rgba(31, 134, 207, 0) 100%),
+    radial-gradient(30% 30% at 0% 0%, #b07ca8 0%, rgba(176, 124, 168, 0) 100%),
+    radial-gradient(
+      45% 40% at 100% 100%,
+      #ec8f63 0%,
+      rgba(236, 143, 99, 0) 100%
+    ),
+    linear-gradient(
+      126deg,
+      #b57ea3 0%,
+      #db8a66 14%,
+      #f6c89c 27%,
+      #ee9a70 37%,
+      #8d78b2 46%,
+      #2f78c4 54%,
+      #0b4aa6 62%,
+      #5c7abd 70%,
+      #c98074 79%,
+      #e3a175 89%,
+      #ef956a 100%
+    );
+}
+.previewShot {
+  position: relative;
+  width: 204px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(10, 10, 20, 0.75),
+    0 4px 10px rgba(0, 0, 30, 0.25);
+}
+.previewShot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------- phones */
+@media (max-width: 640px) {
+  .nav {
+    padding-top: 24px;
+  }
+  .hero {
+    margin-top: 64px;
+  }
+  .when {
+    flex-basis: 96px;
+  }
+  .post .when {
+    flex-basis: 78px;
+  }
+  .tools {
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .toolLogo {
+    width: 30px;
+    height: 30px;
+  }
+  .ventures .band {
+    gap: 12px;
+    height: auto;
+    min-height: 68px;
+    padding: 8px 0;
+  }
+  .ventureText small {
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .postTitle {
+    padding-right: 8px;
+    line-height: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .preview * {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+  .previewCard {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* the payment card stack, under the fan of work: its own grey surface, on the column */
+.payBox {
+  margin: 26px 0 23px;
+}
+.payStack {
+  border-radius: 10px;
+}
+/* the stamps' mono is the page's mono */
+.stampsBox {
+  --stamps-mono: var(--f-mono);
+}
+
+/* the artwork under the photos: the pocket of prints, then the stamps (a little wider than the column) */
+.pocketBox {
+  margin-top: 34px;
+}
+.stampsBox {
+  width: min(800px, calc(100vw - 32px));
+  margin: 10px 0 0 calc(50% - min(400px, 50vw - 16px));
+}
+
+/* ---------------------------------------------------------------- the template's own additions
+   (the profile's content in the original's language; each is listed in the port's notes) */
+.shell {
+  --fw-font: var(--f-body), system-ui, sans-serif;
+}
+
+/* hero: a long name wraps instead of running out of the column */
+.idText {
+  max-width: 100%;
+}
+.hero[data-open="true"] .idText {
+  max-width: calc(100% - 58px);
+}
+.idText h1,
+.idText p {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* the bio's brands: the profile's icon where the original drew a logo */
+.page .inlineLogo {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* the story under EXPERIENCE: its strong and highlighted parts in the dark ink */
+.story + .story {
+  margin-top: 12px;
+}
+.story [data-tone="strong"],
+.story [data-tone="highlight"] {
+  color: var(--dark);
+}
+.expRow .expTitle {
+  overflow-wrap: anywhere;
+}
+
+/* a focused card shows its ring on the picture, not as a dot at the empty slot's corner */
+.page .slot:focus-visible {
+  outline: none;
+}
+
+/* the fan: a picture fills its card like the original's recordings; an upright (phone) screen shows its
+   top, where an app's screen starts */
+.slot .fanCard {
+  overflow: hidden;
+}
+.fanCard img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.fanCard[data-upright="true"] img {
+  object-position: 50% 0;
+}
+.stuff {
+  overflow-wrap: anywhere;
+}
+
+/* ventures: the project's icon, its description on one line (two on phones) */
+.page .ventureLogo {
+  border-radius: 9px;
+  object-fit: cover;
+}
+.initial {
   display: grid;
-  grid-template-columns: subgrid;
+  place-items: center;
+  background: #f3f3f3;
+  color: var(--dark);
+  font-size: 16px;
 }
-.main > :not(.section) {
-  grid-column: col;
+.ventureText b,
+.ventureText small {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.postTitle {
+  overflow-wrap: anywhere;
+}
+
+/* the floating preview: a narrower (upright) picture stands in the middle of the wallpaper */
+.previewShot {
+  margin: 0 auto;
+}
+
+/* a long article title wraps inside its row instead of running into the next one */
+.page .post {
+  height: auto;
+  min-height: 38px;
+}
+.post .postTitle {
+  padding-block: 7.5px;
+  padding-right: 8px;
+}
+@media (max-width: 640px) {
+  .post .postTitle {
+    padding-block: 0;
+  }
+  /* a short stack line keeps the desktop spacing instead of spreading across the phone */
+  .tools[data-few="true"] {
+    justify-content: flex-start;
+    gap: 22px;
+  }
+}
+
+/* the e-mail in the contact card */
+.page .mailLink {
+  overflow-wrap: anywhere;
+}
+.page .mailLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* space held for the artwork until it mounts */
+.hold {
+  display: block;
+}
+
+/* the footer name in capitals, as the original sets it */
+.foot > span:first-child {
+  text-transform: uppercase;
+}
+
+/* the ending: the quote's author, in the note's grey */
+.quoteBy {
+  color: #9a9a9a;
+}
+
+@media (max-width: 640px) {
+  .ventureText small {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }

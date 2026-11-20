@@ -1,0 +1,272 @@
+/* CardStack. Design sizes in CSS px; the stage scales down to its container. */
+.root {
+  position: relative;
+  width: 100%;
+  color: var(--ink, #0a0a0a);
+  font-family: var(
+    --cs-font,
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif
+  );
+  -webkit-font-smoothing: antialiased;
+}
+.root *,
+.root *::before,
+.root *::after {
+  box-sizing: border-box;
+}
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  border-radius: inherit;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- fan ---- */
+.slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  outline: none;
+  transition: translate 0.2s ease;
+}
+.slot[data-hover="true"] {
+  /* hovering slides a card up-left, out of the fan */
+  translate: -20px -11px;
+}
+.fanCard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.slot:focus-visible .fanCard {
+  box-shadow: 0 0 0 3px var(--accent, #1d9bf0);
+}
+
+/* ---- stack: frosted glass cards on their surface ---- */
+.stackRoot {
+  overflow: hidden;
+  background: var(--cs-bg, #e4e4e4);
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.stackRoot .stage {
+  left: 50%;
+}
+/* the soft light the glass throws around the stack */
+.halo {
+  position: absolute;
+  width: 333px;
+  height: 143px;
+  margin: -71.5px 0 0 -166.5px;
+  border-radius: 15px;
+  pointer-events: none;
+  background: var(--cs-halo, rgba(255, 255, 255, 0.6));
+  box-shadow: var(--cs-glow, 0 30px 140px 20px)
+    var(--cs-halo, rgba(255, 255, 255, 0.6));
+}
+.card,
+.ghost {
+  position: absolute;
+  border-radius: 15px;
+  box-shadow:
+    0 0 0 0.5px var(--cs-edge, rgba(0, 0, 0, 0.07)),
+    var(--cs-shadow, 0 4px 9px -3px rgba(0, 0, 0, 0.14));
+  transform-origin: 50% 50%;
+}
+.ghost {
+  background: var(--paper, rgba(255, 255, 255, 0.7));
+}
+.card {
+  cursor: default;
+  will-change: transform;
+}
+/* every layer that fades is drawn once and kept; only its opacity changes */
+.lens,
+.card > .ink,
+.card > .soft {
+  will-change: opacity;
+}
+.card[data-front] {
+  cursor: pointer;
+}
+.card[data-dragging] {
+  cursor: grabbing;
+}
+.stackRoot:focus-visible .card[data-front] {
+  box-shadow:
+    0 0 0 0.5px var(--cs-edge, rgba(0, 0, 0, 0.07)),
+    0 0 0 3px color-mix(in srgb, var(--accent, #1d9bf0) 55%, transparent),
+    var(--cs-shadow, 0 4px 9px -3px rgba(0, 0, 0, 0.14));
+}
+/* the glass: the scene behind, drawn once and blurred (front card only), under a milky veil */
+.glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.frost {
+  position: absolute;
+  inset: -80px;
+  background: var(--cs-bg, #e4e4e4);
+  filter: blur(var(--cs-frost, 32px));
+}
+.frost .ghost {
+  box-shadow: var(--cs-shadow, 0 4px 9px -3px rgba(0, 0, 0, 0.14));
+}
+.frost .ink {
+  opacity: var(--cs-ghost, 1);
+}
+.frost .amount,
+.frost .line,
+.frost .note,
+.frost .time {
+  opacity: var(--cs-ghost-text, 0.5);
+}
+.fill,
+.lens,
+.veil {
+  position: absolute;
+  inset: 0;
+}
+.fill {
+  background: var(--paper, rgba(255, 255, 255, 0.7));
+}
+.veil {
+  background: var(--cs-glass, rgba(255, 255, 255, 0.1));
+}
+.ink,
+.soft {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+/* a pre-blurred copy of the face, faded in while the card swings away (never an animated filter):
+   the blur sits inside the fading layer, so it is drawn once, not by the compositor every frame */
+.soft {
+  opacity: 0;
+  pointer-events: none;
+}
+.blurred {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  filter: blur(var(--cs-soft, 3px));
+}
+.amount {
+  position: absolute;
+  left: 20.5px;
+  top: 16.4px;
+  font-size: 35px;
+  line-height: 42px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.avatars {
+  position: absolute;
+  right: 20.5px;
+  top: 18.25px;
+  display: flex;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* the payer's picture lies over the payee's, ringed in the card's colour */
+.avatar:first-child {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 1.5px var(--cs-ring, #ececec);
+}
+.avatar + .avatar {
+  margin-left: -10.25px;
+}
+.line {
+  position: absolute;
+  left: 20px;
+  top: 76px;
+  display: flex;
+  align-items: center;
+  font-size: 14.8px;
+  line-height: 20px;
+  letter-spacing: -0.6px;
+  white-space: nowrap;
+}
+.line b {
+  font-weight: 700;
+}
+.paid {
+  margin: 0 6px 0 5.5px;
+  color: var(--muted, #737373);
+}
+.badge {
+  width: 11px;
+  height: 11px;
+  margin-left: 3.5px;
+  color: var(--accent, #1d9bf0);
+  flex: none;
+}
+.note {
+  position: absolute;
+  left: 21px;
+  top: 103px;
+  font-size: 14.2px;
+  line-height: 20px;
+  color: var(--muted, #737373);
+  white-space: nowrap;
+}
+.time {
+  position: absolute;
+  right: 20px;
+  top: 100.2px;
+  font-size: 14.2px;
+  line-height: 20px;
+  color: var(--muted, #737373);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    transition: none;
+  }
+}

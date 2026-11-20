@@ -1,25 +1,18 @@
-/* Document-level settings for Ticket Club only: the paper reaches past both ends of the scroll, and
-   plugins read the --fw-* tokens, taken from the bill's own inks. */
+/* Document-level settings for Ticket Club only. The page is red edge to edge (also past the ends of the
+   scroll); plugins read the --fw-* tokens, taken from the tickets' own colours. */
 :root[data-template="ticket-club"] {
-  --fw-font: var(--tc-mono), ui-monospace, monospace;
-  --fw-surface: #f8f2e6;
-  --fw-text: #1c1915;
-  --fw-border: rgba(28, 25, 21, 0.2);
-  --fw-accent: #ad2412;
-  --fw-on-accent: #fbf4e8;
-  --fw-radius: 4px;
+  --fw-font: var(--tc-inter, system-ui), system-ui, sans-serif;
+  --fw-surface: rgb(20, 22, 19);
+  --fw-text: rgb(226, 232, 215);
+  --fw-border: rgba(225, 235, 220, 0.14);
+  --fw-accent: rgb(157, 227, 223);
+  --fw-on-accent: rgb(19, 28, 25);
+  --fw-radius: 10px;
   --fw-plugin-layer: 18000;
-  background: #efe7d7;
+  background: rgb(226, 36, 22);
   color-scheme: light;
 }
 :root[data-template="ticket-club"] body {
   margin: 0;
-  background: #efe7d7;
-}
-
-/* The letter coming out of its envelope (letter.tsx) is a view transition of the whole document. */
-:root[data-template="ticket-club"]::view-transition-group(tc-letter),
-:root[data-template="ticket-club"]::view-transition-group(tc-envelope) {
-  animation-duration: 0.8s;
-  animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: rgb(226, 36, 22);
 }

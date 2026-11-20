@@ -485,7 +485,8 @@ on dark sections. It runs a 30 fps canvas only while visible, holds still under
 reduced motion, and fades out with the other controls while a phone reader
 scrolls down. The character is the Ink Bot from the replicas kit.
 
-The launcher keeps the same place and size on every page.
+The launcher keeps the same place and size on every page. A template that draws
+the same ink drop as decoration (Pond) hides its own while the launcher is on.
 
 ## Work badge
 
