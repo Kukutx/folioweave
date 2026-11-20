@@ -15,7 +15,8 @@
 .photo {
   position: relative;
   display: block;
-  overflow: hidden;
+  /* clip, not hidden: a scroll container of its own would freeze the scroll-driven animation inside */
+  overflow: clip;
   border-radius: 3px;
   background: var(--paper-deep);
   box-shadow:

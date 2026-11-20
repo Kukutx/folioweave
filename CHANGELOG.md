@@ -6,6 +6,17 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## Unreleased
+
+- Pond, redesigned: a garden pond seen from above. The home page is the whole
+  pond, with koi to feed, lily pads to move and a day/night switch (the moon
+  on the water at night); the other pages open on a band of the same water.
+  Work shows each project as its own koi in a viewing bowl, photographs
+  surface as they scroll in and open over the water, and articles are set in
+  Newsreader. The scene is rendered on the server and shows without
+  JavaScript; the canvas pauses off screen and in hidden tabs. Its settings
+  stay valid, and a new `time` setting chooses day, night or the system's.
+
 ## 1.2.1 — 2026-11-20
 
 - Tool launcher: its links no longer prefetch while the fan is closed; the

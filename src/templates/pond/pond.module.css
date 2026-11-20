@@ -364,12 +364,12 @@
 
 /* the introduction settles in as the koi come up (the pond's opening, water.module.css) */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .home:has([data-opening])
-    :is(.motto, .greeting, .role, .summary, .links, .hint) {
-    animation: pond-rise 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  /* the text is there from the first paint and only settles into place */
+  .home:has([data-opening]) :is(.motto, .greeting, .role, .summary, .links) {
+    animation: pond-settle 1.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
-  .home:has([data-opening]) .greeting {
-    animation-delay: 0.1s;
+  .home:has([data-opening]) .hint {
+    animation: pond-rise 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .home:has([data-opening]) .role {
     animation-delay: 0.22s;
@@ -388,6 +388,12 @@
   from {
     opacity: 0;
     translate: 0 14px;
+  }
+}
+@keyframes pond-settle {
+  from {
+    opacity: 0.4;
+    translate: 0 12px;
   }
 }
 

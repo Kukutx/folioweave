@@ -63,7 +63,6 @@ type Palette = Record<Token, RGBA>;
 
 type Fish = {
   look: Markings;
-  size: number;
   /** px per koi unit */
   scale: number;
   spine: Float64Array;
@@ -94,7 +93,7 @@ type Pad = {
   vx: number;
   vy: number;
   spin: number;
-  drag: { id: number; ox: number; oy: number; px: number; py: number; t: number } | null;
+  drag: { id: number; ox: number; oy: number; t: number } | null;
 };
 type Pellet = { x: number; y: number; vx: number; vy: number; age: number; land: number; gone: boolean };
 type Ripple = { x: number; y: number; t: number; life: number; r0: number; r1: number; a: number };
@@ -127,12 +126,13 @@ function parseColor(text: string): RGBA {
 }
 const css = (c: RGBA, alpha = 1) =>
   `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${Math.round(c[3] * alpha * 1000) / 1000})`;
-const lerp = (a: RGBA, b: RGBA, t: number): RGBA => [
-  a[0] + (b[0] - a[0]) * t,
-  a[1] + (b[1] - a[1]) * t,
-  a[2] + (b[2] - a[2]) * t,
-  a[3] + (b[3] - a[3]) * t,
-];
+/** colours mixed with premultiplied alpha, so a colour fading to transparent keeps its hue instead of greying */
+const lerp = (a: RGBA, b: RGBA, t: number): RGBA => {
+  const alpha = a[3] + (b[3] - a[3]) * t;
+  if (alpha <= 0) return [0, 0, 0, 0];
+  const mix = (i: number) => (a[i] * a[3] * (1 - t) + b[i] * b[3] * t) / alpha;
+  return [mix(0), mix(1), mix(2), alpha];
+};
 
 export class Pond {
   private root: HTMLElement;
@@ -256,7 +256,9 @@ export class Pond {
     this.h = Math.round(box.height);
     const unit = this.root.querySelector<HTMLElement>("[data-unit]");
     this.unit = unit ? unit.getBoundingClientRect().width / 180 : 1;
-    this.dpr = Math.min(this.dprCap, window.devicePixelRatio || 1);
+    // at most about 5.5 million canvas pixels (a 1440 × 900 pond at 2×), never fewer than one per CSS pixel
+    const fit = Math.sqrt(5.5e6 / Math.max(1, this.w * this.h));
+    this.dpr = Math.max(1, Math.min(this.dprCap, window.devicePixelRatio || 1, fit));
     this.canvas.width = Math.max(1, Math.round(this.w * this.dpr));
     this.canvas.height = Math.max(1, Math.round(this.h * this.dpr));
     this.readAvoid();
@@ -282,7 +284,6 @@ export class Pond {
       if (!shown(el)) continue;
       const d = el.dataset;
       const { x, y, w } = centre(el);
-      const size = (w / 180) / this.unit;
       const scale = w / 180;
       const angle = (Number(d.angle) * Math.PI) / 180;
       const local = restSpine(Number(d.bend));
@@ -297,7 +298,6 @@ export class Pond {
       const depth = Number(d.depth);
       const fish: Fish = {
         look: markings(Number(d.seed), d.variety as Variety),
-        size,
         scale,
         spine,
         drawn: new Float64Array(SEGMENTS * 2),
@@ -387,7 +387,7 @@ export class Pond {
     if (touch) return;
     const p = this.padAt(x, y);
     if (p) {
-      p.drag = { id, ox: x - p.x, oy: y - p.y, px: x, py: y, t: performance.now() };
+      p.drag = { id, ox: x - p.x, oy: y - p.y, t: performance.now() };
       p.vx = p.vy = 0;
       return true;
     }
@@ -497,14 +497,17 @@ export class Pond {
 
   private tick = (now: number) => {
     this.raf = 0;
-    const dt = Math.min(0.05, Math.max(0, (now - this.last) / 1000));
+    const gap = (now - this.last) / 1000;
+    const dt = Math.min(0.05, Math.max(0, gap));
     this.last = now;
     const work = performance.now();
     this.update(dt);
     this.render();
-    // a pond that takes too long to draw on this screen gives up some sharpness, a step at a time
-    this.slow = (performance.now() - work > 11 ? this.slow + 1 : Math.max(0, this.slow - 0.5));
-    if (this.slow > 40 && this.dprCap > 1) {
+    // a pond this screen cannot draw in time gives up some sharpness, a step at a time: judged by its own work and by
+    // the frames actually shown, since the canvas is painted after this returns
+    const late = performance.now() - work > 11 || gap > 1 / 38;
+    this.slow = late ? this.slow + 1 : Math.max(0, this.slow - 0.5);
+    if (this.slow > 45 && this.dprCap > 1) {
       this.dprCap = this.dprCap > 1.5 ? 1.5 : 1;
       this.slow = 0;
       this.measure();
@@ -768,6 +771,26 @@ export class Pond {
       if (p.y < lo || p.y > hiY) {
         p.vy = (p.y < lo ? 1 : -1) * Math.abs(p.vy) * 0.4;
         p.y = clamp(p.y, lo, hiY);
+      }
+    }
+    // a pad let go over the text drifts out from under it
+    for (const p of this.pads) {
+      if (p.drag) continue;
+      for (const r of this.avoid) {
+        const nx = clamp(p.x, r.x, r.x + r.w), ny = clamp(p.y, r.y, r.y + r.h);
+        const dx = p.x - nx, dy = p.y - ny, d = Math.hypot(dx, dy);
+        const reach = p.r + 12;
+        if (d >= reach) continue;
+        // inside the box: out through the nearer side
+        const [ux, uy] =
+          d > 0.5
+            ? [dx / d, dy / d]
+            : Math.min(p.x - r.x, r.x + r.w - p.x) < Math.min(p.y - r.y, r.y + r.h - p.y)
+              ? [p.x - r.x < r.x + r.w - p.x ? -1 : 1, 0]
+              : [0, p.y - r.y < r.y + r.h - p.y ? -1 : 1];
+        const push = (reach - d) * 2.4;
+        p.vx += ux * push * dt;
+        p.vy += uy * push * dt;
       }
     }
     // pads that meet push apart a little

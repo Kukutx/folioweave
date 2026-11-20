@@ -52,7 +52,7 @@ export const HOME: Scene = {
     { x: 69, y: 83, angle: 18, bend: 0.09, size: 0.86, depth: 0.22, phase: 3.3, only: "wide" },
     { x: 49, y: 50, angle: 252, bend: 0.05, size: 1.02, depth: 0.08, phase: 5.1, only: "wide" },
     { x: 91, y: 19, angle: 64, bend: -0.05, size: 0.88, depth: 0.62, phase: 0.9, only: "wide" },
-    { x: 9, y: 12, angle: 28, bend: 0.06, size: 0.8, depth: 0.4, phase: 2.7, only: "wide" },
+    { x: 8, y: 28, angle: 28, bend: 0.06, size: 0.8, depth: 0.4, phase: 2.7, only: "wide" },
   ],
   pads: [
     { x: 97, y: 37, px: 101, py: 31, size: 1.25, notch: 200 },
