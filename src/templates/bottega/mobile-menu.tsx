@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./bottega.module.css";
-
-type NavItem = { href: string; label: string };
+import type { NavItem } from "./shop";
 
 // The only interactive part of the home page; everything else is static HTML.
 export function MobileMenu({

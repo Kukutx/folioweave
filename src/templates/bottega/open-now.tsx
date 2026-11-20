@@ -2,8 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import styles from "./bottega.module.css";
+import { DAYS, dayName, fill, type Day } from "./hours";
 
-type Day = "mo" | "tu" | "we" | "th" | "fr" | "sa" | "su";
 type Entry = { days: Day[]; opens: string; closes: string };
 export type StatusLabels = {
   statusOpen: string;
@@ -13,7 +13,6 @@ export type StatusLabels = {
   tomorrow: string;
 };
 
-const DAYS: Day[] = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 const SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 /** Fixed-date national holidays: the original shows no status on these days. */
 const HOLIDAYS: Record<string, string[]> = {
@@ -24,8 +23,6 @@ const minutes = (time: string) => {
   const [hours, mins] = time.split(":").map(Number);
   return hours * 60 + mins;
 };
-const fill = (text: string, values: Record<string, string>) =>
-  text.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
 
 // The clock as a store: one snapshot per minute, refreshed every minute and
 // whenever the page becomes visible again. The server has no snapshot, so
@@ -84,10 +81,7 @@ function statusAt(
     }
     return null;
   };
-  const name = (index: number) =>
-    new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(
-      new Date(Date.UTC(2024, 0, 1 + index)),
-    );
+  const name = (index: number) => dayName(DAYS[index], locale);
   const todays = slots(today);
   if (!todays.length) {
     const next = nextDay();
