@@ -190,7 +190,7 @@ carries the momentum to the nearest whole turn, settling on the pose it would
 have shown untouched. Vertical gestures still scroll, the offset never reaches a
 later chapter, and reduced motion or a paused scene disables it.
 
-The manifests and five view entries live in `src/templates/refract-light/` and
+The manifests and six view entries live in `src/templates/refract-light/` and
 `src/templates/refract-dark/`. Shared home views, profile adaptation, CSS and scene
 code live under `src/components/refract/`. Its stylesheet is a stack of ordered
 layers in `styles/`, imported by `styles.css`; a later layer refines the earlier

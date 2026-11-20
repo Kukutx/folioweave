@@ -12,13 +12,6 @@
   }
 }
 
-@media (max-width: 480px) {
-  .spotify-widget {
-    font-size: 0.7rem;
-    max-width: 150px;
-  }
-}
-
 .time-label {
   font-weight: 650;
   font-variant-numeric: tabular-nums;

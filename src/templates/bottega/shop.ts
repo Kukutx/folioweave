@@ -7,6 +7,7 @@ import {
   type BottegaCopy,
   type BottegaOptions,
 } from "./copy";
+import { DAYS, dayName, type Day } from "./hours";
 
 export type Location = StoreView["locations"][number];
 export type NavItem = { href: string; label: string };
@@ -100,16 +101,6 @@ export function mapsUrl(location: Location): string | undefined {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query.join(", "))}`;
 }
 
-export const DAYS = ["mo", "tu", "we", "th", "fr", "sa", "su"] as const;
-export type Day = (typeof DAYS)[number];
-
-/** A weekday's name in the site language; Monday 1 January 2024 anchors the week. */
-export function dayName(day: Day, locale: string) {
-  return new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(
-    new Date(Date.UTC(2024, 0, 1 + DAYS.indexOf(day))),
-  );
-}
-
 /** Hours as written, or, without that, as the machine-readable hours read:
  * one line for each set of days, then its time ranges. */
 export function hoursText(location: Location, locale: string): string {
@@ -181,10 +172,6 @@ export function sharedHoursLine(shop: { store: { hoursSummary?: string }; locati
 /** The cities of every location, once each. */
 export function cities(locations: readonly Location[]) {
   return [...new Set(locations.map((location) => location.city))];
-}
-
-export function fill(text: string, values: Record<string, string>) {
-  return text.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
 }
 
 /** External links open in a new tab; tel:, mailto: and site paths do not. */

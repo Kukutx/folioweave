@@ -280,15 +280,6 @@
   display: flex;
   justify-content: center;
 }
-:where(.refract-site) .chapter-ticks i {
-  width: 1px;
-  height: 0.45rem;
-  background: #777;
-}
-:where(.refract-site) .chapter-ticks [data-active="true"] i {
-  background: #fff;
-  height: 0.85rem;
-}
 :where(.refract-site) .chapter-slider {
   position: absolute;
   inset: 0;
