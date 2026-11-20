@@ -1,0 +1,364 @@
+/* Work: a deck of mounted boards and its index. */
+
+.deck {
+  display: grid;
+  gap: 40px 56px;
+}
+@media (min-width: 960px) {
+  .deck {
+    grid-template-columns: minmax(0, 1fr) 272px;
+    align-items: start;
+  }
+}
+.table {
+  display: grid;
+  gap: 36px;
+}
+
+.pile {
+  display: grid;
+  padding: 0 12px 26px 4px;
+}
+.card {
+  grid-area: 1 / 1;
+  position: relative;
+  perspective: 2000px;
+  translate: 0 0;
+  rotate: 0deg;
+  transition:
+    translate 0.6s var(--ease),
+    rotate 0.6s var(--ease),
+    transform 0.45s var(--ease-settle);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.card[data-p="0"] {
+  cursor: pointer;
+}
+.card[data-p="1"] {
+  translate: 10px 12px;
+  rotate: 1.4deg;
+}
+.card[data-p="2"] {
+  translate: -6px 20px;
+  rotate: -1.6deg;
+}
+.card[data-p="3"] {
+  translate: 14px 26px;
+  rotate: 2.4deg;
+}
+.card[data-moving],
+.card[data-dragging] {
+  transition: none;
+}
+.card[data-dragging] {
+  cursor: grabbing;
+}
+
+.flip {
+  display: grid;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s var(--ease);
+}
+.card[data-turned] .flip {
+  transform: rotateY(-180deg);
+}
+.front,
+.back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px;
+  box-shadow: var(--shadow-2);
+}
+.card[data-p="0"] .front,
+.card[data-p="0"] .back {
+  box-shadow: var(--shadow-3);
+}
+.front {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(10px, 1.6vw, 16px);
+  background: var(--board);
+}
+/* Both faces share one size: when the back needs more room than the front, the front's
+   picture grows to fill it (showing more of the picture) rather than leaving blank board. */
+.back {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(20px, 4vw, 44px);
+  background: var(--paper-warm);
+  transform: rotateY(180deg);
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: auto;
+}
+
+.photo {
+  position: relative;
+  flex: 1 0 auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e9e6df;
+}
+.photo picture {
+  display: block;
+  height: 100%;
+}
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.screens {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4%;
+  height: 100%;
+  padding: 5% 6%;
+  background: #ebe8e1;
+}
+.screens img {
+  width: auto;
+  max-width: 30%;
+  height: 100%;
+  object-fit: contain;
+}
+.blank {
+  height: 100%;
+}
+@media (max-width: 640px) {
+  .photo {
+    aspect-ratio: 8 / 7;
+  }
+  .photo[data-screens] {
+    aspect-ratio: 4 / 3;
+  }
+}
+.badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  max-width: calc(100% - 28px);
+  padding: 6px 10px 5px;
+  border-radius: 2px;
+  background: #ecd79a;
+  box-shadow: var(--shadow-1);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  rotate: -2deg;
+}
+.badge[data-tone="blue"] {
+  background: #c3d3e8;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+  padding: clamp(14px, 2vw, 20px) 4px 4px;
+}
+.name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--display);
+  font-size: clamp(1.7rem, 1.4rem + 1.2vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.name img {
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 22%;
+  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12);
+}
+.date {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.backHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid var(--rule-red);
+}
+.backName {
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.7rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.description {
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.12rem);
+  line-height: 1.62;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.backBadge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+a.backBadge {
+  text-decoration: underline;
+  text-decoration-color: rgb(28 27 25 / 0.3);
+  text-underline-offset: 0.3em;
+}
+.backBadge svg {
+  width: 12px;
+  height: 12px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-size: 17px;
+}
+.actions svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.counter {
+  min-width: 5.5em;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.turn {
+  margin-left: auto;
+}
+
+/* the deck's index: one typed line per board */
+.index {
+  counter-reset: none;
+  border-top: 1px solid var(--desk-line);
+}
+.entry {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 2px;
+  width: 100%;
+  padding: 12px 4px 11px;
+  border: 0;
+  border-bottom: 1px solid var(--desk-line);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.entryNumber {
+  grid-row: 1 / 3;
+  padding-top: 5px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-4);
+}
+.entryName {
+  font-family: var(--display);
+  font-size: 1.45rem;
+  line-height: 1.15;
+  color: var(--ink-2);
+  transition: color 0.2s var(--ease);
+}
+.entryDate {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.entry:hover .entryName {
+  color: var(--ink);
+}
+.entry[aria-current="true"] .entryName {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blue);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
+}
+.entry[aria-current="true"] .entryNumber {
+  color: var(--blue);
+}
+
+/* Without JavaScript the boards lie one after another, both sides showing. */
+@media (scripting: none) {
+  .pile {
+    gap: 40px;
+    padding: 0;
+  }
+  .card {
+    grid-area: auto;
+    translate: none !important;
+    rotate: none !important;
+  }
+  .flip {
+    gap: 0;
+  }
+  .front,
+  .back {
+    grid-area: auto;
+    transform: none;
+    backface-visibility: visible;
+  }
+  .controls,
+  .index {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .flip {
+    transition: none;
+  }
+}

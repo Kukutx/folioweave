@@ -26,6 +26,14 @@ track that names no `cover` shows the cover embedded in its MP3, FLAC or M4A
 file, if it has one; a track that already names a `cover` is unchanged.
 Existing options need no change.
 
+Stack 2.0 is a new design, so its settings changed. `camera` and `ending` keep
+their meaning. `labels` now names the new interface's wording; its keys `now`,
+`writing`, `minutes`, `shotWith`, `copy`, `contact`, `allWriting`, `home`,
+`notFoundTitle` and `notFoundText` remain, the others are gone. Remove
+`established`, `chat`, `tools`, `art`, `shuffle`, `pocketLabel` and the
+removed `labels` keys from `template.settings.stack` before upgrading;
+validation names any that remain.
+
 ## Same repository: update `personal` from `main`
 
 In the maintained FolioWeave repository, shared implementation lands on `main`
