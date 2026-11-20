@@ -13,9 +13,9 @@ FolioWeave brings several site designs into one application: the Classic and Ref
 | Classic       | `classic`       | Editorial portfolio with tactile objects, project stories, and photography                         | [Open demo](https://folioweave-classic.vercel.app)       |
 | Refract Light | `refract-light` | White opening, contrasting dark sections, and a scroll-driven globe that separates and reforms     | [Open demo](https://folioweave-refract-light.vercel.app) |
 | Refract Dark  | `refract-dark`  | Warm dark opening, light drawing stages, and the same globe narrative in a distinct palette        | [Open demo](https://folioweave-refract-dark.vercel.app)  |
-| Stack         | `stack`         | A pile of paper on a desk: calling card, index cards, a deck of work to deal and turn over, prints | `npm run preview:template -- stack`                      |
-| Pond          | `pond`          | A garden pond seen from above: koi to feed, lily pads to move, day and night; work as koi in bowls | `npm run preview:template -- pond`                       |
-| Ticket Club   | `ticket-club`   | A box office on warm paper: links on a roll of tickets to tear off, a sealed letter, a programme    | `npm run preview:template -- ticket-club`                |
+| Stack         | `stack`         | One column: an avatar with a pile of portraits, experience, a fan of work and a chat-style contact | `npm run preview:template -- stack`                      |
+| Pond          | `pond`          | One screen over an ASCII koi pond with a short intro, links and a light/dark switch                | `npm run preview:template -- pond`                       |
+| Ticket Club   | `ticket-club`   | Links hang as tickets on a washing line; tear one off to copy it, and open a sealed letter         | `npm run preview:template -- ticket-club`                |
 | Bottega       | `bottega`       | A small local shop: one-tap WhatsApp and call, locations, products and a services price list       | `npm run preview:template -- bottega`                    |
 
 **In production:** [kukutx.vercel.app](https://kukutx.vercel.app) is the author's own portfolio, built with Classic from this repository's `personal` branch. The demos above use placeholder content; that site shows the template carrying real work.
