@@ -106,6 +106,10 @@
   text-decoration: none;
   white-space: nowrap;
   pointer-events: auto;
+  /* a 24px-high target for a finger (WCAG 2.5.8) without moving the text */
+  display: inline-block;
+  padding-block: 2px;
+  margin-block: -2px;
 }
 
 .active {
@@ -114,7 +118,7 @@
 
 .toggle {
   cursor: pointer;
-  padding: 0;
+  padding: 2px 0;
   border: 0;
   background: none;
   font: inherit;
@@ -244,49 +248,6 @@ a.link {
   white-space: pre;
 }
 
-/* the ink drop rests on the last line of text, at the right edge of the column (its dotted floor shadow lies 3 % of
-   its box above the box's foot). It has no background; only its body takes the pointer. It is drawn in the page's
-   ink, and its colour eases with the page's own theme fade. */
-.drop {
-  --inkbot-ink: var(--ink);
-  --inkbot-fade: 0.3s;
-  --inkbot-ease: ease;
-  position: absolute;
-  right: 24px;
-  bottom: calc(clamp(56px, 12.5vh, 132px) - 1.3px);
-  width: 152px;
-  pointer-events: none;
-}
-/* one drop on screen: the site's launcher is the same ink drop and keeps its place with the other floating
-   controls on every page, so the pond's own gives way to it (display: none also stops its frame loop) */
-:global(:root:has(body > [data-plugin="launcher"])) .drop {
-  display: none;
-}
-
-.dropBody {
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  top: 20%;
-  bottom: 9%;
-  border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%;
-  pointer-events: auto;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* narrower: beside the motto, its foot on the motto's last line */
-@media (max-width: 860px) {
-  .drop {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    align-self: flex-end;
-    width: 132px;
-    margin-bottom: -46px;
-  }
-}
-
 @media (max-width: 640px) {
   .site {
     font-size: 13px;
@@ -327,10 +288,6 @@ a.link {
   .social {
     font-size: 13px;
     margin-top: 16px;
-  }
-  .drop {
-    width: 104px;
-    margin-bottom: -40px;
   }
 }
 

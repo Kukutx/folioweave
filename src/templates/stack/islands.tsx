@@ -1,13 +1,14 @@
 "use client";
 
 // Small client islands of the page: the in-page navigation, the prints, the artwork (mounted when it
-// comes near the viewport), the shuffle stack and the footer clock.
+// comes near the viewport), the shuffle stack, the signature and the footer clock.
 
 import {
   startTransition,
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from "react";
@@ -23,7 +24,8 @@ import s from "./stack.module.css";
 export function NoScriptHolds() {
   return (
     <noscript>
-      <style>{`.${s.hold}{display:none}`}</style>
+      {/* without JavaScript the signature is shown written */}
+      <style>{`.${s.hold}{display:none}.${s.sig} path{stroke-dashoffset:0}`}</style>
     </noscript>
   );
 }
@@ -70,6 +72,44 @@ function useInView<T extends Element>(rootMargin = "0px") {
     return () => io.disconnect();
   }, [rootMargin]);
   return [ref, on] as const;
+}
+
+/** The author's signature, written stroke by stroke in one second once it comes into view, as in the
+ *  original: each stroke takes its share of the second by its length, at one steady pen speed. */
+export function Signature({ viewBox, strokes, label }: {
+  viewBox: string;
+  strokes: { d: string; width?: number }[];
+  label: string;
+}) {
+  const [ref, on] = useInView<HTMLDivElement>("0px 0px -10px 0px");
+  const [timing, setTiming] = useState<{ d: number; at: number }[] | null>(null);
+  useEffect(() => {
+    const paths = [...(ref.current?.querySelectorAll("path") ?? [])];
+    const lengths = paths.map((p) => p.getTotalLength());
+    const total = lengths.reduce((a, b) => a + b, 0) || 1;
+    let at = 0;
+    setTiming(lengths.map((length) => {
+      const d = length / total;
+      const t = { d, at };
+      at += d;
+      return t;
+    }));
+  }, [ref, strokes]);
+  return (
+    <div ref={ref} className={s.sig} data-on={on && timing !== null}>
+      <svg viewBox={viewBox} role="img" aria-label={label}>
+        {strokes.map((st, i) => (
+          <path
+            key={i}
+            d={st.d}
+            strokeWidth={st.width ?? 2}
+            pathLength={1}
+            style={timing?.[i] ? ({ "--d": `${timing[i].d}s`, "--at": `${timing[i].at}s` } as CSSProperties) : undefined}
+          />
+        ))}
+      </svg>
+    </div>
+  );
 }
 
 /** Mounts its children once they come near the viewport; until then holds their space (w:h, max height). */

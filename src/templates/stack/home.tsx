@@ -5,7 +5,7 @@ import { buildStack, type StackData } from "./data";
 import { Chat } from "./chat";
 import { Hero } from "./hero";
 import * as I from "./icons";
-import { Art, NavLinks, NoScriptHolds, Prints, Shuffle, WallClock } from "./islands";
+import { Art, NavLinks, NoScriptHolds, Prints, Shuffle, Signature, WallClock } from "./islands";
 import { PreviewLink, PreviewProvider } from "./preview";
 import { Work } from "./work";
 import s from "./stack.module.css";
@@ -151,13 +151,34 @@ function Writing({ d }: { d: StackData }) {
 
 function Personal({ d }: { d: StackData }) {
   const p = d.personal;
-  if (!p && !d.art) return null;
+  const song = d.song;
+  if (!p && !d.art && !song) return null;
   return (
     <section id={p ? "photography" : undefined} className={`${s.section} ${s.personalSection}`}>
+      {(p || song) && <h2 className={s.label}>{d.labels.personal}</h2>}
+      {p?.text && <p className={s.text}>{p.text}</p>}
+      {song && (
+        <a className={s.spotify} href={song.href} target="_blank" rel="noreferrer">
+          <span className={s.track}>
+            {song.cover && <img className={s.cover} src={song.cover} alt="" />}
+            <span>
+              <b>{song.title}</b>
+              {song.artist && <small>{song.artist}</small>}
+            </span>
+          </span>
+          {(song.note || song.cta) && (
+            <span className={s.spotFoot}>
+              <span>{song.note}</span>
+              <span>
+                {song.cta}
+                {/^https:\/\/open\.spotify\.com\//.test(song.href) && <I.SpotifyGlyph />}
+              </span>
+            </span>
+          )}
+        </a>
+      )}
       {p && (
         <>
-          <h2 className={s.label}>{d.labels.personal}</h2>
-          {p.text && <p className={s.text}>{p.text}</p>}
           <Prints photos={p.photos} />
           {(p.camera || p.more) && (
             <div className={s.photoFoot}>
@@ -217,6 +238,7 @@ const Home: TemplateModule["Home"] = ({ context }) => {
         <Personal d={d} />
         {d.chat.length > 0 && <Chat chat={d.chat} email={d.email} labels={d.labels} />}
 
+        {d.signature && <Signature {...d.signature} />}
         {d.ending && (
           <>
             <p className={s.note}>{d.ending.note}</p>

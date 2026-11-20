@@ -352,6 +352,87 @@
             "default": "sep 2024"
           }
         }
+      },
+      "song": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "href"],
+        "description": "A track in the personal section, as a card that opens it: cover, title and artist, a note and the call to listen.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "artist": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "cover": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Square cover image: a published asset path or an https URL."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Small print under the track, e.g. Most replayed this month."
+          },
+          "cta": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "The call to listen, e.g. Listen on Spotify."
+          },
+          "href": {
+            "type": "string",
+            "pattern": "^https://",
+            "maxLength": 500
+          }
+        }
+      },
+      "signature": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["viewBox", "strokes"],
+        "description": "The author's signature, drawn stroke by stroke in one second when it comes into view, above the closing note: SVG path strokes in pen order.",
+        "properties": {
+          "viewBox": {
+            "type": "string",
+            "pattern": "^-?[0-9.]+ -?[0-9.]+ [0-9.]+ [0-9.]+$"
+          },
+          "strokes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 40,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["d"],
+              "properties": {
+                "d": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20000
+                },
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "maximum": 20
+                }
+              }
+            }
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "What screen readers say for it; by default the author's name and 'signature'."
+          }
+        }
       }
     }
   },

@@ -33,3 +33,9 @@
   width: 100%;
   transform-origin: 50% 0;
 }
+
+/* the golden ticket's page: its line over the ticket in the page's colour; its card and Done as recorded */
+.punch {
+  --ink: rgb(28, 28, 30);
+  --caption: rgb(255, 214, 190);
+}

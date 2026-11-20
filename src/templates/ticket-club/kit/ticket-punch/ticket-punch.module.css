@@ -1,0 +1,338 @@
+/* The Polar Express invitation + golden ticket + hole punch. The card is 856 design px wide (--u = one
+   design px at the current width); text never drops below a readable size on small screens. */
+.root {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  color: var(--ink, #1c1c1e);
+  font-family: var(--font-sans, inherit);
+  -webkit-font-smoothing: antialiased;
+}
+.live,
+.live * {
+  cursor: none !important;
+}
+.root p,
+.root h3,
+.root h4 {
+  margin: 0;
+}
+
+/* invitation: white slip with zig-zag tear edges (drawn), real punched holes (mask). The card is its own
+   layer (it falls and rises); the slip's faint shadow and its holes are painted into it, so that moving or
+   fading the card never filters or masks it again */
+.card {
+  --u: calc(100cqw / 856);
+  position: relative;
+  will-change: transform;
+}
+.slip {
+  position: relative;
+  padding: calc(16px + 69 * var(--u)) max(20px, calc(85 * var(--u))) calc(17px + 59 * var(--u));
+  color: #1c1c1e;
+  background: linear-gradient(#fff, #fff) 0 16px / 100% calc(100% - 33px) no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.04));
+}
+/* the zig-zag edges, under the slip's content */
+.teeth {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 100%;
+  height: 17px;
+  fill: #fff;
+  pointer-events: none;
+}
+.teethBot {
+  top: auto;
+  bottom: 0;
+  height: 18px;
+}
+.invited {
+  font-size: max(13px, calc(19 * var(--u)));
+  line-height: 1.26;
+  color: #77777b;
+  margin-bottom: calc(16 * var(--u)) !important;
+}
+.event {
+  font-size: max(26px, calc(45 * var(--u)));
+  line-height: 1.244;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: calc(9 * var(--u)) !important;
+}
+.sub {
+  font-size: max(14px, calc(23 * var(--u)));
+  line-height: 1.13;
+  color: #6b6b70;
+  margin-bottom: calc(10 * var(--u)) !important;
+}
+.host {
+  font-size: max(13px, calc(19.5 * var(--u)));
+  line-height: 1.23;
+  color: #85858a;
+  margin-bottom: max(22px, calc(41 * var(--u))) !important;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: max(14px, calc(23 * var(--u)));
+  margin-bottom: max(14px, calc(26 * var(--u)));
+}
+.row + .row {
+  margin-bottom: max(22px, calc(41 * var(--u)));
+}
+.row h4 {
+  font-size: max(14px, calc(21 * var(--u)));
+  line-height: 1.24;
+  font-weight: 600;
+}
+.row p {
+  letter-spacing: 0.25px;
+  font-size: max(13px, calc(19 * var(--u)));
+  line-height: 1.37;
+  color: #85858a;
+}
+.cal,
+.pin {
+  flex: none;
+  width: max(44px, calc(66 * var(--u)));
+  height: max(44px, calc(66 * var(--u)));
+  border: 1px solid #e2e2e5;
+  border-radius: max(9px, calc(12 * var(--u)));
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.cal {
+  grid-template-rows: 36% 1fr;
+  place-items: stretch;
+  text-align: center;
+}
+.cal span {
+  display: grid;
+  place-items: center;
+  background: #ececee;
+  font-size: max(10px, calc(13 * var(--u)));
+  color: #5d5d62;
+}
+.cal b {
+  display: grid;
+  place-items: center;
+  font-size: max(17px, calc(24 * var(--u)));
+  font-weight: 600;
+}
+.pin svg {
+  display: block;
+  width: max(17px, calc(22 * var(--u)));
+  height: auto;
+}
+.arrow {
+  font-weight: 400;
+  color: #9a9a9f;
+  font-size: 0.76em;
+}
+.reg {
+  border-radius: max(12px, calc(18 * var(--u)));
+  background: #f4f4f6;
+  overflow: hidden;
+  padding-bottom: max(16px, calc(31 * var(--u)));
+}
+.reg header {
+  height: max(40px, calc(58 * var(--u)));
+  padding-left: max(16px, calc(31 * var(--u)));
+  background: #e9e9ed;
+  font-size: max(13px, calc(19 * var(--u)));
+  line-height: max(40px, calc(58 * var(--u)));
+  font-weight: 500;
+  color: #555559;
+}
+.welcome {
+  padding: max(14px, calc(27 * var(--u))) max(16px, calc(31 * var(--u))) 0;
+  font-size: max(14px, calc(21.2 * var(--u)));
+  line-height: 1.23;
+  color: #3a3a3e;
+}
+.who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: max(10px, calc(17 * var(--u)));
+  row-gap: 4px;
+  margin: max(14px, calc(26 * var(--u))) max(16px, calc(30 * var(--u))) 0;
+  font-size: max(14px, calc(21 * var(--u)));
+}
+.who b {
+  font-weight: 600;
+  margin-right: calc(-6 * var(--u));
+}
+.who span:last-child {
+  font-size: max(13px, calc(19 * var(--u)));
+  color: #8d8d92;
+}
+.avatar {
+  width: max(32px, calc(42 * var(--u)));
+  height: max(32px, calc(42 * var(--u)));
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #b9c4c9, #6f7c80);
+  color: #fff;
+  font-size: max(13px, calc(17 * var(--u)));
+  font-weight: 600;
+}
+.btn {
+  display: block;
+  width: calc(100% - 2 * max(16px, calc(30 * var(--u))));
+  height: max(46px, calc(62 * var(--u)));
+  margin: max(14px, calc(24 * var(--u))) auto 0;
+  border: 0;
+  border-radius: 999px;
+  background: #1c1c1e;
+  color: #fff;
+  font: inherit;
+  font-size: max(15px, calc(21 * var(--u)));
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn:hover,
+.done:hover {
+  background: #3a3a3c;
+}
+.going,
+.going:hover {
+  background: #34c759;
+}
+.btn:focus-visible,
+.done:focus-visible,
+.ticket:focus-visible {
+  outline: 3px solid var(--accent, #c99a2e);
+  outline-offset: 3px;
+}
+.foot {
+  margin-top: max(18px, calc(33 * var(--u))) !important;
+  text-align: center;
+  font-size: max(12px, calc(16.5 * var(--u)));
+  line-height: 1.2;
+  color: #9a9a9f;
+}
+
+/* golden ticket */
+.yes {
+  --u: calc(100cqw / 856);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--yes-top, calc(-20 * var(--u)));
+  text-align: center;
+  font-size: max(15px, calc(22.5 * var(--u)));
+  line-height: 1.33;
+  font-weight: 500;
+  color: var(--caption, var(--ink, #1c1c1e)); /* on the page, not on the card */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: opacity;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ticket {
+  position: absolute;
+  visibility: hidden;
+  will-change: transform;
+  pointer-events: auto;
+  outline: none;
+}
+.ticket canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+/* the face's light: copies of the face over it, only their opacity changes */
+.ticket .dim,
+.ticket .lit {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.shadow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.1), transparent);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+.done {
+  --u: calc(100cqw / 856);
+  position: absolute;
+  left: 50%;
+  bottom: calc(17px - 28.75 * var(--u));
+  width: max(104px, calc(144 * var(--u)));
+  height: max(42px, calc(57.5 * var(--u)));
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink, #1c1c1e);
+  color: var(--paper, #fff);
+  font: inherit;
+  font-size: max(15px, calc(21 * var(--u)));
+  font-weight: 500;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: pointer;
+  will-change: transform, opacity;
+}
+.discs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.disc {
+  position: absolute;
+  display: block;
+  max-width: none;
+  border-radius: 50%;
+  will-change: transform;
+}
+.discDark {
+  background: #1c1c1e;
+}
+.discWhite {
+  background: #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.12);
+}
+.punch {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 3;
+  will-change: transform;
+}
+.pliers {
+  position: absolute;
+  display: block;
+  max-width: none;
+  overflow: visible;
+  will-change: transform, opacity; /* painted once (shadow included): moving or swapping the punch never repaints it */
+}
+

@@ -2,15 +2,10 @@
 
 // The pond home, as in the original: an ASCII koi pond fills the screen; click anywhere on the water (or focus it
 // and press Enter) to drop food. The corner counter shows the koi and the pellets in the water, flashing bright on
-// every change. The ink drop rests at the pond's edge: bottom right on the last line of text on wide pages, beside
-// the motto on narrow ones; its eyes follow the pointer and pressing its body squashes it. The koi steer around
-// the intro and the drop and swim faintly under the lines of text.
-//
-// One drop on screen: when the site's floating launcher (the same ink drop, as a button) is on the page, the pond's
-// own drop gives way to it (pond.module.css, .drop).
+// every change. The koi steer around the intro and swim faintly under the lines of text. The ink drop is not part
+// of the template: it is the launcher plugin, the same on every page.
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { InkBot } from "./kit/ink-bot";
 import { KoiPond, type KoiPondStats } from "./kit/koi-pond";
 import type { Part, PondData } from "./data";
 import { Nav } from "./nav";
@@ -34,17 +29,15 @@ export function PondHome({ data }: { data: PondData }) {
   const theme = usePondTheme();
   const [stats, setStats] = useState<KoiPondStats>({ fish: FISH, food: 0 });
   const [flash, setFlash] = useState(false);
-  const [poke, setPoke] = useState(0);
   const raf = useRef(0);
   const introRef = useRef<HTMLElement>(null);
   const bioRef = useRef<HTMLDivElement>(null);
   const socialRef = useRef<HTMLParagraphElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
-  const dropBodyRef = useRef<HTMLDivElement>(null);
-  // the koi turn away from the bio, the links and the ink drop's body but swim right up to (and past) the motto;
+  // the koi turn away from the bio and the links but swim right up to (and past) the motto;
   // under every line of text the pond is drawn only faintly, so it still shows between the lines
-  const [avoid] = useState(() => [bioRef, socialRef, dropBodyRef]);
+  const [avoid] = useState(() => [bioRef, socialRef]);
   const [dim] = useState(() => [navRef, statsRef, introRef]);
 
   // the pellet count jumps to full brightness on every change, then fades back over 0.6 s
@@ -114,17 +107,6 @@ export function PondHome({ data }: { data: PondData }) {
       </header>
 
       <main id="main" className={s.main}>
-        {/* decorative: the drop's box lets the pointer through (the koi keep clear of it); only its body takes a press */}
-        <div className={s.drop} aria-hidden="true">
-          <InkBot react={poke} />
-          <div
-            className={s.dropBody}
-            ref={dropBodyRef}
-            onPointerDown={(e) => {
-              if (e.button === 0) setPoke((n) => n + 1);
-            }}
-          />
-        </div>
         <section className={s.intro} ref={introRef}>
           {data.motto.length > 0 && (
             <p className={s.motto}>
