@@ -51,9 +51,10 @@ runs:
         packages=$(echo $BROWSERS $PACKAGES | tr ' ' '-')
         {
           echo "browsers=playwright-$ImageOS-$playwright-$browsers"
-          echo "packages=apt-$ImageOS-$ImageVersion-$packages"
-          echo "packages-image=apt-$ImageOS-$ImageVersion-"
-          echo "packages-os=apt-$ImageOS-"
+          # apt2: the apt- caches hold only part of the packages (see below).
+          echo "packages=apt2-$ImageOS-$ImageVersion-$packages"
+          echo "packages-image=apt2-$ImageOS-$ImageVersion-"
+          echo "packages-os=apt2-$ImageOS-"
         } >> "$GITHUB_OUTPUT"
     - name: Restore browsers
       id: restore-browsers
@@ -94,17 +95,22 @@ runs:
           sudo apt-get install --yes --no-install-recommends $PACKAGES
         fi
         # Keep only the packages now installed, so the cache never grows with
-        # versions this image no longer uses.
-        dpkg-query -W -f='${Package}_${Version}_${Architecture}.deb\n' \
+        # versions this image no longer uses. Package and version are compared
+        # without the architecture: on ubuntu-26.04 most files come from the
+        # amd64v3 indexes, and matching whole file names kept 16 of the
+        # 187 packages installed (2026-11-20).
+        dpkg-query -W -f='${Package}_${Version}\n' \
           | sed 's/:/%3a/g' > "$RUNNER_TEMP/installed-debs"
         rm -rf "$archives" && mkdir -p "$archives"
         for deb in /var/cache/apt/archives/*.deb; do
           [ -e "$deb" ] || continue
-          if grep -qxF "$(basename "$deb")" "$RUNNER_TEMP/installed-debs"; then
+          name=$(basename "$deb" .deb)
+          if grep -qxF "${name%_*}" "$RUNNER_TEMP/installed-debs"; then
             cp "$deb" "$archives/"
           fi
         done
-        echo "Cached $(ls "$archives" | wc -l) system packages ($(du -sh "$archives" | cut -f1))."
+        downloaded=$(find /var/cache/apt/archives -maxdepth 1 -name '*.deb' | wc -l)
+        echo "Cached $(ls "$archives" | wc -l) of $downloaded system packages ($(du -sh "$archives" | cut -f1))."
     # Saved right after the install, so a failing suite later in the job still
     # leaves the next run a warm cache.
     - name: Save system packages
