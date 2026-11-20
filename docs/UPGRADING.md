@@ -40,6 +40,15 @@ address. The labels of parts that are gone are no longer accepted: remove
 `stampPost`, `stampWithLove` and `readPost` from
 `template.settings["ticket-club"].labels`; the build names any that remain.
 
+Pond 2.0.0 is a new design: a garden pond seen from above, the whole pond on
+the home page and a band of it over every other page. Every setting it
+accepted still validates and keeps its meaning. Only the labels' defaults
+changed, to Work, Photographs, Day and Night, and the blog's to the profile's
+blog title; set `labels` to keep the old words. The new `time` setting opens
+the site in the visitor's system scheme (`auto`, the default) or always in
+`day` or `night`; before, Pond always opened dark. A visitor's saved choice
+carries over.
+
 Stack 2.0 is a new design, so its settings changed. `camera` and `ending` keep
 their meaning. `labels` now names the new interface's wording; its keys `now`,
 `writing`, `minutes`, `shotWith`, `copy`, `contact`, `allWriting`, `home`,
