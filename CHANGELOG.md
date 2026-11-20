@@ -6,6 +6,17 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
+## 1.3.2 — 2026-11-20
+
+- Cloudflare: optimised images (`/_next/image`) are cached as Next caches
+  them, four hours and then revalidated. The adapter sent no `Cache-Control`
+  for them, so every visit downloaded each optimised image again (about
+  1.4 MB on a phone for the author's home page). The Worker entry is now
+  `cloudflare-worker.mjs`, which wraps the adapter's Worker.
+- CI: the browser jobs keep every system package they install in their cache;
+  on ubuntu-26.04 the cache held 16 of about 190, so a slow package mirror
+  could run a job into its timeout.
+
 ## 1.3.1 — 2026-11-20
 
 - Cloudflare: Next's content-hashed build output (`/_next/static/`) is cached

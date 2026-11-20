@@ -72,7 +72,15 @@ never live in the repository: each provider's CLI keeps its own sign-in
 
 `scripts/deploy.mjs` writes each host's configuration from the profile at
 deploy time (`wrangler.generated.json`, `firebase.generated.json`), so nothing
-host-specific is committed besides `open-next.config.ts`. Build the Cloudflare
+host-specific is committed besides `open-next.config.ts` and
+`cloudflare-worker.mjs`. Next's content-hashed build output
+(`/_next/static/`) is cached for a year on every host: the Firebase
+configuration says so, and on Cloudflare the deploy writes
+`.open-next/assets/_headers` (Workers otherwise serve assets with
+`max-age=0`). The Worker entry, `cloudflare-worker.mjs`, wraps the adapter's
+Worker so optimised images (`/_next/image`) are cached as Next caches them,
+four hours and then revalidated; the adapter sends no `Cache-Control` for
+them. Build the Cloudflare
 adapter on Linux or macOS (CI or a Linux machine): it does not support
 Windows. Adding a host is one entry in the schema's `deployment.providers`,
 one step in `scripts/deploy.mjs` and a row here.
