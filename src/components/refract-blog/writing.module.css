@@ -6,7 +6,7 @@
   min-height: 100svh;
   background: var(--writing-paper);
   color: var(--writing-ink);
-  font-family: "DIN", "Helvetica Neue", Arial, sans-serif;
+  font-family: "RefractDIN", "Helvetica Neue", Arial, sans-serif;
   line-height: 1.5;
 }
 .shell[data-style="dark"] {

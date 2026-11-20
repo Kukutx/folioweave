@@ -6,8 +6,14 @@ migration ([docs/UPGRADING.md](docs/UPGRADING.md)); a minor version adds
 features; a patch fixes behaviour. Every release is a tag on `main` with the
 same notes as a GitHub release.
 
-## Unreleased
+## 1.3.0 — 2026-11-20
 
+- Stack, rebuilt: one person's pile of paper on a desk. A calling card with
+  divider-card tabs as the navigation, the portraits as clipped prints, the
+  story typed on a ruled card, the timeline as index cards and every project
+  as a mounted board in one deck. Manifest 2.0.0: `camera` and `ending` keep
+  their meaning; the labels that were dropped are listed in
+  [docs/UPGRADING.md](docs/UPGRADING.md).
 - Pond, redesigned: a garden pond seen from above. The home page is the whole
   pond, with koi to feed, lily pads to move and a day/night switch (the moon
   on the water at night); the other pages open on a band of the same water.
@@ -16,6 +22,24 @@ same notes as a GitHub release.
   Newsreader. The scene is rendered on the server and shows without
   JavaScript; the canvas pauses off screen and in hidden tabs. Its settings
   stay valid, and a new `time` setting chooses day, night or the system's.
+- Ticket Club, rebuilt: a box office for one person, printed in red and black
+  on warm paper. A roll of admission tickets, one per link, each with a
+  scannable QR stub that tears off to copy the link (by pointer or keyboard),
+  and a kraft envelope whose letter is the author's story. Manifest 2.0.0:
+  `tickets` takes up to six, `stock` and `editionPath` are new, and the
+  dropped labels are listed in [docs/UPGRADING.md](docs/UPGRADING.md).
+- Refract: the aircraft-carrier 404 that came with 1.2.0 is gone, and Refract
+  Light and Dark use the site's own 404 again. The writing pages use the
+  RefractDIN typeface of the home page; their stylesheet named a family that
+  was never loaded, so they showed Helvetica or Arial.
+- Bottega: the "open now" line skips public holidays when it names the next
+  opening (on the evening of 24 December it no longer says "tomorrow at
+  09:00"), and Easter Monday is an Italian holiday.
+- Classic, Refract and Bottega: about 1,350 lines of CSS and code that nothing
+  rendered are removed, with no visible change.
+- Assets: 33 font files from the original Classic site that no page loaded
+  (about 800 KB, among them Google Sans and Satoshi, whose licences do not
+  allow redistribution) are removed from `public/fonts`.
 
 ## 1.2.1 — 2026-11-20
 
