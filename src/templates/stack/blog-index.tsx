@@ -1,25 +1,25 @@
 import type { TemplateModule } from "@/core/contracts";
-import { stackLabels } from "./data";
-import { PostRows, Shell, Tags } from "./blog";
-import s from "./stack.module.css";
-import b from "./blog.module.css";
+import { postsOf, stackLabels } from "./data";
+import { Shell, Tags } from "./blog";
+import { Contents, Sheet } from "./parts/contents";
 
 const BlogIndex: TemplateModule["BlogIndex"] = ({ posts, context }) => {
   const labels = stackLabels(context);
-  const tags = [...new Set(posts.flatMap((post) => [...post.tags]))].sort((x, y) =>
-    x.localeCompare(y, context.site.identity.locale),
+  const locale = context.site.identity.locale;
+  const tags = [...new Set(posts.flatMap((post) => [...post.tags]))].sort(
+    (x, y) => x.localeCompare(y, locale),
   );
   return (
-    <Shell context={context}>
-      <header className={b.head}>
-        <h1 className={s.label}>{labels.writing}</h1>
-        <p className={b.title}>{context.writing.heading ?? context.writing.title}</p>
-        {context.writing.description && <p className={s.text}>{context.writing.description}</p>}
-      </header>
-      <Tags labels={tags} all={labels.allWriting} />
-      <section className={b.list}>
-        <PostRows posts={posts} context={context} />
-      </section>
+    <Shell context={context} current="writing">
+      <Sheet
+        as="h1"
+        land={false}
+        heading={context.writing.heading ?? context.writing.title}
+        description={context.writing.description}
+      >
+        <Tags labels={tags} all={labels.allWriting} />
+        <Contents posts={postsOf(posts, locale, labels)} />
+      </Sheet>
     </Shell>
   );
 };

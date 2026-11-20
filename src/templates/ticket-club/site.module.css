@@ -1,0 +1,371 @@
+/* The bill: a sheet of warm paper printed in two inks, red and black. Tokens, the shell (header and the
+   footer, which is the page's own stub) and the parts every page shares. */
+.root {
+  --paper: #efe7d7;
+  --paper-deep: #e3d8c2;
+  --sheet: #fbf7ee;
+  --ink: #1c1915;
+  --ink-soft: #564e45;
+  --red: #d2321d;
+  --red-deep: #ad2412;
+  --rule: rgba(28, 25, 21, 0.18);
+  --gutter: clamp(16px, 4vw, 56px);
+  --measure: 1360px;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .17 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* the ticket card, set by the `stock` option */
+  --stock: #ecb53e;
+  --stock-ink: #1c1915;
+  --stock-mark: #8f1a0b;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper) var(--grain);
+  color: var(--ink);
+  font-family: var(--tc-serif), Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+.root[data-stock="red"] {
+  --stock: #c42d18;
+  --stock-ink: #fbf1e3;
+  --stock-mark: #fbf1e3;
+}
+.root[data-stock="blue"] {
+  --stock: #9fc0d6;
+  --stock-ink: #13202b;
+  --stock-mark: #ad2412;
+}
+.root[data-stock="green"] {
+  --stock: #a9c89e;
+  --stock-ink: #142016;
+  --stock-mark: #ad2412;
+}
+.root[data-stock="pink"] {
+  --stock: #efb5a8;
+  --stock-ink: #2a1210;
+  --stock-mark: #9e1f0f;
+}
+.root[data-stock="cream"] {
+  --stock: #f8f1e2;
+  --stock-ink: #1c1915;
+  --stock-mark: #ad2412;
+}
+
+:where(.root) *,
+:where(.root) *::before,
+:where(.root) *::after {
+  box-sizing: border-box;
+}
+:where(.root) :where(h1, h2, h3, p, ol, ul, figure, blockquote) {
+  margin: 0;
+}
+:where(.root) :where(ol, ul) {
+  padding: 0;
+  list-style: none;
+}
+:where(.root) :where(a) {
+  color: inherit;
+}
+:where(.root) :where(button) {
+  font: inherit;
+  color: inherit;
+}
+:where(.root) :where(img, svg) {
+  display: block;
+  max-width: 100%;
+}
+.root :focus-visible {
+  outline: 2px solid var(--red-deep);
+  outline-offset: 3px;
+}
+
+.mono {
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- header: the bill's masthead line ---------- */
+.header {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+}
+.mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-height: 44px;
+}
+/* the initials on a small ticket, notched on both sides */
+.badge {
+  display: grid;
+  place-items: center;
+  min-width: 46px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--red);
+  color: #fbf1e3;
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  -webkit-mask:
+    radial-gradient(circle at 0 50%, #0000 4px, #000 4.5px) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle at 100% 50%, #0000 4px, #000 4.5px) right / 51% 100%
+      no-repeat;
+  mask:
+    radial-gradient(circle at 0 50%, #0000 4px, #000 4.5px) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle at 100% 50%, #0000 4px, #000 4.5px) right / 51% 100%
+      no-repeat;
+}
+.markName {
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 26px;
+}
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(var(--red), var(--red)) 0 calc(50% + 0.85em) / 0
+    1.5px no-repeat;
+  transition: background-size 0.25s ease;
+}
+.nav a:hover,
+.nav a:focus-visible {
+  background-size: 100% 1.5px;
+}
+@media (max-width: 640px) {
+  .markName {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .nav ul {
+    gap: 0 18px;
+  }
+  .nav a {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+  }
+}
+@media (max-width: 400px) {
+  .header {
+    column-gap: 14px;
+  }
+  .nav ul {
+    column-gap: 13px;
+  }
+  .nav a {
+    letter-spacing: 0.06em;
+  }
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* ---------- section heads ---------- */
+.section {
+  position: relative;
+  width: 100%;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: clamp(72px, 11vw, 150px) var(--gutter) 0;
+  scroll-margin-top: 8px;
+}
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px 24px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 4px;
+}
+.kicker {
+  grid-column: 1 / -1;
+  color: var(--red-deep);
+}
+.heading {
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  font-size: clamp(3.5rem, 9vw, 8.5rem);
+  line-height: 0.82;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.headAside {
+  max-width: 34ch;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  text-align: right;
+}
+@media (max-width: 760px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .headAside {
+    text-align: left;
+  }
+}
+
+/* ---------- footer: the page's own stub ---------- */
+.stub {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(96px, 12vw, 160px);
+  padding: 40px var(--gutter) 28px;
+  background: var(--stock) var(--grain);
+  color: var(--stock-ink);
+  /* torn along a perforation */
+  -webkit-mask: radial-gradient(circle at 50% 0, #0000 3.2px, #000 3.7px) 0 0 /
+    11px 100% repeat-x;
+  mask: radial-gradient(circle at 50% 0, #0000 3.2px, #000 3.7px) 0 0 / 11px
+    100% repeat-x;
+}
+.stubInner {
+  max-width: calc(var(--measure) - 2 * var(--gutter));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px 40px;
+  align-items: end;
+}
+.quote {
+  grid-column: 1 / -1;
+  max-width: 46ch;
+  font-style: italic;
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  line-height: 1.35;
+}
+.quote cite {
+  display: block;
+  margin-top: 10px;
+  font-style: normal;
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.stubName {
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.stubLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-top: 12px;
+}
+.serialMark {
+  color: var(--stock-mark);
+}
+.keep {
+  display: grid;
+  justify-items: end;
+  gap: 14px;
+}
+.siteCode {
+  width: 76px;
+  height: 76px;
+  fill: currentColor;
+}
+.top {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.top:hover span:last-child {
+  transform: translateY(-3px);
+}
+.top span:last-child {
+  transition: transform 0.2s ease;
+}
+.slot:empty {
+  display: none;
+}
+.slot {
+  grid-column: 1 / -1;
+}
+@media (max-width: 560px) {
+  .stubInner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .root {
+    background: #fff;
+  }
+  .stub {
+    -webkit-mask: none;
+    mask: none;
+  }
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.more:hover {
+  color: var(--red-deep);
+}

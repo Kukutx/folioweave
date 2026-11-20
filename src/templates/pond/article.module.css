@@ -1,0 +1,203 @@
+/* An article on the bank: Newsreader at reading size in a column of about seventy characters, headings in the
+   display cut, quotations set off by a line of water. */
+
+.title {
+  font-size: clamp(40px, 5vw, 76px);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 42rem) minmax(150px, 15rem);
+  justify-content: space-between;
+  gap: 32px clamp(40px, 8vw, 140px);
+}
+.main {
+  min-width: 0;
+}
+.dek {
+  margin-bottom: 22px;
+  font-family: var(--text-italic);
+  font-style: italic;
+  font-size: clamp(19px, 1.6vw, 22px);
+  line-height: 1.5;
+  color: var(--soft);
+}
+.tags {
+  position: sticky;
+  top: 40px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 0 0 22px;
+  border-left: 1px solid var(--rule);
+  list-style: none;
+}
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tags {
+    position: static;
+    order: -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    padding: 0;
+    border: 0;
+  }
+}
+.tag {
+  font-size: 13px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+.tag:hover {
+  color: var(--ink);
+}
+
+.body {
+  font-size: clamp(18px, 1.35vw, 20px);
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+.body > :global(*) + :global(*) {
+  margin-top: 1.1em;
+}
+.body :global(:is(h2, h3, h4)) {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.15;
+  scroll-margin-top: 32px;
+  text-wrap: balance;
+}
+.body :global(h2) {
+  font-size: 1.75em;
+}
+.body :global(:is(h3, h4)) {
+  font-size: 1.32em;
+}
+.body > :global(:is(h2, h3, h4)) {
+  margin-top: 1.9em;
+}
+.body > :global(:is(h2, h3, h4)) + :global(*) {
+  margin-top: 0.6em;
+}
+.body :global(a:not(.heading-anchor)) {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  transition: text-decoration-color 0.25s ease;
+}
+.body :global(a:not(.heading-anchor)):hover {
+  text-decoration-color: var(--accent);
+}
+/* the section link after a heading: a faint mark, shown on hover and focus */
+.body :global(a.heading-anchor) {
+  margin-left: 0.4em;
+  color: var(--muted);
+  font-size: 0.7em;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.body :global(:is(h2, h3, h4)):hover > :global(a.heading-anchor),
+.body :global(a.heading-anchor:focus-visible) {
+  opacity: 1;
+}
+@media (hover: none) {
+  .body :global(a.heading-anchor) {
+    opacity: 1;
+  }
+}
+.body :global(:is(ul, ol)) {
+  padding-left: 1.3em;
+}
+.body :global(li + li) {
+  margin-top: 0.4em;
+}
+.body :global(li::marker) {
+  color: var(--muted);
+}
+.body :global(blockquote) {
+  margin-inline: 0;
+  padding: 0.1em 0 0.1em 1.2em;
+  border-left: 3px solid var(--water);
+  font-family: var(--text-italic);
+  font-style: italic;
+  color: var(--soft);
+}
+.body :global(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 3px;
+}
+.body :global(figure) {
+  margin-inline: 0;
+}
+.body :global(figcaption) {
+  margin-top: 0.6em;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+.body :global(pre) {
+  padding: 18px 20px;
+  border-radius: 4px;
+  background: var(--paper-deep);
+  overflow-x: auto;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.body :global(code) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84em;
+}
+.body :global(:not(pre) > code) {
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  background: var(--paper-deep);
+}
+.body :global(pre code) {
+  font-size: inherit;
+}
+/* a pause: a single ring on the water */
+.body :global(hr) {
+  width: 9px;
+  height: 9px;
+  margin: 2.2em auto;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--muted) 18%, transparent);
+}
+.body :global(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.86em;
+}
+.body :global(:is(th, td)) {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+.body :global(th) {
+  font-family: var(--text-bold);
+  font-weight: 600;
+}
+
+.after:has(> *) {
+  margin-top: clamp(48px, 8vh, 80px);
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+}
+.back {
+  margin-top: clamp(40px, 7vh, 72px);
+  font-size: 18px;
+}

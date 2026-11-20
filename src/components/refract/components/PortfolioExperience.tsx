@@ -26,9 +26,6 @@ export function PortfolioExperience({
     siteConfig,
     sceneContact,
   } = useRefractData();
-  const projectHeading = researchProjects.length
-    ? siteConfig.projectHeading
-    : copy.overview;
   const count = String(researchProjects.length).padStart(2, "0");
   const {
     root,
@@ -45,6 +42,7 @@ export function PortfolioExperience({
     seekPosition,
     refreshScene,
     chapterLabels,
+    projectHeading,
     figures,
   } = usePortfolioScene(stylePreset);
 

@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 import type { BlogPostSummary } from "@/blog/types";
 import type { TemplateModule, TemplateContext } from "@/core/contracts";
 import { ArticleBody } from "@/components/blog/article-body";
+import { formatBlogDate } from "@/blog/format";
 import { tagHref } from "@/blog/taxonomy.mjs";
 import { refractCopy, type RefractCopy } from "@/components/refract/copy";
 import styles from "./writing.module.css";
@@ -50,15 +51,6 @@ function WritingShell({
   );
 }
 
-function dateLabel(date: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(date));
-}
-
 function Tags({
   labels,
   active,
@@ -103,7 +95,9 @@ function PostList({
         <li key={post.slug}>
           <Link className={styles.postLink} href={post.href}>
             <div className={styles.meta}>
-              <time dateTime={post.date}>{dateLabel(post.date, locale)}</time>
+              <time dateTime={post.date}>
+                {formatBlogDate(post.date, locale)}
+              </time>
               <span>
                 {post.readingMinutes} {copy.minRead}
               </span>
@@ -196,7 +190,7 @@ export function RefractBlogPost({
           <header className={styles.articleHeader}>
             <div className={styles.meta}>
               <time dateTime={post.date}>
-                {dateLabel(post.date, context.site.identity.locale)}
+                {formatBlogDate(post.date, context.site.identity.locale)}
               </time>
               <span>
                 {post.readingMinutes} {copy.minRead}

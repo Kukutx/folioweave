@@ -120,18 +120,6 @@
 :where(.refract-site) .feature-content .reference-text {
   text-shadow: none;
 }
-:where(.refract-site) .feature-chapter:nth-child(1) {
-  --accent: var(--accent-red);
-}
-:where(.refract-site) .feature-chapter:nth-child(2) {
-  --accent: var(--accent-orange);
-}
-:where(.refract-site) .feature-chapter:nth-child(3) {
-  --accent: var(--accent-green);
-}
-:where(.refract-site) .feature-chapter:nth-child(4) {
-  --accent: var(--accent-cyan);
-}
 :where(.refract-site) .feature-content .reference-text h2 {
   color: var(--accent);
 }
@@ -225,9 +213,6 @@
 }
 :where(.refract-site) .chapter-ticks > span:last-child {
   border-right: 1px solid #ffffff50;
-}
-:where(.refract-site) .chapter-ticks i {
-  display: none;
 }
 :where(.refract-site) .chapter-slider {
   top: -14px;

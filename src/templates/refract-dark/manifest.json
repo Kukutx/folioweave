@@ -12,8 +12,7 @@
     "Home": "home.tsx",
     "BlogIndex": "blog-index.tsx",
     "BlogPost": "blog-post.tsx",
-    "BlogTag": "blog-tag.tsx",
-    "NotFound": "not-found.tsx"
+    "BlogTag": "blog-tag.tsx"
   },
   "slots": ["site.floating", "site.footer", "article.after"],
   "requires": ["site.contact"],
