@@ -50,10 +50,6 @@
     transform-origin: center top;
     margin-top: 8px;
   }
-  .instax-polaroid .instax-title {
-    font-size: 1.03rem;
-    max-width: min(92vw, 560px);
-  }
 }
 .instax-polaroid .camera .bottom {
   display: block;
@@ -619,11 +615,6 @@
 @media (max-width: 480px) {
   .instax-container.instax-polaroid {
     margin: 1.5rem auto 2rem;
-  }
-  .instax-polaroid .instax-title {
-    font-size: 1.5rem;
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
   }
 }
 .instax-polaroid .camera .top .lens.is-clickable {
