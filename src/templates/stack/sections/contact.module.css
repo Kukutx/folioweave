@@ -115,7 +115,8 @@
   font-size: 10.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-4);
+  /* ink-3: ink-4 falls under 4.5:1 on the paper */
+  color: var(--ink-3);
 }
 
 .actions {

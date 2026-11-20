@@ -301,7 +301,8 @@ a.backBadge {
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.06em;
-  color: var(--ink-4);
+  /* ink-2: the index lies on the bare desk, where lighter inks fall under 4.5:1 */
+  color: var(--ink-2);
 }
 .entryName {
   font-family: var(--display);
@@ -315,7 +316,7 @@ a.backBadge {
   font-size: 10.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink-4);
+  color: var(--ink-2);
 }
 .entry:hover .entryName {
   color: var(--ink);

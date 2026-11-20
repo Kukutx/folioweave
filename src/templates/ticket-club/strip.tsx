@@ -316,12 +316,13 @@ export function Strip({
                     type="button"
                     className={t.stub}
                     data-i={i}
-                    aria-label={fill(labels.stubAction, {
+                    // The name starts with the words the stub shows (WCAG 2.5.3).
+                    aria-label={`${ticket.stub}, ${labels.pull}: ${fill(labels.stubAction, {
                       link:
                         ticket.label === ticket.address
                           ? ticket.address
                           : `${ticket.label} (${ticket.address})`,
-                    })}
+                    })}`}
                     onPointerDown={onDown(i)}
                     onPointerMove={onMove}
                     onPointerUp={onUp}

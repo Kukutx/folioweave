@@ -299,6 +299,10 @@
   font-size: 16.5px;
 }
 .links a {
+  /* A 24px-high target for a finger (WCAG 2.5.8) without moving the text. */
+  display: inline-block;
+  padding-block: 4px;
+  margin-block: -4px;
   color: var(--on-water);
 }
 

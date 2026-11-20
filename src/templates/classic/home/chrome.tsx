@@ -180,6 +180,8 @@ export function TimeWeatherWidget() {
         {siteConfig.features.weather && (
           <span
             className="weather-label"
+            // An image role lets the name be read: a plain span's is ignored.
+            role="img"
             aria-label={
               weather.temperature == null
                 ? `${siteConfig.location.city} weather`
