@@ -8,6 +8,7 @@ import {
   target,
   wranglerConfig,
 } from "../scripts/deploy.mjs";
+import { OPTIMISED_IMAGE_CACHE, withImageCaching } from "../src/config/image-cache.mjs";
 import { nextRedirects, profileRedirects } from "../src/config/redirects.mjs";
 
 const profile = {
@@ -39,7 +40,7 @@ test("the Cloudflare Worker config carries what the Next adapter needs", () => {
   const config = wranglerConfig(profile.deployment.providers.cloudflare);
   assert.equal(config.name, "example");
   assert.equal(config.account_id, "0123456789abcdef0123456789abcdef");
-  assert.equal(config.main, ".open-next/worker.js");
+  assert.equal(config.main, "cloudflare-worker.mjs");
   assert.ok(config.compatibility_flags.includes("nodejs_compat"));
   assert.deepEqual(config.assets, { directory: ".open-next/assets", binding: "ASSETS" });
   assert.equal(config.services[0].service, "example", "the Worker can call itself");
@@ -163,4 +164,25 @@ test("Cloudflare caches Next's hashed build output for good", () => {
     cloudflareAssetHeaders(),
     "/_next/static/*\n  Cache-Control: public, max-age=31536000, immutable\n",
   );
+});
+
+test("optimised images keep Next's caching on Cloudflare", async () => {
+  const { imageConfigDefault } = await import("next/dist/shared/lib/image-config.js");
+  assert.equal(
+    OPTIMISED_IMAGE_CACHE,
+    `public, max-age=${imageConfigDefault.minimumCacheTTL}, must-revalidate`,
+    "the same as Next's own optimiser",
+  );
+  const image = "https://example.com/_next/image?url=%2Fa.jpg&w=640&q=75";
+  const bare = new Response("img", { headers: { "Content-Type": "image/webp", Vary: "Accept" } });
+  const cached = withImageCaching(image, bare);
+  assert.equal(cached.headers.get("Cache-Control"), OPTIMISED_IMAGE_CACHE);
+  assert.equal(cached.headers.get("Vary"), "Accept");
+  assert.equal(await cached.text(), "img");
+  // The adapter's own header (static imports, immutable sources) stays.
+  const immutable = new Response("img", { headers: { "Cache-Control": "public, max-age=315360000, immutable" } });
+  assert.equal(withImageCaching(image, immutable).headers.get("Cache-Control"), "public, max-age=315360000, immutable");
+  // Errors and every other address pass through untouched.
+  assert.equal(withImageCaching(image, new Response("bad", { status: 400 })).headers.get("Cache-Control"), null);
+  assert.equal(withImageCaching("https://example.com/about", new Response("page")).headers.get("Cache-Control"), null);
 });

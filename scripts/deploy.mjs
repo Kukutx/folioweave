@@ -81,7 +81,8 @@ export function wranglerConfig(settings) {
     $schema: "node_modules/wrangler/config-schema.json",
     name: settings.worker,
     account_id: settings.accountId,
-    main: ".open-next/worker.js",
+    // The adapter's Worker (.open-next/worker.js) wrapped to cache optimised images.
+    main: "cloudflare-worker.mjs",
     ...CLOUDFLARE_RUNTIME,
     // Keeps function names short in the bundle; on, they break the adapter.
     keep_names: false,
