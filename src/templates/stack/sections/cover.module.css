@@ -1,0 +1,294 @@
+/* The calling card on top of the pile. */
+
+.cover {
+  position: relative;
+  isolation: isolate;
+  padding-top: 8px;
+}
+
+/* The dividers behind the card: only their tabs show above its top edge. */
+.tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-inline: 2px;
+}
+.navTab {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  min-width: max-content;
+  padding: 9px 14px 22px;
+  margin-bottom: -12px;
+  border-radius: 8px 8px 0 0;
+  background: var(--tint);
+  box-shadow: var(--shadow-1);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  transition: translate 0.3s var(--ease);
+}
+.navTab:hover,
+.navTab:focus-visible {
+  translate: 0 -5px;
+}
+.navTab:focus-visible {
+  outline-offset: -4px;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "place" "name" "role" "summary";
+  padding: clamp(26px, 6vw, 64px);
+  padding-top: clamp(30px, 5vw, 56px);
+  background: var(--paper);
+  border-radius: 3px;
+  box-shadow: var(--shadow-3);
+}
+.card[data-portraits] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "place corner" "name name" "role role" "summary summary";
+}
+/* Two more cards squared up under it, a little off true. */
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 3px;
+  box-shadow: var(--shadow-1);
+}
+.card::before {
+  background: var(--paper-warm);
+  rotate: 1.4deg;
+  translate: 6px 8px;
+}
+.card::after {
+  background: #f1efe9;
+  rotate: -0.9deg;
+  translate: -5px 12px;
+  z-index: -2;
+}
+
+.place {
+  grid-area: place;
+  align-self: start;
+}
+.name {
+  grid-area: name;
+  margin-top: clamp(22px, 4vw, 40px);
+  font-family: var(--display);
+  font-size: clamp(3.4rem, 1.6rem + 7vw, 8rem);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.role {
+  grid-area: role;
+  margin-top: clamp(14px, 2vw, 20px);
+  font-family: var(--display);
+  font-style: italic;
+  font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.75rem);
+  line-height: 1.25;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.role :global(img) {
+  translate: 0 0.06em;
+}
+.summary {
+  grid-area: summary;
+  max-width: 36em;
+  margin-top: clamp(26px, 4vw, 40px);
+  padding-top: clamp(20px, 3vw, 28px);
+  border-top: 1px solid rgb(28 27 25 / 0.12);
+  font-size: clamp(1.03rem, 0.98rem + 0.25vw, 1.15rem);
+  line-height: 1.62;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+/* The portraits, clipped over the card's top right corner. */
+.corner {
+  grid-area: corner;
+  justify-self: end;
+  align-self: start;
+  width: 118px;
+  margin: -6px -14px -36px 16px;
+}
+@media (min-width: 720px) {
+  .card[data-portraits] {
+    grid-template-columns: minmax(0, 1fr) 232px;
+    grid-template-areas: "place corner" "name corner" "role role" "summary summary";
+  }
+  .corner {
+    width: 232px;
+    margin: -14px -62px 0 24px;
+  }
+}
+
+.pileBox {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+.pile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  background: none;
+  touch-action: pan-y;
+}
+button.pile {
+  cursor: pointer;
+}
+button.pile:focus-visible {
+  outline-offset: 10px;
+}
+.print {
+  position: absolute;
+  inset: 0;
+  padding: 6%;
+  background: var(--board);
+  box-shadow: var(--shadow-2);
+  translate: 0 0;
+  rotate: 3deg;
+  transition:
+    translate 0.6s var(--ease),
+    rotate 0.6s var(--ease),
+    transform 0.45s var(--ease-settle);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.print img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #ece9e2;
+  pointer-events: none;
+}
+.print[data-p="1"] {
+  translate: -9% 4%;
+  rotate: -5deg;
+}
+.print[data-p="2"] {
+  translate: 8% -4%;
+  rotate: 8deg;
+}
+.print[data-p="3"] {
+  translate: -4% -7%;
+  rotate: -10deg;
+}
+.print[data-moving],
+.print[data-dragging] {
+  transition: none;
+}
+.print[data-dragging] {
+  cursor: grabbing;
+  box-shadow: var(--shadow-3);
+}
+@media (hover: hover) {
+  button.pile:hover .print[data-p="0"] {
+    translate: 0 -3%;
+  }
+  button.pile:hover .print[data-p="1"] {
+    translate: -16% 5%;
+    rotate: -9deg;
+  }
+  button.pile:hover .print[data-p="2"] {
+    translate: 15% -2%;
+    rotate: 12deg;
+  }
+  button.pile:hover .print[data-p="3"] {
+    translate: -2% -12%;
+    rotate: -14deg;
+  }
+}
+.count {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 719px) {
+  .navTab {
+    padding: 8px 9px 20px;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+  }
+  .navNumber {
+    display: none;
+  }
+}
+
+/* Opening: the card is set down, the dividers' tabs rise behind it and the portraits are
+   dealt onto its corner (see parts/opening.tsx). */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .cover[data-opening] .card {
+    animation: stack-set-down 1s var(--ease) both;
+  }
+  .cover[data-opening] .navTab {
+    animation: stack-rise 0.7s var(--ease) both;
+    animation-delay: calc(0.45s + var(--i) * 70ms);
+  }
+  .cover[data-opening] .print {
+    animation: stack-deal 0.9s var(--ease) both;
+    animation-delay: calc(0.5s + (3 - var(--p-index, 0)) * 90ms);
+  }
+  .cover[data-opening] .print[data-p="3"] {
+    --p-index: 3;
+  }
+  .cover[data-opening] .print[data-p="2"] {
+    --p-index: 2;
+  }
+  .cover[data-opening] .print[data-p="1"] {
+    --p-index: 1;
+  }
+  .cover[data-opening] .count {
+    animation: stack-fade 0.6s 1.2s var(--ease) both;
+  }
+}
+/* never transparent: the name is the page's largest paint and shows at once */
+@keyframes stack-set-down {
+  from {
+    translate: 0 -14px;
+    rotate: -1deg;
+    scale: 1.025;
+    box-shadow: 0 40px 70px -24px rgb(52 40 22 / 0.42);
+  }
+}
+@keyframes stack-rise {
+  from {
+    translate: 0 26px;
+  }
+}
+@keyframes stack-deal {
+  from {
+    opacity: 0;
+    translate: 70% -30%;
+    rotate: 24deg;
+  }
+}
+@keyframes stack-fade {
+  from {
+    opacity: 0;
+  }
+}

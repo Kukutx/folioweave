@@ -1,0 +1,166 @@
+/* About: a ruled card with the story, then the years as index cards. */
+
+.story {
+  --lh: 28px;
+  --head: calc(var(--lh) * 1.5);
+  position: relative;
+  padding: calc(var(--head) + var(--lh) * 0.5) clamp(20px, 6vw, 60px) var(--lh);
+  background-color: var(--paper-warm);
+  background-image:
+    linear-gradient(var(--rule-red), var(--rule-red)),
+    linear-gradient(var(--paper-warm), var(--paper-warm)),
+    linear-gradient(
+      to bottom,
+      transparent calc(var(--lh) - 1px),
+      var(--rule) calc(var(--lh) - 1px)
+    );
+  background-size:
+    100% 1.5px,
+    100% var(--head),
+    100% var(--lh);
+  background-position:
+    0 var(--head),
+    0 0,
+    0 calc(var(--head) + var(--lh) * 0.5 - 2.5px);
+  background-repeat: no-repeat, no-repeat, repeat-y;
+  border-radius: 2px;
+  box-shadow: var(--shadow-2);
+  rotate: -0.35deg;
+  font-size: 17px;
+  line-height: var(--lh);
+  text-wrap: pretty;
+}
+@media (min-width: 720px) {
+  .story {
+    --lh: 32px;
+    font-size: 19.5px;
+  }
+}
+.story p + p {
+  margin-top: var(--lh);
+}
+.muted {
+  color: var(--ink-3);
+}
+.strong {
+  color: var(--ink);
+}
+.highlight {
+  color: var(--ink);
+  padding-inline: 0.12em;
+  margin-inline: -0.06em;
+  background-image: linear-gradient(
+    100deg,
+    transparent 0.1em,
+    var(--marker) 0.22em,
+    var(--marker) calc(100% - 0.18em),
+    transparent calc(100% - 0.06em)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 58%;
+  background-size: 100% 74%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 0.9s 0.5s var(--ease);
+}
+/* the marker goes over the words once the card has landed */
+.story[data-landing="wait"] .highlight {
+  background-size: 0% 74%;
+  transition: none;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  margin-top: clamp(56px, 8vw, 88px);
+  padding-bottom: 12px;
+}
+.card {
+  --lh: 26px;
+  --w: 460px;
+  --pad: clamp(20px, 4vw, 28px);
+  position: relative;
+  width: min(100%, var(--w));
+  margin-left: max(0px, calc(var(--shift) * (100% - var(--w))));
+  padding: 0 var(--pad) calc(var(--lh) * 2);
+  background-color: #fffdf8;
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--lh) - 1px),
+    var(--rule) calc(var(--lh) - 1px)
+  );
+  background-size: 100% var(--lh);
+  background-position: 0 calc(var(--lh) * 2.5 - 1.5px);
+  border-radius: 2px;
+  box-shadow: var(--shadow-2);
+  rotate: var(--tilt);
+  transition:
+    rotate 0.45s var(--ease),
+    translate 0.45s var(--ease),
+    box-shadow 0.45s var(--ease);
+}
+.card + .card {
+  margin-top: calc(var(--lh) * -1.5);
+}
+@media (hover: hover) {
+  .card:hover {
+    z-index: 20 !important;
+    rotate: 0deg;
+    translate: 0 -6px;
+    box-shadow: var(--shadow-3);
+  }
+}
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box;
+  height: calc(var(--lh) * 2);
+  margin: 0 calc(-1 * var(--pad));
+  padding: 4px var(--pad) 0;
+  border-bottom: 1.5px solid var(--rule-red);
+  background: #fffdf8;
+  border-radius: 2px 2px 0 0;
+}
+.year {
+  font-family: var(--display);
+  font-size: 36px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums;
+}
+.stamp {
+  padding: 4px 10px 3px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  color: var(--stamp);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  rotate: -8deg;
+  opacity: 0.88;
+  mix-blend-mode: multiply;
+}
+.cardTitle {
+  margin-top: calc(var(--lh) * 0.5);
+  font-family: var(--text);
+  font-size: 17.5px;
+  font-weight: 600;
+  line-height: var(--lh);
+}
+.cardText {
+  font-size: 16px;
+  line-height: var(--lh);
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+@media (max-width: 559px) {
+  .card {
+    rotate: calc(var(--tilt) * 0.5);
+  }
+}

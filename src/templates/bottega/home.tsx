@@ -1,13 +1,13 @@
 import Image from "next/image";
 import type { TemplateModule } from "@/core/contracts";
 import styles from "./bottega.module.css";
+import { fill } from "./hours";
 import { MobileMenu } from "./mobile-menu";
 import { OpenNow } from "./open-now";
 import { ContactButtons, HeaderCta, PhoneLine, Wordmark } from "./parts";
 import {
   cities,
   external,
-  fill,
   fullAddress,
   hoursLine,
   sharedHoursLine,

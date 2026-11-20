@@ -1,7 +1,7 @@
 {
   "version": 1,
   "description": "Reference/demo assets preserved from the deployed portfolio. These files intentionally remain in public even when not all are currently rendered.",
-  "count": 103,
+  "count": 73,
   "assets": [
     {
       "referencePath": "apple-touch-icon.png",
@@ -134,186 +134,6 @@
       "publicPath": "fonts/caveat-latin-400.woff2",
       "size": 48864,
       "sha256": "7bd727afb3d294b5be1f3df1e47f875144e35d2ec9ba8f4c2484b885722dadb9"
-    },
-    {
-      "referencePath": "fonts/google-000.woff2",
-      "publicPath": "fonts/google-000.woff2",
-      "size": 8104,
-      "sha256": "3275f18f3783930981517dd969e75911b9a5c774ac602299f635a083702e81b6"
-    },
-    {
-      "referencePath": "fonts/google-001.woff2",
-      "publicPath": "fonts/google-001.woff2",
-      "size": 17196,
-      "sha256": "2c9576bb1d612cf8750bf749689b5916287940fc99e1be5451b83d9fb6c4c5d9"
-    },
-    {
-      "referencePath": "fonts/google-002.woff2",
-      "publicPath": "fonts/google-002.woff2",
-      "size": 23528,
-      "sha256": "04f54ff42ea2b8fc50b4259c29c60b1e05e606b769c2fb541c98624346c9767c"
-    },
-    {
-      "referencePath": "fonts/google-003.woff2",
-      "publicPath": "fonts/google-003.woff2",
-      "size": 2896,
-      "sha256": "aaeca97c82451ceff098a70bc77c3bf22320d1e9763bd4989f32f2c2a4a7ced0"
-    },
-    {
-      "referencePath": "fonts/google-004.woff2",
-      "publicPath": "fonts/google-004.woff2",
-      "size": 2552,
-      "sha256": "cd48eed0925d2c483b42ef8f15082488e175eabab8704d2cf97cf4136c1a2b5d"
-    },
-    {
-      "referencePath": "fonts/google-005.woff2",
-      "publicPath": "fonts/google-005.woff2",
-      "size": 38836,
-      "sha256": "f266d6cc9d343ae3da3de6ee68a772a76a27277ba864a1a07f8bc7ec4bcfd68d"
-    },
-    {
-      "referencePath": "fonts/google-006.woff2",
-      "publicPath": "fonts/google-006.woff2",
-      "size": 24024,
-      "sha256": "d877cbd19ac97d8baa047ef544d92cbf7254ff7eeb4195f022dc068210823141"
-    },
-    {
-      "referencePath": "fonts/google-007.woff2",
-      "publicPath": "fonts/google-007.woff2",
-      "size": 24856,
-      "sha256": "bd180e400d337693ff3880c95acbd9e7a44848ab89839e4c384911aad663b8ae"
-    },
-    {
-      "referencePath": "fonts/google-008.woff2",
-      "publicPath": "fonts/google-008.woff2",
-      "size": 5476,
-      "sha256": "c782c559ee388463d30b7cf138116d29b19bf8f51922eafe3061437ddac40d23"
-    },
-    {
-      "referencePath": "fonts/google-009.woff2",
-      "publicPath": "fonts/google-009.woff2",
-      "size": 2828,
-      "sha256": "64a603f0d77e97d6e6c0dd1380768f3109a52a3866cf93427c5f912eeaaa8490"
-    },
-    {
-      "referencePath": "fonts/google-010.woff2",
-      "publicPath": "fonts/google-010.woff2",
-      "size": 11112,
-      "sha256": "c3c9f394ebb84e5a77df8e7bae973035114f852986810435775007137cdddebe"
-    },
-    {
-      "referencePath": "fonts/google-011.woff2",
-      "publicPath": "fonts/google-011.woff2",
-      "size": 25584,
-      "sha256": "24dd4792970a1bc781b03f040aab74f5b8065921b4797e6547fc6476d1a51eb4"
-    },
-    {
-      "referencePath": "fonts/google-012.woff2",
-      "publicPath": "fonts/google-012.woff2",
-      "size": 50832,
-      "sha256": "4f2ce47af77a0bb9ec3dbd2e81bab7eb97fbcfcd94e47fa63510bb4271b09113"
-    },
-    {
-      "referencePath": "fonts/google-013.woff2",
-      "publicPath": "fonts/google-013.woff2",
-      "size": 12384,
-      "sha256": "d0014821252a8a770bf7551641572f239a8ede83d75652d84fef0c3627751baf"
-    },
-    {
-      "referencePath": "fonts/google-014.woff2",
-      "publicPath": "fonts/google-014.woff2",
-      "size": 22128,
-      "sha256": "5a51946dfffa82972bc98745359c46761515641fda557c25116459a9f83da4a7"
-    },
-    {
-      "referencePath": "fonts/google-015.woff2",
-      "publicPath": "fonts/google-015.woff2",
-      "size": 11604,
-      "sha256": "290e6267dd833bf5f899eba4c29ad0a9b09dbe53f6075b18af38057159e1ff20"
-    },
-    {
-      "referencePath": "fonts/google-016.woff2",
-      "publicPath": "fonts/google-016.woff2",
-      "size": 21032,
-      "sha256": "5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31"
-    },
-    {
-      "referencePath": "fonts/google-017.woff2",
-      "publicPath": "fonts/google-017.woff2",
-      "size": 25960,
-      "sha256": "ca157063339ac4ad418f214f3abfed119b0798ab4d377386ce5c9e5a7a435ebd"
-    },
-    {
-      "referencePath": "fonts/google-018.woff2",
-      "publicPath": "fonts/google-018.woff2",
-      "size": 18748,
-      "sha256": "71d5ee93cc1e9f1d520a3a8b66456de18c7879d8df09d57fcd2eaff75fef0075"
-    },
-    {
-      "referencePath": "fonts/google-019.woff2",
-      "publicPath": "fonts/google-019.woff2",
-      "size": 11232,
-      "sha256": "6e9e020a25f9b56d418f2c085b1d3c09725a4da23fe693a5b463064606732190"
-    },
-    {
-      "referencePath": "fonts/google-020.woff2",
-      "publicPath": "fonts/google-020.woff2",
-      "size": 18996,
-      "sha256": "1be3448e292fbf05ffe176fe1e43f135013d50b1e7d324ad1a558f623d3bb6f6"
-    },
-    {
-      "referencePath": "fonts/google-021.woff2",
-      "publicPath": "fonts/google-021.woff2",
-      "size": 10252,
-      "sha256": "5c66f9e07e90c6d4ac4922cc68d60de26c17b1858e677fb5e603fce3952b3ff2"
-    },
-    {
-      "referencePath": "fonts/google-022.woff2",
-      "publicPath": "fonts/google-022.woff2",
-      "size": 85068,
-      "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"
-    },
-    {
-      "referencePath": "fonts/google-023.woff2",
-      "publicPath": "fonts/google-023.woff2",
-      "size": 48256,
-      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
-    },
-    {
-      "referencePath": "fonts/google-024.woff2",
-      "publicPath": "fonts/google-024.woff2",
-      "size": 5556,
-      "sha256": "f7e98aa7b0c65d422b06851f7a5f148dca71df9083f19f0ed0ca888bc96055ad"
-    },
-    {
-      "referencePath": "fonts/google-025.woff2",
-      "publicPath": "fonts/google-025.woff2",
-      "size": 15228,
-      "sha256": "b775f4faa4ffd1bbb36db8c9504c95af98d82e37209f3a6253915c7cae919d6a"
-    },
-    {
-      "referencePath": "fonts/google-026.woff2",
-      "publicPath": "fonts/google-026.woff2",
-      "size": 24340,
-      "sha256": "fa9b900403949d9a723106752a5c8ad2797012a0c9057427b1da2db72d552148"
-    },
-    {
-      "referencePath": "fonts/google-027.woff2",
-      "publicPath": "fonts/google-027.woff2",
-      "size": 11932,
-      "sha256": "f0dcc9795666850cc4cd8d50d55c44d48d9103cc86f552b4a12f0793eb915840"
-    },
-    {
-      "referencePath": "fonts/google-028.woff2",
-      "publicPath": "fonts/google-028.woff2",
-      "size": 36244,
-      "sha256": "ac6fa9ed533278f4c8fd3ae44a1fc78c7df736040237ab86fc1160d020af0af2"
-    },
-    {
-      "referencePath": "fonts/google-029.woff2",
-      "publicPath": "fonts/google-029.woff2",
-      "size": 58084,
-      "sha256": "62981321d9a3cc7a61a73792729043703fd6112da86e8ec848bb57f088578757"
     },
     {
       "referencePath": "media/5c0589_0a1ded0ebf574f41a427c109a3ab6ca8~mv2.webp",
@@ -622,10 +442,5 @@
       "sha256": "6b86f390bd17a13fe125d339b5edfa7b4af13776f403bade2452c80d3207de2e"
     }
   ],
-  "templateExtras": [
-    "assets/app-store-badge.svg",
-    "fonts/satoshi-0.woff2",
-    "fonts/satoshi-1.woff2",
-    "fonts/satoshi-2.woff2"
-  ]
+  "templateExtras": ["assets/app-store-badge.svg"]
 }

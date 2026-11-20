@@ -13,17 +13,6 @@
   margin: 6rem auto 4rem;
   text-align: center;
 }
-.writing-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #86868b;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 1rem;
-}
 .writing-title {
   font-size: 4rem;
   font-weight: 700;
