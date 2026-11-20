@@ -1,10 +1,10 @@
 {
   "id": "pond",
   "name": "Pond",
-  "description": "A one-screen personal page over an ASCII koi pond: a small mono navigation, a short intro and links, an ink drop at the water's edge, food to drop for the koi and a light/dark switch.",
+  "description": "A one-screen personal page over an ASCII koi pond: a small mono navigation, a short intro and links, food to drop for the koi and a light/dark switch.",
   "translations": {
     "zh": {
-      "description": "ASCII 锦鲤池塘上的单屏个人页：小号等宽导航、简短介绍和链接，水边的墨水滴，可以喂鱼，还能切换深浅色。"
+      "description": "ASCII 锦鲤池塘上的单屏个人页：小号等宽导航、简短介绍和链接，可以喂鱼，还能切换深浅色。"
     }
   },
   "version": "1.0.0",

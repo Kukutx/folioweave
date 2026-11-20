@@ -471,6 +471,57 @@
 .personalSection {
   margin-top: 39px;
 }
+.page .spotify {
+  display: block;
+  cursor: default;
+  margin-top: 16px;
+  padding: 6px 6px 4px;
+  border-radius: 10px;
+  background: #fbfbfb;
+}
+.track {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px;
+  border-radius: 8px;
+  background: #f3f3f3;
+  transition: background 0.2s;
+}
+.spotify:hover .track {
+  background: #efefef;
+}
+.track b {
+  display: block;
+  font-weight: 400;
+  color: var(--dark);
+}
+.track small {
+  display: block;
+  font-size: 15px;
+}
+.cover {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.spotFoot {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 2px 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: #8a8a8a;
+}
+.spotFoot span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.spotFoot svg {
+  color: #9a9a9a;
+}
 .photosBox {
   position: relative;
   margin-top: 40px;
@@ -681,6 +732,33 @@
 }
 
 /* ---------------------------------------------------------------- ending */
+.sig {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+  padding-left: 11px;
+}
+.sig svg {
+  width: 129px;
+  height: auto;
+  overflow: visible;
+}
+.sig path {
+  fill: none;
+  stroke: #111;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.sig[data-on="true"] path {
+  animation: write var(--d) linear var(--at) forwards;
+}
+@keyframes write {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 .note,
 .quote {
   margin: 0;
@@ -843,6 +921,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .sig[data-on="true"] path,
+  .sig path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
   .page *,
   .preview * {
     transition-duration: 0.01ms !important;

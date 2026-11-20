@@ -2,11 +2,13 @@
 
 // The edition's envelope (and, once it is torn open, the letter stack) under the page's header, as the
 // original's Edition lays it out: on a wide screen scaled down (never up) to fit under the header; on a
-// phone at its own size, the page scrolls. The stack's × and Escape go back to the line.
+// phone at its own size, the page scrolls. Inside, as in the original: the letter, then the golden ticket and
+// its hole punch as the stack's second page. The stack's × and Escape go back to the line.
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Envelope, Letter, LetterStack } from "./kit/envelope";
+import { TicketPunch } from "./kit/ticket-punch";
 import type { EnvelopeContent, LetterContent } from "./kit/envelope/content";
 import env from "./kit/envelope/envelope.module.css";
 import s from "./edition.module.css";
@@ -58,7 +60,10 @@ export function EditionView({ header, envelope, letter, stack }: {
         <div ref={fit} className={s.fit}>
           <div ref={fitIn} className={s.fitIn}>
             <Envelope fold={FOLD} {...envelope}>
-              <LetterStack onClose={() => router.push("/")} prepare labels={stack} pages={[{ content: <Letter {...letter} /> }]} />
+              <LetterStack onClose={() => router.push("/")} prepare labels={stack} pages={[
+                { content: <Letter {...letter} /> },
+                { content: <TicketPunch className={s.punch} />, bare: true },
+              ]} />
             </Envelope>
           </div>
         </div>

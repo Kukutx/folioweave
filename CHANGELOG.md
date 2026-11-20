@@ -13,6 +13,15 @@ same notes as a GitHub release.
   asked for (a pile of paper, a garden pond, a box office) and are removed.
 - Refract Light and Dark have their aircraft-carrier 404 page back, as the
   author asked; 1.3.0 had removed it.
+- Pond no longer draws an ink drop of its own: the ink drop is the launcher
+  plugin, the same on every page. The template's copy duplicated it.
+- Ticket Club's letter has its second page back: the golden ticket and its
+  hole punch, as in the author's original, left out when the template was
+  first brought in.
+- Stack has the original's song card and signature back: a track as a card in
+  the personal section (`song`) and the author's signature written stroke by
+  stroke above the closing note (`signature`).
+- Pond's navigation links are 24px-high targets for a finger without moving.
 
 ## 1.3.2 — 2026-11-20
 

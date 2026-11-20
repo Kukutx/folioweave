@@ -158,3 +158,19 @@ export function Mail({ size = 14, className }: P) {
     </svg>
   );
 }
+
+/** The original's Spotify mark on the song card. */
+export function SpotifyGlyph({ size = 13, className }: P) {
+  return (
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="11" fill="currentColor" />
+      <path
+        d="M6.4 9.2c3.9-1.1 7.8-.8 11.2 1M7.2 12.4c3.1-.8 6.2-.5 8.8.9M8 15.4c2.4-.6 4.7-.4 6.8.7"
+        stroke="#fff"
+        strokeWidth="1.6"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

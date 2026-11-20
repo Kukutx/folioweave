@@ -62,6 +62,10 @@ export type StackOptions = {
   shuffle?: boolean;
   pocketLabel?: { title?: string; tool?: string; date?: string };
   ending?: { quote: string; author?: string };
+  /** The track in the personal section, as a card that opens it (the original's Spotify card). */
+  song?: { title: string; artist?: string; cover?: string; note?: string; cta?: string; href: string };
+  /** The author's signature, drawn stroke by stroke above the closing note. */
+  signature?: { viewBox: string; strokes: { d: string; width?: number }[]; label?: string };
 };
 
 export const DEFAULT_LABELS: StackLabels = {
@@ -339,6 +343,10 @@ export function buildStack(context: TemplateContext, posts: readonly BlogPostSum
     personal,
     // Off unless the author asks: the pocket presents its art as the author's own work.
     art: options.art === true,
+    song: options.song ?? null,
+    signature: options.signature?.strokes.length
+      ? { ...options.signature, label: options.signature.label ?? `${identity.name}'s signature` }
+      : null,
     pocketLabel: options.pocketLabel,
     chat,
     email,
