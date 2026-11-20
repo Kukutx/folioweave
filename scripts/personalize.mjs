@@ -166,7 +166,7 @@ const defaults = cleanStart
       company: current.company,
       city: portfolio.site.location.city,
       country: portfolio.site.location.country,
-      email: portfolio.site.contact.email,
+      email: portfolio.site.contact?.email ?? "",
       origin: portfolio.site.origin,
       locale: current.locale || "en-US",
       twitter: socialByIcon("twitter"),

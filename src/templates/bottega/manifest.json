@@ -1,0 +1,207 @@
+{
+  "id": "bottega",
+  "name": "Bottega",
+  "description": "A black-and-white site for a small local shop: large type, one-tap WhatsApp and call, locations, a product overview and a services price list.",
+  "translations": {
+    "zh": {
+      "description": "给本地小店的黑白网站：大字号、一键 WhatsApp 和电话、门店与营业时间、商品分类和服务价目表。"
+    }
+  },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "category": "store",
+  "requires": ["store"],
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx",
+    "NotFound": "not-found.tsx"
+  },
+  "pages": [
+    {
+      "id": "catalog",
+      "entry": "catalog.tsx",
+      "path": "products",
+      "pathOption": "catalogPath",
+      "requires": "store.catalog"
+    },
+    {
+      "id": "services",
+      "entry": "services.tsx",
+      "path": "services",
+      "pathOption": "servicesPath",
+      "requires": "store.services"
+    }
+  ],
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": ["home", "help", "services", "stores", "contact"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "Interface wording follows the site locale: Italian for it-* locales, English otherwise (see copy.ts). Every entry can be overridden here.",
+    "properties": {
+      "catalogPath": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$",
+        "description": "Address of the products page, without slashes, such as prodotti. Default: products."
+      },
+      "servicesPath": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$",
+        "description": "Address of the services price list, such as sartoria. Default: services."
+      },
+      "wordmark": {
+        "enum": ["split", "plain"],
+        "description": "split sets every word of the brand name after the first in italic, as in CASA LUNARI; plain keeps it upright. Default: split."
+      },
+      "separateGroup": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$",
+        "description": "The id of one services group to show below the numbered price grid, full width and without a number, as the original's \"Altri lavori\". Default: none."
+      },
+      "quickActions": {
+        "type": "array",
+        "maxItems": 6,
+        "description": "The \"How can we help?\" entries; each opens WhatsApp with its message already written. An empty list hides the section.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "message"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 240
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      },
+      "steps": {
+        "type": "array",
+        "maxItems": 6,
+        "description": "The \"How it works\" steps on the services page. An empty list hides them.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 400
+            }
+          }
+        }
+      },
+      "labels": {
+        "type": "object",
+        "description": "Interface wording. {city} in inquireMessage, {name} in mapName, and {time} and {day} in the status lines are filled in. An empty storesIntro hides that paragraph.",
+        "propertyNames": {
+          "enum": [
+            "skipToContent",
+            "mainNavigation",
+            "mobileNavigation",
+            "footerNavigation",
+            "quickContact",
+            "openMenu",
+            "closeMenu",
+            "topOfPage",
+            "backToHomeLabel",
+            "navServices",
+            "navStores",
+            "navServicesPage",
+            "navCatalogPage",
+            "navContact",
+            "navWriting",
+            "whatsapp",
+            "whatsappCta",
+            "call",
+            "email",
+            "whereLink",
+            "quickTitle",
+            "quickIntro",
+            "quickCta",
+            "servicesTitle",
+            "catalogLink",
+            "servicesLink",
+            "storesTitle",
+            "storesIntro",
+            "findHere",
+            "hours",
+            "address",
+            "phone",
+            "addressPending",
+            "mapName",
+            "statusOpen",
+            "statusOpensLater",
+            "statusReopens",
+            "statusClosedToday",
+            "tomorrow",
+            "directions",
+            "inquire",
+            "inquireMessage",
+            "contactTitle",
+            "contactText",
+            "follow",
+            "phoneAndWhatsapp",
+            "phoneOnly",
+            "whatsappOnly",
+            "backHome",
+            "backHomeFooter",
+            "catalogEyebrow",
+            "categoriesEyebrow",
+            "categoriesTitle",
+            "categoriesIntro",
+            "catalogCtaTitle",
+            "catalogCtaText",
+            "askAvailability",
+            "availabilityMessage",
+            "servicesEyebrow",
+            "askPrice",
+            "priceMessage",
+            "stepsTitle",
+            "whichStore",
+            "priceListEyebrow",
+            "priceListTitle",
+            "priceListAside",
+            "priceNoteLabel",
+            "priceNote",
+            "servicesCtaTitle",
+            "servicesCtaText",
+            "notFoundEyebrow",
+            "notFoundTitle",
+            "notFoundText",
+            "notFoundHome",
+            "allArticles",
+            "allTopics",
+            "articleTopics",
+            "noArticles",
+            "minRead",
+            "onThisPage",
+            "backToTop"
+          ]
+        },
+        "additionalProperties": {
+          "type": "string",
+          "maxLength": 600
+        }
+      }
+    }
+  },
+  "preview": "preview.webp"
+}

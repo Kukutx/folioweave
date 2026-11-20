@@ -21,7 +21,8 @@ function twitterHandleFromSocialLinks() {
 
 export const siteConfig = {
   identity: { ...sourceSite.identity, country: sourceSite.location.country },
-  origin: sourceSite.origin,
+  // A build for a given host (npm run deploy) sets that host's address.
+  origin: process.env.NEXT_PUBLIC_SITE_ORIGIN || sourceSite.origin,
   themeColor: sourceSite.themeColor,
   copyrightYear: sourceSite.copyrightYear,
   contact: sourceSite.contact,
@@ -29,8 +30,9 @@ export const siteConfig = {
   socialLinks: sourceSite.socialLinks,
   navigation: sourceSite.navigation,
   location: sourceSite.location,
+  // The schema requires the resume's files whenever the resume is shown.
   resume: {
-    ...sourceSite.resume,
+    ...(sourceSite.resume as NonNullable<typeof sourceSite.resume>),
     enabled: portfolio.features.resume,
   },
   assets: sourceSite.assets,
@@ -39,7 +41,9 @@ export const siteConfig = {
 
 export const siteCopyright = `© ${siteConfig.copyrightYear} ${siteConfig.identity.name}. All rights reserved.`;
 
-export function mailto(email: PortfolioConfig["site"]["contact"]["email"], subject?: string) {
+export { contactOf } from "./contact";
+
+export function mailto(email: string, subject?: string) {
   return `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
 }
 

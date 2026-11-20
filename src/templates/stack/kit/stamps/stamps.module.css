@@ -1,0 +1,376 @@
+/* Stamps. The stage is in design units and scales to the container width. */
+.root {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.stamp {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  touch-action: pan-y;
+  outline: none;
+  will-change: transform;
+}
+.stamp[data-drag] {
+  cursor: grabbing;
+}
+/* the slow drift: three sine swings of their own periods, run by the compositor. Each swing moves
+   along a page axis (its direction in the stamp's turned frame comes in as --xa/--xb, --ya/--yb);
+   periods (--xp …) and starting moments (--xo …) are in seconds, amplitudes in px and degrees */
+.drift,
+.driftY {
+  position: absolute;
+  inset: 0;
+}
+.drift {
+  animation:
+    stampsDx calc(var(--xp, 7.3) * 0.5s) cubic-bezier(0.37, 0, 0.63, 1)
+      calc(var(--xo, 0) * -1s) infinite alternate,
+    stampsDr calc(var(--rp, 11.7) * 0.5s) cubic-bezier(0.37, 0, 0.63, 1)
+      calc(var(--ro, 0) * -1s) infinite alternate;
+}
+.driftY {
+  animation: stampsDy calc(var(--yp, 9.1) * 0.5s) cubic-bezier(0.37, 0, 0.63, 1)
+    calc(var(--yo, 0) * -1s) infinite alternate;
+}
+.root[data-off] .drift,
+.root[data-off] .driftY {
+  animation-play-state: paused;
+}
+@keyframes stampsDx {
+  from {
+    translate: calc(var(--xa, 0) * -1px) calc(var(--xb, 0) * -1px);
+  }
+  to {
+    translate: calc(var(--xa, 0) * 1px) calc(var(--xb, 0) * 1px);
+  }
+}
+@keyframes stampsDy {
+  from {
+    translate: calc(var(--ya, 0) * -1px) calc(var(--yb, 0) * -1px);
+  }
+  to {
+    translate: calc(var(--ya, 0) * 1px) calc(var(--yb, 0) * 1px);
+  }
+}
+@keyframes stampsDr {
+  from {
+    rotate: calc(var(--ra, 0) * -1deg);
+  }
+  to {
+    rotate: calc(var(--ra, 0) * 1deg);
+  }
+}
+.face,
+.soft,
+.aged {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.face > *,
+.soft > *,
+.print > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  overflow: visible;
+}
+/* the type layer of a drawn stamp: HTML text inside its SVG, in the drawing's units */
+.type {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.run {
+  position: absolute;
+  margin: 0;
+  white-space: pre;
+  line-height: normal;
+  transform-origin: 0 0;
+}
+.base {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+/* the type on the stamps; pages may hand in their own faces */
+.fMono {
+  font-family: var(
+    --stamps-mono,
+    "Geist Mono",
+    "Roboto Mono",
+    ui-monospace,
+    "SF Mono",
+    Menlo,
+    monospace
+  );
+}
+.fType {
+  font-family: var(
+    --stamps-type,
+    "Courier Prime",
+    "Courier New",
+    Courier,
+    "Nimbus Mono PS",
+    monospace
+  );
+}
+.fSans {
+  font-family: var(
+    --stamps-sans,
+    Urbanist,
+    Questrial,
+    "Avenir Next",
+    Avenir,
+    "Century Gothic",
+    sans-serif
+  );
+}
+.fSerif {
+  font-family: var(
+    --stamps-serif,
+    "Bodoni Moda",
+    Didot,
+    "Bodoni 72",
+    "Playfair Display",
+    Georgia,
+    "Times New Roman",
+    serif
+  );
+}
+.fCjk {
+  font-family: var(
+    --stamps-cjk,
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Noto Sans SC",
+    "Noto Sans CJK SC",
+    "Source Han Sans SC",
+    "Microsoft YaHei",
+    "WenQuanYi Zen Hei",
+    sans-serif
+  );
+}
+/* each layer is drawn once: only its opacity changes, and the stamp's lift, push and tilt move it
+   without drawing it again */
+.face,
+.soft,
+.lifted,
+.aged {
+  will-change: transform, opacity;
+}
+/* the paper casts a soft shadow onto the page. The filters sit on the drawing inside each layer,
+   so they are drawn once into the layer, not applied again by the compositor every frame */
+.face > * {
+  filter: drop-shadow(0 17px 26px var(--stamps-shadow, rgba(0, 0, 0, 0.36)));
+}
+/* the same print, blurred once: faded in while another stamp is lifted */
+.soft {
+  opacity: 0;
+}
+.soft > * {
+  filter: blur(8px)
+    drop-shadow(0 17px 26px var(--stamps-shadow, rgba(0, 0, 0, 0.36)));
+}
+/* the deeper shadow of a lifted stamp, faded in with the lift */
+.lifted {
+  position: absolute;
+  inset: 6% 5%;
+  border-radius: 4px;
+  opacity: 0;
+  box-shadow: 0 30px 36px rgba(0, 0, 0, 0.16);
+  pointer-events: none;
+}
+.aged {
+  opacity: 0;
+  overflow: visible;
+}
+.stamp:focus-visible .face {
+  outline: 3px solid var(--accent, #8fb35a);
+  outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drift,
+  .driftY,
+  .pillDrift,
+  .pillDriftY {
+    animation: none;
+  }
+}
+
+/* name pill over the lifted stamp, in two drifting wrappers (x, y) that follow its swings */
+.pillDrift,
+.pillDriftY {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+.pillDrift {
+  z-index: 100;
+  animation: stampsDx calc(var(--xp, 7.3) * 0.5s) cubic-bezier(0.37, 0, 0.63, 1)
+    calc(var(--xo, 0) * -1s) infinite alternate;
+}
+.pillDriftY {
+  animation: stampsDy calc(var(--yp, 9.1) * 0.5s) cubic-bezier(0.37, 0, 0.63, 1)
+    calc(var(--yo, 0) * -1s) infinite alternate;
+}
+.root[data-off] .pillDrift,
+.root[data-off] .pillDriftY {
+  animation-play-state: paused;
+}
+.pill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform, translate, opacity;
+  z-index: 100;
+  height: 24.65px;
+  padding: 0 11.5px;
+  border-radius: 12.33px;
+  background: var(--ink, #201a19);
+  color: var(--paper, #eeebe9);
+  font: 500 12.5px/24.65px
+    var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translate(-50%, calc(-100% + 4px)) scale(0.965);
+  transition:
+    opacity 0.35s cubic-bezier(0.2, 0.7, 0.3, 1),
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.pill[data-on="true"] {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+/* lightbox (a modal dialog in the top layer) */
+.box {
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  outline: none;
+  cursor: zoom-out;
+  container-type: size;
+}
+.box[open] {
+  display: grid;
+  place-items: center;
+}
+.box::backdrop {
+  background: transparent;
+}
+.night {
+  position: absolute;
+  inset: 0;
+  background: var(--stamps-night, #23221e);
+}
+.big {
+  position: relative;
+  /* as recorded: 434 × 541 px, smaller when the window is */
+  height: min(541px, 82cqh, 74cqw * 237 / 190);
+  aspect-ratio: 190 / 237;
+  will-change: transform;
+}
+/* tilted under the pointer: the script writes this transform (and the light's offset) */
+.tilt {
+  position: absolute;
+  inset: 0;
+  transform: perspective(1100px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1);
+  will-change: transform;
+}
+/* the shadow is drawn once with the print (inside the moving layers), never re-filtered per frame */
+.print {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.45));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* a soft light that follows the pointer across the print: a fixed gradient slid under the print's
+   shape, so following the pointer is a transform */
+.glare {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  pointer-events: none;
+}
+.glare::before {
+  content: "";
+  position: absolute;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    30% 25% at 50% 50%,
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0) 70%
+  );
+  mix-blend-mode: soft-light;
+  transform: translate(var(--tx, 0%), var(--ty, -5%));
+  transition: transform 0.2s;
+  will-change: transform;
+}
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  margin: 0;
+  text-align: center;
+  font: 400 12px/14px
+    var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.46);
+  pointer-events: none;
+  animation: hint 0.5s 0.25s both;
+}
+@keyframes hint {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .tilt {
+    transition: none;
+  }
+  .hint {
+    animation: none;
+  }
+}

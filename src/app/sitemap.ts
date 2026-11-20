@@ -2,6 +2,11 @@ import type { MetadataRoute } from "next";
 import { getBlogIndexPosts, getBlogTags } from "@/blog";
 import { siteConfig } from "@/config/site";
 import { resolvePublishedRoutes } from "@/portfolio/publication-policy.mjs";
+import { pluginPageLinks } from "@/portfolio/plugin-page-links.generated";
+import { templatePages } from "@/portfolio/template-pages.generated";
+
+/** Built once from the profile, so static hosts can serve it as a file. */
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getBlogIndexPosts();
@@ -14,6 +19,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return resolvePublishedRoutes({
     demoRoutesEnabled: siteConfig.features.demoRoutes,
     blogRoutes: [...modified.keys()],
+    pluginRoutes: [
+      ...pluginPageLinks
+        .filter((link) => link.kind === "page")
+        .map((page) => page.href),
+      ...templatePages.map((page) => page.href),
+    ],
   }).map((route) => ({
     // Tag slugs may be written in any script.
     url: `${siteConfig.origin}${route === "/" ? "" : encodeURI(route)}`,

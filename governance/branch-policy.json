@@ -8,6 +8,7 @@
   "profileSpecificFiles": [
     "portfolio.json",
     "src/portfolio/config.generated.ts",
+    "src/portfolio/redirects.generated.json",
     "src/portfolio/media.generated.ts",
     "src/blog/posts.generated.ts",
     "src/blog/custom-posts.generated.ts"

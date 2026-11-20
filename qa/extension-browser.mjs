@@ -134,6 +134,8 @@ try {
   );
   const profilePath = path.join(sandbox, "portfolio.json");
   const profile = JSON.parse(await fs.readFile(profilePath, "utf8"));
+  // The fixture switches back to the profile's own template at the end.
+  const ownTemplate = profile.template?.id ?? "classic";
   profile.features.demoRoutes = false;
   profile.site.identity.locale = "zh-Hant-HK";
   profile.features.work = false;
@@ -666,7 +668,13 @@ try {
     );
     musicReport.method =
       "Same template, profile and QA bridge; only music toggled. Unique loaded JS/CSS decoded bodies; gzip sizes estimated locally. CDP timing is diagnostic, three 1200ms samples per state.";
-    musicReport.budgets = { jsGzipBytes: 24000, cssGzipBytes: 8000 };
+    // The same budget the music manifest declares for the bundle budget.
+    musicReport.budgets = JSON.parse(
+      await fs.readFile(
+        path.join(root, "src/plugins/music/manifest.json"),
+        "utf8",
+      ),
+    ).budget;
     await fs.writeFile(
       path.join(root, "qa/music-quality-report.json"),
       JSON.stringify(musicReport, null, 2) + "\n",
@@ -683,10 +691,11 @@ try {
   }
   stop();
   const before = JSON.parse(await fs.readFile(profilePath, "utf8"));
-  await run(cli, ["plugin", "disable", "music"]);
-  await run(cli, ["plugin", "disable", "comments"]);
-  await run(cli, ["plugin", "disable", "fixture-failure"]);
-  await run(cli, ["template", "use", "classic"]);
+  // Every plugin the profile has on, not only the ones this check turned on:
+  // an author's profile may enable others (a launcher, a badge).
+  for (const [id, entry] of Object.entries(before.plugins ?? {}))
+    if (entry.enabled) await run(cli, ["plugin", "disable", id]);
+  await run(cli, ["template", "use", ownTemplate]);
   const after = JSON.parse(await fs.readFile(profilePath, "utf8"));
   assert.deepEqual(after.site, before.site);
   assert.deepEqual(after.projects, before.projects);
@@ -707,7 +716,9 @@ try {
     false,
   );
   await run(cli, ["doctor", "--json"]);
-  console.log("Building Classic again with both plugins disabled…");
+  console.log(
+    `Building the profile's own template (${ownTemplate}) again with every plugin disabled…`,
+  );
   await build();
   base = await start();
   const disabledPage = await browser.newPage();
@@ -721,8 +732,33 @@ try {
   assert.equal(await disabledPage.locator("[data-plugin]").count(), 0);
   assert.equal(
     await disabledPage.locator("html").getAttribute("data-template"),
-    "classic",
+    ownTemplate,
   );
+  report.push(
+    "CLI switching preserves content/settings; disabling removes UI, published audio and external CSP sources.",
+  );
+  // Classic's article page, blog tools and photography reveal; another
+  // template renders its own views, which its own suites check.
+  if (ownTemplate === "classic") await checkClassicViews(disabledPage, base);
+  else
+    console.log(
+      `SKIP Classic article, blog tools and photography checks: the profile uses ${ownTemplate}.`,
+    );
+  console.log(report.join("\n"));
+} finally {
+  await browser?.close();
+  stop();
+  // Check the resolved path before recursively removing only this owned sandbox.
+  if (
+    path.dirname(sandbox) !== path.join(root, ".generated") ||
+    !path.basename(sandbox).startsWith("extension-qa-")
+  )
+    throw new Error("Unsafe sandbox cleanup");
+  await fs.rm(sandbox, { recursive: true, force: true });
+}
+
+/** A direct article visit, the blog tools and the photography reveal. */
+async function checkClassicViews(disabledPage, base) {
   await disabledPage.goto(base + "/blogs/first", { waitUntil: "networkidle" });
   const cover = disabledPage.locator(".blog-post-hero-image");
   await cover.evaluate((image) => image.decode());
@@ -749,20 +785,6 @@ try {
       ),
     1,
   );
-  report.push(
-    "CLI switching preserves content/settings; disabling removes UI, published audio and external CSP sources.",
-  );
   await checkBlogTools(disabledPage, base);
   await checkPhotographyReveal(disabledPage, base);
-  console.log(report.join("\n"));
-} finally {
-  await browser?.close();
-  stop();
-  // Check the resolved path before recursively removing only this owned sandbox.
-  if (
-    path.dirname(sandbox) !== path.join(root, ".generated") ||
-    !path.basename(sandbox).startsWith("extension-qa-")
-  )
-    throw new Error("Unsafe sandbox cleanup");
-  await fs.rm(sandbox, { recursive: true, force: true });
 }

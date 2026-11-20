@@ -1,0 +1,52 @@
+{
+  "id": "emojicut",
+  "name": "EmojiCut",
+  "description": "A sticker printer page: cut a sticker sheet into separate transparent PNGs in the browser, or have AI design the sheet with the visitor's own key.",
+  "translations": {
+    "zh": {
+      "name": "EmojiCut 贴纸打印机",
+      "description": "一个贴纸打印机页面：在浏览器里把贴纸大图切成单独的透明 PNG，或用访客自己的密钥让 AI 设计整张贴纸。"
+    }
+  },
+  "setupHelp": "Enable it to publish /tools/emojicut. Cutting runs entirely in the visitor's browser; AI design uses the visitor's own Gemini API key, kept only in their browser.",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "slots": [],
+  "page": {
+    "entry": "page.tsx",
+    "path": "emojicut",
+    "title": "EmojiCut",
+    "description": "Turn a sticker sheet into separate transparent stickers, or design one from a character with AI.",
+    "icon": "icon.tsx"
+  },
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "ai": {
+        "type": "boolean",
+        "default": true,
+        "description": "Offer AI sticker design with the visitor's own Gemini API key. Cutting works either way."
+      },
+      "imageModel": {
+        "type": "string",
+        "default": "gemini-3-pro-image",
+        "pattern": "^[a-z0-9][a-z0-9.-]*$",
+        "maxLength": 80,
+        "description": "Gemini model that designs the sticker sheet (Nano Banana Pro by default). Any image-output model id from https://ai.google.dev/gemini-api/docs/models."
+      },
+      "namingModel": {
+        "type": "string",
+        "default": "gemini-3.5-flash-lite",
+        "pattern": "^[a-z0-9][a-z0-9.-]*$",
+        "maxLength": 80,
+        "description": "Fast Gemini model that names each AI-designed sticker for the ZIP."
+      }
+    },
+    "title": "EmojiCutOptions"
+  },
+  "network": {
+    "connect-src": ["https://generativelanguage.googleapis.com"]
+  },
+  "generateOptions": true
+}

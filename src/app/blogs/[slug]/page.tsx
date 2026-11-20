@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { exportableParams } from "@/lib/static-params.mjs";
 import { getMarkdownBlogPost, getMarkdownBlogPosts } from "@/blog";
 import BlogPost from "@/portfolio/template-blog-post.generated";
 import ArticlePlugins from "@/portfolio/plugins-article-after.generated";
@@ -10,7 +11,10 @@ import { createBlogMetadata } from "@/blog/metadata";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getMarkdownBlogPosts().map((post) => ({ slug: post.slug }));
+  return exportableParams(
+    getMarkdownBlogPosts().map((post) => ({ slug: post.slug })),
+    "slug",
+  );
 }
 
 export async function generateMetadata({

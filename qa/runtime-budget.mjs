@@ -5,6 +5,9 @@ import path from "node:path";
 import { chromium } from "playwright-core";
 import { firstPhotograph } from "./profile.mjs";
 import { installServiceFixtures } from "./service-fixtures.mjs";
+import { qaTemplate } from "./template.mjs";
+
+const template = qaTemplate();
 
 // Synthetic regression budgets, NOT field CWV / INP or a device benchmark.
 // CLS/LCP/interaction work gate everywhere. Long-task and RAF-frame budgets are
@@ -300,11 +303,13 @@ try {
           await page.evaluate(() => performance.mark("qa:hero-actions"));
           if (width < 768)
             for (let i = 0; i < 3; i++) {
-              await page.locator(".mobile-menu-toggle").click();
+              await page.locator(template.menuToggle).first().click();
               await page.keyboard.press("Escape");
             }
-          for (let i = 0; i < 3; i++)
-            await page.locator(".card-polaroid").click();
+          // Classic's portrait cycles on a click; other heroes have no such control.
+          if (template.classic)
+            for (let i = 0; i < 3; i++)
+              await page.locator(".card-polaroid").click();
           const frames = await page.evaluate(
             () =>
               new Promise((resolve) => {

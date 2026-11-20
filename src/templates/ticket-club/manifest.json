@@ -1,0 +1,404 @@
+{
+  "id": "ticket-club",
+  "name": "Ticket Club",
+  "description": "A red page where the author's links hang as tickets on a washing line: pull a stub down to tear it off and copy the link. A sealed envelope holds a letter from the author.",
+  "translations": {
+    "zh": {
+      "description": "红色页面上，作者的链接像车票一样晾在绳上：往下拽就撕下票根、复制链接；还有一封装在信封里的信。"
+    }
+  },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx",
+    "NotFound": "not-found.tsx"
+  },
+  "pages": [
+    {
+      "id": "edition",
+      "entry": "edition.tsx",
+      "path": "edition",
+      "pathOption": "editionPath",
+      "requires": "about.story"
+    }
+  ],
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": ["home"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "labels": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Interface wording, in the original's words by default.",
+        "properties": {
+          "brandTop": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "YOUR LITTLE"
+          },
+          "brandBottom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "LINK COLLECTION"
+          },
+          "edition": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PERSONAL EDITION"
+          },
+          "tagline": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "GOOD THINGS. PASSED ALONG."
+          },
+          "titleTop": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "TICKET"
+          },
+          "titleBottom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "CLUB"
+          },
+          "subLead": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "A little piece of my internet."
+          },
+          "subTail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Tear one off. Make it yours."
+          },
+          "edit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Edit your links"
+          },
+          "fresh": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Fresh tickets"
+          },
+          "pass": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PERSONAL PASS"
+          },
+          "club": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "TICKET CLUB"
+          },
+          "year": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "The year on each card; defaults to the copyright year followed by · ∞."
+          },
+          "pull": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PULL TO COLLECT"
+          },
+          "taken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "TAKEN. GOOD CHOICE."
+          },
+          "again": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PRINT ANOTHER ↻"
+          },
+          "hintIdle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "A whole collection. In good hands."
+          },
+          "hintPull": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "One little pull. One good link."
+          },
+          "hintDone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "A good link, ready to go. ⌘ V"
+          },
+          "clipboard": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Clipboard"
+          },
+          "clipboardFoot": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Copied & ready to paste."
+          },
+          "keys": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "⌘ V"
+          },
+          "writing": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "The link to the articles in the tools row; defaults to the blog's title, in capitals."
+          },
+          "copyFailed": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Couldn’t copy. It’s {link}",
+            "description": "The toast when the browser refuses the clipboard; {link} is the ticket's link."
+          },
+          "envelopeTo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "To: You"
+          },
+          "envelopeDate": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "The line under the address on the envelope; defaults to the location's city and the copyright year."
+          },
+          "envelopeHint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Drag to tear the envelope, or tap to open"
+          },
+          "envelopeOpening": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Opening your letter..."
+          },
+          "envelopeTag": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "drag"
+          },
+          "letterTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "A little about me"
+          },
+          "letterGreeting": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Dear friend,"
+          },
+          "close": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Close"
+          },
+          "previous": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Previous"
+          },
+          "next": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Next"
+          },
+          "stampCity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "SINGAPORE"
+          },
+          "stampCaption": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "SHOPHOUSES"
+          },
+          "stampRainy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "RAINY DAYS"
+          },
+          "stampPost": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "POST"
+          },
+          "stampWithLove": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "WITH LOVE"
+          },
+          "allPosts": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "ALL"
+          },
+          "readPost": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "READ IT"
+          },
+          "minutes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "MIN"
+          },
+          "backHome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "BACK TO THE LINE"
+          },
+          "notFoundKicker": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "NOT FOUND"
+          },
+          "notFoundTop": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "LOST"
+          },
+          "notFoundBottom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "TICKET."
+          },
+          "notFoundText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "This page isn’t on the line."
+          }
+        }
+      },
+      "tickets": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 3,
+        "description": "The tickets on the line, in order (one to three). Without this list: the site, a code profile (else the first project with a link) and the e-mail (else another social profile), as the profile has them.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["link"],
+          "properties": {
+            "link": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 300,
+              "pattern": "^(?:https?://|mailto:|tel:|/(?!/))",
+              "description": "What the stub hands out and the QR code carries: an http(s), mailto: or tel: link, or a path on this site."
+            },
+            "title": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 2,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 24
+              },
+              "description": "The big title, one or two lines (e.g. [\"KEEP IN\", \"TOUCH.\"])."
+            },
+            "kicker": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "description": "The small line above the title, after the number (e.g. THE CONVERSATION)."
+            },
+            "subtitle": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "The line under the title."
+            },
+            "stub": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "description": "The label on the stub (e.g. TAKE MY LINK)."
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "description": "The link's name on the clipboard."
+            },
+            "toast": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "The note once the link is copied."
+            },
+            "icon": {
+              "enum": ["web", "github", "chat"],
+              "description": "The corner icon."
+            },
+            "light": {
+              "type": "boolean",
+              "description": "A cyan stub (the first ticket's by default)."
+            }
+          }
+        }
+      },
+      "editionPath": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$",
+        "maxLength": 40,
+        "default": "edition",
+        "description": "The address of the personal edition (the letter), e.g. lettera."
+      }
+    }
+  },
+  "preview": "preview.webp"
+}

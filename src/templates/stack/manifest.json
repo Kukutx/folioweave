@@ -1,0 +1,359 @@
+{
+  "id": "stack",
+  "name": "Stack",
+  "description": "A minimal one-column personal page: an avatar with a pile of portraits, experience, a perspective fan of work, link previews, prints, art and a chat-style contact.",
+  "translations": {
+    "zh": {
+      "description": "极简的单栏个人页：叠放的头像、经历、扇形展开的作品、链接预览、相片和聊天式联系。"
+    }
+  },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "entries": {
+    "Layout": "layout.tsx",
+    "Home": "home.tsx",
+    "BlogIndex": "blog-index.tsx",
+    "BlogPost": "blog-post.tsx",
+    "BlogTag": "blog-tag.tsx",
+    "NotFound": "not-found.tsx"
+  },
+  "slots": ["site.floating", "site.footer", "article.after"],
+  "sections": ["about", "work", "thoughts", "photography", "contact"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "established": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40,
+        "description": "The year after EST. in the navigation; defaults to the earliest year of the timeline (omitted without one)."
+      },
+      "labels": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Interface wording, in the original's words by default.",
+        "properties": {
+          "est": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "EST."
+          },
+          "navHome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "/HOME"
+          },
+          "navAbout": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "/ABOUT"
+          },
+          "navWork": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "/WORK"
+          },
+          "navThoughts": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "/THOUGHTS"
+          },
+          "navContact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "/CONTACT"
+          },
+          "experience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "EXPERIENCE"
+          },
+          "now": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "NOW"
+          },
+          "stuff": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "STUFF I DO"
+          },
+          "stack": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "STACK"
+          },
+          "ventures": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "VENTURES"
+          },
+          "writing": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "WRITING"
+          },
+          "minutes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "m"
+          },
+          "personal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "PERSONAL"
+          },
+          "shotWith": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Shot with"
+          },
+          "seeMore": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "See more on IG"
+          },
+          "copy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Copy"
+          },
+          "submit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Submit"
+          },
+          "namePlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "John Doe"
+          },
+          "emailPlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "john@doe.com"
+          },
+          "messagePlaceholder": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Enter your message"
+          },
+          "endingNote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Ending on a note I try to live by"
+          },
+          "showPhotos": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Show photos of"
+          },
+          "hidePhotos": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Hide photos of"
+          },
+          "selectedWork": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Selected work"
+          },
+          "contact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Contact"
+          },
+          "allWriting": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "All writing"
+          },
+          "home": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Home"
+          },
+          "notFoundTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Nothing here."
+          },
+          "notFoundText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "The link may be outdated, or the page has moved."
+          }
+        }
+      },
+      "chat": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The lines of the contact conversation around the e-mail, the form and the links.",
+        "properties": {
+          "greeting": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "hey, how do i actually reach you?"
+          },
+          "emailReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "fastest way is to email me. keep it short."
+          },
+          "messageAsk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "hmm too lazy to email tho"
+          },
+          "formReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "fair. just use the form below, lands in the same inbox."
+          },
+          "elsewhereAsk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "also where else are you online?"
+          },
+          "linksReply": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "you can find me here too."
+          },
+          "thanks": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "nice. i’ll connect."
+          },
+          "goodbye": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "default": "always down to chat, swap ideas, or hear what you’re building."
+          }
+        }
+      },
+      "tools": {
+        "type": "array",
+        "maxItems": 12,
+        "description": "The STACK line: tools with a local square icon; omitted when empty.",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "icon"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "icon": {
+              "type": "string",
+              "pattern": "^/(?!/)",
+              "maxLength": 300
+            }
+          }
+        },
+        "default": []
+      },
+      "camera": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "description": "What the photos were taken with, shown under the prints."
+      },
+      "art": {
+        "type": "boolean",
+        "default": false,
+        "description": "The pocket of digital art and the floating stamps under the photos. Off by default: its caption presents the art as the author's own work."
+      },
+      "shuffle": {
+        "type": "boolean",
+        "default": true,
+        "description": "The shuffle stack of the projects' landscape pictures under the fan."
+      },
+      "ending": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["quote"],
+        "description": "The closing quote under the conversation, after the endingNote label. Defaults to the profile's footerBook quote; omitted when neither exists.",
+        "properties": {
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "author": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      },
+      "pocketLabel": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The caption printed on the art pocket.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "digital art"
+          },
+          "tool": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "tool: procreate"
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "sep 2024"
+          }
+        }
+      }
+    }
+  },
+  "preview": "preview.webp"
+}

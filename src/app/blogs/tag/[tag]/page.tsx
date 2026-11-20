@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { exportableParams } from "@/lib/static-params.mjs";
 import { getBlogTag, getBlogTags } from "@/blog";
 import { createRouteMetadata } from "@/config/seo";
 import { siteConfig } from "@/config/site";
@@ -10,7 +11,10 @@ import { templateContext } from "@/core/template-context";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getBlogTags().map((tag) => ({ tag: tag.slug }));
+  return exportableParams(
+    getBlogTags().map((tag) => ({ tag: tag.slug })),
+    "tag",
+  );
 }
 
 /** A tag written in a non-Latin script may arrive percent-encoded. */

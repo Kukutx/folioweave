@@ -7,6 +7,8 @@ import {
   requireProfileBlocks,
   resolveExtensions,
   extensionOutputs,
+  pluginPageRoutes,
+  templatePages,
 } from "../src/core/extensions.mjs";
 import { withEmbeddedArtwork } from "../src/core/audio-artwork.mjs";
 import {
@@ -102,8 +104,18 @@ export async function prepareContent(root = projectRoot, candidate) {
   const routes = resolvePublishedRoutes({
     demoRoutesEnabled: config.features.demoRoutes,
     blogRoutes,
+    pluginRoutes: [
+      ...pluginPageRoutes(extensions),
+      ...templatePages(extensions).map((page) => page.href),
+    ],
     definitions: context.routes,
   });
+  // A registered page wins over a template page at the same address.
+  for (const page of templatePages(extensions))
+    if (context.routes.some((route) => route.path.split("/")[1] === page.path))
+      throw new Error(
+        `${extensions.template.id}: page path /${page.path} is already a registered route`,
+      );
   validateContentLinks(
     livePosts.flatMap((post) => post.bodyLinks),
     routes,

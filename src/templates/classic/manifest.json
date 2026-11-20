@@ -2,6 +2,9 @@
   "id": "classic",
   "name": "Classic",
   "description": "The original editorial portfolio with playful objects and scroll motion.",
+  "translations": {
+    "zh": { "description": "最初的编辑风格作品集：好玩的小物件和滚动动效。" }
+  },
   "version": "1.0.0",
   "apiVersion": 1,
   "entries": {
@@ -13,6 +16,10 @@
   },
   "slots": ["site.floating", "site.footer", "article.after"],
   "sections": ["home", "about", "interlude", "work", "photography", "contact"],
-  "requires": ["photography", "footerBook", "interlude"],
-  "optionsSchema": { "type": "object", "additionalProperties": false }
+  "requires": ["photography", "footerBook", "interlude", "site.contact"],
+  "optionsSchema": {
+    "type": "object",
+    "additionalProperties": false
+  },
+  "preview": "preview.webp"
 }

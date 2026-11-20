@@ -2,3 +2,4 @@
 import 'server-only';
 export const templateId = "classic";
 export const templateOptions = {};
+export const templateCategory: "personal" | "store" = "personal";
