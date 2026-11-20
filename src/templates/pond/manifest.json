@@ -1,13 +1,13 @@
 {
   "id": "pond",
   "name": "Pond",
-  "description": "A one-screen personal page over an ASCII koi pond: a small mono navigation, a short intro and links, an ink drop at the water's edge, food to drop for the koi and a light/dark switch.",
+  "description": "A garden pond seen from the bridge: on the home page koi you can feed, lily pads you can move and a day/night switch; projects shown as koi in viewing bowls, photographs that surface as they scroll in, and writing on the bank.",
   "translations": {
     "zh": {
-      "description": "ASCII 锦鲤池塘上的单屏个人页：小号等宽导航、简短介绍和链接，水边的墨水滴，可以喂鱼，还能切换深浅色。"
+      "description": "从桥上俯看的庭院池塘：首页可以喂锦鲤、拨动睡莲叶，还能切换白天和夜晚；作品像锦鲤展那样一条鱼一个圆盆，照片随滚动从水里浮上来，文章写在岸边。"
     }
   },
-  "version": "1.0.0",
+  "version": "2.0.0",
   "apiVersion": 1,
   "entries": {
     "Layout": "layout.tsx",
@@ -48,7 +48,13 @@
           "minLength": 1,
           "maxLength": 80
         },
-        "description": "Short lines above the intro, in the softer ink, ending in a blinking caret; omitted by default."
+        "description": "Up to three short lines in italic above the greeting; omitted by default."
+      },
+      "time": {
+        "type": "string",
+        "enum": ["auto", "day", "night"],
+        "default": "auto",
+        "description": "The time of day the site opens in: the visitor's system setting (auto), or always day or night until the visitor switches."
       },
       "projectsPath": {
         "type": "string",
@@ -65,80 +71,120 @@
       "labels": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Interface wording, in the original's words by default.",
+        "description": "Interface wording, in plain English by default.",
         "properties": {
           "home": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "pond"
+            "default": "Pond",
+            "description": "The home page in the list of pages at the foot of the other pages."
           },
           "projects": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "projects"
+            "default": "Work"
           },
           "gallery": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "gallery"
+            "default": "Photographs"
           },
           "blog": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "blog"
+            "description": "The writing in the navigation; the profile's blog title by default."
           },
           "light": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "light"
+            "default": "Day"
           },
           "dark": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "dark"
+            "default": "Night"
+          },
+          "timeOfDay": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Time of day",
+            "description": "Accessible name of the Day / Night switch."
           },
           "greeting": {
             "type": "string",
             "minLength": 1,
             "maxLength": 120,
             "default": "{hello}, I'm {name}.",
-            "description": "The first line of the intro; {hello} is the first of the profile's greetings and {name} its first name."
+            "description": "The greeting on the pond; {hello} is the first of the profile's greetings and {name} its first name."
           },
           "pond": {
             "type": "string",
             "minLength": 1,
             "maxLength": 80,
-            "default": "Koi pond"
+            "default": "Feed the koi",
+            "description": "Accessible name of the pond, a button that drops food on the water."
+          },
+          "hint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "default": "Touch the water to feed the koi",
+            "description": "The hint at the lower right of the pond until the visitor has fed the koi."
           },
           "minutes": {
             "type": "string",
             "minLength": 1,
             "maxLength": 20,
-            "default": "min"
+            "default": "min read"
           },
           "allTopics": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "all"
+            "default": "All"
           },
           "back": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "default": "back to the pond"
+            "default": "Back to the pond"
           },
           "notFound": {
             "type": "string",
             "minLength": 1,
             "maxLength": 120,
             "default": "This page wandered off."
+          },
+          "skip": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Skip to content"
+          },
+          "close": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Close"
+          },
+          "previous": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Previous"
+          },
+          "next": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Next"
           }
         }
       }

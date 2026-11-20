@@ -3,7 +3,8 @@ import type { TemplateContext, TemplateModule } from "@/core/contracts";
 import { serializeJsonLd } from "@/lib/json-ld";
 import styles from "./bottega.module.css";
 import { sans, sansExtended, serif, serifExtended } from "./fonts";
-import { DAYS, external, mapsUrl, shopOf } from "./shop";
+import { DAYS } from "./hours";
+import { external, mapsUrl, shopOf } from "./shop";
 import "./host.css";
 
 const SCHEMA_DAYS = [

@@ -1,0 +1,497 @@
+/* The envelope and the letter. Envelope sizes follow its own width (cqi). */
+.wrap {
+  position: relative;
+  max-width: 760px;
+  margin: clamp(40px, 6vw, 72px) auto 0;
+}
+.wrap[data-state="open"] {
+  padding-bottom: clamp(70px, 12vw, 110px);
+}
+
+/* ---------- the envelope (a button) ---------- */
+.envelope {
+  display: grid;
+  justify-items: center;
+  gap: 26px;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  container-type: inline-size;
+  -webkit-tap-highlight-color: transparent;
+}
+.envelope:focus-visible {
+  outline: none;
+}
+.envelope:focus-visible .card {
+  outline: 2px solid var(--red-deep);
+  outline-offset: 6px;
+}
+/* the name sits here, not on the card: a named element is flattened, which would undo the turn */
+.scene {
+  display: block;
+  width: 100%;
+  perspective: 1800px;
+  view-transition-name: tc-envelope;
+}
+.card {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.6;
+  transform-style: preserve-3d;
+  rotate: -2deg;
+  transition: translate 0.3s ease;
+}
+.face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background:
+    var(--grain),
+    radial-gradient(120% 90% at 30% 20%, #d4b385 0%, #c4a072 55%, #b38d5f 100%);
+  box-shadow:
+    0 1px 1px rgba(40, 25, 10, 0.25),
+    0 22px 30px -14px rgba(60, 38, 18, 0.4);
+}
+.back {
+  transform: rotateY(180deg);
+}
+.flat {
+  transform: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .wrap[data-state="sealed"] .envelope:hover .card {
+    translate: 0 -6px;
+  }
+}
+
+/* front: the stamp, the postmark, the address */
+.stamp {
+  position: absolute;
+  top: 6cqi;
+  right: 6cqi;
+  width: 16.5cqi;
+  aspect-ratio: 0.8;
+  padding: 1.2cqi;
+  background: #f7f0e1;
+  rotate: 3deg;
+  filter: drop-shadow(0 1px 1px rgba(40, 25, 10, 0.3));
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, #0000 0.75cqi, #000 calc(0.75cqi + 0.5px))
+      0 0 / 2.2cqi 100% repeat-x,
+    radial-gradient(
+        circle at 50% 100%,
+        #0000 0.75cqi,
+        #000 calc(0.75cqi + 0.5px)
+      )
+      0 0 / 2.2cqi 100% repeat-x,
+    radial-gradient(circle at 0 50%, #0000 0.75cqi, #000 calc(0.75cqi + 0.5px))
+      0 0 / 100% 2.2cqi repeat-y,
+    radial-gradient(
+        circle at 100% 50%,
+        #0000 0.75cqi,
+        #000 calc(0.75cqi + 0.5px)
+      )
+      0 0 / 100% 2.2cqi repeat-y;
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle at 50% 0, #0000 0.75cqi, #000 calc(0.75cqi + 0.5px))
+      0 0 / 2.2cqi 100% repeat-x,
+    radial-gradient(
+        circle at 50% 100%,
+        #0000 0.75cqi,
+        #000 calc(0.75cqi + 0.5px)
+      )
+      0 0 / 2.2cqi 100% repeat-x,
+    radial-gradient(circle at 0 50%, #0000 0.75cqi, #000 calc(0.75cqi + 0.5px))
+      0 0 / 100% 2.2cqi repeat-y,
+    radial-gradient(
+        circle at 100% 50%,
+        #0000 0.75cqi,
+        #000 calc(0.75cqi + 0.5px)
+      )
+      0 0 / 100% 2.2cqi repeat-y;
+  mask-composite: intersect;
+}
+/* a red frame lettered with the city and the year, the portrait printed in the same red */
+.stampFrame {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.5cqi;
+  width: 100%;
+  height: 100%;
+  padding: 0.7cqi 0.9cqi 0.6cqi;
+  background: var(--red);
+  color: #fbf1e3;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.stampCity {
+  overflow: hidden;
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: max(6px, 1.2cqi);
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stampValue {
+  justify-self: end;
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-size: 3.4cqi;
+}
+.stampWindow {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f7efe0;
+}
+.stampWindow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.2);
+}
+/* dark becomes red, light becomes the stamp's paper */
+.stampWindow::before,
+.stampWindow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.stampWindow::before {
+  background: var(--red);
+  mix-blend-mode: screen;
+}
+.stampWindow::after {
+  background: #f7efe0;
+  mix-blend-mode: multiply;
+}
+.stampInitials {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--red);
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-size: 7cqi;
+}
+.postmark {
+  position: absolute;
+  top: 9cqi;
+  right: 13cqi;
+  width: 46cqi;
+  rotate: -9deg;
+  fill: none;
+  stroke: rgba(30, 24, 20, 0.62);
+  stroke-width: 2;
+  mix-blend-mode: multiply;
+}
+.postmarkRing,
+.postmarkYear {
+  fill: rgba(30, 24, 20, 0.7);
+  stroke: none;
+  font-family: var(--tc-mono), ui-monospace, monospace;
+}
+.postmarkRing {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.postmarkYear {
+  font-size: 17px;
+  font-weight: 600;
+}
+.address {
+  position: absolute;
+  left: 13cqi;
+  right: 30cqi;
+  bottom: 15cqi;
+  display: grid;
+  gap: 2.4cqi;
+  text-align: left;
+  color: #23190f;
+}
+.to {
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-style: italic;
+  font-size: max(1.4rem, 6.4cqi);
+  line-height: 1;
+  border-bottom: 1px solid rgba(35, 25, 15, 0.35);
+  padding-bottom: 2cqi;
+}
+.toLine {
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: max(10px, 1.9cqi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(35, 25, 15, 0.35);
+  padding-bottom: 2cqi;
+}
+
+/* back: the inside, the flap, the letter waiting, the lower flaps and the seal */
+.inside {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#7d5e3b, #96764d 60%);
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+}
+.flap {
+  position: absolute;
+  z-index: 4;
+  inset: 0 0 auto;
+  height: 58%;
+  transform-origin: 50% 0;
+  background: var(--grain), linear-gradient(#cfad7e, #bf9a69);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  filter: drop-shadow(0 2px 0 rgba(60, 38, 18, 0.25));
+}
+/* once it stands up the flap shows its inside and lies behind the letter */
+.flapOpen {
+  z-index: 1;
+  background: var(--grain), linear-gradient(#a8865a, #c6a374);
+}
+.flat .flapOpen {
+  transform: perspective(900px) rotateX(180deg);
+}
+.peek {
+  position: absolute;
+  z-index: 2;
+  top: 7%;
+  left: 7%;
+  right: 7%;
+  height: 86%;
+  background:
+    var(--grain),
+    linear-gradient(
+      transparent 32.8%,
+      rgba(60, 40, 20, 0.07) 33.2%,
+      transparent 33.8%
+    ),
+    var(--sheet);
+  box-shadow: 0 -1px 2px rgba(40, 25, 10, 0.15);
+  view-transition-name: tc-letter;
+}
+.pocket {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  background:
+    var(--grain),
+    radial-gradient(120% 90% at 30% 20%, #d4b385 0%, #c4a072 55%, #b38d5f 100%);
+  clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+}
+.pocket svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: rgba(70, 45, 20, 0.35);
+  stroke-width: 0.5;
+  vector-effect: non-scaling-stroke;
+}
+.from {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9cqi;
+  display: grid;
+  justify-items: center;
+  gap: 0.8cqi;
+  padding: 0 10cqi;
+  color: rgba(35, 25, 15, 0.82);
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: max(9px, 1.7cqi);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.seal {
+  position: absolute;
+  z-index: 5;
+  top: 58%;
+  left: 50%;
+  width: 15cqi;
+  aspect-ratio: 1;
+  translate: -50% -55%;
+}
+.sealHalf {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 47% 53% 50% 48% / 52% 47% 53% 48%;
+  background: radial-gradient(
+    circle at 36% 30%,
+    #e5543c,
+    #b3230f 58%,
+    #8c1606 100%
+  );
+  box-shadow:
+    inset 0 0 0 1.4cqi rgba(0, 0, 0, 0.08),
+    0 2px 3px rgba(60, 20, 5, 0.4);
+  color: rgba(70, 8, 0, 0.55);
+  font-family: var(--tc-display), "Arial Narrow", sans-serif;
+  font-size: 6.2cqi;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 190, 170, 0.35);
+}
+.sealHalf::before {
+  content: "";
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  border: 0.45cqi solid rgba(90, 12, 2, 0.35);
+  box-shadow: 0 1px 0 rgba(255, 190, 170, 0.25);
+}
+.sealHalf:first-child {
+  clip-path: polygon(0 0, 54% 0, 46% 38%, 55% 62%, 47% 100%, 0 100%);
+}
+.sealHalf:last-child {
+  clip-path: polygon(54% 0, 100% 0, 100% 100%, 47% 100%, 55% 62%, 46% 38%);
+}
+
+.hint {
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--ink-soft);
+}
+.hint::after {
+  content: " →" / "";
+  font-style: normal;
+  color: var(--red-deep);
+}
+
+/* ---------- the letter ---------- */
+.letter {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(30px, 6vw, 68px) clamp(22px, 6.4vw, 76px)
+    clamp(36px, 6vw, 64px);
+  background:
+    var(--grain),
+    linear-gradient(
+      transparent 33.1%,
+      rgba(60, 40, 20, 0.06) 33.3%,
+      transparent 33.7%
+    ),
+    linear-gradient(
+      transparent 66.4%,
+      rgba(60, 40, 20, 0.06) 66.6%,
+      transparent 67%
+    ),
+    var(--sheet);
+  box-shadow:
+    0 1px 1px rgba(40, 25, 10, 0.12),
+    0 26px 44px -18px rgba(60, 38, 18, 0.32);
+  color: var(--ink);
+  outline: none;
+  view-transition-name: tc-letter;
+}
+.wrap:not([data-state="open"]) .letter {
+  margin-top: 48px;
+}
+.place {
+  text-align: right;
+  font-family: var(--tc-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.greeting {
+  margin: 28px 0 18px;
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+}
+.para {
+  font-size: clamp(1.0625rem, 1.5vw, 1.2rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+.para + .para {
+  margin-top: 1em;
+}
+.muted {
+  color: var(--ink-soft);
+}
+.strong {
+  color: var(--ink);
+}
+.highlight {
+  color: var(--red-deep);
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-style: italic;
+}
+.sign {
+  margin-top: 34px;
+  font-size: 1.125rem;
+}
+.signature {
+  position: relative;
+  display: inline-block;
+  margin-top: 6px;
+  padding-bottom: 10px;
+  font-family: var(--tc-serif-italic), var(--tc-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(2rem, 4.4vw, 2.6rem);
+  line-height: 1.1;
+}
+.signature svg {
+  position: absolute;
+  left: -2%;
+  bottom: 0;
+  width: 104%;
+  height: 14px;
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.tucked {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: 0;
+  display: block;
+  width: min(600px, 94%);
+  aspect-ratio: 1.6;
+  translate: -50% 0;
+  rotate: 2.4deg;
+  container-type: inline-size;
+  view-transition-name: tc-envelope;
+}
+
+/* where the browser cannot carry the letter out of the envelope (a view transition), it rises in place */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  @supports not (view-transition-name: none) {
+    .wrap[data-state="open"] .letter {
+      animation: tc-letter-in 0.5s ease-out backwards;
+    }
+  }
+}
+@keyframes tc-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media print {
+  .envelope,
+  .tucked {
+    display: none;
+  }
+  .letter[hidden] {
+    display: block;
+  }
+}

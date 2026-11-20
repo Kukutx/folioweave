@@ -1,13 +1,13 @@
 {
   "id": "ticket-club",
   "name": "Ticket Club",
-  "description": "A red page where the author's links hang as tickets on a washing line: pull a stub down to tear it off and copy the link. A sealed envelope holds a letter from the author.",
+  "description": "A one-person box office printed on warm paper: the author's links come off a roll as admission tickets (open one, or tear off its stub to keep the link), a sealed envelope holds a letter, and the projects and articles are set as the programme.",
   "translations": {
     "zh": {
-      "description": "红色页面上，作者的链接像车票一样晾在绳上：往下拽就撕下票根、复制链接；还有一封装在信封里的信。"
+      "description": "一个人的售票窗口，印在暖色纸上：作者的链接是一卷入场券（点开去那里，撕下票根就复制链接），一只封着火漆的信封里有一封信，作品和文章排成节目单。"
     }
   },
-  "version": "1.0.0",
+  "version": "2.0.0",
   "apiVersion": 1,
   "entries": {
     "Layout": "layout.tsx",
@@ -35,298 +35,244 @@
       "labels": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Interface wording, in the original's words by default.",
+        "description": "Interface wording.",
         "properties": {
-          "brandTop": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "YOUR LITTLE"
-          },
-          "brandBottom": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "LINK COLLECTION"
-          },
-          "edition": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "PERSONAL EDITION"
-          },
-          "tagline": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "GOOD THINGS. PASSED ALONG."
-          },
-          "titleTop": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "TICKET"
-          },
-          "titleBottom": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "CLUB"
-          },
-          "subLead": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "A little piece of my internet."
-          },
-          "subTail": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Tear one off. Make it yours."
-          },
-          "edit": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Edit your links"
-          },
-          "fresh": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Fresh tickets"
-          },
-          "pass": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "PERSONAL PASS"
-          },
-          "club": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "TICKET CLUB"
-          },
-          "year": {
+          "tickets": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "description": "The year on each card; defaults to the copyright year followed by · ∞."
+            "default": "Tickets",
+            "description": "The navigation's link to the tickets."
           },
-          "pull": {
+          "letter": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "PULL TO COLLECT"
-          },
-          "taken": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "TAKEN. GOOD CHOICE."
-          },
-          "again": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "PRINT ANOTHER ↻"
-          },
-          "hintIdle": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "A whole collection. In good hands."
-          },
-          "hintPull": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "One little pull. One good link."
-          },
-          "hintDone": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "A good link, ready to go. ⌘ V"
-          },
-          "clipboard": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Clipboard"
-          },
-          "clipboardFoot": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Copied & ready to paste."
-          },
-          "keys": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "⌘ V"
+            "maxLength": 40,
+            "default": "Letter",
+            "description": "The navigation's link to the letter."
           },
           "writing": {
             "type": "string",
             "minLength": 1,
             "maxLength": 40,
-            "description": "The link to the articles in the tools row; defaults to the blog's title, in capitals."
+            "description": "The navigation's link to the articles; defaults to the blog's title."
+          },
+          "programme": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Programme",
+            "description": "The heading of the projects, and its link in the navigation."
+          },
+          "hintIdle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Click a ticket to go there. Tear off its stub to keep the link.",
+            "description": "The line under the tickets."
+          },
+          "hintDone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Kept: {link}. Paste it anywhere.",
+            "description": "The line under the tickets once a stub is torn off; {link} is the ticket's address."
           },
           "copyFailed": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
             "default": "Couldn’t copy. It’s {link}",
-            "description": "The toast when the browser refuses the clipboard; {link} is the ticket's link."
+            "description": "The line when the browser refuses the clipboard; {link} is the ticket's address."
+          },
+          "admit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Admit one to",
+            "description": "The line above each ticket's title."
+          },
+          "issuedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "default": "Issued by {name}",
+            "description": "The ticket's foot; {name} is the author's name."
+          },
+          "stub": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "default": "Keep this stub",
+            "description": "The stub's heading."
+          },
+          "pull": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "default": "Tear here",
+            "description": "The stub's hint."
+          },
+          "stubAction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "default": "Tear off the stub and copy the link to {link}",
+            "description": "What assistive technology reads for a stub; {link} names the ticket's link."
+          },
+          "taken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24,
+            "default": "Copied",
+            "description": "The stamp on a ticket whose stub was torn off."
+          },
+          "again": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Print another",
+            "description": "The button that prints a new stub."
           },
           "envelopeTo": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "To: You"
+            "maxLength": 80,
+            "default": "To you",
+            "description": "The address on the envelope."
+          },
+          "envelopeFrom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "default": "From {name}",
+            "description": "The return address on the envelope's flap; {name} is the author's name."
           },
           "envelopeDate": {
             "type": "string",
             "minLength": 1,
             "maxLength": 80,
-            "description": "The line under the address on the envelope; defaults to the location's city and the copyright year."
+            "description": "The line under the address; defaults to the location's city and the copyright year."
           },
           "envelopeHint": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Drag to tear the envelope, or tap to open"
-          },
-          "envelopeOpening": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Opening your letter..."
-          },
-          "envelopeTag": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "drag"
+            "default": "Turn it over and break the seal",
+            "description": "The line under the sealed envelope."
           },
           "letterTitle": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "A little about me"
+            "default": "A letter",
+            "description": "The title of the letter's own page."
           },
           "letterGreeting": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "Dear friend,"
+            "default": "Dear visitor,",
+            "description": "The letter's first line."
           },
-          "close": {
+          "signOff": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "Close"
-          },
-          "previous": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Previous"
-          },
-          "next": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "Next"
-          },
-          "stampCity": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "SINGAPORE"
-          },
-          "stampCaption": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "SHOPHOUSES"
-          },
-          "stampRainy": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "RAINY DAYS"
-          },
-          "stampPost": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "POST"
-          },
-          "stampWithLove": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "default": "WITH LOVE"
+            "maxLength": 80,
+            "default": "Yours,",
+            "description": "The line above the author's name at the end of the letter."
           },
           "allPosts": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "ALL"
+            "maxLength": 40,
+            "default": "All",
+            "description": "The first topic: every article."
           },
-          "readPost": {
+          "allWriting": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "READ IT"
+            "maxLength": 40,
+            "default": "All articles",
+            "description": "The link from the home page to every article."
           },
           "minutes": {
             "type": "string",
             "minLength": 1,
+            "maxLength": 20,
+            "default": "min",
+            "description": "After an article's reading time."
+          },
+          "tagged": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Tagged",
+            "description": "Before a topic's name on its page."
+          },
+          "keepArticle": {
+            "type": "string",
+            "minLength": 1,
             "maxLength": 200,
-            "default": "MIN"
+            "default": "Tear off the stub to keep a link to this article.",
+            "description": "The line under the ticket that ends each article."
+          },
+          "void": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 24,
+            "default": "Void",
+            "description": "The stamp on the missing page's ticket."
           },
           "backHome": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "BACK TO THE LINE"
+            "maxLength": 80,
+            "default": "Back to the tickets",
+            "description": "The missing page's way home."
           },
           "notFoundKicker": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "NOT FOUND"
+            "maxLength": 40,
+            "default": "Not found",
+            "description": "The line above the missing page's title."
           },
           "notFoundTop": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "LOST"
+            "maxLength": 40,
+            "default": "Lost",
+            "description": "The missing page's title, first line."
           },
           "notFoundBottom": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 200,
-            "default": "TICKET."
+            "maxLength": 40,
+            "default": "ticket.",
+            "description": "The missing page's title, second line."
           },
           "notFoundText": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200,
-            "default": "This page isn’t on the line."
+            "default": "This page isn’t on the programme.",
+            "description": "The missing page's line of text."
+          },
+          "top": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "default": "Back to top",
+            "description": "The footer's link to the top of the page."
           }
         }
       },
       "tickets": {
         "type": "array",
         "minItems": 1,
-        "maxItems": 3,
-        "description": "The tickets on the line, in order (one to three). Without this list: the site, a code profile (else the first project with a link) and the e-mail (else another social profile), as the profile has them.",
+        "maxItems": 6,
+        "description": "The tickets on the roll, in order (one to six). Without this list: each of the profile's social links, then the e-mail address, up to six.",
         "items": {
           "type": "object",
           "additionalProperties": false,
@@ -337,7 +283,7 @@
               "minLength": 2,
               "maxLength": 300,
               "pattern": "^(?:https?://|mailto:|tel:|/(?!/))",
-              "description": "What the stub hands out and the QR code carries: an http(s), mailto: or tel: link, or a path on this site."
+              "description": "What the ticket opens, the stub copies and its code carries: an http(s), mailto: or tel: link, or a path on this site."
             },
             "title": {
               "type": "array",
@@ -348,55 +294,52 @@
                 "minLength": 1,
                 "maxLength": 24
               },
-              "description": "The big title, one or two lines (e.g. [\"KEEP IN\", \"TOUCH.\"])."
+              "description": "The big title, one or two lines; defaults to the link's name (e.g. [\"GitHub\"])."
             },
             "kicker": {
               "type": "string",
               "minLength": 1,
               "maxLength": 40,
-              "description": "The small line above the title, after the number (e.g. THE CONVERSATION)."
+              "description": "The line above the title; defaults to the admit label."
             },
             "subtitle": {
               "type": "string",
               "minLength": 1,
               "maxLength": 80,
-              "description": "The line under the title."
+              "description": "The line under the title; defaults to the link's address."
             },
             "stub": {
               "type": "string",
               "minLength": 1,
               "maxLength": 30,
-              "description": "The label on the stub (e.g. TAKE MY LINK)."
+              "description": "The stub's heading; defaults to the stub label."
             },
             "label": {
               "type": "string",
               "minLength": 1,
               "maxLength": 40,
-              "description": "The link's name on the clipboard."
+              "description": "The link's name, read out by assistive technology; defaults to the host or Email."
             },
             "toast": {
               "type": "string",
               "minLength": 1,
               "maxLength": 80,
-              "description": "The note once the link is copied."
-            },
-            "icon": {
-              "enum": ["web", "github", "chat"],
-              "description": "The corner icon."
-            },
-            "light": {
-              "type": "boolean",
-              "description": "A cyan stub (the first ticket's by default)."
+              "description": "The line under the tickets once this one's stub is torn off."
             }
           }
         }
+      },
+      "stock": {
+        "enum": ["gold", "red", "blue", "green", "pink", "cream"],
+        "default": "gold",
+        "description": "The colour of the ticket card."
       },
       "editionPath": {
         "type": "string",
         "pattern": "^[a-z0-9][a-z0-9-]*$",
         "maxLength": 40,
         "default": "edition",
-        "description": "The address of the personal edition (the letter), e.g. lettera."
+        "description": "The address of the letter's own page, e.g. lettera."
       }
     }
   },

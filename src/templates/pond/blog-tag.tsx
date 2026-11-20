@@ -1,12 +1,9 @@
 import type { TemplateModule } from "@/core/contracts";
-import { PostList, Topics } from "./blog";
-import { Shell } from "./shell";
-import s from "./pond.module.css";
+import { Head, Shell } from "./shell";
+import { PostList, Topics } from "./writing";
 
 const BlogTag: TemplateModule["BlogTag"] = ({ tag, context }) => (
-  <Shell context={context} current="blog">
-    <p className={`${s.muted} ${s.small}`}>{context.writing.title}</p>
-    <h1 className={s.title}>{tag.label}</h1>
+  <Shell context={context} current="blog" head={<Head kicker={context.writing.title} title={tag.label} />}>
     <Topics labels={tag.labels} active={tag.label} context={context} />
     <PostList posts={tag.posts} context={context} />
   </Shell>
